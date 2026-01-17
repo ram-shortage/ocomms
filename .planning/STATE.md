@@ -11,27 +11,27 @@ See: .planning/PROJECT.md (updated 2026-01-17)
 
 Phase: 2 of 8 (Channels & DMs)
 Plan: 3 of 3 in current phase
-Status: In progress
-Last activity: 2026-01-17 - Completed 02-03-PLAN.md
+Status: Complete
+Last activity: 2026-01-17 - Completed 02-02-PLAN.md
 
 Progress: ███████░░░ 35%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7
+- Total plans completed: 8
 - Average duration: 4 min
-- Total execution time: 28 min
+- Total execution time: 33 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1-foundation | 4/4 | 16 min | 4 min |
-| 2-channels-dms | 3/3 | 12 min | 4 min |
+| 2-channels-dms | 3/3 | 17 min | ~6 min |
 
 **Recent Trend:**
-- Last 5 plans: 4 min, 4 min, 4 min, 4 min, 5 min
+- Last 5 plans: 4 min, 4 min, 5 min, 4 min, 5 min
 - Trend: Stable
 
 ## Accumulated Context
@@ -56,6 +56,8 @@ Recent decisions affecting current work:
 | 2-01 | Unique (org_id, slug) index | Ensures unique channel names per workspace |
 | 2-01 | createdBy set null on delete | Preserve channel if creator leaves |
 | 2-01 | Creator as admin member | Transaction ensures consistent membership |
+| 2-02 | Admin leave protection | Cannot leave if sole admin with members |
+| 2-02 | Topic vs Description | Any member edits topic, admin edits description |
 | 2-03 | 1:1 DMs have null name | Display other person's name in UI |
 | 2-03 | Adding to 1:1 converts to group | Seamless participant expansion |
 | 2-03 | Duplicate 1:1 prevention | Check existing participants before creating |
@@ -70,6 +72,6 @@ Database connection required before `npm run db:push` can verify schema.
 
 ## Session Continuity
 
-Last session: 2026-01-17T23:13:31Z
-Stopped at: Completed 02-03-PLAN.md
+Last session: 2026-01-17T23:20:30Z
+Stopped at: Completed 02-02-PLAN.md
 Resume file: None
