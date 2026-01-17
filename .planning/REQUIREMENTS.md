@@ -165,70 +165,70 @@ Explicitly excluded. Documented to prevent scope creep.
 
 ## Traceability
 
-Which phases cover which requirements. Updated by create-roadmap.
+Which phases cover which requirements.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | TBD | Pending |
-| AUTH-02 | TBD | Pending |
-| AUTH-03 | TBD | Pending |
-| AUTH-04 | TBD | Pending |
-| WKSP-01 | TBD | Pending |
-| WKSP-02 | TBD | Pending |
-| WKSP-03 | TBD | Pending |
-| MEMB-01 | TBD | Pending |
-| MEMB-02 | TBD | Pending |
-| MEMB-03 | TBD | Pending |
-| MEMB-04 | TBD | Pending |
-| MEMB-05 | TBD | Pending |
-| MEMB-06 | TBD | Pending |
-| CHAN-01 | TBD | Pending |
-| CHAN-02 | TBD | Pending |
-| CHAN-03 | TBD | Pending |
-| CHAN-04 | TBD | Pending |
-| CHAN-05 | TBD | Pending |
-| CHAN-06 | TBD | Pending |
-| CHAN-07 | TBD | Pending |
-| CHAN-08 | TBD | Pending |
-| CHAN-09 | TBD | Pending |
-| DM-01 | TBD | Pending |
-| DM-02 | TBD | Pending |
-| DM-03 | TBD | Pending |
-| MSG-01 | TBD | Pending |
-| MSG-02 | TBD | Pending |
-| MSG-03 | TBD | Pending |
-| MSG-04 | TBD | Pending |
-| THRD-01 | TBD | Pending |
-| THRD-02 | TBD | Pending |
-| THRD-03 | TBD | Pending |
-| THRD-04 | TBD | Pending |
-| NOTF-01 | TBD | Pending |
-| NOTF-02 | TBD | Pending |
-| NOTF-03 | TBD | Pending |
-| NOTF-04 | TBD | Pending |
-| NOTF-05 | TBD | Pending |
-| NOTF-06 | TBD | Pending |
-| SRCH-01 | TBD | Pending |
-| SRCH-02 | TBD | Pending |
-| PRES-01 | TBD | Pending |
-| PRES-02 | TBD | Pending |
-| UNRD-01 | TBD | Pending |
-| UNRD-02 | TBD | Pending |
-| UNRD-03 | TBD | Pending |
-| REAC-01 | TBD | Pending |
-| REAC-02 | TBD | Pending |
-| REAC-03 | TBD | Pending |
-| INFR-01 | TBD | Pending |
-| INFR-02 | TBD | Pending |
-| INFR-03 | TBD | Pending |
-| INFR-04 | TBD | Pending |
-| INFR-05 | TBD | Pending |
+| AUTH-01 | Phase 1 | Pending |
+| AUTH-02 | Phase 1 | Pending |
+| AUTH-03 | Phase 1 | Pending |
+| AUTH-04 | Phase 1 | Pending |
+| WKSP-01 | Phase 1 | Pending |
+| WKSP-02 | Phase 1 | Pending |
+| WKSP-03 | Phase 1 | Pending |
+| MEMB-01 | Phase 1 | Pending |
+| MEMB-02 | Phase 1 | Pending |
+| MEMB-03 | Phase 1 | Pending |
+| MEMB-04 | Phase 1 | Pending |
+| MEMB-05 | Phase 1 | Pending |
+| MEMB-06 | Phase 1 | Pending |
+| CHAN-01 | Phase 2 | Pending |
+| CHAN-02 | Phase 2 | Pending |
+| CHAN-03 | Phase 2 | Pending |
+| CHAN-04 | Phase 2 | Pending |
+| CHAN-05 | Phase 2 | Pending |
+| CHAN-06 | Phase 2 | Pending |
+| CHAN-07 | Phase 2 | Pending |
+| CHAN-08 | Phase 4 | Pending |
+| CHAN-09 | Phase 4 | Pending |
+| DM-01 | Phase 2 | Pending |
+| DM-02 | Phase 2 | Pending |
+| DM-03 | Phase 2 | Pending |
+| MSG-01 | Phase 3 | Pending |
+| MSG-02 | Phase 3 | Pending |
+| MSG-03 | Phase 3 | Pending |
+| MSG-04 | Phase 3 | Pending |
+| THRD-01 | Phase 4 | Pending |
+| THRD-02 | Phase 4 | Pending |
+| THRD-03 | Phase 4 | Pending |
+| THRD-04 | Phase 4 | Pending |
+| NOTF-01 | Phase 5 | Pending |
+| NOTF-02 | Phase 5 | Pending |
+| NOTF-03 | Phase 5 | Pending |
+| NOTF-04 | Phase 5 | Pending |
+| NOTF-05 | Phase 5 | Pending |
+| NOTF-06 | Phase 5 | Pending |
+| SRCH-01 | Phase 7 | Pending |
+| SRCH-02 | Phase 7 | Pending |
+| PRES-01 | Phase 3 | Pending |
+| PRES-02 | Phase 3 | Pending |
+| UNRD-01 | Phase 6 | Pending |
+| UNRD-02 | Phase 6 | Pending |
+| UNRD-03 | Phase 6 | Pending |
+| REAC-01 | Phase 4 | Pending |
+| REAC-02 | Phase 4 | Pending |
+| REAC-03 | Phase 4 | Pending |
+| INFR-01 | Phase 8 | Pending |
+| INFR-02 | Phase 8 | Pending |
+| INFR-03 | Phase 8 | Pending |
+| INFR-04 | Phase 8 | Pending |
+| INFR-05 | Phase 8 | Pending |
 
 **Coverage:**
 - v1 requirements: 51 total
-- Mapped to phases: 0
-- Unmapped: 51 ⚠️ (will be mapped by create-roadmap)
+- Mapped to phases: 51
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-01-17*
-*Last updated: 2026-01-17 after initial definition*
+*Last updated: 2026-01-17 after roadmap creation*
