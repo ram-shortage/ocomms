@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { organization } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,6 +26,7 @@ interface Member {
 interface MemberListProps {
   members: Member[];
   organizationId: string;
+  workspaceSlug: string;
   currentUserId: string;
   currentUserRole: "owner" | "admin" | "member";
   onMemberUpdated?: () => void;
@@ -33,6 +35,7 @@ interface MemberListProps {
 export function MemberList({
   members,
   organizationId,
+  workspaceSlug,
   currentUserId,
   currentUserRole,
   onMemberUpdated,
@@ -97,10 +100,13 @@ export function MemberList({
           className="flex items-center justify-between p-3 bg-white border rounded"
         >
           <div>
-            <p className="font-medium">
+            <Link
+              href={`/${workspaceSlug}/members/${member.id}`}
+              className="font-medium hover:underline"
+            >
               {member.user.name || member.user.email}
               {member.userId === currentUserId && " (you)"}
-            </p>
+            </Link>
             <p className="text-sm text-gray-500">{member.user.email}</p>
           </div>
           <div className="flex items-center gap-2">

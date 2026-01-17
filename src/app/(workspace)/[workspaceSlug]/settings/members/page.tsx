@@ -88,6 +88,7 @@ export default async function MembersSettingsPage({
         <MemberList
           members={members}
           organizationId={workspace.id}
+          workspaceSlug={workspaceSlug}
           currentUserId={session.user.id}
           currentUserRole={currentMembership?.role as "owner" | "admin" | "member" || "member"}
         />

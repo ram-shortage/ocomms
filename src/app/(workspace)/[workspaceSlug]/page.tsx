@@ -33,12 +33,20 @@ export default async function WorkspacePage({
     <div className="p-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-2xl font-bold">{workspace.name}</h1>
-        <Link
-          href={`/${workspaceSlug}/settings`}
-          className="text-sm text-blue-600 hover:underline"
-        >
-          Settings
-        </Link>
+        <div className="flex items-center gap-4">
+          <Link
+            href={`/${workspaceSlug}/profile`}
+            className="text-sm text-blue-600 hover:underline"
+          >
+            Edit Profile
+          </Link>
+          <Link
+            href={`/${workspaceSlug}/settings`}
+            className="text-sm text-blue-600 hover:underline"
+          >
+            Settings
+          </Link>
+        </div>
       </div>
       <p className="text-gray-600">
         Welcome to your workspace. Channels and messages coming soon.
