@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-17)
 
 **Core value:** Data sovereignty - Complete control over communication data, no third-party dependencies
-**Current focus:** Phase 2 - Channels & DMs
+**Current focus:** Phase 3 - Real-Time Messaging
 
 ## Current Position
 
-Phase: 2 of 8 (Channels & DMs)
-Plan: 3 of 3 in current phase
-Status: Complete
-Last activity: 2026-01-17 - Completed 02-02-PLAN.md
+Phase: 3 of 8 (Real-Time Messaging)
+Plan: 1 of 3 in current phase
+Status: In progress
+Last activity: 2026-01-17 - Completed 03-01-PLAN.md
 
-Progress: ███████░░░ 35%
+Progress: ████████░░ 40%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 8
+- Total plans completed: 9
 - Average duration: 4 min
-- Total execution time: 33 min
+- Total execution time: 38 min
 
 **By Phase:**
 
@@ -29,9 +29,10 @@ Progress: ███████░░░ 35%
 |-------|-------|-------|----------|
 | 1-foundation | 4/4 | 16 min | 4 min |
 | 2-channels-dms | 3/3 | 17 min | ~6 min |
+| 3-real-time-messaging | 1/3 | 5 min | 5 min |
 
 **Recent Trend:**
-- Last 5 plans: 4 min, 4 min, 5 min, 4 min, 5 min
+- Last 5 plans: 4 min, 5 min, 4 min, 5 min, 5 min
 - Trend: Stable
 
 ## Accumulated Context
@@ -61,10 +62,14 @@ Recent decisions affecting current work:
 | 2-03 | 1:1 DMs have null name | Display other person's name in UI |
 | 2-03 | Adding to 1:1 converts to group | Seamless participant expansion |
 | 2-03 | Duplicate 1:1 prevention | Check existing participants before creating |
+| 3-01 | Redis graceful fallback | Local dev works without Redis; production gets scaling |
+| 3-01 | Cookie-based WebSocket auth | Consistent auth with HTTP routes via better-auth |
+| 3-01 | Prefixed room names | channel:, dm:, workspace:, user: prevents collisions |
 
 ### Pending Todos
 
 - Complete USER-SETUP.md (PostgreSQL, SMTP configuration)
+- Configure REDIS_URL for production scaling (optional for dev)
 
 ### Blockers/Concerns
 
@@ -72,6 +77,6 @@ Database connection required before `npm run db:push` can verify schema.
 
 ## Session Continuity
 
-Last session: 2026-01-17T23:20:30Z
-Stopped at: Completed 02-02-PLAN.md
+Last session: 2026-01-17T23:45:00Z
+Stopped at: Completed 03-01-PLAN.md
 Resume file: None
