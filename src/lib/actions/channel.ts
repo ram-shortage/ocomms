@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db";
-import { channels, channelMembers } from "@/db/schema";
+import { channels, channelMembers, members } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { eq, and } from "drizzle-orm";
@@ -204,4 +204,61 @@ export async function getChannel(organizationId: string, slug: string) {
   }
 
   return channel;
+}
+
+export async function inviteToChannel(channelId: string, userId: string) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) throw new Error("Unauthorized");
+
+  // Verify inviter is channel admin
+  const inviterMembership = await db.query.channelMembers.findFirst({
+    where: and(
+      eq(channelMembers.channelId, channelId),
+      eq(channelMembers.userId, session.user.id)
+    ),
+  });
+
+  if (!inviterMembership || inviterMembership.role !== "admin") {
+    throw new Error("Only channel admins can invite members");
+  }
+
+  // Verify channel is private (public channels use join, not invite)
+  const channel = await db.query.channels.findFirst({
+    where: eq(channels.id, channelId),
+  });
+
+  if (!channel) throw new Error("Channel not found");
+  if (!channel.isPrivate) throw new Error("Public channels don't require invitations");
+
+  // Verify target user is workspace member
+  const orgMembers = await db.query.members.findMany({
+    where: eq(members.organizationId, channel.organizationId),
+  });
+
+  const isOrgMember = orgMembers.some((m) => m.userId === userId);
+  if (!isOrgMember) throw new Error("User is not a workspace member");
+
+  // Add to channel
+  await db.insert(channelMembers).values({
+    channelId,
+    userId,
+    role: "member",
+  }).onConflictDoNothing();
+
+  revalidatePath(`/`);
+  return { success: true };
+}
+
+export async function getWorkspaceMembers(organizationId: string) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) throw new Error("Unauthorized");
+
+  const orgMembers = await db.query.members.findMany({
+    where: eq(members.organizationId, organizationId),
+    with: {
+      user: true,
+    },
+  });
+
+  return orgMembers;
 }

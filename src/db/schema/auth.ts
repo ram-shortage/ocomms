@@ -1,4 +1,5 @@
 import { pgTable, text, timestamp, boolean, uuid } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 
 // better-auth core tables
 export const users = pgTable("users", {
@@ -87,3 +88,15 @@ export const invitations = pgTable("invitations", {
   expiresAt: timestamp("expires_at").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
+
+// Relations for organization members
+export const membersRelations = relations(members, ({ one }) => ({
+  user: one(users, {
+    fields: [members.userId],
+    references: [users.id],
+  }),
+  organization: one(organizations, {
+    fields: [members.organizationId],
+    references: [organizations.id],
+  }),
+}));

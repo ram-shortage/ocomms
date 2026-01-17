@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { leaveChannel, updateChannelTopic } from "@/lib/actions/channel";
+import { InviteToChannelDialog } from "./invite-to-channel-dialog";
 
 interface ChannelMember {
   id: string;
@@ -35,6 +36,7 @@ interface ChannelHeaderProps {
     isPrivate: boolean;
     memberCount: number;
   };
+  organizationId: string;
   workspaceSlug: string;
   isAdmin: boolean;
   members: ChannelMember[];
@@ -42,6 +44,7 @@ interface ChannelHeaderProps {
 
 export function ChannelHeader({
   channel,
+  organizationId,
   workspaceSlug,
   isAdmin,
   members,
@@ -199,6 +202,16 @@ export function ChannelHeader({
               </div>
             </DialogContent>
           </Dialog>
+
+          {/* Invite to private channel (admin only) */}
+          {isAdmin && channel.isPrivate && (
+            <InviteToChannelDialog
+              channelId={channel.id}
+              channelName={channel.name}
+              organizationId={organizationId}
+              existingMemberIds={members.map((m) => m.id)}
+            />
+          )}
 
           {/* Settings link (admin only) */}
           {isAdmin && (

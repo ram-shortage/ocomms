@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getUserChannels } from "@/lib/actions/channel";
-import { Hash } from "lucide-react";
+import { Hash, Lock } from "lucide-react";
 
 interface ChannelListProps {
   organizationId: string;
@@ -35,7 +35,11 @@ export async function ChannelList({
           href={`/${workspaceSlug}/channels/${channel.slug}`}
           className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-md hover:bg-accent transition-colors"
         >
-          <Hash className="h-4 w-4 text-muted-foreground" />
+          {channel.isPrivate ? (
+            <Lock className="h-4 w-4 text-muted-foreground" />
+          ) : (
+            <Hash className="h-4 w-4 text-muted-foreground" />
+          )}
           <span className="truncate">{channel.name}</span>
         </Link>
       ))}

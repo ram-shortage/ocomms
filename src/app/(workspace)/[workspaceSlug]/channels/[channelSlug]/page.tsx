@@ -55,6 +55,7 @@ export default async function ChannelPage({
           isPrivate: channel.isPrivate,
           memberCount: channel.members.length,
         }}
+        organizationId={workspace.id}
         workspaceSlug={workspaceSlug}
         isAdmin={isAdmin}
         members={channel.members.map((m) => ({

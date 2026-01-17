@@ -119,19 +119,23 @@ export function CreateChannelDialog({
               rows={3}
             />
           </div>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-start space-x-2">
             <Checkbox
               id="channel-private"
               checked={isPrivate}
               onCheckedChange={(checked) => setIsPrivate(checked === true)}
-              disabled
             />
-            <Label
-              htmlFor="channel-private"
-              className="text-sm font-normal text-muted-foreground cursor-not-allowed"
-            >
-              Make private (coming soon)
-            </Label>
+            <div className="space-y-1">
+              <Label
+                htmlFor="channel-private"
+                className="text-sm font-normal cursor-pointer"
+              >
+                Make channel private
+              </Label>
+              <p className="text-xs text-muted-foreground">
+                Private channels are only visible to invited members
+              </p>
+            </div>
           </div>
           {error && <p className="text-sm text-red-600">{error}</p>}
           <DialogFooter>
