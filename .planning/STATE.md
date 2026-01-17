@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-17)
 ## Current Position
 
 Phase: 3 of 8 (Real-Time Messaging)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: In progress
-Last activity: 2026-01-17 - Completed 03-01-PLAN.md
+Last activity: 2026-01-17 - Completed 03-02-PLAN.md
 
-Progress: ████████░░ 40%
+Progress: ████████░░ 45%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 9
+- Total plans completed: 10
 - Average duration: 4 min
-- Total execution time: 38 min
+- Total execution time: 41 min
 
 **By Phase:**
 
@@ -29,10 +29,10 @@ Progress: ████████░░ 40%
 |-------|-------|-------|----------|
 | 1-foundation | 4/4 | 16 min | 4 min |
 | 2-channels-dms | 3/3 | 17 min | ~6 min |
-| 3-real-time-messaging | 1/3 | 5 min | 5 min |
+| 3-real-time-messaging | 2/3 | 8 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 4 min, 5 min, 4 min, 5 min, 5 min
+- Last 5 plans: 5 min, 4 min, 5 min, 5 min, 3 min
 - Trend: Stable
 
 ## Accumulated Context
@@ -65,6 +65,9 @@ Recent decisions affecting current work:
 | 3-01 | Redis graceful fallback | Local dev works without Redis; production gets scaling |
 | 3-01 | Cookie-based WebSocket auth | Consistent auth with HTTP routes via better-auth |
 | 3-01 | Prefixed room names | channel:, dm:, workspace:, user: prevents collisions |
+| 3-02 | Sequence numbers for ordering | Avoids clock skew across distributed systems |
+| 3-02 | Soft delete pattern | Preserves message history, shows [deleted] in UI |
+| 3-02 | Callback acknowledgement | Socket emit uses callback to confirm save |
 
 ### Pending Todos
 
@@ -77,6 +80,6 @@ Database connection required before `npm run db:push` can verify schema.
 
 ## Session Continuity
 
-Last session: 2026-01-17T23:45:00Z
-Stopped at: Completed 03-01-PLAN.md
+Last session: 2026-01-17T23:48:00Z
+Stopped at: Completed 03-02-PLAN.md
 Resume file: None
