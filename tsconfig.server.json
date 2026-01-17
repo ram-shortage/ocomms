@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "outDir": "dist",
+    "noEmit": false,
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+  "include": ["src/server/**/*", "src/lib/socket-events.ts"],
+  "exclude": ["node_modules"]
+}
