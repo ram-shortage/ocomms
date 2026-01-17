@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-01-17)
 ## Current Position
 
 Phase: 1 of 8 (Foundation)
-Plan: 1 of 4 in current phase
+Plan: 2 of 4 in current phase
 Status: In progress
-Last activity: 2026-01-17 — Completed 1-01-PLAN.md
+Last activity: 2026-01-17 — Completed 1-02-PLAN.md
 
-Progress: █░░░░░░░░░ 5%
+Progress: ██░░░░░░░░ 10%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1
-- Average duration: 5 min
-- Total execution time: 5 min
+- Total plans completed: 2
+- Average duration: 4 min
+- Total execution time: 8 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 1-foundation | 1/4 | 5 min | 5 min |
+| 1-foundation | 2/4 | 8 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 5 min
-- Trend: —
+- Last 5 plans: 5 min, 3 min
+- Trend: Improving
 
 ## Accumulated Context
 
@@ -45,6 +45,9 @@ Recent decisions affecting current work:
 | 1-01 | Manual better-auth schema | CLI requires database connection |
 | 1-01 | UUID primary keys | Follows better-auth conventions |
 | 1-01 | snake_case DB naming | PostgreSQL best practice via Drizzle casing |
+| 1-02 | Fire-and-forget emails | Prevent timing attacks revealing user existence |
+| 1-02 | 7-day sessions with daily refresh | Balance security and UX |
+| 1-02 | Middleware + page validation | Middleware for redirect, pages for full validation |
 
 ### Pending Todos
 
@@ -56,6 +59,6 @@ Database connection required before `npm run db:push` can verify schema.
 
 ## Session Continuity
 
-Last session: 2026-01-17T22:39:18Z
-Stopped at: Completed 1-01-PLAN.md
+Last session: 2026-01-17T22:44:42Z
+Stopped at: Completed 1-02-PLAN.md
 Resume file: None
