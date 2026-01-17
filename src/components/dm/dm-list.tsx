@@ -1,7 +1,7 @@
-import Link from "next/link";
 import { getUserConversations } from "@/lib/actions/conversation";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { DMListItem } from "./dm-list-item";
 
 interface DMListProps {
   organizationId: string;
@@ -48,22 +48,15 @@ export async function DMList({ organizationId, workspaceSlug }: DMListProps) {
         }
 
         return (
-          <Link
+          <DMListItem
             key={conversation.id}
-            href={`/${workspaceSlug}/dm/${conversation.id}`}
-            className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-gray-100"
-          >
-            {conversation.isGroup ? (
-              <div className="w-6 h-6 rounded bg-gray-200 flex items-center justify-center text-xs font-medium">
-                {otherParticipants.length + 1}
-              </div>
-            ) : (
-              <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs font-medium">
-                {displayName[0].toUpperCase()}
-              </div>
-            )}
-            <span className="text-sm truncate">{displayName}</span>
-          </Link>
+            conversationId={conversation.id}
+            workspaceSlug={workspaceSlug}
+            isGroup={conversation.isGroup}
+            displayName={displayName}
+            otherUserId={!conversation.isGroup ? otherParticipants[0]?.userId : undefined}
+            participantCount={conversation.isGroup ? otherParticipants.length + 1 : undefined}
+          />
         );
       })}
     </div>

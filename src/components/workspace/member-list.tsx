@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { PresenceIndicator, usePresence } from "@/components/presence";
 
 interface Member {
   id: string;
@@ -41,6 +42,7 @@ export function MemberList({
   onMemberUpdated,
 }: MemberListProps) {
   const [loading, setLoading] = useState<string | null>(null);
+  const { getPresence } = usePresence();
 
   const canManageRole = (memberRole: string) => {
     // Owner can manage anyone except other owners
@@ -99,15 +101,28 @@ export function MemberList({
           key={member.id}
           className="flex items-center justify-between p-3 bg-white border rounded"
         >
-          <div>
-            <Link
-              href={`/${workspaceSlug}/members/${member.id}`}
-              className="font-medium hover:underline"
-            >
-              {member.user.name || member.user.email}
-              {member.userId === currentUserId && " (you)"}
-            </Link>
-            <p className="text-sm text-gray-500">{member.user.email}</p>
+          <div className="flex items-center gap-3">
+            {/* Avatar with presence indicator */}
+            <div className="relative">
+              <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-sm font-medium text-gray-600">
+                {(member.user.name?.[0] || member.user.email[0]).toUpperCase()}
+              </div>
+              <PresenceIndicator
+                status={getPresence(member.userId)}
+                size="sm"
+                className="absolute -bottom-0.5 -right-0.5"
+              />
+            </div>
+            <div>
+              <Link
+                href={`/${workspaceSlug}/members/${member.id}`}
+                className="font-medium hover:underline"
+              >
+                {member.user.name || member.user.email}
+                {member.userId === currentUserId && " (you)"}
+              </Link>
+              <p className="text-sm text-gray-500">{member.user.email}</p>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             {canManageRole(member.role) ? (
