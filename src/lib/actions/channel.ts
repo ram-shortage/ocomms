@@ -4,7 +4,7 @@ import { db } from "@/db";
 import { channels, channelMembers } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 function slugify(name: string): string {
@@ -102,4 +102,106 @@ export async function joinChannel(channelId: string) {
 
   revalidatePath(`/`);
   return { success: true };
+}
+
+export async function leaveChannel(channelId: string) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) throw new Error("Unauthorized");
+
+  // Check if user is the only admin
+  const members = await db.query.channelMembers.findMany({
+    where: eq(channelMembers.channelId, channelId),
+  });
+
+  const admins = members.filter((m) => m.role === "admin");
+  const isOnlyAdmin = admins.length === 1 && admins[0].userId === session.user.id;
+
+  if (isOnlyAdmin && members.length > 1) {
+    throw new Error("Cannot leave: you are the only admin. Promote another member first.");
+  }
+
+  await db.delete(channelMembers).where(
+    and(
+      eq(channelMembers.channelId, channelId),
+      eq(channelMembers.userId, session.user.id)
+    )
+  );
+
+  revalidatePath(`/`);
+  return { success: true };
+}
+
+export async function updateChannelTopic(channelId: string, topic: string) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) throw new Error("Unauthorized");
+
+  // Verify user is channel member
+  const membership = await db.query.channelMembers.findFirst({
+    where: and(
+      eq(channelMembers.channelId, channelId),
+      eq(channelMembers.userId, session.user.id)
+    ),
+  });
+
+  if (!membership) throw new Error("Not a channel member");
+
+  await db.update(channels)
+    .set({ topic, updatedAt: new Date() })
+    .where(eq(channels.id, channelId));
+
+  revalidatePath(`/`);
+  return { success: true };
+}
+
+export async function updateChannelDescription(channelId: string, description: string) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) throw new Error("Unauthorized");
+
+  // Verify user is channel admin
+  const membership = await db.query.channelMembers.findFirst({
+    where: and(
+      eq(channelMembers.channelId, channelId),
+      eq(channelMembers.userId, session.user.id)
+    ),
+  });
+
+  if (!membership || membership.role !== "admin") {
+    throw new Error("Only channel admins can update description");
+  }
+
+  await db.update(channels)
+    .set({ description, updatedAt: new Date() })
+    .where(eq(channels.id, channelId));
+
+  revalidatePath(`/`);
+  return { success: true };
+}
+
+export async function getChannel(organizationId: string, slug: string) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) throw new Error("Unauthorized");
+
+  const channel = await db.query.channels.findFirst({
+    where: and(
+      eq(channels.organizationId, organizationId),
+      eq(channels.slug, slug)
+    ),
+    with: {
+      members: {
+        with: {
+          user: true,
+        },
+      },
+    },
+  });
+
+  if (!channel) return null;
+
+  // Check access for private channels
+  if (channel.isPrivate) {
+    const isMember = channel.members.some((m) => m.userId === session.user.id);
+    if (!isMember) return null;
+  }
+
+  return channel;
 }
