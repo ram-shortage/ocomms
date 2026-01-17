@@ -3,6 +3,11 @@ import { headers } from "next/headers";
 import { redirect, notFound } from "next/navigation";
 import { getConversation } from "@/lib/actions/conversation";
 import { DMHeader } from "@/components/dm/dm-header";
+import { MessageList, MessageInput } from "@/components/message";
+import { db } from "@/db";
+import { messages, users } from "@/db/schema";
+import { eq, and, isNull, asc } from "drizzle-orm";
+import type { Message } from "@/lib/socket-events";
 
 export default async function DMPage({
   params,
@@ -41,6 +46,45 @@ export default async function DMPage({
     notFound();
   }
 
+  // Fetch initial messages for this conversation
+  const conversationMessages = await db
+    .select({
+      id: messages.id,
+      content: messages.content,
+      authorId: messages.authorId,
+      channelId: messages.channelId,
+      conversationId: messages.conversationId,
+      sequence: messages.sequence,
+      deletedAt: messages.deletedAt,
+      createdAt: messages.createdAt,
+      updatedAt: messages.updatedAt,
+      authorName: users.name,
+      authorEmail: users.email,
+    })
+    .from(messages)
+    .leftJoin(users, eq(messages.authorId, users.id))
+    .where(and(eq(messages.conversationId, conversationId), isNull(messages.deletedAt)))
+    .orderBy(asc(messages.sequence))
+    .limit(50);
+
+  // Transform to Message type for client
+  const initialMessages: Message[] = conversationMessages.map((m) => ({
+    id: m.id,
+    content: m.content,
+    authorId: m.authorId,
+    channelId: m.channelId,
+    conversationId: m.conversationId,
+    sequence: m.sequence,
+    deletedAt: m.deletedAt,
+    createdAt: m.createdAt,
+    updatedAt: m.updatedAt,
+    author: {
+      id: m.authorId,
+      name: m.authorName,
+      email: m.authorEmail || "",
+    },
+  }));
+
   return (
     <div className="flex flex-col h-screen">
       <DMHeader
@@ -49,12 +93,17 @@ export default async function DMPage({
         workspaceSlug={workspaceSlug}
         currentUserId={session.user.id}
       />
-      <div className="flex-1 flex items-center justify-center bg-gray-50">
-        <div className="text-center text-gray-500">
-          <p className="text-lg font-medium">Messages coming in Phase 3</p>
-          <p className="text-sm">This conversation is ready for messaging</p>
-        </div>
-      </div>
+
+      {/* Message list - grows to fill available space */}
+      <MessageList
+        initialMessages={initialMessages}
+        targetId={conversationId}
+        targetType="dm"
+        currentUserId={session.user.id}
+      />
+
+      {/* Message input - fixed at bottom */}
+      <MessageInput targetId={conversationId} targetType="dm" />
     </div>
   );
 }

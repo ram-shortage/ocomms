@@ -24,6 +24,7 @@
     "better-auth": "^1.4.14",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.45.1",
     "ioredis": "^5.9.2",

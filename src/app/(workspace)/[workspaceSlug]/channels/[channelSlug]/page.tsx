@@ -3,6 +3,11 @@ import { headers } from "next/headers";
 import { redirect, notFound } from "next/navigation";
 import { getChannel } from "@/lib/actions/channel";
 import { ChannelHeader } from "@/components/channel/channel-header";
+import { MessageList, MessageInput } from "@/components/message";
+import { db } from "@/db";
+import { messages, users } from "@/db/schema";
+import { eq, and, isNull, asc } from "drizzle-orm";
+import type { Message } from "@/lib/socket-events";
 
 export default async function ChannelPage({
   params,
@@ -43,6 +48,45 @@ export default async function ChannelPage({
 
   const isAdmin = currentMembership?.role === "admin";
 
+  // Fetch initial messages for this channel
+  const channelMessages = await db
+    .select({
+      id: messages.id,
+      content: messages.content,
+      authorId: messages.authorId,
+      channelId: messages.channelId,
+      conversationId: messages.conversationId,
+      sequence: messages.sequence,
+      deletedAt: messages.deletedAt,
+      createdAt: messages.createdAt,
+      updatedAt: messages.updatedAt,
+      authorName: users.name,
+      authorEmail: users.email,
+    })
+    .from(messages)
+    .leftJoin(users, eq(messages.authorId, users.id))
+    .where(and(eq(messages.channelId, channel.id), isNull(messages.deletedAt)))
+    .orderBy(asc(messages.sequence))
+    .limit(50);
+
+  // Transform to Message type for client
+  const initialMessages: Message[] = channelMessages.map((m) => ({
+    id: m.id,
+    content: m.content,
+    authorId: m.authorId,
+    channelId: m.channelId,
+    conversationId: m.conversationId,
+    sequence: m.sequence,
+    deletedAt: m.deletedAt,
+    createdAt: m.createdAt,
+    updatedAt: m.updatedAt,
+    author: {
+      id: m.authorId,
+      name: m.authorName,
+      email: m.authorEmail || "",
+    },
+  }));
+
   return (
     <div className="flex flex-col h-screen">
       <ChannelHeader
@@ -67,14 +111,16 @@ export default async function ChannelPage({
         }))}
       />
 
-      {/* Main content area - messages placeholder */}
-      <div className="flex-1 overflow-y-auto p-6">
-        <div className="max-w-3xl mx-auto text-center py-12">
-          <p className="text-muted-foreground">
-            Messages coming in Phase 3
-          </p>
-        </div>
-      </div>
+      {/* Message list - grows to fill available space */}
+      <MessageList
+        initialMessages={initialMessages}
+        targetId={channel.id}
+        targetType="channel"
+        currentUserId={session.user.id}
+      />
+
+      {/* Message input - fixed at bottom */}
+      <MessageInput targetId={channel.id} targetType="channel" />
     </div>
   );
 }
