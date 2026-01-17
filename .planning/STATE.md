@@ -53,6 +53,9 @@ Recent decisions affecting current work:
 | 1-03 | Role hierarchy (owner > admin > member) | Consistent permission model |
 | 1-04 | Local filesystem for avatars | Simple storage, migrate to S3 later |
 | 1-04 | UUID filenames for avatars | Prevent collisions and enumeration |
+| 2-01 | Unique (org_id, slug) index | Ensures unique channel names per workspace |
+| 2-01 | createdBy set null on delete | Preserve channel if creator leaves |
+| 2-01 | Creator as admin member | Transaction ensures consistent membership |
 | 2-03 | 1:1 DMs have null name | Display other person's name in UI |
 | 2-03 | Adding to 1:1 converts to group | Seamless participant expansion |
 | 2-03 | Duplicate 1:1 prevention | Check existing participants before creating |
