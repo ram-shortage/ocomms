@@ -49,10 +49,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Messaging
 
-- [ ] **MSG-01**: Member can send message to channel
-- [ ] **MSG-02**: Member can send message in DM
-- [ ] **MSG-03**: Messages delivered in real-time (sub-second)
-- [ ] **MSG-04**: Member can delete own messages
+- [x] **MSG-01**: Member can send message to channel
+- [x] **MSG-02**: Member can send message in DM
+- [x] **MSG-03**: Messages delivered in real-time (sub-second)
+- [x] **MSG-04**: Member can delete own messages
 
 ### Threading
 
@@ -77,8 +77,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Presence
 
-- [ ] **PRES-01**: Member presence shows as active/away/offline
-- [ ] **PRES-02**: Presence updates in real-time
+- [x] **PRES-01**: Member presence shows as active/away/offline
+- [x] **PRES-02**: Presence updates in real-time
 
 ### Unread Management
 
@@ -194,10 +194,10 @@ Which phases cover which requirements.
 | DM-01 | Phase 2 | Complete |
 | DM-02 | Phase 2 | Complete |
 | DM-03 | Phase 2 | Complete |
-| MSG-01 | Phase 3 | Pending |
-| MSG-02 | Phase 3 | Pending |
-| MSG-03 | Phase 3 | Pending |
-| MSG-04 | Phase 3 | Pending |
+| MSG-01 | Phase 3 | Complete |
+| MSG-02 | Phase 3 | Complete |
+| MSG-03 | Phase 3 | Complete |
+| MSG-04 | Phase 3 | Complete |
 | THRD-01 | Phase 4 | Pending |
 | THRD-02 | Phase 4 | Pending |
 | THRD-03 | Phase 4 | Pending |
@@ -210,8 +210,8 @@ Which phases cover which requirements.
 | NOTF-06 | Phase 5 | Pending |
 | SRCH-01 | Phase 7 | Pending |
 | SRCH-02 | Phase 7 | Pending |
-| PRES-01 | Phase 3 | Pending |
-| PRES-02 | Phase 3 | Pending |
+| PRES-01 | Phase 3 | Complete |
+| PRES-02 | Phase 3 | Complete |
 | UNRD-01 | Phase 6 | Pending |
 | UNRD-02 | Phase 6 | Pending |
 | UNRD-03 | Phase 6 | Pending |
