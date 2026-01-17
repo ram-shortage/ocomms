@@ -13,7 +13,7 @@ OComms delivers a complete self-hosted team communication platform through 8 seq
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Auth, workspaces, members, profiles
-- [ ] **Phase 2: Channels & DMs** - Conversation containers
+- [x] **Phase 2: Channels & DMs** - Conversation containers
 - [ ] **Phase 3: Real-Time Messaging** - WebSocket message delivery, presence
 - [ ] **Phase 4: Threading & Reactions** - Threads, emoji reactions, pins
 - [ ] **Phase 5: Mentions & Notifications** - @mentions, notification routing
@@ -63,8 +63,9 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 02-01: Channel CRUD and membership
-- [ ] 02-02: Direct messages
+- [x] 02-01: Channel CRUD and membership
+- [x] 02-02: Channel management
+- [x] 02-03: Direct messages
 
 ### Phase 3: Real-Time Messaging
 **Goal**: Messages delivered instantly via WebSockets with basic presence
@@ -183,7 +184,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 4/4 | Complete | 2026-01-17 |
-| 2. Channels & DMs | 0/2 | Not started | - |
+| 2. Channels & DMs | 3/3 | Complete | 2026-01-17 |
 | 3. Real-Time Messaging | 0/3 | Not started | - |
 | 4. Threading & Reactions | 0/3 | Not started | - |
 | 5. Mentions & Notifications | 0/3 | Not started | - |
@@ -191,4 +192,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 7. Search | 0/1 | Not started | - |
 | 8. Self-Hosted Packaging | 0/3 | Not started | - |
 
-**Total:** 4/20 plans complete
+**Total:** 7/20 plans complete

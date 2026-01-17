@@ -31,21 +31,21 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Channels
 
-- [ ] **CHAN-01**: Member can create public channel
-- [ ] **CHAN-02**: Member can create private channel
-- [ ] **CHAN-03**: Member can browse channel directory
-- [ ] **CHAN-04**: Member can join public channel
-- [ ] **CHAN-05**: Member can leave channel
-- [ ] **CHAN-06**: Admin can invite members to private channel
-- [ ] **CHAN-07**: Member can set channel topic and description
+- [x] **CHAN-01**: Member can create public channel
+- [x] **CHAN-02**: Member can create private channel
+- [x] **CHAN-03**: Member can browse channel directory
+- [x] **CHAN-04**: Member can join public channel
+- [x] **CHAN-05**: Member can leave channel
+- [x] **CHAN-06**: Admin can invite members to private channel
+- [x] **CHAN-07**: Member can set channel topic and description
 - [ ] **CHAN-08**: Member can pin messages in channel
 - [ ] **CHAN-09**: Member can view pinned messages
 
 ### Direct Messages
 
-- [ ] **DM-01**: Member can start 1:1 DM with another member
-- [ ] **DM-02**: Member can start group DM (3+ members)
-- [ ] **DM-03**: Member can add participants to group DM
+- [x] **DM-01**: Member can start 1:1 DM with another member
+- [x] **DM-02**: Member can start group DM (3+ members)
+- [x] **DM-03**: Member can add participants to group DM
 
 ### Messaging
 
@@ -182,18 +182,18 @@ Which phases cover which requirements.
 | MEMB-04 | Phase 1 | Complete |
 | MEMB-05 | Phase 1 | Complete |
 | MEMB-06 | Phase 1 | Complete |
-| CHAN-01 | Phase 2 | Pending |
-| CHAN-02 | Phase 2 | Pending |
-| CHAN-03 | Phase 2 | Pending |
-| CHAN-04 | Phase 2 | Pending |
-| CHAN-05 | Phase 2 | Pending |
-| CHAN-06 | Phase 2 | Pending |
-| CHAN-07 | Phase 2 | Pending |
+| CHAN-01 | Phase 2 | Complete |
+| CHAN-02 | Phase 2 | Complete |
+| CHAN-03 | Phase 2 | Complete |
+| CHAN-04 | Phase 2 | Complete |
+| CHAN-05 | Phase 2 | Complete |
+| CHAN-06 | Phase 2 | Complete |
+| CHAN-07 | Phase 2 | Complete |
 | CHAN-08 | Phase 4 | Pending |
 | CHAN-09 | Phase 4 | Pending |
-| DM-01 | Phase 2 | Pending |
-| DM-02 | Phase 2 | Pending |
-| DM-03 | Phase 2 | Pending |
+| DM-01 | Phase 2 | Complete |
+| DM-02 | Phase 2 | Complete |
+| DM-03 | Phase 2 | Complete |
 | MSG-01 | Phase 3 | Pending |
 | MSG-02 | Phase 3 | Pending |
 | MSG-03 | Phase 3 | Pending |
