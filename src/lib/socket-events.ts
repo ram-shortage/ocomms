@@ -46,8 +46,13 @@ export interface ClientToServerEvents {
   "typing:stop": (data: { targetId: string; targetType: "channel" | "dm" }) => void;
   "presence:setAway": () => void;
   "presence:setActive": () => void;
+  "presence:fetch": (
+    data: { workspaceId: string; userIds: string[] },
+    callback: (response: Record<string, "active" | "away" | "offline">) => void
+  ) => void;
   "room:join": (data: { roomId: string; roomType: "channel" | "dm" }) => void;
   "room:leave": (data: { roomId: string; roomType: "channel" | "dm" }) => void;
+  "workspace:join": (data: { workspaceId: string }) => void;
 }
 
 export interface SocketData {

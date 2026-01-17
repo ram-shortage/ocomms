@@ -2,7 +2,7 @@ import "dotenv/config";
 import { createServer } from "node:http";
 import next from "next";
 import { Server as SocketServer } from "socket.io";
-import { createRedisAdapter } from "./socket/adapter";
+import { createRedisAdapter, createPresenceRedisClient } from "./socket/adapter";
 import { setupSocketHandlers } from "./socket";
 import type { ClientToServerEvents, ServerToClientEvents, SocketData } from "@/lib/socket-events";
 
@@ -33,8 +33,11 @@ app.prepare().then(async () => {
     io.adapter(adapter);
   }
 
-  // Setup event handlers
-  setupSocketHandlers(io);
+  // Create Redis client for presence (separate from adapter)
+  const presenceRedis = await createPresenceRedisClient();
+
+  // Setup event handlers with Redis for presence
+  setupSocketHandlers(io, presenceRedis);
 
   httpServer.listen(port, () => {
     console.log(`> Ready on http://${hostname}:${port}`);

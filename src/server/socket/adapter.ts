@@ -1,5 +1,31 @@
+import type { Redis } from "ioredis";
 import { createAdapter } from "@socket.io/redis-adapter";
-import { createRedisClient } from "../redis";
+import { createRedisClient as createRedis } from "../redis";
+
+// Re-export for convenience
+export { createRedis as createRedisClient };
+
+/**
+ * Create a Redis client for presence/general operations.
+ * Returns null if Redis connection fails.
+ */
+export async function createPresenceRedisClient(): Promise<Redis | null> {
+  try {
+    const client = createRedis();
+
+    await new Promise<void>((resolve, reject) => {
+      client.on("connect", () => resolve());
+      client.on("error", (err) => reject(err));
+      setTimeout(() => reject(new Error("Redis connection timeout")), 5000);
+    });
+
+    console.log("[Redis] Presence client connected");
+    return client;
+  } catch (error) {
+    console.warn("[Redis] Presence client not available:", (error as Error).message);
+    return null;
+  }
+}
 
 /**
  * Create Redis adapter for Socket.IO horizontal scaling.
@@ -7,7 +33,7 @@ import { createRedisClient } from "../redis";
  */
 export async function createRedisAdapter() {
   try {
-    const pubClient = createRedisClient();
+    const pubClient = createRedis();
     const subClient = pubClient.duplicate();
 
     // Wait for both connections with timeout
