@@ -5,32 +5,33 @@
 See: .planning/PROJECT.md (updated 2026-01-17)
 
 **Core value:** Data sovereignty - Complete control over communication data, no third-party dependencies
-**Current focus:** Phase 1 — Foundation
+**Current focus:** Phase 2 - Channels & DMs
 
 ## Current Position
 
-Phase: 1 of 8 (Foundation)
-Plan: 4 of 4 in current phase
-Status: Phase complete
-Last activity: 2026-01-17 — Completed 1-04-PLAN.md
+Phase: 2 of 8 (Channels & DMs)
+Plan: 3 of 3 in current phase
+Status: In progress
+Last activity: 2026-01-17 - Completed 02-03-PLAN.md
 
-Progress: ████░░░░░░ 20%
+Progress: ███████░░░ 35%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
+- Total plans completed: 7
 - Average duration: 4 min
-- Total execution time: 16 min
+- Total execution time: 28 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1-foundation | 4/4 | 16 min | 4 min |
+| 2-channels-dms | 3/3 | 12 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 5 min, 3 min, 4 min, 4 min
+- Last 5 plans: 4 min, 4 min, 4 min, 4 min, 5 min
 - Trend: Stable
 
 ## Accumulated Context
@@ -52,6 +53,9 @@ Recent decisions affecting current work:
 | 1-03 | Role hierarchy (owner > admin > member) | Consistent permission model |
 | 1-04 | Local filesystem for avatars | Simple storage, migrate to S3 later |
 | 1-04 | UUID filenames for avatars | Prevent collisions and enumeration |
+| 2-03 | 1:1 DMs have null name | Display other person's name in UI |
+| 2-03 | Adding to 1:1 converts to group | Seamless participant expansion |
+| 2-03 | Duplicate 1:1 prevention | Check existing participants before creating |
 
 ### Pending Todos
 
@@ -63,6 +67,6 @@ Database connection required before `npm run db:push` can verify schema.
 
 ## Session Continuity
 
-Last session: 2026-01-17T22:55:38Z
-Stopped at: Completed 1-04-PLAN.md (Phase 1 complete)
+Last session: 2026-01-17T23:13:31Z
+Stopped at: Completed 02-03-PLAN.md
 Resume file: None
