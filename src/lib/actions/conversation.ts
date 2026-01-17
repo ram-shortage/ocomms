@@ -141,3 +141,67 @@ export async function getWorkspaceMembers(organizationId: string) {
     },
   }));
 }
+
+export async function addParticipant(conversationId: string, userId: string) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) throw new Error("Unauthorized");
+
+  // Verify requester is participant
+  const conversation = await db.query.conversations.findFirst({
+    where: eq(conversations.id, conversationId),
+    with: {
+      participants: true,
+    },
+  });
+
+  if (!conversation) throw new Error("Conversation not found");
+
+  const isParticipant = conversation.participants.some(
+    (p) => p.userId === session.user.id
+  );
+  if (!isParticipant) throw new Error("Not a participant");
+
+  // Adding to 1:1 converts it to group DM
+  if (!conversation.isGroup) {
+    await db.update(conversations)
+      .set({ isGroup: true, updatedAt: new Date() })
+      .where(eq(conversations.id, conversationId));
+  }
+
+  // Add participant
+  await db.insert(conversationParticipants).values({
+    conversationId,
+    userId,
+  }).onConflictDoNothing();
+
+  revalidatePath(`/`);
+  return { success: true };
+}
+
+export async function setConversationName(conversationId: string, name: string) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) throw new Error("Unauthorized");
+
+  // Verify requester is participant
+  const conversation = await db.query.conversations.findFirst({
+    where: eq(conversations.id, conversationId),
+    with: {
+      participants: true,
+    },
+  });
+
+  if (!conversation) throw new Error("Conversation not found");
+  if (!conversation.isGroup) throw new Error("Cannot name 1:1 conversations");
+
+  const isParticipant = conversation.participants.some(
+    (p) => p.userId === session.user.id
+  );
+  if (!isParticipant) throw new Error("Not a participant");
+
+  await db.update(conversations)
+    .set({ name: name || null, updatedAt: new Date() })
+    .where(eq(conversations.id, conversationId));
+
+  revalidatePath(`/`);
+  return { success: true };
+}
