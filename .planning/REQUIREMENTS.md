@@ -9,25 +9,25 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Authentication
 
-- [ ] **AUTH-01**: User can sign up with email and password
-- [ ] **AUTH-02**: User receives email verification after signup
-- [ ] **AUTH-03**: User session persists across browser refresh
-- [ ] **AUTH-04**: User can log out from current session
+- [x] **AUTH-01**: User can sign up with email and password
+- [x] **AUTH-02**: User receives email verification after signup
+- [x] **AUTH-03**: User session persists across browser refresh
+- [x] **AUTH-04**: User can log out from current session
 
 ### Workspaces
 
-- [ ] **WKSP-01**: Admin can create a new workspace
-- [ ] **WKSP-02**: Workspace provides tenant isolation (data separated)
-- [ ] **WKSP-03**: User can be invited to join workspace
+- [x] **WKSP-01**: Admin can create a new workspace
+- [x] **WKSP-02**: Workspace provides tenant isolation (data separated)
+- [x] **WKSP-03**: User can be invited to join workspace
 
 ### Members
 
-- [ ] **MEMB-01**: Member has role (member, admin, owner)
-- [ ] **MEMB-02**: Admin can change member roles
-- [ ] **MEMB-03**: Admin can remove members from workspace
-- [ ] **MEMB-04**: Member can create profile with display name
-- [ ] **MEMB-05**: Member can upload avatar image
-- [ ] **MEMB-06**: Member can view other members' profiles
+- [x] **MEMB-01**: Member has role (member, admin, owner)
+- [x] **MEMB-02**: Admin can change member roles
+- [x] **MEMB-03**: Admin can remove members from workspace
+- [x] **MEMB-04**: Member can create profile with display name
+- [x] **MEMB-05**: Member can upload avatar image
+- [x] **MEMB-06**: Member can view other members' profiles
 
 ### Channels
 
@@ -169,19 +169,19 @@ Which phases cover which requirements.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | Phase 1 | Pending |
-| AUTH-02 | Phase 1 | Pending |
-| AUTH-03 | Phase 1 | Pending |
-| AUTH-04 | Phase 1 | Pending |
-| WKSP-01 | Phase 1 | Pending |
-| WKSP-02 | Phase 1 | Pending |
-| WKSP-03 | Phase 1 | Pending |
-| MEMB-01 | Phase 1 | Pending |
-| MEMB-02 | Phase 1 | Pending |
-| MEMB-03 | Phase 1 | Pending |
-| MEMB-04 | Phase 1 | Pending |
-| MEMB-05 | Phase 1 | Pending |
-| MEMB-06 | Phase 1 | Pending |
+| AUTH-01 | Phase 1 | Complete |
+| AUTH-02 | Phase 1 | Complete |
+| AUTH-03 | Phase 1 | Complete |
+| AUTH-04 | Phase 1 | Complete |
+| WKSP-01 | Phase 1 | Complete |
+| WKSP-02 | Phase 1 | Complete |
+| WKSP-03 | Phase 1 | Complete |
+| MEMB-01 | Phase 1 | Complete |
+| MEMB-02 | Phase 1 | Complete |
+| MEMB-03 | Phase 1 | Complete |
+| MEMB-04 | Phase 1 | Complete |
+| MEMB-05 | Phase 1 | Complete |
+| MEMB-06 | Phase 1 | Complete |
 | CHAN-01 | Phase 2 | Pending |
 | CHAN-02 | Phase 2 | Pending |
 | CHAN-03 | Phase 2 | Pending |
