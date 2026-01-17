@@ -43,7 +43,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 Plans:
 - [x] 01-01: Project scaffolding and database setup
 - [x] 01-02: Authentication system
-- [ ] 01-03: Workspace and member management
+- [x] 01-03: Workspace and member management
 - [ ] 01-04: Member profiles and avatars
 
 ### Phase 2: Channels & DMs
@@ -182,7 +182,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 2/4 | In progress | - |
+| 1. Foundation | 3/4 | In progress | - |
 | 2. Channels & DMs | 0/2 | Not started | - |
 | 3. Real-Time Messaging | 0/3 | Not started | - |
 | 4. Threading & Reactions | 0/3 | Not started | - |
@@ -191,4 +191,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 7. Search | 0/1 | Not started | - |
 | 8. Self-Hosted Packaging | 0/3 | Not started | - |
 
-**Total:** 2/20 plans complete
+**Total:** 3/20 plans complete
