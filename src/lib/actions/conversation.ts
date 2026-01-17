@@ -1,0 +1,143 @@
+"use server";
+
+import { db } from "@/db";
+import { conversations, conversationParticipants } from "@/db/schema";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { eq, and } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
+
+export async function createConversation(formData: {
+  organizationId: string;
+  participantIds: string[];
+  name?: string;
+}) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) throw new Error("Unauthorized");
+
+  const allParticipantIds = [...new Set([session.user.id, ...formData.participantIds])];
+  const isGroup = allParticipantIds.length > 2;
+
+  // For 1:1, check if conversation already exists
+  if (!isGroup) {
+    const existingConversations = await db.query.conversations.findMany({
+      where: and(
+        eq(conversations.organizationId, formData.organizationId),
+        eq(conversations.isGroup, false)
+      ),
+      with: {
+        participants: true,
+      },
+    });
+
+    const existing = existingConversations.find((conv) => {
+      const participantUserIds = conv.participants.map((p) => p.userId).sort();
+      const targetIds = allParticipantIds.sort();
+      return (
+        participantUserIds.length === targetIds.length &&
+        participantUserIds.every((id, i) => id === targetIds[i])
+      );
+    });
+
+    if (existing) {
+      return existing;
+    }
+  }
+
+  // Create conversation and add participants
+  const [conversation] = await db.transaction(async (tx) => {
+    const [newConv] = await tx.insert(conversations).values({
+      organizationId: formData.organizationId,
+      isGroup,
+      name: isGroup ? formData.name || null : null,
+      createdBy: session.user.id,
+    }).returning();
+
+    await tx.insert(conversationParticipants).values(
+      allParticipantIds.map((userId) => ({
+        conversationId: newConv.id,
+        userId,
+      }))
+    );
+
+    return [newConv];
+  });
+
+  revalidatePath(`/`);
+  return conversation;
+}
+
+export async function getUserConversations(organizationId: string) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) throw new Error("Unauthorized");
+
+  const participations = await db.query.conversationParticipants.findMany({
+    where: eq(conversationParticipants.userId, session.user.id),
+    with: {
+      conversation: {
+        with: {
+          participants: {
+            with: {
+              user: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  return participations
+    .filter((p) => p.conversation.organizationId === organizationId)
+    .map((p) => p.conversation);
+}
+
+export async function getConversation(conversationId: string) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) throw new Error("Unauthorized");
+
+  const conversation = await db.query.conversations.findFirst({
+    where: eq(conversations.id, conversationId),
+    with: {
+      participants: {
+        with: {
+          user: true,
+        },
+      },
+    },
+  });
+
+  if (!conversation) return null;
+
+  // Check user is participant
+  const isParticipant = conversation.participants.some(
+    (p) => p.userId === session.user.id
+  );
+
+  if (!isParticipant) return null;
+
+  return conversation;
+}
+
+export async function getWorkspaceMembers(organizationId: string) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) throw new Error("Unauthorized");
+
+  const fullOrg = await auth.api.getFullOrganization({
+    query: { organizationId },
+    headers: await headers(),
+  });
+
+  if (!fullOrg) return [];
+
+  return (fullOrg.members || []).map((m) => ({
+    id: m.id,
+    userId: m.userId,
+    role: m.role as "owner" | "admin" | "member",
+    user: {
+      id: m.user.id,
+      name: m.user.name,
+      email: m.user.email,
+      image: m.user.image,
+    },
+  }));
+}
