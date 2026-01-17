@@ -1,0 +1,13 @@
+{
+  "mode": "autonomous",
+  "research_depth": "standard",
+  "parallelization": true,
+  "project": {
+    "name": "OComms",
+    "type": "full-stack-application"
+  },
+  "milestone": {
+    "current": "Full Conversation",
+    "version": "0.1.0"
+  }
+}
