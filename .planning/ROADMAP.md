@@ -26,7 +26,7 @@ Real-time messaging, channels, DMs, threading, mentions, search, presence, react
 
 **Milestone Goal:** Production-ready security baseline with authorization fixes, encrypted transport, hardened authentication, and audit trail.
 
-- [ ] **Phase 9: Authorization & Data Integrity Fixes** - Critical fixes from CODE_REVIEW.MD
+- [x] **Phase 9: Authorization & Data Integrity Fixes** - Critical fixes from CODE_REVIEW.MD ✓
 - [ ] **Phase 10: Transport Security** - Encrypted traffic and database connections
 - [ ] **Phase 11: Request Hardening** - Security headers and rate limiting
 - [ ] **Phase 12: Authentication Hardening** - Password strength and account lockout
@@ -48,17 +48,17 @@ Real-time messaging, channels, DMs, threading, mentions, search, presence, react
 **Plans**: 11 plans in 5 waves
 
 Plans:
-- [ ] 09-01: Create authorization helpers module
-- [ ] 09-02: Add authorization to room:join and workspace:join
-- [ ] 09-03: Add authorization to thread handlers
-- [ ] 09-04: Add authorization to reaction handlers
-- [ ] 09-05: Add authorization to unread handlers
-- [ ] 09-06: Add organization validation to server actions
-- [ ] 09-07: Add unique sequence constraints to messages
-- [ ] 09-08: Fix created_by foreign key constraints
-- [ ] 09-09: Fix export endpoint org scoping
-- [ ] 09-10: Add avatar file signature validation
-- [ ] 09-11: Add middleware session validation
+- [x] 09-01: Create authorization helpers module
+- [x] 09-02: Add authorization to room:join and workspace:join
+- [x] 09-03: Add authorization to thread handlers
+- [x] 09-04: Add authorization to reaction handlers
+- [x] 09-05: Add authorization to unread handlers
+- [x] 09-06: Add organization validation to server actions
+- [x] 09-07: Add unique sequence constraints to messages
+- [x] 09-08: Fix created_by foreign key constraints
+- [x] 09-09: Fix export endpoint org scoping
+- [x] 09-10: Add avatar file signature validation
+- [x] 09-11: Add middleware session validation
 
 ### Phase 10: Transport Security
 **Goal**: All traffic encrypted in transit
@@ -125,7 +125,7 @@ Phases execute in numeric order: 9 → 10 → 11 → 12 → 13
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 1-8 | v0.1.0 | - | Complete | 2026-01-18 |
-| 9. Authorization & Data Integrity | v0.2.0 | 0/11 | Planned | - |
+| 9. Authorization & Data Integrity | v0.2.0 | 11/11 | Complete | 2026-01-18 |
 | 10. Transport Security | v0.2.0 | 0/? | Not started | - |
 | 11. Request Hardening | v0.2.0 | 0/? | Not started | - |
 | 12. Authentication Hardening | v0.2.0 | 0/? | Not started | - |
