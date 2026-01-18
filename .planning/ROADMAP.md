@@ -46,7 +46,11 @@ See: .planning/milestones/v0.2.0-ROADMAP.md
   3. Messages have sequential order numbers without race conditions
   4. getChannel rejects requests for channels outside user's organization
   5. Server rejects messages exceeding size limit; rate-limited users receive clear feedback
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 14-01-PLAN.md — Server-side security (fail-closed middleware, getChannel org check, async audit)
+- [ ] 14-02-PLAN.md — Message handler fixes (atomic sequence, length limit, rate limiting)
+- [ ] 14-03-PLAN.md — Client UX and scoping (@mention org scope, character counter, rate limit UI)
 
 ### Phase 15: PWA Foundation
 **Goal**: Users can install the app to their home screen with fast initial load
@@ -124,7 +128,7 @@ See: .planning/milestones/v0.2.0-ROADMAP.md
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 14. Security Fixes | v0.3.0 | 0/TBD | Not started | - |
+| 14. Security Fixes | v0.3.0 | 0/3 | Planned | - |
 | 15. PWA Foundation | v0.3.0 | 0/TBD | Not started | - |
 | 16. Message Caching | v0.3.0 | 0/TBD | Not started | - |
 | 17. Offline Send Queue | v0.3.0 | 0/TBD | Not started | - |
