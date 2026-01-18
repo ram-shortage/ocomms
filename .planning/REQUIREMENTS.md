@@ -30,8 +30,8 @@ Requirements for v0.2.0 milestone. Each maps to roadmap phases.
 
 ### Transport Security
 
-- [ ] **SEC-01**: Application serves all traffic over HTTPS with Let's Encrypt auto-renewal
-- [ ] **SEC-05**: Database connections use SSL encryption
+- [x] **SEC-01**: Application serves all traffic over HTTPS with Let's Encrypt auto-renewal
+- [x] **SEC-05**: Database connections use SSL encryption
 
 ### Request Hardening
 
@@ -93,8 +93,8 @@ Which phases cover which requirements. Updated by create-roadmap.
 | INTG-03 | Phase 9 | Complete |
 | VAL-01 | Phase 9 | Complete |
 | VAL-02 | Phase 9 | Complete |
-| SEC-01 | Phase 10 | Pending |
-| SEC-05 | Phase 10 | Pending |
+| SEC-01 | Phase 10 | Complete |
+| SEC-05 | Phase 10 | Complete |
 | SEC-02 | Phase 11 | Pending |
 | SEC-03 | Phase 11 | Pending |
 | SEC-04 | Phase 12 | Pending |
