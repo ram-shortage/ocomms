@@ -4,6 +4,7 @@ import { messages, threadParticipants, users } from "@/db/schema";
 import { eq, and, isNull, sql, max } from "drizzle-orm";
 import { getRoomName } from "../rooms";
 import type { ClientToServerEvents, ServerToClientEvents, SocketData, Message } from "@/lib/socket-events";
+import { isChannelMember, isConversationParticipant, getMessageContext } from "../authz";
 
 type SocketIOServer = Server<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
 type SocketWithData = Socket<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
@@ -33,6 +34,23 @@ async function handleThreadReply(
       socket.emit("error", { message: "Parent message not found" });
       callback?.({ success: false });
       return;
+    }
+
+    // Verify user has access to the channel/DM containing this thread
+    if (parent.channelId) {
+      const isMember = await isChannelMember(userId, parent.channelId);
+      if (!isMember) {
+        socket.emit("error", { message: "Not authorized to reply in this channel" });
+        callback?.({ success: false });
+        return;
+      }
+    } else if (parent.conversationId) {
+      const isParticipant = await isConversationParticipant(userId, parent.conversationId);
+      if (!isParticipant) {
+        socket.emit("error", { message: "Not authorized to reply in this conversation" });
+        callback?.({ success: false });
+        return;
+      }
     }
 
     // Prevent nested threads: cannot reply to a reply
