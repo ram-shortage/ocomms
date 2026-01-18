@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-17)
 ## Current Position
 
 Phase: 8 of 8 (Self-Hosted Packaging)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: In progress
-Last activity: 2026-01-18 - Completed 08-01-PLAN.md
+Last activity: 2026-01-18 - Completed 08-02-PLAN.md
 
-Progress: ████████████████████░ 96%
+Progress: █████████████████████ 98%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 22
-- Average duration: 4.2 min
-- Total execution time: 92 min
+- Total plans completed: 23
+- Average duration: 4.1 min
+- Total execution time: 94 min
 
 **By Phase:**
 
@@ -34,10 +34,10 @@ Progress: ████████████████████░ 96%
 | 5-mentions-notifications | 3/3 | 13 min | ~4 min |
 | 6-attention-management | 2/2 | 7 min | ~3.5 min |
 | 7-search | 2/2 | 3 min | ~1.5 min |
-| 8-self-hosted-packaging | 1/3 | 3 min | 3 min |
+| 8-self-hosted-packaging | 2/3 | 5 min | ~2.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 3 min, 1 min, 2 min, 3 min
+- Last 5 plans: 1 min, 2 min, 3 min, 2 min
 - Trend: Stable
 
 ## Accumulated Context
@@ -110,6 +110,10 @@ Recent decisions affecting current work:
 | 8-01 | Multi-stage Docker build | 70-80% smaller images |
 | 8-01 | Non-root container user | Security best practice |
 | 8-01 | Health check dependencies | Declarative startup ordering via service_healthy |
+| 8-02 | pg_dump custom format (-Fc) | Compression and selective table restore |
+| 8-02 | 7-day default retention | Balances disk space with recovery window |
+| 8-02 | Explicit restore confirmation | Prevents accidental data loss |
+| 8-02 | Connection termination before restore | Ensures no active queries block DROP DATABASE |
 
 ### Pending Todos
 
@@ -123,5 +127,5 @@ Database connection required before `npm run db:push` can verify schema.
 ## Session Continuity
 
 Last session: 2026-01-18
-Stopped at: Completed 08-01-PLAN.md
+Stopped at: Completed 08-02-PLAN.md
 Resume file: None
