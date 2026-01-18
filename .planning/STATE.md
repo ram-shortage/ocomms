@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-18)
 ## Current Position
 
 Phase: 12 of 13 (Authentication Hardening)
-Plan: 2 of 4
+Plan: 2 of 4 complete (12-01, 12-02)
 Status: In progress
-Last activity: 2026-01-18 — Completed 12-02-PLAN.md (Password Strength Visualization)
+Last activity: 2026-01-18 — Completed 12-01-PLAN.md (Password & Lockout)
 
 Progress: █████████░ 95% (v0.1.0 complete, v0.2.0 phases 9-11 complete, 12 in progress)
 
@@ -74,6 +74,9 @@ Key decisions from v0.1.0 are documented in PROJECT.md Key Decisions table.
 | 2026-01-18 | 10-03 | Production verification deferred | Infrastructure validated locally; full HTTPS verification requires domain deployment |
 | 2026-01-18 | 11-01 | CSP allows unsafe-inline/unsafe-eval | Required for Next.js and Tailwind CSS runtime |
 | 2026-01-18 | 11-01 | In-memory rate limiting | Appropriate for single-server deployment; Redis for horizontal scaling |
+| 2026-01-18 | 12-01 | APIError detection via instanceof Error | better-auth returns Error objects for failed logins in after hooks |
+| 2026-01-18 | 12-01 | Vague lockout message for security | "Unable to log in" prevents confirming account existence |
+| 2026-01-18 | 12-01 | Preserve lockoutCount on successful login | Enables progressive escalation across multiple lockout cycles |
 | 2026-01-18 | 12-02 | zxcvbn dynamic import | 400KB library loaded on first password character to avoid bundle bloat |
 | 2026-01-18 | 12-02 | Radix Progress primitive with indicatorClassName | Custom indicator colors per instance while maintaining accessibility |
 
@@ -91,6 +94,6 @@ None active.
 
 ## Session Continuity
 
-Last session: 2026-01-18T17:37Z
-Stopped at: Completed 12-02-PLAN.md (Password Strength Visualization)
+Last session: 2026-01-18T17:47Z
+Stopped at: Completed 12-01-PLAN.md (Password & Lockout)
 Resume file: None
