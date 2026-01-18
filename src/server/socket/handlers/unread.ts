@@ -5,6 +5,7 @@ import { channelReadState, messages, channelMembers, conversationParticipants } 
 import { eq, and, isNull, sql } from "drizzle-orm";
 import { getRoomName } from "../rooms";
 import type { ClientToServerEvents, ServerToClientEvents, SocketData } from "@/lib/socket-events";
+import { isChannelMember, isConversationParticipant, getMessageContext } from "../authz";
 
 type SocketIOServer = Server<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
 type SocketWithData = Socket<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
@@ -401,13 +402,23 @@ export function handleUnreadEvents(
 
       if (data.channelIds) {
         for (const channelId of data.channelIds) {
-          channels[channelId] = await unreadManager.getUnreadCount(userId, channelId);
+          // Only return count if user is member
+          const isMember = await isChannelMember(userId, channelId);
+          if (isMember) {
+            channels[channelId] = await unreadManager.getUnreadCount(userId, channelId);
+          }
+          // Silently skip unauthorized channels (don't reveal existence)
         }
       }
 
       if (data.conversationIds) {
         for (const conversationId of data.conversationIds) {
-          conversations[conversationId] = await unreadManager.getConversationUnreadCount(userId, conversationId);
+          // Only return count if user is participant
+          const isParticipant = await isConversationParticipant(userId, conversationId);
+          if (isParticipant) {
+            conversations[conversationId] = await unreadManager.getConversationUnreadCount(userId, conversationId);
+          }
+          // Silently skip unauthorized conversations
         }
       }
 
