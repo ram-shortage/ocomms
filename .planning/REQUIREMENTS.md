@@ -7,6 +7,27 @@
 
 Requirements for v0.2.0 milestone. Each maps to roadmap phases.
 
+### Authorization (from CODE_REVIEW.MD - HIGH priority)
+
+- [ ] **AUTHZ-01**: Socket.IO room join validates channel/DM membership before subscribing
+- [ ] **AUTHZ-02**: Socket.IO workspace join validates organization membership
+- [ ] **AUTHZ-03**: Thread events validate channel/DM membership before read/write
+- [ ] **AUTHZ-04**: Reaction events validate channel/DM membership before add/remove/list
+- [ ] **AUTHZ-05**: Unread events validate channel/DM membership before operations
+- [ ] **AUTHZ-06**: Channel server actions validate organization membership
+- [ ] **AUTHZ-07**: Conversation server actions validate organization membership
+
+### Data Integrity (from CODE_REVIEW.MD - MEDIUM priority)
+
+- [ ] **INTG-01**: Message sequencing uses atomic operations to prevent duplicates
+- [ ] **INTG-02**: Schema foreign keys handle user deletion without constraint violations
+- [ ] **INTG-03**: Export endpoint scoped to requesting user's organization only
+
+### Input Validation (from CODE_REVIEW.MD - LOW priority)
+
+- [ ] **VAL-01**: Avatar upload validates file signature server-side (not just MIME type)
+- [ ] **VAL-02**: Middleware validates session validity, not just cookie presence
+
 ### Transport Security
 
 - [ ] **SEC-01**: Application serves all traffic over HTTPS with Let's Encrypt auto-renewal
@@ -60,19 +81,31 @@ Which phases cover which requirements. Updated by create-roadmap.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SEC-01 | Phase 9 | Pending |
-| SEC-02 | Phase 10 | Pending |
-| SEC-03 | Phase 10 | Pending |
-| SEC-04 | Phase 11 | Pending |
-| SEC-05 | Phase 9 | Pending |
-| SEC-06 | Phase 12 | Pending |
-| SEC-07 | Phase 11 | Pending |
+| AUTHZ-01 | Phase 9 | Pending |
+| AUTHZ-02 | Phase 9 | Pending |
+| AUTHZ-03 | Phase 9 | Pending |
+| AUTHZ-04 | Phase 9 | Pending |
+| AUTHZ-05 | Phase 9 | Pending |
+| AUTHZ-06 | Phase 9 | Pending |
+| AUTHZ-07 | Phase 9 | Pending |
+| INTG-01 | Phase 9 | Pending |
+| INTG-02 | Phase 9 | Pending |
+| INTG-03 | Phase 9 | Pending |
+| VAL-01 | Phase 9 | Pending |
+| VAL-02 | Phase 9 | Pending |
+| SEC-01 | Phase 10 | Pending |
+| SEC-05 | Phase 10 | Pending |
+| SEC-02 | Phase 11 | Pending |
+| SEC-03 | Phase 11 | Pending |
+| SEC-04 | Phase 12 | Pending |
+| SEC-07 | Phase 12 | Pending |
+| SEC-06 | Phase 13 | Pending |
 
 **Coverage:**
-- v1 requirements: 7 total
-- Mapped to phases: 7
+- v1 requirements: 19 total
+- Mapped to phases: 19
 - Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-01-18*
-*Last updated: 2026-01-18 after roadmap creation*
+*Last updated: 2026-01-18 after CODE_REVIEW.MD integration*

@@ -3,7 +3,7 @@
 ## Milestones
 
 - ✅ **v0.1.0 Full Conversation** - Phases 1-8 (shipped 2026-01-18)
-- 🚧 **v0.2.0 Security Hardening** - Phases 9-12 (in progress)
+- 🚧 **v0.2.0 Security Hardening** - Phases 9-13 (in progress)
 
 ## Phases
 
@@ -24,18 +24,35 @@ Real-time messaging, channels, DMs, threading, mentions, search, presence, react
 
 ### 🚧 v0.2.0 Security Hardening (In Progress)
 
-**Milestone Goal:** Production-ready security baseline with encrypted transport, hardened authentication, and audit trail.
+**Milestone Goal:** Production-ready security baseline with authorization fixes, encrypted transport, hardened authentication, and audit trail.
 
-- [ ] **Phase 9: Transport Security** - Encrypted traffic and database connections
-- [ ] **Phase 10: Request Hardening** - Security headers and rate limiting
-- [ ] **Phase 11: Authentication Hardening** - Password strength and account lockout
-- [ ] **Phase 12: Audit Logging** - Security event logging
+- [ ] **Phase 9: Authorization & Data Integrity Fixes** - Critical fixes from CODE_REVIEW.MD
+- [ ] **Phase 10: Transport Security** - Encrypted traffic and database connections
+- [ ] **Phase 11: Request Hardening** - Security headers and rate limiting
+- [ ] **Phase 12: Authentication Hardening** - Password strength and account lockout
+- [ ] **Phase 13: Audit Logging** - Security event logging
 
 ## Phase Details
 
-### Phase 9: Transport Security
+### Phase 9: Authorization & Data Integrity Fixes
+**Goal**: Fix authorization bypass vulnerabilities and data integrity issues from code review
+**Depends on**: Nothing (critical fixes, first priority)
+**Requirements**: AUTHZ-01, AUTHZ-02, AUTHZ-03, AUTHZ-04, AUTHZ-05, AUTHZ-06, AUTHZ-07, INTG-01, INTG-02, INTG-03, VAL-01, VAL-02
+**Success Criteria** (what must be TRUE):
+  1. Socket.IO room/workspace joins validate membership (cannot subscribe to unauthorized channels)
+  2. Thread, reaction, and unread events reject requests for channels user doesn't belong to
+  3. Channel and conversation actions reject cross-organization requests
+  4. Message sequences are unique per channel (no race condition duplicates)
+  5. User deletion doesn't violate foreign key constraints
+**Research**: Unlikely (fixing existing code with known patterns)
+**Plans**: TBD
+
+Plans:
+- [ ] 09-01: TBD
+
+### Phase 10: Transport Security
 **Goal**: All traffic encrypted in transit
-**Depends on**: Nothing (first phase of milestone)
+**Depends on**: Phase 9 (authorization fixes first)
 **Requirements**: SEC-01, SEC-05
 **Success Criteria** (what must be TRUE):
   1. All HTTP requests redirect to HTTPS
@@ -46,11 +63,11 @@ Real-time messaging, channels, DMs, threading, mentions, search, presence, react
 **Plans**: TBD
 
 Plans:
-- [ ] 09-01: TBD
+- [ ] 10-01: TBD
 
-### Phase 10: Request Hardening
+### Phase 11: Request Hardening
 **Goal**: Requests protected against common attacks
-**Depends on**: Phase 9 (HTTPS must be working)
+**Depends on**: Phase 10 (HTTPS must be working)
 **Requirements**: SEC-02, SEC-03
 **Success Criteria** (what must be TRUE):
   1. Security headers present on all responses (CSP, HSTS, X-Frame-Options, X-Content-Type-Options)
@@ -60,11 +77,11 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 10-01: TBD
+- [ ] 11-01: TBD
 
-### Phase 11: Authentication Hardening
+### Phase 12: Authentication Hardening
 **Goal**: Authentication resistant to attack
-**Depends on**: Phase 10 (rate limiting protects auth endpoints)
+**Depends on**: Phase 11 (rate limiting protects auth endpoints)
 **Requirements**: SEC-04, SEC-07
 **Success Criteria** (what must be TRUE):
   1. Weak passwords rejected at signup and password change
@@ -74,11 +91,11 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 11-01: TBD
+- [ ] 12-01: TBD
 
-### Phase 12: Audit Logging
+### Phase 13: Audit Logging
 **Goal**: Security events visible for investigation
-**Depends on**: Phase 11 (auth events to log)
+**Depends on**: Phase 12 (auth events to log)
 **Requirements**: SEC-06
 **Success Criteria** (what must be TRUE):
   1. Login attempts (success/fail) logged with timestamp, IP, user
@@ -88,17 +105,18 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 12-01: TBD
+- [ ] 13-01: TBD
 
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 9 → 10 → 11 → 12
+Phases execute in numeric order: 9 → 10 → 11 → 12 → 13
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 1-8 | v0.1.0 | - | Complete | 2026-01-18 |
-| 9. Transport Security | v0.2.0 | 0/? | Not started | - |
-| 10. Request Hardening | v0.2.0 | 0/? | Not started | - |
-| 11. Authentication Hardening | v0.2.0 | 0/? | Not started | - |
-| 12. Audit Logging | v0.2.0 | 0/? | Not started | - |
+| 9. Authorization & Data Integrity | v0.2.0 | 0/? | Not started | - |
+| 10. Transport Security | v0.2.0 | 0/? | Not started | - |
+| 11. Request Hardening | v0.2.0 | 0/? | Not started | - |
+| 12. Authentication Hardening | v0.2.0 | 0/? | Not started | - |
+| 13. Audit Logging | v0.2.0 | 0/? | Not started | - |

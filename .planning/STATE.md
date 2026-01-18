@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-18)
 
 **Core value:** Data sovereignty — complete control over communication data
-**Current focus:** Phase 9 — Transport Security
+**Current focus:** Phase 9 — Authorization & Data Integrity Fixes
 
 ## Current Position
 
-Phase: 9 of 12 (Transport Security)
+Phase: 9 of 13 (Authorization & Data Integrity Fixes)
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-01-18 — Roadmap created for v0.2.0
+Last activity: 2026-01-18 — Roadmap updated with CODE_REVIEW.MD findings
 
-Progress: ████████░░ 67% (v0.1.0 complete, v0.2.0 starting)
+Progress: ████████░░ 62% (v0.1.0 complete, v0.2.0 starting)
 
 ## Shipped Milestones
 
