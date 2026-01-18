@@ -10,7 +10,6 @@ export const conversations = pgTable("conversations", {
   isGroup: boolean("is_group").notNull().default(false),
   name: text("name"), // null for 1:1, optional name for group DMs
   createdBy: text("created_by")
-    .notNull()
     .references(() => users.id, { onDelete: "set null" }),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),

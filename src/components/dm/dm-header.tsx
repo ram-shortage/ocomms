@@ -28,7 +28,7 @@ interface Conversation {
   organizationId: string;
   isGroup: boolean;
   name: string | null;
-  createdBy: string;
+  createdBy: string | null;
   createdAt: Date;
   updatedAt: Date;
   participants: Participant[];

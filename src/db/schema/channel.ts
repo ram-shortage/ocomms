@@ -13,7 +13,6 @@ export const channels = pgTable("channels", {
   topic: text("topic"),
   isPrivate: boolean("is_private").notNull().default(false),
   createdBy: text("created_by")
-    .notNull()
     .references(() => users.id, { onDelete: "set null" }),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
