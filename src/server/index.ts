@@ -10,6 +10,11 @@ const dev = process.env.NODE_ENV !== "production";
 const hostname = process.env.HOST || "localhost";
 const port = parseInt(process.env.PORT || "3000");
 
+// SECFIX-07: Warn if NEXT_PUBLIC_APP_URL not set in production
+if (!dev && !process.env.NEXT_PUBLIC_APP_URL) {
+  console.warn("[Server] NEXT_PUBLIC_APP_URL not set in production - using fallback origin");
+}
+
 const app = next({ dev, hostname, port });
 const handler = app.getRequestHandler();
 
