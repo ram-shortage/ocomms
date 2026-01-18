@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { db } from "@/db";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import {
   organizations,
   members,
@@ -73,21 +73,14 @@ export async function POST(request: Request) {
     }
 
     // Verify user is owner of the organization
-    const membership = await db.query.members.findFirst({
-      where: eq(members.organizationId, organizationId),
-    });
-
-    // Find user's membership
     const userMembership = await db.query.members.findFirst({
-      where: eq(members.userId, session.user.id),
+      where: and(
+        eq(members.userId, session.user.id),
+        eq(members.organizationId, organizationId)
+      ),
     });
 
-    // Check if user's membership is for this org and is owner
-    const isOwner =
-      userMembership?.organizationId === organizationId &&
-      userMembership?.role === "owner";
-
-    if (!isOwner) {
+    if (!userMembership || userMembership.role !== "owner") {
       return NextResponse.json(
         { error: "Only organization owners can export data" },
         { status: 403 }
