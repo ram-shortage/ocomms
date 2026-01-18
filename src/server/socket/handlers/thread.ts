@@ -173,9 +173,33 @@ async function handleThreadReply(
  * Handle thread:join event.
  * Joins socket to thread room for real-time updates.
  */
-function handleJoinThread(socket: SocketWithData, data: { threadId: string }): void {
+async function handleJoinThread(socket: SocketWithData, data: { threadId: string }): Promise<void> {
+  const userId = socket.data.userId;
+
+  // Get the message context to verify access
+  const context = await getMessageContext(data.threadId);
+  if (!context) {
+    socket.emit("error", { message: "Thread not found" });
+    return;
+  }
+
+  // Verify membership
+  if (context.channelId) {
+    const isMember = await isChannelMember(userId, context.channelId);
+    if (!isMember) {
+      socket.emit("error", { message: "Not authorized to view this thread" });
+      return;
+    }
+  } else if (context.conversationId) {
+    const isParticipant = await isConversationParticipant(userId, context.conversationId);
+    if (!isParticipant) {
+      socket.emit("error", { message: "Not authorized to view this thread" });
+      return;
+    }
+  }
+
   socket.join(getRoomName.thread(data.threadId));
-  console.log(`[Thread] User ${socket.data.userId} joined thread: ${data.threadId}`);
+  console.log(`[Thread] User ${userId} joined thread: ${data.threadId}`);
 }
 
 /**
@@ -196,7 +220,33 @@ async function handleGetReplies(
   data: { threadId: string },
   callback: (response: { success: boolean; replies?: Message[] }) => void
 ): Promise<void> {
+  const userId = socket.data.userId;
+
   try {
+    // Get the message context to verify access
+    const context = await getMessageContext(data.threadId);
+    if (!context) {
+      callback({ success: false });
+      return;
+    }
+
+    // Verify membership
+    if (context.channelId) {
+      const isMember = await isChannelMember(userId, context.channelId);
+      if (!isMember) {
+        socket.emit("error", { message: "Not authorized to view this thread" });
+        callback({ success: false });
+        return;
+      }
+    } else if (context.conversationId) {
+      const isParticipant = await isConversationParticipant(userId, context.conversationId);
+      if (!isParticipant) {
+        socket.emit("error", { message: "Not authorized to view this thread" });
+        callback({ success: false });
+        return;
+      }
+    }
+
     const replies = await db
       .select({
         id: messages.id,
@@ -252,8 +302,8 @@ export function handleThreadEvents(socket: SocketWithData, io: SocketIOServer): 
     handleThreadReply(socket, io, data, callback);
   });
 
-  socket.on("thread:join", (data) => {
-    handleJoinThread(socket, data);
+  socket.on("thread:join", async (data) => {
+    await handleJoinThread(socket, data);
   });
 
   socket.on("thread:leave", (data) => {
