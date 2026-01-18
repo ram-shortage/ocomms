@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-18)
 ## Current Position
 
 Phase: 9 of 13 (Authorization & Data Integrity Fixes)
-Plan: Not started
-Status: Ready to plan
-Last activity: 2026-01-18 — Roadmap updated with CODE_REVIEW.MD findings
+Plan: 1 of 11 complete
+Status: In progress
+Last activity: 2026-01-18 — Completed 09-01-PLAN.md (Socket Authorization Helpers)
 
-Progress: ████████░░ 62% (v0.1.0 complete, v0.2.0 starting)
+Progress: ████████░░ 63% (v0.1.0 complete, v0.2.0 phase 9 started)
 
 ## Shipped Milestones
 
@@ -25,25 +25,32 @@ Progress: ████████░░ 62% (v0.1.0 complete, v0.2.0 starting)
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 0 (v0.2.0)
-- Average duration: —
-- Total execution time: 0 hours
+- Total plans completed: 1 (v0.2.0)
+- Average duration: 2 min
+- Total execution time: 2 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| — | — | — | — |
+| 09 | 1/11 | 2min | 2min |
 
 **Recent Trend:**
-- Last 5 plans: —
-- Trend: —
+- Last 5 plans: 09-01 (2min)
+- Trend: N/A (first plan)
 
 ## Accumulated Context
 
 ### Decisions
 
 Key decisions from v0.1.0 are documented in PROJECT.md Key Decisions table.
+
+**v0.2.0 Decisions:**
+
+| Date | Phase | Decision | Rationale |
+|------|-------|----------|-----------|
+| 2026-01-18 | 09-01 | Added vitest as unit testing framework | Project had no unit test framework; needed for authorization helper tests |
+| 2026-01-18 | 09-01 | Mock-based testing for DB operations | Avoids test database dependency, keeps tests fast and isolated |
 
 ### Pending Todos
 
@@ -58,5 +65,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-18
-Stopped at: Roadmap created for v0.2.0 Security Hardening
+Stopped at: Completed 09-01-PLAN.md (Socket Authorization Helpers)
 Resume file: None
