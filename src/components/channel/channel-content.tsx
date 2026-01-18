@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { MessageList, MessageInput, type MentionMember } from "@/components/message";
 import type { Message } from "@/lib/socket-events";
+import { useMarkAsRead, useMarkMessageUnread } from "@/lib/hooks/use-unread";
 
 interface ChannelContentProps {
   channelId: string;
@@ -25,10 +26,19 @@ export function ChannelContent({
     () => new Set(initialPinnedMessageIds)
   );
 
+  // Unread management hooks
+  const markAsRead = useMarkAsRead();
+  const markMessageUnread = useMarkMessageUnread();
+
   // Re-sync when initial props change (e.g., navigation)
   useEffect(() => {
     setPinnedMessageIds(new Set(initialPinnedMessageIds));
   }, [initialPinnedMessageIds]);
+
+  // Mark channel as read when navigating to it
+  useEffect(() => {
+    markAsRead(channelId);
+  }, [channelId, markAsRead]);
 
   const handlePin = useCallback(
     async (messageId: string) => {
@@ -86,6 +96,7 @@ export function ChannelContent({
         pinnedMessageIds={pinnedMessageIds}
         onPin={handlePin}
         onUnpin={handleUnpin}
+        onMarkUnread={markMessageUnread}
       />
 
       {/* Message input - fixed at bottom */}

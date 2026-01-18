@@ -15,6 +15,7 @@ interface MessageListProps {
   pinnedMessageIds?: Set<string>;
   onPin?: (messageId: string) => void;
   onUnpin?: (messageId: string) => void;
+  onMarkUnread?: (messageId: string) => void;
 }
 
 // Track reactions per message
@@ -29,6 +30,7 @@ export function MessageList({
   pinnedMessageIds,
   onPin,
   onUnpin,
+  onMarkUnread,
 }: MessageListProps) {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [reactionsMap, setReactionsMap] = useState<ReactionsMap>({});
@@ -234,6 +236,7 @@ export function MessageList({
             onPin={onPin}
             onUnpin={onUnpin}
             isChannelMessage={targetType === "channel"}
+            onMarkUnread={onMarkUnread}
           />
         ))}
         <div ref={bottomRef} />

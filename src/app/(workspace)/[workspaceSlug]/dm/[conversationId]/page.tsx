@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import { redirect, notFound } from "next/navigation";
 import { getConversation } from "@/lib/actions/conversation";
 import { DMHeader } from "@/components/dm/dm-header";
-import { MessageList, MessageInput, type MentionMember } from "@/components/message";
+import { DMContent } from "@/components/dm/dm-content";
 import { db } from "@/db";
 import { messages, users } from "@/db/schema";
 import { eq, and, isNull, asc } from "drizzle-orm";
@@ -98,19 +98,11 @@ export default async function DMPage({
         currentUserId={session.user.id}
       />
 
-      {/* Message list - grows to fill available space */}
-      <MessageList
+      <DMContent
+        conversationId={conversationId}
         initialMessages={initialMessages}
-        targetId={conversationId}
-        targetType="dm"
         currentUserId={session.user.id}
         currentUsername={session.user.name || session.user.email.split("@")[0]}
-      />
-
-      {/* Message input - fixed at bottom */}
-      <MessageInput
-        targetId={conversationId}
-        targetType="dm"
         members={conversation.participants.map((p) => ({
           id: p.user.id,
           name: p.user.name,
