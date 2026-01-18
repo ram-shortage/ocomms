@@ -2,8 +2,8 @@
 
 ## Milestones
 
-- ✅ **v0.1.0 Full Conversation** - Phases 1-8 (shipped 2026-01-18)
-- 🚧 **v0.2.0 Security Hardening** - Phases 9-13 (in progress)
+- **v0.1.0 Full Conversation** - Phases 1-8 (shipped 2026-01-18)
+- **v0.2.0 Security Hardening** - Phases 9-13 (in progress)
 
 ## Phases
 
@@ -14,7 +14,7 @@
 Decimal phases appear between their surrounding integers in numeric order.
 
 <details>
-<summary>✅ v0.1.0 Full Conversation (Phases 1-8) - SHIPPED 2026-01-18</summary>
+<summary>v0.1.0 Full Conversation (Phases 1-8) - SHIPPED 2026-01-18</summary>
 
 Real-time messaging, channels, DMs, threading, mentions, search, presence, reactions, and Docker deployment.
 
@@ -22,11 +22,11 @@ Real-time messaging, channels, DMs, threading, mentions, search, presence, react
 
 </details>
 
-### 🚧 v0.2.0 Security Hardening (In Progress)
+### v0.2.0 Security Hardening (In Progress)
 
 **Milestone Goal:** Production-ready security baseline with authorization fixes, encrypted transport, hardened authentication, and audit trail.
 
-- [x] **Phase 9: Authorization & Data Integrity Fixes** - Critical fixes from CODE_REVIEW.MD ✓
+- [x] **Phase 9: Authorization & Data Integrity Fixes** - Critical fixes from CODE_REVIEW.MD
 - [ ] **Phase 10: Transport Security** - Encrypted traffic and database connections
 - [ ] **Phase 11: Request Hardening** - Security headers and rate limiting
 - [ ] **Phase 12: Authentication Hardening** - Password strength and account lockout
@@ -68,12 +68,13 @@ Plans:
   1. All HTTP requests redirect to HTTPS
   2. SSL certificate auto-renews before expiry
   3. Database connections use SSL encryption
-**Research**: Likely (Let's Encrypt + Docker integration)
-**Research topics**: Let's Encrypt automation with Docker, nginx/Caddy reverse proxy, PostgreSQL SSL configuration
-**Plans**: TBD
+**Research**: Complete (10-RESEARCH.md)
+**Plans**: 3 plans in 2 waves
 
 Plans:
-- [ ] 10-01: TBD
+- [ ] 10-01: Database SSL setup (cert generation, db connection, health endpoint)
+- [ ] 10-02: HTTPS infrastructure (docker-compose, nginx, env config)
+- [ ] 10-03: Transport security verification (checkpoint)
 
 ### Phase 11: Request Hardening
 **Goal**: Requests protected against common attacks
@@ -120,13 +121,13 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 9 → 10 → 11 → 12 → 13
+Phases execute in numeric order: 9 -> 10 -> 11 -> 12 -> 13
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 1-8 | v0.1.0 | - | Complete | 2026-01-18 |
 | 9. Authorization & Data Integrity | v0.2.0 | 11/11 | Complete | 2026-01-18 |
-| 10. Transport Security | v0.2.0 | 0/? | Not started | - |
+| 10. Transport Security | v0.2.0 | 0/3 | Planned | - |
 | 11. Request Hardening | v0.2.0 | 0/? | Not started | - |
 | 12. Authentication Hardening | v0.2.0 | 0/? | Not started | - |
 | 13. Audit Logging | v0.2.0 | 0/? | Not started | - |
