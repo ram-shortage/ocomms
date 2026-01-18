@@ -119,3 +119,59 @@ export function auditLog(data: AuditEventData): void {
     console.error("Audit log write failed:", error);
   }
 }
+
+/**
+ * Clean up old audit log files
+ *
+ * Deletes log files older than retentionDays.
+ * Returns count of deleted files.
+ *
+ * Note: Logs cleanup activity to console (not to audit log to avoid recursion)
+ *
+ * @param retentionDays Number of days to retain logs (default: 90)
+ * @returns Number of files deleted
+ */
+export function cleanupOldLogs(retentionDays: number = 90): number {
+  const logsDir = getLogsDir();
+
+  if (!fs.existsSync(logsDir)) {
+    console.log("Audit log cleanup: No logs directory found");
+    return 0;
+  }
+
+  const files = fs.readdirSync(logsDir);
+  const cutoffDate = new Date();
+  cutoffDate.setDate(cutoffDate.getDate() - retentionDays);
+  const cutoffDateOnly = new Date(cutoffDate.toISOString().split("T")[0] + "T00:00:00Z");
+
+  let deletedCount = 0;
+
+  for (const file of files) {
+    if (!file.endsWith(".jsonl")) continue;
+
+    // Parse date from filename (YYYY-MM-DD.jsonl)
+    const dateStr = file.replace(".jsonl", "");
+    const fileDate = new Date(dateStr + "T00:00:00Z");
+
+    // Skip if date is invalid
+    if (isNaN(fileDate.getTime())) {
+      console.warn(`Audit log cleanup: Skipping invalid filename ${file}`);
+      continue;
+    }
+
+    // Delete if older than retention period
+    if (fileDate < cutoffDateOnly) {
+      try {
+        const filePath = path.join(logsDir, file);
+        fs.unlinkSync(filePath);
+        deletedCount++;
+        console.log(`Audit log cleanup: Deleted ${file}`);
+      } catch (error) {
+        console.error(`Audit log cleanup: Failed to delete ${file}:`, error);
+      }
+    }
+  }
+
+  console.log(`Audit log cleanup: Deleted ${deletedCount} files older than ${retentionDays} days`);
+  return deletedCount;
+}
