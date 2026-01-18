@@ -74,9 +74,10 @@ export async function middleware(request: NextRequest) {
     return response;
   } catch (error) {
     console.error("[Middleware] Session validation error:", error);
-    // On error, allow through (fail open for availability)
-    // The downstream page will re-check anyway
-    return NextResponse.next();
+    // SECFIX-02: Fail closed - redirect to login on any validation error
+    const response = NextResponse.redirect(new URL("/login", request.url));
+    response.cookies.delete("better-auth.session_token");
+    return response;
   }
 }
 
