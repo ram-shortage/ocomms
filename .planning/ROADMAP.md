@@ -26,7 +26,7 @@ See: .planning/milestones/v0.2.0-ROADMAP.md
 
 **Milestone Goal:** Complete UI gaps, add PWA support with offline capability and push notifications for mobile access.
 
-- [ ] **Phase 14: Security Fixes** - Harden existing code before adding features
+- [x] **Phase 14: Security Fixes** - Harden existing code before adding features
 - [ ] **Phase 15: PWA Foundation** - Installable PWA with app shell caching
 - [ ] **Phase 16: Message Caching** - IndexedDB schema and offline reading
 - [ ] **Phase 17: Offline Send Queue** - Compose offline with auto-sync
@@ -128,7 +128,7 @@ Plans:
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 14. Security Fixes | v0.3.0 | 0/3 | Planned | - |
+| 14. Security Fixes | v0.3.0 | 3/3 | Complete | 2026-01-18 |
 | 15. PWA Foundation | v0.3.0 | 0/TBD | Not started | - |
 | 16. Message Caching | v0.3.0 | 0/TBD | Not started | - |
 | 17. Offline Send Queue | v0.3.0 | 0/TBD | Not started | - |
@@ -138,4 +138,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-01-18*
-*Last updated: 2026-01-18*
+*Last updated: 2026-01-18 after Phase 14 completion*

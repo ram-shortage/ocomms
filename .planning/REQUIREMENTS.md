@@ -54,14 +54,14 @@ Requirements for Mobile & Polish milestone. Each maps to roadmap phases.
 
 ### Security Fixes
 
-- [ ] **SECFIX-01**: @mention resolution scoped to organization membership
-- [ ] **SECFIX-02**: Middleware fails closed on validation errors
-- [ ] **SECFIX-03**: Message sequences use atomic increment (no race condition)
-- [ ] **SECFIX-04**: getChannel verifies organization membership
-- [ ] **SECFIX-05**: Server enforces maximum message length
-- [ ] **SECFIX-06**: Server enforces message rate limits per user
-- [ ] **SECFIX-07**: Workspace URL uses NEXT_PUBLIC_APP_URL, not hard-coded domain
-- [ ] **SECFIX-08**: Audit logger uses async file writes
+- [x] **SECFIX-01**: @mention resolution scoped to organization membership
+- [x] **SECFIX-02**: Middleware fails closed on validation errors
+- [x] **SECFIX-03**: Message sequences use atomic increment (no race condition)
+- [x] **SECFIX-04**: getChannel verifies organization membership
+- [x] **SECFIX-05**: Server enforces maximum message length
+- [x] **SECFIX-06**: Server enforces message rate limits per user
+- [x] **SECFIX-07**: Workspace URL uses NEXT_PUBLIC_APP_URL, not hard-coded domain
+- [x] **SECFIX-08**: Audit logger uses async file writes
 
 ## v2 Requirements
 
@@ -134,14 +134,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 | UIPOL-04 | Phase 20 | Pending |
 | UIPOL-05 | Phase 20 | Pending |
 | UIPOL-06 | Phase 20 | Pending |
-| SECFIX-01 | Phase 14 | Pending |
-| SECFIX-02 | Phase 14 | Pending |
-| SECFIX-03 | Phase 14 | Pending |
-| SECFIX-04 | Phase 14 | Pending |
-| SECFIX-05 | Phase 14 | Pending |
-| SECFIX-06 | Phase 14 | Pending |
-| SECFIX-07 | Phase 14 | Pending |
-| SECFIX-08 | Phase 14 | Pending |
+| SECFIX-01 | Phase 14 | Complete |
+| SECFIX-02 | Phase 14 | Complete |
+| SECFIX-03 | Phase 14 | Complete |
+| SECFIX-04 | Phase 14 | Complete |
+| SECFIX-05 | Phase 14 | Complete |
+| SECFIX-06 | Phase 14 | Complete |
+| SECFIX-07 | Phase 14 | Complete |
+| SECFIX-08 | Phase 14 | Complete |
 
 **Coverage:**
 - v0.3.0 requirements: 38 total
@@ -150,4 +150,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-18*
-*Last updated: 2026-01-18 after roadmap creation*
+*Last updated: 2026-01-18 after Phase 14 completion*
