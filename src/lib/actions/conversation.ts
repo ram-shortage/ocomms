@@ -1,11 +1,21 @@
 "use server";
 
 import { db } from "@/db";
-import { conversations, conversationParticipants } from "@/db/schema";
+import { conversations, conversationParticipants, members } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { eq, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+
+async function verifyOrgMembership(userId: string, organizationId: string): Promise<boolean> {
+  const membership = await db.query.members.findFirst({
+    where: and(
+      eq(members.userId, userId),
+      eq(members.organizationId, organizationId)
+    ),
+  });
+  return !!membership;
+}
 
 export async function createConversation(formData: {
   organizationId: string;
@@ -14,6 +24,20 @@ export async function createConversation(formData: {
 }) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) throw new Error("Unauthorized");
+
+  // Verify requester is member of target organization
+  const isRequesterMember = await verifyOrgMembership(session.user.id, formData.organizationId);
+  if (!isRequesterMember) {
+    throw new Error("Not authorized to create conversations in this organization");
+  }
+
+  // Verify all participants are members of the organization
+  for (const participantId of formData.participantIds) {
+    const isParticipantMember = await verifyOrgMembership(participantId, formData.organizationId);
+    if (!isParticipantMember) {
+      throw new Error("All participants must be members of the organization");
+    }
+  }
 
   const allParticipantIds = [...new Set([session.user.id, ...formData.participantIds])];
   const isGroup = allParticipantIds.length > 2;
@@ -160,6 +184,12 @@ export async function addParticipant(conversationId: string, userId: string) {
     (p) => p.userId === session.user.id
   );
   if (!isParticipant) throw new Error("Not a participant");
+
+  // Verify new participant is member of the conversation's organization
+  const isNewMemberInOrg = await verifyOrgMembership(userId, conversation.organizationId);
+  if (!isNewMemberInOrg) {
+    throw new Error("User must be a member of the organization");
+  }
 
   // Adding to 1:1 converts it to group DM
   if (!conversation.isGroup) {
