@@ -86,6 +86,8 @@ Key decisions from v0.1.0 are documented in PROJECT.md Key Decisions table.
 | 2026-01-18 | 13-01 | Fire-and-forget audit logging | Never blocks request flow; errors logged to console |
 | 2026-01-18 | 13-02 | Log after successful action completion | Ensures only completed actions are logged |
 | 2026-01-18 | 13-02 | Keep console.log with audit log | Audit log supplements existing console logging |
+| 2026-01-18 | 13-03 | Org admins see their org events only | Strict scoping per CONTEXT.md |
+| 2026-01-18 | 13-03 | 90-day default retention for cleanup | Balance between audit trail and storage |
 
 ### Pending Todos
 
@@ -101,6 +103,6 @@ None active.
 
 ## Session Continuity
 
-Last session: 2026-01-18T18:59Z
-Stopped at: Completed 13-02-PLAN.md (Admin and Authorization Audit Logging)
+Last session: 2026-01-18T18:58Z
+Stopped at: Completed 13-03-PLAN.md (Audit Query API)
 Resume file: None
