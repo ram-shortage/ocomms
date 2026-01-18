@@ -45,10 +45,20 @@ Real-time messaging, channels, DMs, threading, mentions, search, presence, react
   4. Message sequences are unique per channel (no race condition duplicates)
   5. User deletion doesn't violate foreign key constraints
 **Research**: Unlikely (fixing existing code with known patterns)
-**Plans**: TBD
+**Plans**: 11 plans in 5 waves
 
 Plans:
-- [ ] 09-01: TBD
+- [ ] 09-01: Create authorization helpers module
+- [ ] 09-02: Add authorization to room:join and workspace:join
+- [ ] 09-03: Add authorization to thread handlers
+- [ ] 09-04: Add authorization to reaction handlers
+- [ ] 09-05: Add authorization to unread handlers
+- [ ] 09-06: Add organization validation to server actions
+- [ ] 09-07: Add unique sequence constraints to messages
+- [ ] 09-08: Fix created_by foreign key constraints
+- [ ] 09-09: Fix export endpoint org scoping
+- [ ] 09-10: Add avatar file signature validation
+- [ ] 09-11: Add middleware session validation
 
 ### Phase 10: Transport Security
 **Goal**: All traffic encrypted in transit
@@ -115,7 +125,7 @@ Phases execute in numeric order: 9 → 10 → 11 → 12 → 13
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 1-8 | v0.1.0 | - | Complete | 2026-01-18 |
-| 9. Authorization & Data Integrity | v0.2.0 | 0/? | Not started | - |
+| 9. Authorization & Data Integrity | v0.2.0 | 0/11 | Planned | - |
 | 10. Transport Security | v0.2.0 | 0/? | Not started | - |
 | 11. Request Hardening | v0.2.0 | 0/? | Not started | - |
 | 12. Authentication Hardening | v0.2.0 | 0/? | Not started | - |
