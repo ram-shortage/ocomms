@@ -38,8 +38,8 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **CHAN-05**: Member can leave channel
 - [x] **CHAN-06**: Admin can invite members to private channel
 - [x] **CHAN-07**: Member can set channel topic and description
-- [ ] **CHAN-08**: Member can pin messages in channel
-- [ ] **CHAN-09**: Member can view pinned messages
+- [x] **CHAN-08**: Member can pin messages in channel
+- [x] **CHAN-09**: Member can view pinned messages
 
 ### Direct Messages
 
@@ -56,10 +56,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Threading
 
-- [ ] **THRD-01**: Member can reply to message to create thread
-- [ ] **THRD-02**: Member can view thread replies in thread panel
-- [ ] **THRD-03**: Member receives notifications for threads they're in
-- [ ] **THRD-04**: Member can view "All Threads" across channels
+- [x] **THRD-01**: Member can reply to message to create thread
+- [x] **THRD-02**: Member can view thread replies in thread panel
+- [x] **THRD-03**: Member receives notifications for threads they're in
+- [x] **THRD-04**: Member can view "All Threads" across channels
 
 ### Mentions & Notifications
 
@@ -88,9 +88,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Emoji Reactions
 
-- [ ] **REAC-01**: Member can add emoji reaction to message
-- [ ] **REAC-02**: Member can remove own emoji reaction
-- [ ] **REAC-03**: Member can see who reacted with each emoji
+- [x] **REAC-01**: Member can add emoji reaction to message
+- [x] **REAC-02**: Member can remove own emoji reaction
+- [x] **REAC-03**: Member can see who reacted with each emoji
 
 ### Self-Hosted Infrastructure
 
@@ -189,8 +189,8 @@ Which phases cover which requirements.
 | CHAN-05 | Phase 2 | Complete |
 | CHAN-06 | Phase 2 | Complete |
 | CHAN-07 | Phase 2 | Complete |
-| CHAN-08 | Phase 4 | Pending |
-| CHAN-09 | Phase 4 | Pending |
+| CHAN-08 | Phase 4 | Complete |
+| CHAN-09 | Phase 4 | Complete |
 | DM-01 | Phase 2 | Complete |
 | DM-02 | Phase 2 | Complete |
 | DM-03 | Phase 2 | Complete |
@@ -198,10 +198,10 @@ Which phases cover which requirements.
 | MSG-02 | Phase 3 | Complete |
 | MSG-03 | Phase 3 | Complete |
 | MSG-04 | Phase 3 | Complete |
-| THRD-01 | Phase 4 | Pending |
-| THRD-02 | Phase 4 | Pending |
-| THRD-03 | Phase 4 | Pending |
-| THRD-04 | Phase 4 | Pending |
+| THRD-01 | Phase 4 | Complete |
+| THRD-02 | Phase 4 | Complete |
+| THRD-03 | Phase 4 | Complete |
+| THRD-04 | Phase 4 | Complete |
 | NOTF-01 | Phase 5 | Pending |
 | NOTF-02 | Phase 5 | Pending |
 | NOTF-03 | Phase 5 | Pending |
@@ -215,9 +215,9 @@ Which phases cover which requirements.
 | UNRD-01 | Phase 6 | Pending |
 | UNRD-02 | Phase 6 | Pending |
 | UNRD-03 | Phase 6 | Pending |
-| REAC-01 | Phase 4 | Pending |
-| REAC-02 | Phase 4 | Pending |
-| REAC-03 | Phase 4 | Pending |
+| REAC-01 | Phase 4 | Complete |
+| REAC-02 | Phase 4 | Complete |
+| REAC-03 | Phase 4 | Complete |
 | INFR-01 | Phase 8 | Pending |
 | INFR-02 | Phase 8 | Pending |
 | INFR-03 | Phase 8 | Pending |
@@ -231,4 +231,4 @@ Which phases cover which requirements.
 
 ---
 *Requirements defined: 2026-01-17*
-*Last updated: 2026-01-17 after roadmap creation*
+*Last updated: 2026-01-18 after Phase 4 completion*

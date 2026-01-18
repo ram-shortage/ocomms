@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Foundation** - Auth, workspaces, members, profiles
 - [x] **Phase 2: Channels & DMs** - Conversation containers
 - [x] **Phase 3: Real-Time Messaging** - WebSocket message delivery, presence
-- [ ] **Phase 4: Threading & Reactions** - Threads, emoji reactions, pins
+- [x] **Phase 4: Threading & Reactions** - Threads, emoji reactions, pins
 - [ ] **Phase 5: Mentions & Notifications** - @mentions, notification routing
 - [ ] **Phase 6: Attention Management** - Unread counts, read state
 - [ ] **Phase 7: Search** - Full-text message search
@@ -105,9 +105,9 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 04-01: Threading model and UI
-- [ ] 04-02: Emoji reactions
-- [ ] 04-03: Pinned messages
+- [x] 04-01: Threading model and UI
+- [x] 04-02: Emoji reactions
+- [x] 04-03: Pinned messages
 
 ### Phase 5: Mentions & Notifications
 **Goal**: @mentions with notification delivery and channel settings
@@ -186,10 +186,10 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 1. Foundation | 4/4 | Complete | 2026-01-17 |
 | 2. Channels & DMs | 3/3 | Complete | 2026-01-17 |
 | 3. Real-Time Messaging | 3/3 | Complete | 2026-01-17 |
-| 4. Threading & Reactions | 0/3 | Not started | - |
+| 4. Threading & Reactions | 3/3 | Complete | 2026-01-18 |
 | 5. Mentions & Notifications | 0/3 | Not started | - |
 | 6. Attention Management | 0/1 | Not started | - |
 | 7. Search | 0/1 | Not started | - |
 | 8. Self-Hosted Packaging | 0/3 | Not started | - |
 
-**Total:** 10/20 plans complete
+**Total:** 13/20 plans complete
