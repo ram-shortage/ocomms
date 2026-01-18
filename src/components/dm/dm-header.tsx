@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { setConversationName } from "@/lib/actions/conversation";
 import { AddParticipantsDialog } from "./add-participants-dialog";
+import { NotificationBell } from "@/components/notification/notification-bell";
 import Link from "next/link";
 
 interface Participant {
@@ -195,6 +196,7 @@ export function DMHeader({
 
         {/* Actions */}
         <div className="flex items-center gap-2">
+          <NotificationBell workspaceSlug={workspaceSlug} />
           <AddParticipantsDialog
             conversationId={conversation.id}
             organizationId={organizationId}

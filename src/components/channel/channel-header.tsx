@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { leaveChannel, updateChannelTopic } from "@/lib/actions/channel";
 import { InviteToChannelDialog } from "./invite-to-channel-dialog";
 import { PinnedMessagesDialog } from "./pinned-messages-dialog";
+import { NotificationBell } from "@/components/notification/notification-bell";
 
 interface ChannelMember {
   id: string;
@@ -156,6 +157,9 @@ export function ChannelHeader({
           {error && (
             <span className="text-sm text-red-600">{error}</span>
           )}
+
+          {/* Notifications */}
+          <NotificationBell workspaceSlug={workspaceSlug} />
 
           {/* Pinned messages */}
           <PinnedMessagesDialog channelId={channel.id} currentUserId={currentUserId} />
