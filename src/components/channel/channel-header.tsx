@@ -17,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { leaveChannel, updateChannelTopic } from "@/lib/actions/channel";
 import { InviteToChannelDialog } from "./invite-to-channel-dialog";
+import { PinnedMessagesDialog } from "./pinned-messages-dialog";
 
 interface ChannelMember {
   id: string;
@@ -40,6 +41,7 @@ interface ChannelHeaderProps {
   workspaceSlug: string;
   isAdmin: boolean;
   members: ChannelMember[];
+  currentUserId: string;
 }
 
 export function ChannelHeader({
@@ -48,6 +50,7 @@ export function ChannelHeader({
   workspaceSlug,
   isAdmin,
   members,
+  currentUserId,
 }: ChannelHeaderProps) {
   const router = useRouter();
   const [isEditingTopic, setIsEditingTopic] = useState(false);
@@ -153,6 +156,9 @@ export function ChannelHeader({
           {error && (
             <span className="text-sm text-red-600">{error}</span>
           )}
+
+          {/* Pinned messages */}
+          <PinnedMessagesDialog channelId={channel.id} currentUserId={currentUserId} />
 
           {/* Members button */}
           <Dialog open={showMembersDialog} onOpenChange={setShowMembersDialog}>

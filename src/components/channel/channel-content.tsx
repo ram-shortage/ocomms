@@ -1,0 +1,90 @@
+"use client";
+
+import { useState, useCallback, useEffect } from "react";
+import { MessageList, MessageInput } from "@/components/message";
+import type { Message } from "@/lib/socket-events";
+
+interface ChannelContentProps {
+  channelId: string;
+  initialMessages: Message[];
+  initialPinnedMessageIds: string[];
+  currentUserId: string;
+}
+
+export function ChannelContent({
+  channelId,
+  initialMessages,
+  initialPinnedMessageIds,
+  currentUserId,
+}: ChannelContentProps) {
+  const [pinnedMessageIds, setPinnedMessageIds] = useState<Set<string>>(
+    () => new Set(initialPinnedMessageIds)
+  );
+
+  // Re-sync when initial props change (e.g., navigation)
+  useEffect(() => {
+    setPinnedMessageIds(new Set(initialPinnedMessageIds));
+  }, [initialPinnedMessageIds]);
+
+  const handlePin = useCallback(
+    async (messageId: string) => {
+      // Optimistic update
+      setPinnedMessageIds((prev) => new Set([...prev, messageId]));
+
+      const res = await fetch(`/api/channels/${channelId}/pins`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messageId }),
+      });
+
+      if (!res.ok) {
+        // Revert on failure
+        setPinnedMessageIds((prev) => {
+          const next = new Set(prev);
+          next.delete(messageId);
+          return next;
+        });
+      }
+    },
+    [channelId]
+  );
+
+  const handleUnpin = useCallback(
+    async (messageId: string) => {
+      // Optimistic update
+      setPinnedMessageIds((prev) => {
+        const next = new Set(prev);
+        next.delete(messageId);
+        return next;
+      });
+
+      const res = await fetch(`/api/channels/${channelId}/pins?messageId=${messageId}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        // Revert on failure
+        setPinnedMessageIds((prev) => new Set([...prev, messageId]));
+      }
+    },
+    [channelId]
+  );
+
+  return (
+    <>
+      {/* Message list - grows to fill available space */}
+      <MessageList
+        initialMessages={initialMessages}
+        targetId={channelId}
+        targetType="channel"
+        currentUserId={currentUserId}
+        pinnedMessageIds={pinnedMessageIds}
+        onPin={handlePin}
+        onUnpin={handleUnpin}
+      />
+
+      {/* Message input - fixed at bottom */}
+      <MessageInput targetId={channelId} targetType="channel" />
+    </>
+  );
+}

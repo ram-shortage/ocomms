@@ -1,7 +1,7 @@
 "use client";
 
 import { formatDistanceToNow } from "date-fns";
-import { Trash2, MessageSquare } from "lucide-react";
+import { Trash2, MessageSquare, Pin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Message, ReactionGroup } from "@/lib/socket-events";
 import { ReactionPicker } from "./reaction-picker";
@@ -14,6 +14,10 @@ interface MessageItemProps {
   reactions: ReactionGroup[];
   onToggleReaction: (messageId: string, emoji: string) => void;
   onReply?: (messageId: string) => void;
+  isPinned?: boolean;
+  onPin?: (messageId: string) => void;
+  onUnpin?: (messageId: string) => void;
+  isChannelMessage?: boolean;
 }
 
 export function MessageItem({
@@ -23,6 +27,10 @@ export function MessageItem({
   reactions,
   onToggleReaction,
   onReply,
+  isPinned = false,
+  onPin,
+  onUnpin,
+  isChannelMessage = false,
 }: MessageItemProps) {
   const isOwn = message.authorId === currentUserId;
   const isDeleted = message.deletedAt !== null && message.deletedAt !== undefined;
@@ -64,6 +72,26 @@ export function MessageItem({
       {!isDeleted && (
         <div className="flex items-center gap-1">
           <ReactionPicker onSelectEmoji={(emoji) => onToggleReaction(message.id, emoji)} />
+          {/* Pin button - only for channel messages (not DMs) */}
+          {isChannelMessage && (onPin || onUnpin) && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className={`transition-opacity h-7 w-7 p-0 ${
+                isPinned
+                  ? "opacity-100 text-amber-500 hover:text-amber-600"
+                  : "opacity-0 group-hover:opacity-100 text-gray-400 hover:text-amber-500"
+              }`}
+              onClick={() =>
+                isPinned
+                  ? onUnpin?.(message.id)
+                  : onPin?.(message.id)
+              }
+            >
+              <Pin className={`h-4 w-4 ${isPinned ? "fill-current" : ""}`} />
+              <span className="sr-only">{isPinned ? "Unpin message" : "Pin message"}</span>
+            </Button>
+          )}
           {/* Reply button - only for top-level messages (no nested threading) */}
           {!isThreaded && onReply && (
             <Button

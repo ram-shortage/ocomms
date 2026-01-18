@@ -11,6 +11,9 @@ interface MessageListProps {
   targetId: string;
   targetType: "channel" | "dm";
   currentUserId: string;
+  pinnedMessageIds?: Set<string>;
+  onPin?: (messageId: string) => void;
+  onUnpin?: (messageId: string) => void;
 }
 
 // Track reactions per message
@@ -21,6 +24,9 @@ export function MessageList({
   targetId,
   targetType,
   currentUserId,
+  pinnedMessageIds,
+  onPin,
+  onUnpin,
 }: MessageListProps) {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [reactionsMap, setReactionsMap] = useState<ReactionsMap>({});
@@ -221,6 +227,10 @@ export function MessageList({
             reactions={reactionsMap[message.id] || []}
             onToggleReaction={handleToggleReaction}
             onReply={handleReply}
+            isPinned={pinnedMessageIds?.has(message.id) ?? false}
+            onPin={onPin}
+            onUnpin={onUnpin}
+            isChannelMessage={targetType === "channel"}
           />
         ))}
         <div ref={bottomRef} />

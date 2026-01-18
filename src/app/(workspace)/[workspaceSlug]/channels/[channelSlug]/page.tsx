@@ -3,9 +3,9 @@ import { headers } from "next/headers";
 import { redirect, notFound } from "next/navigation";
 import { getChannel } from "@/lib/actions/channel";
 import { ChannelHeader } from "@/components/channel/channel-header";
-import { MessageList, MessageInput } from "@/components/message";
+import { ChannelContent } from "@/components/channel/channel-content";
 import { db } from "@/db";
-import { messages, users } from "@/db/schema";
+import { messages, users, pinnedMessages } from "@/db/schema";
 import { eq, and, isNull, asc } from "drizzle-orm";
 import type { Message } from "@/lib/socket-events";
 
@@ -91,6 +91,20 @@ export default async function ChannelPage({
     },
   }));
 
+  // Fetch pinned message IDs for this channel
+  const pinnedMessagesData = await db
+    .select({ messageId: pinnedMessages.messageId })
+    .from(pinnedMessages)
+    .innerJoin(messages, eq(pinnedMessages.messageId, messages.id))
+    .where(
+      and(
+        eq(pinnedMessages.channelId, channel.id),
+        isNull(messages.deletedAt)
+      )
+    );
+
+  const initialPinnedMessageIds = pinnedMessagesData.map((p) => p.messageId);
+
   return (
     <div className="flex flex-col h-screen">
       <ChannelHeader
@@ -113,18 +127,15 @@ export default async function ChannelPage({
           image: m.user.image,
           role: m.role,
         }))}
-      />
-
-      {/* Message list - grows to fill available space */}
-      <MessageList
-        initialMessages={initialMessages}
-        targetId={channel.id}
-        targetType="channel"
         currentUserId={session.user.id}
       />
 
-      {/* Message input - fixed at bottom */}
-      <MessageInput targetId={channel.id} targetType="channel" />
+      <ChannelContent
+        channelId={channel.id}
+        initialMessages={initialMessages}
+        initialPinnedMessageIds={initialPinnedMessageIds}
+        currentUserId={session.user.id}
+      />
     </div>
   );
 }
