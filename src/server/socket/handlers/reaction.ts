@@ -4,6 +4,7 @@ import { reactions, messages, users } from "@/db/schema";
 import { eq, and, sql } from "drizzle-orm";
 import { getRoomName } from "../rooms";
 import type { ClientToServerEvents, ServerToClientEvents, SocketData, ReactionGroup } from "@/lib/socket-events";
+import { isChannelMember, isConversationParticipant, getMessageContext } from "../authz";
 
 type SocketIOServer = Server<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
 type SocketWithData = Socket<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
@@ -23,6 +24,27 @@ async function handleReactionToggle(
   const { messageId, emoji } = data;
 
   try {
+    // Verify user has access to the message's channel/DM
+    const context = await getMessageContext(messageId);
+    if (!context) {
+      socket.emit("error", { message: "Message not found" });
+      return;
+    }
+
+    if (context.channelId) {
+      const isMember = await isChannelMember(userId, context.channelId);
+      if (!isMember) {
+        socket.emit("error", { message: "Not authorized to react to this message" });
+        return;
+      }
+    } else if (context.conversationId) {
+      const isParticipant = await isConversationParticipant(userId, context.conversationId);
+      if (!isParticipant) {
+        socket.emit("error", { message: "Not authorized to react to this message" });
+        return;
+      }
+    }
+
     // Check if reaction already exists
     const existing = await db
       .select()
@@ -63,22 +85,10 @@ async function handleReactionToggle(
       action = "added";
     }
 
-    // Get message to determine which room to broadcast to
-    const [message] = await db
-      .select({ channelId: messages.channelId, conversationId: messages.conversationId })
-      .from(messages)
-      .where(eq(messages.id, messageId))
-      .limit(1);
-
-    if (!message) {
-      socket.emit("error", { message: "Message not found" });
-      return;
-    }
-
-    // Determine room name
-    const roomName = message.channelId
-      ? getRoomName.channel(message.channelId)
-      : getRoomName.conversation(message.conversationId!);
+    // Determine room name using already-fetched context
+    const roomName = context.channelId
+      ? getRoomName.channel(context.channelId)
+      : getRoomName.conversation(context.conversationId!);
 
     // Broadcast reaction update to room
     io.to(roomName).emit("reaction:update", {
