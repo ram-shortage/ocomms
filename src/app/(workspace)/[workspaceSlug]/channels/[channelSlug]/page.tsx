@@ -135,6 +135,7 @@ export default async function ChannelPage({
         initialMessages={initialMessages}
         initialPinnedMessageIds={initialPinnedMessageIds}
         currentUserId={session.user.id}
+        currentUsername={session.user.name || session.user.email.split("@")[0]}
         members={channel.members.map((m) => ({
           id: m.userId,
           name: m.user.name,

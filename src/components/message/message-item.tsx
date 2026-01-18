@@ -6,10 +6,12 @@ import { Button } from "@/components/ui/button";
 import type { Message, ReactionGroup } from "@/lib/socket-events";
 import { ReactionPicker } from "./reaction-picker";
 import { ReactionDisplay } from "./reaction-display";
+import { MessageContent } from "./message-content";
 
 interface MessageItemProps {
   message: Message;
   currentUserId: string;
+  currentUsername?: string;
   onDelete: (messageId: string) => void;
   reactions: ReactionGroup[];
   onToggleReaction: (messageId: string, emoji: string) => void;
@@ -23,6 +25,7 @@ interface MessageItemProps {
 export function MessageItem({
   message,
   currentUserId,
+  currentUsername,
   onDelete,
   reactions,
   onToggleReaction,
@@ -58,7 +61,7 @@ export function MessageItem({
           <p className="text-gray-400 italic text-sm">[Message deleted]</p>
         ) : (
           <>
-            <p className="text-gray-700 whitespace-pre-wrap break-words">{message.content}</p>
+            <MessageContent content={message.content} currentUsername={currentUsername} />
             <ReactionDisplay
               reactions={reactions}
               currentUserId={currentUserId}

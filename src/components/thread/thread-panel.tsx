@@ -8,15 +8,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { Send, X } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import type { Message } from "@/lib/socket-events";
+import { MessageContent } from "@/components/message/message-content";
 
 interface ThreadPanelProps {
   isOpen: boolean;
   onClose: () => void;
   parentMessage: Message | null;
   currentUserId: string;
+  currentUsername?: string;
 }
 
-function ThreadReplyItem({ message }: { message: Message }) {
+function ThreadReplyItem({ message, currentUsername }: { message: Message; currentUsername?: string }) {
   const isDeleted = message.deletedAt !== null && message.deletedAt !== undefined;
 
   return (
@@ -39,7 +41,9 @@ function ThreadReplyItem({ message }: { message: Message }) {
         {isDeleted ? (
           <p className="text-gray-400 italic text-sm">[Message deleted]</p>
         ) : (
-          <p className="text-gray-700 text-sm whitespace-pre-wrap break-words">{message.content}</p>
+          <div className="text-sm">
+            <MessageContent content={message.content} currentUsername={currentUsername} />
+          </div>
         )}
       </div>
     </div>
@@ -112,7 +116,7 @@ function ThreadReplyInput({
   );
 }
 
-export function ThreadPanel({ isOpen, onClose, parentMessage, currentUserId }: ThreadPanelProps) {
+export function ThreadPanel({ isOpen, onClose, parentMessage, currentUserId, currentUsername }: ThreadPanelProps) {
   const [replies, setReplies] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
   const socket = useSocket();
@@ -211,7 +215,7 @@ export function ThreadPanel({ isOpen, onClose, parentMessage, currentUserId }: T
               {parentIsDeleted ? (
                 <p className="text-gray-400 italic">[Message deleted]</p>
               ) : (
-                <p className="text-gray-700 whitespace-pre-wrap break-words">{parentMessage.content}</p>
+                <MessageContent content={parentMessage.content} currentUsername={currentUsername} />
               )}
             </div>
           </div>
@@ -233,7 +237,7 @@ export function ThreadPanel({ isOpen, onClose, parentMessage, currentUserId }: T
                 {replies.length} {replies.length === 1 ? "reply" : "replies"}
               </div>
               {replies.map((reply) => (
-                <ThreadReplyItem key={reply.id} message={reply} />
+                <ThreadReplyItem key={reply.id} message={reply} currentUsername={currentUsername} />
               ))}
               <div ref={repliesEndRef} />
             </>

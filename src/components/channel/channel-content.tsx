@@ -9,6 +9,7 @@ interface ChannelContentProps {
   initialMessages: Message[];
   initialPinnedMessageIds: string[];
   currentUserId: string;
+  currentUsername?: string;
   members: MentionMember[];
 }
 
@@ -17,6 +18,7 @@ export function ChannelContent({
   initialMessages,
   initialPinnedMessageIds,
   currentUserId,
+  currentUsername,
   members,
 }: ChannelContentProps) {
   const [pinnedMessageIds, setPinnedMessageIds] = useState<Set<string>>(
@@ -80,6 +82,7 @@ export function ChannelContent({
         targetId={channelId}
         targetType="channel"
         currentUserId={currentUserId}
+        currentUsername={currentUsername}
         pinnedMessageIds={pinnedMessageIds}
         onPin={handlePin}
         onUnpin={handleUnpin}

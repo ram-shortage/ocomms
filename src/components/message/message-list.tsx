@@ -11,6 +11,7 @@ interface MessageListProps {
   targetId: string;
   targetType: "channel" | "dm";
   currentUserId: string;
+  currentUsername?: string;
   pinnedMessageIds?: Set<string>;
   onPin?: (messageId: string) => void;
   onUnpin?: (messageId: string) => void;
@@ -24,6 +25,7 @@ export function MessageList({
   targetId,
   targetType,
   currentUserId,
+  currentUsername,
   pinnedMessageIds,
   onPin,
   onUnpin,
@@ -223,6 +225,7 @@ export function MessageList({
             key={message.id}
             message={message}
             currentUserId={currentUserId}
+            currentUsername={currentUsername}
             onDelete={handleDelete}
             reactions={reactionsMap[message.id] || []}
             onToggleReaction={handleToggleReaction}
@@ -241,6 +244,7 @@ export function MessageList({
         onClose={handleCloseThreadPanel}
         parentMessage={selectedThread}
         currentUserId={currentUserId}
+        currentUsername={currentUsername}
       />
     </>
   );

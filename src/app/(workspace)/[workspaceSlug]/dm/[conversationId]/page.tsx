@@ -104,6 +104,7 @@ export default async function DMPage({
         targetId={conversationId}
         targetType="dm"
         currentUserId={session.user.id}
+        currentUsername={session.user.name || session.user.email.split("@")[0]}
       />
 
       {/* Message input - fixed at bottom */}
