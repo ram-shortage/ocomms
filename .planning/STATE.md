@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-18)
 ## Current Position
 
 Phase: 9 of 13 (Authorization & Data Integrity Fixes)
-Plan: 1 of 11 complete
+Plan: 2 of 11 complete
 Status: In progress
-Last activity: 2026-01-18 — Completed 09-01-PLAN.md (Socket Authorization Helpers)
+Last activity: 2026-01-18 — Completed 09-05-PLAN.md (Unread Handler Authorization)
 
-Progress: ████████░░ 63% (v0.1.0 complete, v0.2.0 phase 9 started)
+Progress: ████████░░ 64% (v0.1.0 complete, v0.2.0 phase 9 in progress)
 
 ## Shipped Milestones
 
@@ -25,19 +25,19 @@ Progress: ████████░░ 63% (v0.1.0 complete, v0.2.0 phase 9 st
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1 (v0.2.0)
+- Total plans completed: 2 (v0.2.0)
 - Average duration: 2 min
-- Total execution time: 2 min
+- Total execution time: 4 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 09 | 1/11 | 2min | 2min |
+| 09 | 2/11 | 4min | 2min |
 
 **Recent Trend:**
-- Last 5 plans: 09-01 (2min)
-- Trend: N/A (first plan)
+- Last 5 plans: 09-01 (2min), 09-05 (2min)
+- Trend: Stable at 2min/plan
 
 ## Accumulated Context
 
@@ -51,6 +51,8 @@ Key decisions from v0.1.0 are documented in PROJECT.md Key Decisions table.
 |------|-------|----------|-----------|
 | 2026-01-18 | 09-01 | Added vitest as unit testing framework | Project had no unit test framework; needed for authorization helper tests |
 | 2026-01-18 | 09-01 | Mock-based testing for DB operations | Avoids test database dependency, keeps tests fast and isolated |
+| 2026-01-18 | 09-05 | Silent skip for unauthorized read ops | Prevents information disclosure about channel/conversation existence |
+| 2026-01-18 | 09-05 | Error emit for unauthorized write ops | Gives users clear feedback when operation is denied |
 
 ### Pending Todos
 
@@ -65,5 +67,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-18
-Stopped at: Completed 09-01-PLAN.md (Socket Authorization Helpers)
+Stopped at: Completed 09-05-PLAN.md (Unread Handler Authorization)
 Resume file: None
