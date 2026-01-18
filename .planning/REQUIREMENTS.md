@@ -82,9 +82,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Unread Management
 
-- [ ] **UNRD-01**: Member sees unread count per channel
-- [ ] **UNRD-02**: Member can mark channel as read
-- [ ] **UNRD-03**: Member can mark message as unread
+- [x] **UNRD-01**: Member sees unread count per channel
+- [x] **UNRD-02**: Member can mark channel as read
+- [x] **UNRD-03**: Member can mark message as unread
 
 ### Emoji Reactions
 
@@ -212,9 +212,9 @@ Which phases cover which requirements.
 | SRCH-02 | Phase 7 | Pending |
 | PRES-01 | Phase 3 | Complete |
 | PRES-02 | Phase 3 | Complete |
-| UNRD-01 | Phase 6 | Pending |
-| UNRD-02 | Phase 6 | Pending |
-| UNRD-03 | Phase 6 | Pending |
+| UNRD-01 | Phase 6 | Complete |
+| UNRD-02 | Phase 6 | Complete |
+| UNRD-03 | Phase 6 | Complete |
 | REAC-01 | Phase 4 | Complete |
 | REAC-02 | Phase 4 | Complete |
 | REAC-03 | Phase 4 | Complete |
@@ -231,4 +231,4 @@ Which phases cover which requirements.
 
 ---
 *Requirements defined: 2026-01-17*
-*Last updated: 2026-01-18 after Phase 5 completion*
+*Last updated: 2026-01-18 after Phase 6 completion*

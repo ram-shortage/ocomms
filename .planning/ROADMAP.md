@@ -17,7 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: Real-Time Messaging** - WebSocket message delivery, presence
 - [x] **Phase 4: Threading & Reactions** - Threads, emoji reactions, pins
 - [x] **Phase 5: Mentions & Notifications** - @mentions, notification routing
-- [ ] **Phase 6: Attention Management** - Unread counts, read state
+- [x] **Phase 6: Attention Management** - Unread counts, read state
 - [ ] **Phase 7: Search** - Full-text message search
 - [ ] **Phase 8: Self-Hosted Packaging** - Docker deployment, backup/restore
 
@@ -141,7 +141,7 @@ Plans:
 
 Plans:
 - [x] 06-01: Read state tracking and unread counts
-- [ ] 06-02: Sidebar unread UI and mark-as-read actions
+- [x] 06-02: Sidebar unread UI and mark-as-read actions
 
 ### Phase 7: Search
 **Goal**: Full-text message search
@@ -189,7 +189,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 3. Real-Time Messaging | 3/3 | Complete | 2026-01-17 |
 | 4. Threading & Reactions | 3/3 | Complete | 2026-01-18 |
 | 5. Mentions & Notifications | 3/3 | Complete | 2026-01-18 |
-| 6. Attention Management | 1/2 | In progress | - |
+| 6. Attention Management | 2/2 | Complete | 2026-01-18 |
 | 7. Search | 0/1 | Not started | - |
 | 8. Self-Hosted Packaging | 0/3 | Not started | - |
 
