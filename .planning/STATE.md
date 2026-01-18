@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-17)
 
 **Core value:** Data sovereignty - Complete control over communication data, no third-party dependencies
-**Current focus:** Phase 3 - Real-Time Messaging
+**Current focus:** Phase 4 - Threading & Reactions
 
 ## Current Position
 
-Phase: 3 of 8 (Real-Time Messaging)
-Plan: 3 of 3 in current phase
-Status: Phase complete
-Last activity: 2026-01-17 - Completed 03-03-PLAN.md
+Phase: 4 of 8 (Threading & Reactions)
+Plan: 2 of 3 in current phase
+Status: In progress
+Last activity: 2026-01-18 - Completed 04-02-PLAN.md (Emoji Reactions)
 
-Progress: █████████░ 50%
+Progress: █████████░ 54%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 11
-- Average duration: 4.5 min
-- Total execution time: 49 min
+- Total plans completed: 12
+- Average duration: 4.3 min
+- Total execution time: 52 min
 
 **By Phase:**
 
@@ -30,9 +30,10 @@ Progress: █████████░ 50%
 | 1-foundation | 4/4 | 16 min | 4 min |
 | 2-channels-dms | 3/3 | 17 min | ~6 min |
 | 3-real-time-messaging | 3/3 | 16 min | ~5 min |
+| 4-threading-reactions | 1/3 | 3 min | 3 min |
 
 **Recent Trend:**
-- Last 5 plans: 4 min, 5 min, 5 min, 3 min, 8 min
+- Last 5 plans: 5 min, 5 min, 3 min, 8 min, 3 min
 - Trend: Stable
 
 ## Accumulated Context
@@ -71,6 +72,12 @@ Recent decisions affecting current work:
 | 3-03 | 60s TTL / 30s heartbeat | Balances responsiveness with Redis load |
 | 3-03 | workspace:join event | Explicit workspace context for presence |
 | 3-03 | Visibility API for away | Tab blur/focus for automatic away detection |
+| 4-01 | Self-referencing parentId | No separate threads table, simpler queries |
+| 4-01 | Single-level threading only | Replies cannot have replies (Slack pattern) |
+| 4-01 | Denormalized replyCount | Avoid COUNT query on every message render |
+| 4-02 | frimousse emoji picker | <5KB vs 50KB alternatives, shadcn integration |
+| 4-02 | Composite unique for reactions | Race-safe, prevents duplicate emoji per user |
+| 4-03 | REST API for pins | Low frequency ops, no real-time broadcast needed |
 
 ### Pending Todos
 
@@ -83,6 +90,6 @@ Database connection required before `npm run db:push` can verify schema.
 
 ## Session Continuity
 
-Last session: 2026-01-17T23:52:00Z
-Stopped at: Completed 03-03-PLAN.md (Phase 3 complete)
+Last session: 2026-01-18
+Stopped at: Completed 04-02-PLAN.md (Emoji Reactions)
 Resume file: None
