@@ -165,6 +165,7 @@ export async function POST(request: Request) {
         participants: true,
       },
     });
+    const conversationIds = orgConversations.map((c) => c.id);
 
     const conversationsWithMessages = [];
     let totalDmMessages = 0;
@@ -213,7 +214,7 @@ export async function POST(request: Request) {
       const orgNotifications = userNotifications.filter(
         (n) =>
           (n.channelId && channelIds.includes(n.channelId)) ||
-          n.conversationId
+          (n.conversationId && conversationIds.includes(n.conversationId))
       );
       allNotifications.push(...orgNotifications);
     }
