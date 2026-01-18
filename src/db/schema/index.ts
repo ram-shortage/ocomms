@@ -3,3 +3,4 @@ export * from "./profile";
 export * from "./channel";
 export * from "./conversation";
 export * from "./message";
+export * from "./reaction";
