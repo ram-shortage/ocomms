@@ -1,14 +1,54 @@
 import type { Server, Socket } from "socket.io";
 import { db } from "@/db";
-import { notifications, users, channelMembers, channels } from "@/db/schema";
+import { notifications, users, channelMembers, channels, channelNotificationSettings } from "@/db/schema";
 import { eq, and, isNull, desc } from "drizzle-orm";
 import { getRoomName } from "../rooms";
 import type { ClientToServerEvents, ServerToClientEvents, SocketData, Message, Notification } from "@/lib/socket-events";
 import type { ParsedMention } from "@/lib/mentions";
 import type { PresenceManager } from "./presence";
+import type { NotificationMode } from "@/db/schema/channel-notification-settings";
 
 type SocketIOServer = Server<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
 type SocketWithData = Socket<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
+
+/**
+ * Check if a user should receive a notification for a mention.
+ * Returns true if notification should be created, false if filtered out.
+ *
+ * Rules:
+ * - muted: No notifications at all
+ * - mentions: Only direct @user mentions (not @channel/@here)
+ * - all: All notifications (default)
+ */
+async function shouldNotify(
+  userId: string,
+  channelId: string,
+  mentionType: "user" | "channel" | "here"
+): Promise<boolean> {
+  // Query user's notification settings for this channel
+  const settings = await db.query.channelNotificationSettings.findFirst({
+    where: and(
+      eq(channelNotificationSettings.channelId, channelId),
+      eq(channelNotificationSettings.userId, userId)
+    ),
+  });
+
+  // No settings = "all" mode (default)
+  const mode: NotificationMode = (settings?.mode as NotificationMode) ?? "all";
+
+  switch (mode) {
+    case "muted":
+      // No notifications at all
+      return false;
+    case "mentions":
+      // Only direct @user mentions
+      return mentionType === "user";
+    case "all":
+    default:
+      // All notifications
+      return true;
+  }
+}
 
 /**
  * Create notifications for mentions in a message.
@@ -63,6 +103,12 @@ export async function createNotifications(params: {
         .limit(1);
 
       if (targetUser && targetUser.id !== senderId && !notifiedUserIds.has(targetUser.id)) {
+        // Check notification settings if in channel context
+        if (channelId) {
+          const allowed = await shouldNotify(targetUser.id, channelId, "user");
+          if (!allowed) continue;
+        }
+
         notifiedUserIds.add(targetUser.id);
         notificationsToCreate.push({
           userId: targetUser.id,
@@ -83,6 +129,10 @@ export async function createNotifications(params: {
 
       for (const member of members) {
         if (member.userId !== senderId && !notifiedUserIds.has(member.userId)) {
+          // Check notification settings
+          const allowed = await shouldNotify(member.userId, channelId, "channel");
+          if (!allowed) continue;
+
           notifiedUserIds.add(member.userId);
           notificationsToCreate.push({
             userId: member.userId,
@@ -109,6 +159,10 @@ export async function createNotifications(params: {
             const status = await presenceManager.getStatus(member.userId, workspaceId);
             if (status !== "active") continue;
           }
+
+          // Check notification settings
+          const allowed = await shouldNotify(member.userId, channelId, "here");
+          if (!allowed) continue;
 
           notifiedUserIds.add(member.userId);
           notificationsToCreate.push({
