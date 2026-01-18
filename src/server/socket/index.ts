@@ -127,6 +127,14 @@ export function setupSocketHandlers(io: SocketIOServer, redis?: Redis | null) {
     socket.on("workspace:join", async (data) => {
       const { workspaceId } = data;
 
+      // Validate organization membership before joining workspace
+      const isMember = await isOrganizationMember(userId, workspaceId);
+      if (!isMember) {
+        socket.emit("error", { message: "Not authorized to join this workspace" });
+        console.log(`[Socket.IO] Unauthorized workspace:join attempt: user ${userId} -> workspace ${workspaceId}`);
+        return;
+      }
+
       // Store workspaceId in socket data for presence handlers
       socket.data.workspaceId = workspaceId;
 
