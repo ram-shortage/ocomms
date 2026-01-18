@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-18)
 ## Current Position
 
 Phase: 9 of 13 (Authorization & Data Integrity Fixes)
-Plan: 8 of 11 complete
+Plan: 9 of 11 complete
 Status: In progress
-Last activity: 2026-01-18 — Completed 09-07-PLAN.md (Message Sequence Constraints)
+Last activity: 2026-01-18 — Completed 09-08-PLAN.md (Created By FK Fix)
 
-Progress: ████████░░ 76% (v0.1.0 complete, v0.2.0 phase 9 in progress)
+Progress: ████████░░ 78% (v0.1.0 complete, v0.2.0 phase 9 in progress)
 
 ## Shipped Milestones
 
@@ -25,18 +25,18 @@ Progress: ████████░░ 76% (v0.1.0 complete, v0.2.0 phase 9 in
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 8 (v0.2.0)
+- Total plans completed: 9 (v0.2.0)
 - Average duration: 2 min
-- Total execution time: 17 min
+- Total execution time: 20 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 09 | 8/11 | 17min | 2.1min |
+| 09 | 9/11 | 20min | 2.2min |
 
 **Recent Trend:**
-- Last 5 plans: 09-02 (2min), 09-04 (3min), 09-06 (2min), 09-09 (2min), 09-07 (2min)
+- Last 5 plans: 09-04 (3min), 09-06 (2min), 09-09 (2min), 09-07 (2min), 09-08 (3min)
 - Trend: Stable at ~2min/plan
 
 ## Accumulated Context
@@ -61,6 +61,7 @@ Key decisions from v0.1.0 are documented in PROJECT.md Key Decisions table.
 | 2026-01-18 | 09-09 | Single and() query for ownership check | Simpler and more correct than 2-query approach |
 | 2026-01-18 | 09-09 | Create ID arrays before filtering loops | Cleaner org-scoped filtering pattern |
 | 2026-01-18 | 09-07 | Standard uniqueIndex over partial indexes | PostgreSQL treats NULLs as distinct in unique indexes |
+| 2026-01-18 | 09-08 | Nullable creator columns with onDelete set null | Schema consistency - notNull+set null is contradictory |
 
 ### Pending Todos
 
@@ -75,5 +76,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-18
-Stopped at: Completed 09-07-PLAN.md (Message Sequence Constraints)
+Stopped at: Completed 09-08-PLAN.md (Created By FK Fix)
 Resume file: None
