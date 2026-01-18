@@ -1,8 +1,14 @@
-import { pgTable, text, timestamp, uuid, integer, index, type AnyPgColumn } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { pgTable, text, timestamp, uuid, integer, index, type AnyPgColumn, customType } from "drizzle-orm/pg-core";
+import { relations, SQL, sql } from "drizzle-orm";
 import { users } from "./auth";
 import { channels } from "./channel";
 import { conversations } from "./conversation";
+
+export const tsvector = customType<{ data: string }>({
+  dataType() {
+    return `tsvector`;
+  },
+});
 
 export const messages = pgTable("messages", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -20,11 +26,14 @@ export const messages = pgTable("messages", {
   deletedAt: timestamp("deleted_at"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  searchContent: tsvector("search_content")
+    .generatedAlwaysAs((): SQL => sql`to_tsvector('english', ${messages.content})`),
 }, (table) => [
   index("messages_channel_seq_idx").on(table.channelId, table.sequence),
   index("messages_conversation_seq_idx").on(table.conversationId, table.sequence),
   index("messages_author_idx").on(table.authorId),
   index("messages_parent_idx").on(table.parentId),
+  index("messages_search_idx").using("gin", table.searchContent),
 ]);
 
 export const messagesRelations = relations(messages, ({ one, many }) => ({
