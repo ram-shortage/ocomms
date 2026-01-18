@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { organization } from "@/lib/auth-client";
+import { adminUnlockUser } from "@/lib/actions/admin";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -61,6 +62,12 @@ export function MemberList({
     return canManageRole(memberRole);
   };
 
+  const canUnlock = (memberUserId: string) => {
+    // Admin/owner can unlock non-self members
+    if (currentUserRole === "member") return false;
+    return memberUserId !== currentUserId;
+  };
+
   const handleRoleChange = async (memberId: string, newRole: "admin" | "member") => {
     setLoading(memberId);
     try {
@@ -89,6 +96,18 @@ export function MemberList({
       onMemberUpdated?.();
     } catch (err) {
       console.error("Failed to remove member:", err);
+    } finally {
+      setLoading(null);
+    }
+  };
+
+  const handleUnlock = async (userId: string) => {
+    setLoading(userId);
+    try {
+      await adminUnlockUser(userId, organizationId);
+      // Show brief success feedback (the user's lockout is cleared)
+    } catch (err) {
+      console.error("Failed to unlock user:", err);
     } finally {
       setLoading(null);
     }
@@ -143,6 +162,16 @@ export function MemberList({
               <span className="px-2 py-1 text-sm bg-gray-100 rounded capitalize">
                 {member.role}
               </span>
+            )}
+            {canUnlock(member.userId) && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleUnlock(member.userId)}
+                disabled={loading === member.userId}
+              >
+                Unlock
+              </Button>
             )}
             {canRemove(member.id, member.role) && (
               <Button
