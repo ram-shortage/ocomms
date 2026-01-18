@@ -5,6 +5,7 @@ import { db } from "@/db";
 import { userLockout, members } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { headers } from "next/headers";
+import { auditLog, AuditEventType } from "@/lib/audit-logger";
 
 export async function adminUnlockUser(userId: string, organizationId: string) {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -44,6 +45,14 @@ export async function adminUnlockUser(userId: string, organizationId: string) {
       updatedAt: new Date(),
     })
     .where(eq(userLockout.userId, userId));
+
+  // Log successful unlock action
+  auditLog({
+    eventType: AuditEventType.ADMIN_UNLOCK_USER,
+    userId: session.user.id,  // Admin performing action
+    targetId: userId,         // User being unlocked
+    organizationId,
+  });
 
   return { success: true };
 }

@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { db } from "@/db";
 import { and, eq } from "drizzle-orm";
+import { auditLog, AuditEventType, getClientIP } from "@/lib/audit-logger";
 import {
   organizations,
   members,
@@ -301,6 +302,18 @@ export async function POST(request: Request) {
       channelNotificationSettings: allNotificationSettings,
       readStates: allReadStates,
     };
+
+    // Log successful export
+    auditLog({
+      eventType: AuditEventType.ADMIN_EXPORT_DATA,
+      userId: session.user.id,
+      organizationId,
+      ip: getClientIP(await headers()),
+      details: {
+        memberCount: manifest.counts.members,
+        messageCount: manifest.counts.messages,
+      },
+    });
 
     // Create response with download headers
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
