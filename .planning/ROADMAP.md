@@ -27,7 +27,7 @@ See: .planning/milestones/v0.2.0-ROADMAP.md
 **Milestone Goal:** Complete UI gaps, add PWA support with offline capability and push notifications for mobile access.
 
 - [x] **Phase 14: Security Fixes** - Harden existing code before adding features
-- [ ] **Phase 15: PWA Foundation** - Installable PWA with app shell caching
+- [x] **Phase 15: PWA Foundation** - Installable PWA with app shell caching
 - [ ] **Phase 16: Message Caching** - IndexedDB schema and offline reading
 - [ ] **Phase 17: Offline Send Queue** - Compose offline with auto-sync
 - [ ] **Phase 18: Push Notifications** - Web Push for DMs and mentions
@@ -64,9 +64,9 @@ Plans:
   5. iOS users see "Add to Home Screen" instructions (Safari doesn't have native install)
 **Plans**: 3 plans
 Plans:
-- [ ] 15-01-PLAN.md — PWA infrastructure (manifest, Serwist config, icons)
-- [ ] 15-02-PLAN.md — Service worker and offline page
-- [ ] 15-03-PLAN.md — PWA components (install prompt, iOS guide, update notification, offline banner)
+- [x] 15-01-PLAN.md — PWA infrastructure (manifest, Serwist config, icons)
+- [x] 15-02-PLAN.md — Service worker and offline page
+- [x] 15-03-PLAN.md — PWA components (install prompt, iOS guide, update notification, offline banner)
 
 ### Phase 16: Message Caching
 **Goal**: Users can read recent messages when offline
@@ -133,7 +133,7 @@ Plans:
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 14. Security Fixes | v0.3.0 | 3/3 | Complete | 2026-01-18 |
-| 15. PWA Foundation | v0.3.0 | 0/3 | Planned | - |
+| 15. PWA Foundation | v0.3.0 | 3/3 | Complete | 2026-01-18 |
 | 16. Message Caching | v0.3.0 | 0/TBD | Not started | - |
 | 17. Offline Send Queue | v0.3.0 | 0/TBD | Not started | - |
 | 18. Push Notifications | v0.3.0 | 0/TBD | Not started | - |
@@ -142,4 +142,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-01-18*
-*Last updated: 2026-01-18 after Phase 15 planning*
+*Last updated: 2026-01-18 after Phase 15 completion*

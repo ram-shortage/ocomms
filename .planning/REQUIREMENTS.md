@@ -9,12 +9,12 @@ Requirements for Mobile & Polish milestone. Each maps to roadmap phases.
 
 ### PWA Foundation
 
-- [ ] **PWA-01**: App has web app manifest with icons, theme colors, display mode
-- [ ] **PWA-02**: Service worker caches app shell for instant load
-- [ ] **PWA-03**: Custom offline page displays when network unavailable
-- [ ] **PWA-04**: Custom install prompt triggers after user engagement
-- [ ] **PWA-05**: Service worker update notification allows user-controlled reload
-- [ ] **PWA-06**: iOS users see "Add to Home Screen" guidance
+- [x] **PWA-01**: App has web app manifest with icons, theme colors, display mode
+- [x] **PWA-02**: Service worker caches app shell for instant load
+- [x] **PWA-03**: Custom offline page displays when network unavailable
+- [x] **PWA-04**: Custom install prompt triggers after user engagement
+- [x] **PWA-05**: Service worker update notification allows user-controlled reload
+- [x] **PWA-06**: iOS users see "Add to Home Screen" guidance
 
 ### Offline Support
 
@@ -85,6 +85,26 @@ Deferred to future release. Tracked but not in current roadmap.
 - **AOFFL-01**: Offline search through cached messages
 - **AOFFL-02**: Sync conflict resolution for edits
 
+### Dark Mode
+
+- **DARK-01**: System preference detection (prefers-color-scheme)
+- **DARK-02**: Manual theme toggle in settings
+- **DARK-03**: Theme persistence across sessions
+
+### Chatbot Integration
+
+- **BOT-01**: Bot user type with API token authentication
+- **BOT-02**: Webhook endpoints for bot messages
+- **BOT-03**: Bot mention notifications (@bot triggers)
+- **BOT-04**: Slash command framework (/command handling)
+
+### Federation
+
+- **FED-01**: Matrix protocol bridge (Element/Synapse interop)
+- **FED-02**: Mattermost bridge (MM server interop)
+- **FED-03**: Federated identity mapping
+- **FED-04**: Cross-server message routing
+
 ## Out of Scope
 
 Explicitly excluded. Documented to prevent scope creep.
@@ -104,12 +124,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PWA-01 | Phase 15 | Pending |
-| PWA-02 | Phase 15 | Pending |
-| PWA-03 | Phase 15 | Pending |
-| PWA-04 | Phase 15 | Pending |
-| PWA-05 | Phase 15 | Pending |
-| PWA-06 | Phase 15 | Pending |
+| PWA-01 | Phase 15 | Complete |
+| PWA-02 | Phase 15 | Complete |
+| PWA-03 | Phase 15 | Complete |
+| PWA-04 | Phase 15 | Complete |
+| PWA-05 | Phase 15 | Complete |
+| PWA-06 | Phase 15 | Complete |
 | OFFL-01 | Phase 16 | Pending |
 | OFFL-02 | Phase 16 | Pending |
 | OFFL-03 | Phase 17 | Pending |
@@ -150,4 +170,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-18*
-*Last updated: 2026-01-18 after Phase 14 completion*
+*Last updated: 2026-01-18 after Phase 15 completion*
