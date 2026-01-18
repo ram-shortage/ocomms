@@ -40,8 +40,8 @@ Requirements for v0.2.0 milestone. Each maps to roadmap phases.
 
 ### Authentication Hardening
 
-- [ ] **SEC-04**: Password strength validation enforced (minimum length, complexity rules)
-- [ ] **SEC-07**: Account lockout triggered after repeated failed login attempts
+- [x] **SEC-04**: Password strength validation enforced (minimum length, complexity rules)
+- [x] **SEC-07**: Account lockout triggered after repeated failed login attempts
 
 ### Audit & Compliance
 
@@ -97,8 +97,8 @@ Which phases cover which requirements. Updated by create-roadmap.
 | SEC-05 | Phase 10 | Complete |
 | SEC-02 | Phase 11 | Complete |
 | SEC-03 | Phase 11 | Complete |
-| SEC-04 | Phase 12 | Pending |
-| SEC-07 | Phase 12 | Pending |
+| SEC-04 | Phase 12 | Complete |
+| SEC-07 | Phase 12 | Complete |
 | SEC-06 | Phase 13 | Pending |
 
 **Coverage:**

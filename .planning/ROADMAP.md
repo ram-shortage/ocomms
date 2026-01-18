@@ -103,10 +103,10 @@ Plans:
 **Plans**: 4 plans in 3 waves
 
 Plans:
-- [ ] 12-01: Lockout schema and auth hooks (password validation, failure tracking, progressive delays)
-- [ ] 12-02: Password strength UI (zxcvbn meter, requirements checklist)
-- [ ] 12-03: Unlock flow (email notification, forgot-password page, admin unlock)
-- [ ] 12-04: Verify authentication hardening (checkpoint)
+- [x] 12-01: Lockout schema and auth hooks (password validation, failure tracking, progressive delays)
+- [x] 12-02: Password strength UI (zxcvbn meter, requirements checklist)
+- [x] 12-03: Unlock flow (email notification, forgot-password page, admin unlock)
+- [x] 12-04: Verify authentication hardening (checkpoint)
 
 ### Phase 13: Audit Logging
 **Goal**: Security events visible for investigation
@@ -133,5 +133,5 @@ Phases execute in numeric order: 9 -> 10 -> 11 -> 12 -> 13
 | 9. Authorization & Data Integrity | v0.2.0 | 11/11 | Complete | 2026-01-18 |
 | 10. Transport Security | v0.2.0 | 3/3 | Complete | 2026-01-18 |
 | 11. Request Hardening | v0.2.0 | 2/2 | Complete | 2026-01-18 |
-| 12. Authentication Hardening | v0.2.0 | 0/4 | Planning complete | - |
+| 12. Authentication Hardening | v0.2.0 | 4/4 | Complete | 2026-01-18 |
 | 13. Audit Logging | v0.2.0 | 0/? | Not started | - |
