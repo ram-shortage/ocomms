@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useSocket } from "@/lib/socket-client";
 import { MessageItem } from "./message-item";
+import { ThreadPanel } from "../thread/thread-panel";
 import type { Message, ReactionGroup } from "@/lib/socket-events";
 
 interface MessageListProps {
@@ -23,6 +24,8 @@ export function MessageList({
 }: MessageListProps) {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [reactionsMap, setReactionsMap] = useState<ReactionsMap>({});
+  const [selectedThread, setSelectedThread] = useState<Message | null>(null);
+  const [isThreadPanelOpen, setIsThreadPanelOpen] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const socket = useSocket();
 
@@ -139,14 +142,32 @@ export function MessageList({
       });
     }
 
+    function handleReplyCount(data: { messageId: string; replyCount: number }) {
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === data.messageId
+            ? { ...msg, replyCount: data.replyCount }
+            : msg
+        )
+      );
+      // Also update selectedThread if it matches
+      setSelectedThread((prev) =>
+        prev?.id === data.messageId
+          ? { ...prev, replyCount: data.replyCount }
+          : prev
+      );
+    }
+
     socket.on("message:new", handleNewMessage);
     socket.on("message:deleted", handleDeletedMessage);
     socket.on("reaction:update", handleReactionUpdate);
+    socket.on("message:replyCount", handleReplyCount);
 
     return () => {
       socket.off("message:new", handleNewMessage);
       socket.off("message:deleted", handleDeletedMessage);
       socket.off("reaction:update", handleReactionUpdate);
+      socket.off("message:replyCount", handleReplyCount);
     };
   }, [socket, targetId, targetType]);
 
@@ -164,6 +185,22 @@ export function MessageList({
     [socket]
   );
 
+  const handleReply = useCallback(
+    (messageId: string) => {
+      const message = messages.find((m) => m.id === messageId);
+      if (message) {
+        setSelectedThread(message);
+        setIsThreadPanelOpen(true);
+      }
+    },
+    [messages]
+  );
+
+  const handleCloseThreadPanel = useCallback(() => {
+    setIsThreadPanelOpen(false);
+    setSelectedThread(null);
+  }, []);
+
   if (messages.length === 0) {
     return (
       <div className="flex-1 flex items-center justify-center text-gray-500">
@@ -173,18 +210,28 @@ export function MessageList({
   }
 
   return (
-    <div className="flex-1 overflow-y-auto py-4">
-      {messages.map((message) => (
-        <MessageItem
-          key={message.id}
-          message={message}
-          currentUserId={currentUserId}
-          onDelete={handleDelete}
-          reactions={reactionsMap[message.id] || []}
-          onToggleReaction={handleToggleReaction}
-        />
-      ))}
-      <div ref={bottomRef} />
-    </div>
+    <>
+      <div className="flex-1 overflow-y-auto py-4">
+        {messages.map((message) => (
+          <MessageItem
+            key={message.id}
+            message={message}
+            currentUserId={currentUserId}
+            onDelete={handleDelete}
+            reactions={reactionsMap[message.id] || []}
+            onToggleReaction={handleToggleReaction}
+            onReply={handleReply}
+          />
+        ))}
+        <div ref={bottomRef} />
+      </div>
+
+      <ThreadPanel
+        isOpen={isThreadPanelOpen}
+        onClose={handleCloseThreadPanel}
+        parentMessage={selectedThread}
+        currentUserId={currentUserId}
+      />
+    </>
   );
 }

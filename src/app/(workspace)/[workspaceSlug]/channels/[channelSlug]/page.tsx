@@ -48,7 +48,7 @@ export default async function ChannelPage({
 
   const isAdmin = currentMembership?.role === "admin";
 
-  // Fetch initial messages for this channel
+  // Fetch initial messages for this channel (only top-level messages, not thread replies)
   const channelMessages = await db
     .select({
       id: messages.id,
@@ -56,6 +56,8 @@ export default async function ChannelPage({
       authorId: messages.authorId,
       channelId: messages.channelId,
       conversationId: messages.conversationId,
+      parentId: messages.parentId,
+      replyCount: messages.replyCount,
       sequence: messages.sequence,
       deletedAt: messages.deletedAt,
       createdAt: messages.createdAt,
@@ -65,7 +67,7 @@ export default async function ChannelPage({
     })
     .from(messages)
     .leftJoin(users, eq(messages.authorId, users.id))
-    .where(and(eq(messages.channelId, channel.id), isNull(messages.deletedAt)))
+    .where(and(eq(messages.channelId, channel.id), isNull(messages.deletedAt), isNull(messages.parentId)))
     .orderBy(asc(messages.sequence))
     .limit(50);
 
@@ -76,6 +78,8 @@ export default async function ChannelPage({
     authorId: m.authorId,
     channelId: m.channelId,
     conversationId: m.conversationId,
+    parentId: m.parentId,
+    replyCount: m.replyCount,
     sequence: m.sequence,
     deletedAt: m.deletedAt,
     createdAt: m.createdAt,

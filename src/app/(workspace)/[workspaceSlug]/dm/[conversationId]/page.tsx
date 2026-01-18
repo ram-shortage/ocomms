@@ -46,7 +46,7 @@ export default async function DMPage({
     notFound();
   }
 
-  // Fetch initial messages for this conversation
+  // Fetch initial messages for this conversation (only top-level messages, not thread replies)
   const conversationMessages = await db
     .select({
       id: messages.id,
@@ -54,6 +54,8 @@ export default async function DMPage({
       authorId: messages.authorId,
       channelId: messages.channelId,
       conversationId: messages.conversationId,
+      parentId: messages.parentId,
+      replyCount: messages.replyCount,
       sequence: messages.sequence,
       deletedAt: messages.deletedAt,
       createdAt: messages.createdAt,
@@ -63,7 +65,7 @@ export default async function DMPage({
     })
     .from(messages)
     .leftJoin(users, eq(messages.authorId, users.id))
-    .where(and(eq(messages.conversationId, conversationId), isNull(messages.deletedAt)))
+    .where(and(eq(messages.conversationId, conversationId), isNull(messages.deletedAt), isNull(messages.parentId)))
     .orderBy(asc(messages.sequence))
     .limit(50);
 
@@ -74,6 +76,8 @@ export default async function DMPage({
     authorId: m.authorId,
     channelId: m.channelId,
     conversationId: m.conversationId,
+    parentId: m.parentId,
+    replyCount: m.replyCount,
     sequence: m.sequence,
     deletedAt: m.deletedAt,
     createdAt: m.createdAt,
