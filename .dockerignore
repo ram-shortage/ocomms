@@ -1,0 +1,9 @@
+.git
+.next
+node_modules
+dist
+dist-server
+.env
+.env.local
+*.log
+.planning
