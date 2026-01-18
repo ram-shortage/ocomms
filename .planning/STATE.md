@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-18)
 
 **Core value:** Data sovereignty — complete control over communication data
-**Current focus:** Phase 13 — Audit Logging
+**Current focus:** v0.2.0 Milestone Complete
 
 ## Current Position
 
 Phase: 13 of 13 (Audit Logging)
-Plan: 3 of ? (Audit Query API)
-Status: In progress
-Last activity: 2026-01-18 — Completed 13-03-PLAN.md (Audit Query API)
+Plan: 4/4 complete
+Status: Milestone complete
+Last activity: 2026-01-18 — Phase 13 complete (4 plans, 1 requirement verified)
 
-Progress: █████████░ 98% (v0.1.0 complete, v0.2.0 phases 9-12 complete, phase 13 plans 01-03 done)
+Progress: ██████████ 100% (v0.1.0 complete, v0.2.0 complete)
 
 ## Shipped Milestones
 
@@ -25,9 +25,9 @@ Progress: █████████░ 98% (v0.1.0 complete, v0.2.0 phases 9-1
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 20 (v0.2.0)
+- Total plans completed: 24 (v0.2.0)
 - Average duration: 3 min
-- Total execution time: 50 min
+- Total execution time: 60 min
 
 **By Phase:**
 
@@ -37,10 +37,11 @@ Progress: █████████░ 98% (v0.1.0 complete, v0.2.0 phases 9-1
 | 10 | 3/3 | 7min | 2.3min |
 | 11 | 2/2 | 4min | 2min |
 | 12 | 4/4 | 15min | 3.75min |
+| 13 | 4/4 | 10min | 2.5min |
 
 **Recent Trend:**
-- Last 5 plans: 12-02 (2min), 12-03 (10min), 12-04 (1min), 13-01 (5min), 13-02 (3min)
-- Trend: Stable at ~3min/plan
+- Last 5 plans: 13-01 (5min), 13-02 (3min), 13-03 (2min), 13-04 (20min)
+- Trend: Stable at ~3min/plan (13-04 was human verification)
 
 ## Accumulated Context
 
@@ -96,6 +97,7 @@ Key decisions from v0.1.0 are documented in PROJECT.md Key Decisions table.
 - Add sidebar navigation links for /threads and /search pages (tech debt from v0.1.0)
 - Verify HTTPS in production after domain deployment (10-03 deferred)
 - Increase HSTS max-age to 31536000 after production verification
+- Add logout button to UI (LogoutButton component exists but not wired into layout)
 
 ### Blockers/Concerns
 

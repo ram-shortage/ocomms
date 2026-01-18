@@ -45,7 +45,7 @@ Requirements for v0.2.0 milestone. Each maps to roadmap phases.
 
 ### Audit & Compliance
 
-- [ ] **SEC-06**: Security events logged (logins, failed attempts, admin actions)
+- [x] **SEC-06**: Security events logged (logins, failed attempts, admin actions)
 
 ## v2 Requirements
 
