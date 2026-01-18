@@ -1,7 +1,7 @@
 # Requirements: OComms
 
 **Defined:** 2026-01-18
-**Core Value:** Data sovereignty — complete control over communication data
+**Core Value:** Data sovereignty - complete control over communication data
 
 ## v0.3.0 Requirements
 
@@ -104,50 +104,50 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PWA-01 | TBD | Pending |
-| PWA-02 | TBD | Pending |
-| PWA-03 | TBD | Pending |
-| PWA-04 | TBD | Pending |
-| PWA-05 | TBD | Pending |
-| PWA-06 | TBD | Pending |
-| OFFL-01 | TBD | Pending |
-| OFFL-02 | TBD | Pending |
-| OFFL-03 | TBD | Pending |
-| OFFL-04 | TBD | Pending |
-| OFFL-05 | TBD | Pending |
-| OFFL-06 | TBD | Pending |
-| OFFL-07 | TBD | Pending |
-| PUSH-01 | TBD | Pending |
-| PUSH-02 | TBD | Pending |
-| PUSH-03 | TBD | Pending |
-| PUSH-04 | TBD | Pending |
-| PUSH-05 | TBD | Pending |
-| PUSH-06 | TBD | Pending |
-| MOBI-01 | TBD | Pending |
-| MOBI-02 | TBD | Pending |
-| MOBI-03 | TBD | Pending |
-| MOBI-04 | TBD | Pending |
-| MOBI-05 | TBD | Pending |
-| UIPOL-01 | TBD | Pending |
-| UIPOL-02 | TBD | Pending |
-| UIPOL-03 | TBD | Pending |
-| UIPOL-04 | TBD | Pending |
-| UIPOL-05 | TBD | Pending |
-| UIPOL-06 | TBD | Pending |
-| SECFIX-01 | TBD | Pending |
-| SECFIX-02 | TBD | Pending |
-| SECFIX-03 | TBD | Pending |
-| SECFIX-04 | TBD | Pending |
-| SECFIX-05 | TBD | Pending |
-| SECFIX-06 | TBD | Pending |
-| SECFIX-07 | TBD | Pending |
-| SECFIX-08 | TBD | Pending |
+| PWA-01 | Phase 15 | Pending |
+| PWA-02 | Phase 15 | Pending |
+| PWA-03 | Phase 15 | Pending |
+| PWA-04 | Phase 15 | Pending |
+| PWA-05 | Phase 15 | Pending |
+| PWA-06 | Phase 15 | Pending |
+| OFFL-01 | Phase 16 | Pending |
+| OFFL-02 | Phase 16 | Pending |
+| OFFL-03 | Phase 17 | Pending |
+| OFFL-04 | Phase 17 | Pending |
+| OFFL-05 | Phase 17 | Pending |
+| OFFL-06 | Phase 17 | Pending |
+| OFFL-07 | Phase 17 | Pending |
+| PUSH-01 | Phase 18 | Pending |
+| PUSH-02 | Phase 18 | Pending |
+| PUSH-03 | Phase 18 | Pending |
+| PUSH-04 | Phase 18 | Pending |
+| PUSH-05 | Phase 18 | Pending |
+| PUSH-06 | Phase 18 | Pending |
+| MOBI-01 | Phase 19 | Pending |
+| MOBI-02 | Phase 19 | Pending |
+| MOBI-03 | Phase 19 | Pending |
+| MOBI-04 | Phase 19 | Pending |
+| MOBI-05 | Phase 19 | Pending |
+| UIPOL-01 | Phase 20 | Pending |
+| UIPOL-02 | Phase 20 | Pending |
+| UIPOL-03 | Phase 20 | Pending |
+| UIPOL-04 | Phase 20 | Pending |
+| UIPOL-05 | Phase 20 | Pending |
+| UIPOL-06 | Phase 20 | Pending |
+| SECFIX-01 | Phase 14 | Pending |
+| SECFIX-02 | Phase 14 | Pending |
+| SECFIX-03 | Phase 14 | Pending |
+| SECFIX-04 | Phase 14 | Pending |
+| SECFIX-05 | Phase 14 | Pending |
+| SECFIX-06 | Phase 14 | Pending |
+| SECFIX-07 | Phase 14 | Pending |
+| SECFIX-08 | Phase 14 | Pending |
 
 **Coverage:**
-- v0.3.0 requirements: 33 total
-- Mapped to phases: 0 (pending roadmap creation)
-- Unmapped: 33
+- v0.3.0 requirements: 38 total
+- Mapped to phases: 38
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-01-18*
-*Last updated: 2026-01-18 after initial definition*
+*Last updated: 2026-01-18 after roadmap creation*
