@@ -28,7 +28,7 @@ Real-time messaging, channels, DMs, threading, mentions, search, presence, react
 
 - [x] **Phase 9: Authorization & Data Integrity Fixes** - Critical fixes from CODE_REVIEW.MD
 - [x] **Phase 10: Transport Security** - Encrypted traffic and database connections
-- [ ] **Phase 11: Request Hardening** - Security headers and rate limiting
+- [x] **Phase 11: Request Hardening** - Security headers and rate limiting
 - [ ] **Phase 12: Authentication Hardening** - Password strength and account lockout
 - [ ] **Phase 13: Audit Logging** - Security event logging
 
@@ -85,10 +85,11 @@ Plans:
   2. Rate limiting blocks excessive requests (429 response)
   3. Login/signup endpoints have stricter rate limits
 **Research**: Unlikely (standard patterns)
-**Plans**: TBD
+**Plans**: 2 plans in 2 waves
 
 Plans:
-- [ ] 11-01: TBD
+- [x] 11-01: Security headers and rate limiting configuration
+- [x] 11-02: Verify request hardening (checkpoint)
 
 ### Phase 12: Authentication Hardening
 **Goal**: Authentication resistant to attack
@@ -128,6 +129,6 @@ Phases execute in numeric order: 9 -> 10 -> 11 -> 12 -> 13
 | 1-8 | v0.1.0 | - | Complete | 2026-01-18 |
 | 9. Authorization & Data Integrity | v0.2.0 | 11/11 | Complete | 2026-01-18 |
 | 10. Transport Security | v0.2.0 | 3/3 | Complete | 2026-01-18 |
-| 11. Request Hardening | v0.2.0 | 0/? | Not started | - |
+| 11. Request Hardening | v0.2.0 | 2/2 | Complete | 2026-01-18 |
 | 12. Authentication Hardening | v0.2.0 | 0/? | Not started | - |
 | 13. Audit Logging | v0.2.0 | 0/? | Not started | - |

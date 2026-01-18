@@ -35,8 +35,8 @@ Requirements for v0.2.0 milestone. Each maps to roadmap phases.
 
 ### Request Hardening
 
-- [ ] **SEC-02**: Security headers applied (CSP, HSTS, X-Frame-Options, X-Content-Type-Options)
-- [ ] **SEC-03**: Rate limiting enforced on login, signup, and sensitive API endpoints
+- [x] **SEC-02**: Security headers applied (CSP, HSTS, X-Frame-Options, X-Content-Type-Options)
+- [x] **SEC-03**: Rate limiting enforced on login, signup, and sensitive API endpoints
 
 ### Authentication Hardening
 
@@ -95,8 +95,8 @@ Which phases cover which requirements. Updated by create-roadmap.
 | VAL-02 | Phase 9 | Complete |
 | SEC-01 | Phase 10 | Complete |
 | SEC-05 | Phase 10 | Complete |
-| SEC-02 | Phase 11 | Pending |
-| SEC-03 | Phase 11 | Pending |
+| SEC-02 | Phase 11 | Complete |
+| SEC-03 | Phase 11 | Complete |
 | SEC-04 | Phase 12 | Pending |
 | SEC-07 | Phase 12 | Pending |
 | SEC-06 | Phase 13 | Pending |
