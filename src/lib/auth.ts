@@ -6,7 +6,7 @@ import { db } from "@/db";
 import * as schema from "@/db/schema";
 import { userLockout, user } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { sendVerificationEmail, sendInviteEmail, sendUnlockEmail } from "./email";
+import { sendVerificationEmail, sendInviteEmail, sendUnlockEmail, sendResetPasswordEmail } from "./email";
 import { validatePasswordComplexity } from "./password-validation";
 
 /**
@@ -44,6 +44,10 @@ export const auth = betterAuth({
     enabled: true,
     requireEmailVerification: !!process.env.SMTP_HOST, // Only require if SMTP configured
     minPasswordLength: 8,
+    sendResetPassword: async ({ user, url }) => {
+      // Fire-and-forget to prevent timing attacks
+      void sendResetPasswordEmail({ to: user.email, url });
+    },
   },
   emailVerification: {
     sendOnSignUp: true,
@@ -74,7 +78,7 @@ export const auth = betterAuth({
         window: 60,
         max: 3,
       },
-      "/forgot-password": {
+      "/request-password-reset": {
         window: 60,
         max: 3,
       },
@@ -262,28 +266,26 @@ export const auth = betterAuth({
 
         if (resetSuccessful) {
           // Try to get user from the request context
-          // better-auth reset-password typically has the user available after verification
+          // better-auth reset-password stores: identifier = "reset-password:{token}", value = userId
           const token = (ctx.body as { token?: string })?.token;
           if (token) {
-            // Find the verification record to get the user email
+            // Find the verification record to get the userId
+            const identifier = `reset-password:${token}`;
             const verification = await db.query.verification.findFirst({
-              where: eq(schema.verification.id, token),
+              where: eq(schema.verification.identifier, identifier),
             });
-            if (verification?.identifier) {
-              const resetUser = await db.query.user.findFirst({
-                where: eq(user.email, verification.identifier),
-              });
-              if (resetUser) {
-                // Clear lockout (keep lockoutCount for history)
-                await db
-                  .update(userLockout)
-                  .set({
-                    failedAttempts: 0,
-                    lockedUntil: null,
-                    updatedAt: new Date(),
-                  })
-                  .where(eq(userLockout.userId, resetUser.id));
-              }
+            if (verification?.value) {
+              // value contains the userId
+              const userId = verification.value;
+              // Clear lockout (keep lockoutCount for history)
+              await db
+                .update(userLockout)
+                .set({
+                  failedAttempts: 0,
+                  lockedUntil: null,
+                  updatedAt: new Date(),
+                })
+                .where(eq(userLockout.userId, userId));
             }
           }
         }

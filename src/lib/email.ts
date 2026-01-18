@@ -73,3 +73,24 @@ export async function sendUnlockEmail({
     `,
   });
 }
+
+export async function sendResetPasswordEmail({
+  to,
+  url,
+}: {
+  to: string;
+  url: string;
+}) {
+  await transporter.sendMail({
+    from: process.env.EMAIL_FROM,
+    to,
+    subject: "Reset Your Password - OComms",
+    html: `
+      <h1>Reset Your Password</h1>
+      <p>You requested to reset your password. Click the link below to continue:</p>
+      <a href="${url}">Reset Password</a>
+      <p>This link expires in 1 hour.</p>
+      <p>If you didn't request this, you can safely ignore this email.</p>
+    `,
+  });
+}
