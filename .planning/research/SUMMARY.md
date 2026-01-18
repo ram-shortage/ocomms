@@ -1,193 +1,200 @@
-# Research Summary
+# Project Research Summary
 
-**Project:** OComms - Self-Hosted Team Chat Platform
-**Researched:** 2026-01-17
-**Overall Confidence:** HIGH
-
----
+**Project:** OComms v0.3.0 - Mobile & Polish
+**Domain:** PWA enhancement for self-hosted team chat
+**Researched:** 2026-01-18
+**Confidence:** HIGH
 
 ## Executive Summary
 
-OComms enters a mature market with well-established patterns. The recommended approach: **TypeScript everywhere, PostgreSQL + Redis architecture, React ecosystem for all clients**. The first milestone "Full Conversation" covers all table stakes features. Success depends on execution quality, not innovation.
+PWA technology has matured significantly with iOS 16.4+ push notification support, making a well-built PWA capable of delivering near-native chat experience on both Android and iOS. For OComms, the recommended approach is: **service worker handles caching/push/background-sync, while Socket.IO remains the real-time source of truth**. IndexedDB (via Dexie.js) serves as the offline cache and message queue, not a full replica. The key architectural insight is that these systems operate in parallel with clear boundaries - the service worker never replaces Socket.IO for real-time messaging.
 
-**Key insight:** At 500 concurrent users, you can use simplified enterprise patterns. No Kubernetes, no Elasticsearch, no distributed databases needed yet. Single-server deployment with Docker Compose is the right starting point.
+The recommended stack is minimal and well-proven: Serwist for service worker management (official Next.js recommendation), Dexie.js for IndexedDB with reactive React hooks, and web-push for VAPID-based notifications that respect OComms' data sovereignty. No third-party push services needed. The manifest and service worker registration integrate cleanly with Next.js 15 App Router.
 
----
+Critical risks center on iOS limitations and offline sync complexity. iOS Safari's 7-day storage eviction policy means users who don't install to home screen will lose cached data - installation prompts must be prominent. The offline message queue requires careful implementation: persist to IndexedDB immediately, use client-generated UUIDs for idempotency, show clear pending/sent/failed status, and don't rely on Background Sync alone (it doesn't work on iOS). Push notification permission is permanent once denied, so use double-permission pattern with custom UI before triggering browser prompt.
 
-## Stack Decisions (HIGH confidence)
+## Key Findings
 
-| Layer | Choice | Why |
-|-------|--------|-----|
-| **Backend** | Node.js 22 + Hono + Socket.IO (uWebSockets adapter) | TypeScript everywhere, 4x faster than Express, proven WebSocket abstraction |
-| **Database** | PostgreSQL 17 + Valkey (Redis fork) | ACID for messages, BSD license for self-hosted, pub/sub for real-time |
-| **ORM** | Drizzle ORM | 7KB vs Prisma's 500KB, no code generation, SQL-first |
-| **Search** | Meilisearch | Single binary, MIT license, sub-50ms latency |
-| **Web** | React 19 + Vite + TanStack Query + Zustand | Compiler optimization, ecosystem maturity |
-| **Mobile** | React Native + Expo | Code sharing with web, 20x larger talent pool than Dart |
-| **Desktop** | Tauri 2.x | 3MB vs Electron's 100MB, 30MB RAM vs 200MB |
-| **Deploy** | Docker Compose | Single-command deployment, no K8s complexity at this scale |
+### Recommended Stack
 
-**What NOT to use:** Electron (too heavy), Prisma (too slow), MongoDB (wrong fit), Kubernetes (overkill), Flutter (no code sharing).
+The stack prioritizes libraries that are actively maintained, officially recommended, and respect OComms' self-hosted nature.
 
----
+**Core technologies:**
+- **Serwist** (^9.5.0): Service worker management - official Next.js PWA docs recommendation, App Router native, Workbox foundation
+- **Dexie.js** (^4.2.1) + dexie-react-hooks: IndexedDB with `useLiveQuery()` for reactive cache - superior DX over raw idb, handles migrations
+- **web-push** (^3.6.7): VAPID push notifications - no Google/third-party servers, data sovereignty maintained
+- **Built-in**: Next.js `app/manifest.ts` for web manifest, Serwist includes Background Sync
 
-## Architecture Decisions (HIGH confidence)
+**What NOT to use:**
+- next-pwa (abandoned 2+ years)
+- Firebase Cloud Messaging (data through Google servers - contradicts data sovereignty)
+- OneSignal/Pusher Beams (third-party push services)
+- localForage/idb (insufficient for complex message queries)
 
-### Core Pattern
-```
-HTTP API (commands/persistence) → PostgreSQL → Redis (publish)
-                                                    ↓
-                                      WebSocket Gateway (push to clients)
-```
+### Expected Features
 
-### Key Architectural Principles
+**Must have (table stakes):**
+- Install to home screen with custom install prompt
+- Custom offline page (branded, not browser error)
+- Read cached messages offline (7-day retention)
+- Compose and queue messages offline with clear pending indicators
+- Automatic sync on reconnect
+- Push notifications for DMs and @mentions
+- Bottom tab navigation (mobile standard since Slack 2020 redesign)
+- Responsive mobile layout with 44px touch targets
 
-1. **HTTP for writes, WebSocket for reads** - Messages sent via REST, delivered via WebSocket
-2. **Ephemeral vs Persistent split** - Typing/presence in Redis with TTL, messages in PostgreSQL
-3. **Pub/sub from day one** - Every WebSocket gateway subscribes to Redis, enables horizontal scaling
-4. **Server-assigned ordering** - Sequence numbers per conversation, not client timestamps
+**Should have (differentiators):**
+- Notification preferences per-channel (all/mentions/none)
+- Swipe-to-reply gesture on messages
+- Update notification when new version available
+- iOS install guidance ("Add to Home Screen" instructions)
+- Quiet hours for push delivery
 
-### Component Boundaries
+**Defer (v2+):**
+- Swipe between tabs
+- Offline search (complex, limited value)
+- Notification grouping
+- Background Fetch API (limited support)
 
-- **HTTP API:** Auth, CRUD, file uploads, search, business logic
-- **WebSocket Gateway:** Connection lifecycle, event delivery, room subscriptions
-- **Redis:** Inter-instance messaging, presence cache, typing indicators, unread cache
-- **PostgreSQL:** All persistent data, ACID transactions, complex queries
+### Architecture Approach
 
----
+The PWA integrates with OComms' existing Next.js 15 + Socket.IO architecture through clear boundaries: service worker handles caching/push/background-sync in parallel to the main app. Socket.IO remains the source of truth for online messaging; IndexedDB is the offline cache and queue. Background sync uses HTTP POST to a new `/api/messages` endpoint (service workers can't use WebSockets), with the server broadcasting via Socket.IO after persistence.
 
-## Feature Prioritization (HIGH confidence)
+**Major components:**
+1. **Service Worker** (`public/sw.js`) - Cache shell assets, handle push events, process background sync queue
+2. **IndexedDB** (via Dexie.js) - Store cached messages, offline queue, sync cursors, push subscription
+3. **Push Subscription Manager** - VAPID key handling, server-side web-push integration, subscription storage
+4. **Mobile Layout** - Bottom tab bar, responsive breakpoints, safe area handling
 
-### Table Stakes (Must ship in v1.0)
-- Channels (public/private) + DMs
-- Real-time messaging with threading
-- @mentions with notifications
-- Basic search (full-text)
-- Presence (online/away/offline)
-- Unread management
+**Data flow for offline sends:**
+1. User sends message while offline
+2. Save to IndexedDB with status: `pending`
+3. Display with pending indicator
+4. Register Background Sync (or retry on foreground for iOS)
+5. POST to `/api/messages` when online
+6. Update status to `sent`, server broadcasts via Socket.IO
 
-### Differentiators for Self-Hosted
-- Zero external dependencies (air-gapped deployment possible)
-- Simple deployment (one command)
-- Power search with modifiers (`in:`, `from:`, `before:`, `after:`)
-- Resource efficiency (run on modest hardware)
+### Critical Pitfalls
 
-### Anti-Features (Do NOT build in v1.0)
-- AI summaries/Q&A (breaks self-hosted value prop)
-- Video/audio calls (massive complexity)
-- Workflow Builder (enterprise scope creep)
-- Nested threading (no major platform does this)
-- Read receipts (privacy concerns, complexity)
+1. **Auto skipWaiting() without user consent** - New service worker takes over mid-action, loses typed message. Prevention: Show "Update available" notification, let user choose when to refresh.
 
----
+2. **iOS Safari 7-day storage eviction** - All IndexedDB data deleted after 7 days of no visits (unless installed to home screen). Prevention: Prompt home screen installation early and clearly; installed PWAs are exempt.
 
-## Critical Pitfalls to Prevent
+3. **Offline message queue lost on close** - User sends offline, closes app, message never sent. Prevention: Write to IndexedDB immediately (not just memory), retry queue on every app open, not just Background Sync.
 
-| Pitfall | Phase | Prevention |
-|---------|-------|------------|
-| **WebSocket without pub/sub** | Foundation | Redis pub/sub architecture from day one |
-| **Message ordering chaos** | Messages | Server-assigned sequence numbers per conversation |
-| **Thread complexity explosion** | Messages | Materialized path, single-level threading only |
-| **Unread counts that lie** | Unreads | Server-side read horizon, not client state |
-| **Self-hosted data loss** | Deployment | Volume mount validation, startup checks |
+4. **Push permission denied = permanent block** - One "Deny" click means no notifications ever. Prevention: Double-permission pattern - show custom UI explaining value first, only trigger browser prompt after user clicks "Enable."
 
-### Self-Hosted Specific Risks
-- Docker restart data loss → Named volumes + startup validation
-- Push notification limits → Self-hosted gateway (ntfy/Gotify) or BYOK Firebase
-- SSO lockout → Emergency local admin account always available
-- Storage exhaustion → Quota enforcement, clear documentation
-
----
+5. **No idempotency keys = duplicate messages** - Network timeout triggers retry, same message sent multiple times. Prevention: Generate UUID client-side when user creates message, server rejects duplicates.
 
 ## Implications for Roadmap
 
-Based on research, suggested phase structure:
+Based on technical dependencies and risk mitigation, suggested phase structure:
 
-### Phase 1: Foundation
-**Build:** Database schema, core API, authentication, workspace/member/channel primitives
-- Uses: PostgreSQL, Drizzle ORM, Hono
-- Addresses: Core data model, auth with escape hatches
-- Avoids: Pitfall 5 (data loss), Pitfall 9 (auth lockout), Pitfall 14 (naming collisions)
+### Phase 1: PWA Foundation
+**Rationale:** Zero dependencies, enables all other PWA features. Must establish service worker and manifest before caching/push/offline.
+**Delivers:** Installable PWA with app shell caching, custom offline page, install prompt UI
+**Features:** Install to home screen, custom offline page, fast initial load
+**Avoids:** SW2 (cached sw.js), SW3 (over-caching), iOS3 (no install prompt)
+**Complexity:** Low
 
-### Phase 2: Real-Time Core
-**Build:** WebSocket gateway, Redis pub/sub, message delivery, basic presence
-- Uses: Socket.IO + uWebSockets adapter, Valkey
-- Addresses: Real-time messaging foundation
-- Avoids: Pitfall 1 (no pub/sub), Pitfall 2 (ordering chaos)
+### Phase 2: IndexedDB & Message Caching
+**Rationale:** Foundation for all offline features. Must have schema before storing messages.
+**Delivers:** Dexie.js schema, React hooks (`useLiveQuery`), cache population on channel load, read from cache when offline
+**Features:** Read cached messages offline, 7-day retention with cleanup
+**Uses:** Dexie.js, dexie-react-hooks
+**Avoids:** C2 (iOS 7-day eviction - via cleanup strategy), IDB1-4 (quota/cleanup/timeout/migration pitfalls)
+**Complexity:** Medium
 
-### Phase 3: Threading & Conversations
-**Build:** Thread model, mentions, reactions, channel metadata
-- Addresses: Threading (HIGH complexity table stakes)
-- Avoids: Pitfall 3 (thread complexity) - use materialized path
+### Phase 3: Offline Send Queue
+**Rationale:** Depends on IndexedDB schema (Phase 2). Most complex phase - requires new API endpoint, background sync, iOS fallback.
+**Delivers:** Offline message queue, POST `/api/messages` endpoint, Background Sync registration, status indicators (pending/sent/failed)
+**Features:** Compose messages offline, automatic sync on reconnect, retry with backoff
+**Uses:** Serwist Background Sync, Dexie.js
+**Avoids:** C3 (queue loss), OS1-5 (idempotency, rollback, ordering, sync storms, silent failures), PN3 (iOS no background sync)
+**Complexity:** High - most critical phase for correctness
 
-### Phase 4: Attention Management
-**Build:** Unreads, DND, notification preferences, drafts
-- Addresses: Multi-device sync, notification routing
-- Avoids: Pitfall 4 (lying unreads), Pitfall 8 (notification chaos)
+### Phase 4: Push Notifications
+**Rationale:** Depends on service worker (Phase 1). High impact but isolated from offline features.
+**Delivers:** VAPID key setup, push subscription management, server-side web-push integration, notification click handling
+**Features:** Push for DMs and @mentions, notification preferences, iOS-specific install gate
+**Uses:** web-push library
+**Avoids:** C4 (permission denied permanent), PN1-4 (sensitive payload, iOS install required, VAPID key management)
+**Complexity:** High - server changes + VAPID + Safari quirks
 
-### Phase 5: Search
-**Build:** Full-text search, query modifiers, indexing pipeline
-- Uses: Meilisearch (or PostgreSQL FTS initially)
-- Addresses: Power search differentiator
-- Avoids: Pitfall 7 (slow/missing search)
+### Phase 5: Mobile Layout
+**Rationale:** Independent of PWA features - can start in parallel with Phase 3-4 if desired.
+**Delivers:** Bottom tab bar, responsive views, touch-optimized targets
+**Features:** Bottom tab navigation, responsive layout, pull-to-refresh
+**Avoids:** iOS2 (100vh bug), iOS6 (safe area insets)
+**Complexity:** Medium - standard responsive patterns
 
-### Phase 6: Self-Hosted Packaging
-**Build:** Docker Compose config, health checks, documentation, deployment validation
-- Addresses: Single-command deployment promise
-- Avoids: Pitfall 5 (data loss), Pitfall 15 (storage assumptions)
+### Phase 6: UI Polish
+**Rationale:** After core PWA and mobile work complete, polish items for v0.3.0 completion.
+**Delivers:** Swipe gestures, update notifications, notification preferences UI, quiet hours
+**Features:** Swipe-to-reply, update notification, per-channel notification settings
+**Complexity:** Medium
 
 ### Phase Ordering Rationale
 
-1. **Foundation before real-time:** API patterns inform WebSocket design, simpler debugging
-2. **Real-time before threading:** Threading depends on message delivery working
-3. **Threading before unreads:** Unread counts need to understand thread membership
-4. **Search after core features:** Can use PostgreSQL FTS initially, upgrade later
-5. **Packaging last:** Need working product before deployment optimization
+- **Phase 1 first:** Service worker and manifest are prerequisites for all PWA features
+- **Phase 2 before 3:** IndexedDB schema must exist before message queue can store pending messages
+- **Phase 3 is critical path:** Most complex, highest risk of data loss bugs - deserves focused attention
+- **Phase 4 after 3:** Push doesn't depend on offline queue, but both need service worker; grouping avoids context switching
+- **Phase 5 parallel-capable:** No technical dependency on Phases 2-4, could run in parallel if resources allow
+- **Phase 6 last:** Polish after core functionality solid
 
-### Research Flags for Later Phases
+### Research Flags
 
-- **Mobile apps:** May need dedicated research on React Native + Expo for chat UX
-- **Push notifications:** Self-hosted push gateway selection (ntfy vs Gotify vs custom)
-- **SSO integration:** authentik vs Keycloak for enterprise customers
+Phases likely needing deeper research during planning:
+- **Phase 3 (Offline Send Queue):** Background Sync browser support varies, iOS fallback critical, idempotency implementation needs careful design
+- **Phase 4 (Push Notifications):** Safari/iOS push subscription quirks, VAPID key rotation, subscription expiry handling
 
----
+Phases with standard patterns (skip research-phase):
+- **Phase 1 (PWA Foundation):** Well-documented, Serwist has official Next.js guide
+- **Phase 2 (IndexedDB):** Dexie.js has excellent documentation and examples
+- **Phase 5 (Mobile Layout):** Standard responsive patterns, Slack/Discord patterns documented
 
 ## Confidence Assessment
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Backend stack | HIGH | Node.js + Hono + Socket.IO is proven pattern |
-| Database layer | HIGH | PostgreSQL + Redis is industry standard |
-| Frontend stack | HIGH | React ecosystem dominance |
-| Architecture patterns | HIGH | Verified against Slack engineering blog |
-| Feature priorities | HIGH | Cross-verified against Slack, Mattermost, Rocket.Chat |
-| Pitfall identification | MEDIUM-HIGH | Based on multiple sources, some self-hosted specific |
-| Desktop (Tauri) | MEDIUM | Newer technology, watch for WebView quirks |
-| Phase structure | MEDIUM | Derived from dependencies, may need adjustment |
+| Stack | HIGH | All recommendations from official docs (Next.js PWA guide, Serwist, Dexie, web-push npm) |
+| Features | HIGH | Verified against MDN, web.dev, Slack/Discord mobile implementations |
+| Architecture | HIGH | Official MDN docs, Socket.IO docs, 2025-2026 PWA guides |
+| Pitfalls | HIGH | MDN, WebKit official sources, community patterns (Rich Harris service worker guide) |
 
----
+**Overall confidence:** HIGH
 
-## Open Questions (Deferred to Phase-Specific Research)
+### Gaps to Address
 
-1. **Database schema design** - Exact table structure, indexes, partitioning strategy
-2. **WebSocket event protocol** - Message format, versioning, error handling
-3. **File upload strategy** - Chunking for large files, storage backend abstraction
-4. **Mobile-specific considerations** - Background connections, battery optimization
-5. **Push notification gateway** - Which self-hosted solution to recommend
-
----
+- **Background Sync fallback timing:** Exact retry timing on iOS app foreground needs testing - start with "retry on visibility change"
+- **Push subscription expiry:** web-push doesn't notify on expiry - need periodic revalidation strategy during implementation
+- **Storage budget validation:** 35MB target is estimate - monitor `navigator.storage.estimate()` during testing
+- **Service worker update race condition:** StaleWhileRevalidate + skipWaiting edge case needs testing with slow networks
 
 ## Sources
 
-Research drew from:
-- Official documentation (Node.js, PostgreSQL, React, Socket.IO, Meilisearch)
-- Engineering blogs (Slack, Ably, Stream)
-- Competitor analysis (Mattermost, Rocket.Chat, Zulip)
-- System design resources (verified patterns)
-- Self-hosted community (common deployment issues)
+### Primary (HIGH confidence)
+- [Next.js PWA Guide](https://nextjs.org/docs/app/guides/progressive-web-apps) - official Serwist recommendation
+- [Serwist Documentation](https://serwist.pages.dev/docs/next/getting-started) - service worker setup
+- [MDN: PWA Best Practices](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Guides/Best_practices) - features
+- [MDN: Offline and Background Operation](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Guides/Offline_and_background_operation) - offline patterns
+- [MDN: Push API Best Practices](https://developer.mozilla.org/en-US/docs/Web/API/Push_API/Best_Practices) - push patterns
+- [MDN: Storage quotas and eviction criteria](https://developer.mozilla.org/en-US/docs/Web/API/Storage_API/Storage_quotas_and_eviction_criteria) - iOS limitations
+- [WebKit: Updates to Storage Policy](https://webkit.org/blog/14403/updates-to-storage-policy/) - iOS 7-day eviction
+- [Dexie.js](https://dexie.org/) - IndexedDB wrapper
+- [web-push npm](https://www.npmjs.com/package/web-push) - push notifications
 
-See individual research files for detailed citations:
-- `STACK.md` - Technology choices with versions
-- `FEATURES.md` - Feature landscape and prioritization
-- `ARCHITECTURE.md` - System design patterns
-- `PITFALLS.md` - Domain-specific mistakes to avoid
+### Secondary (MEDIUM confidence)
+- [Slack Design: Re-designing Slack Mobile](https://slack.design/articles/re-designing-slack-on-mobile/) - mobile UI patterns
+- [Discord: Android Navigation Redesign](https://discord.com/blog/how-discord-made-android-in-app-navigation-easier) - bottom tabs
+- [Ably: Chat Architecture](https://ably.com/blog/chat-architecture-reliable-message-ordering) - offline queue patterns
+- [Rich Harris: Service Worker Tips](https://gist.github.com/Rich-Harris/fd6c3c73e6e707e312d7c5d7d0f3b2f9) - pitfalls
+- [Brainhub: PWA on iOS 2025](https://brainhub.eu/library/pwa-on-ios) - iOS limitations
+
+### Tertiary (LOW confidence)
+- Community blog posts on PWA update patterns - validated against official sources
+
+---
+*Research completed: 2026-01-18*
+*Ready for roadmap: yes*
