@@ -6,3 +6,4 @@ export * from "./message";
 export * from "./reaction";
 export * from "./thread-participant";
 export * from "./pinned-message";
+export * from "./notification";

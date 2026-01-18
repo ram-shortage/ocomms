@@ -29,6 +29,20 @@ export interface ReactionGroup {
   userNames: string[];
 }
 
+export interface Notification {
+  id: string;
+  type: "mention" | "channel" | "here" | "thread_reply";
+  messageId: string | null;
+  channelId: string | null;
+  conversationId: string | null;
+  actorId: string | null;
+  actorName: string | null;
+  content: string;
+  channelName?: string;
+  readAt: Date | null;
+  createdAt: Date;
+}
+
 export interface ServerToClientEvents {
   "message:new": (message: Message) => void;
   "message:deleted": (data: { messageId: string; deletedAt: Date }) => void;
@@ -51,6 +65,9 @@ export interface ServerToClientEvents {
     action: "added" | "removed";
   }) => void;
   "thread:newReply": (data: Message) => void;
+  "notification:new": (notification: Notification) => void;
+  "notification:read": (data: { notificationId: string }) => void;
+  "notification:readAll": () => void;
   error: (data: { message: string }) => void;
 }
 
@@ -86,6 +103,12 @@ export interface ClientToServerEvents {
   "room:join": (data: { roomId: string; roomType: "channel" | "dm" }) => void;
   "room:leave": (data: { roomId: string; roomType: "channel" | "dm" }) => void;
   "workspace:join": (data: { workspaceId: string }) => void;
+  "notification:markRead": (data: { notificationId: string }) => void;
+  "notification:markAllRead": () => void;
+  "notification:fetch": (
+    data: { limit?: number },
+    callback: (response: { notifications: Notification[]; unreadCount: number }) => void
+  ) => void;
 }
 
 export interface SocketData {
