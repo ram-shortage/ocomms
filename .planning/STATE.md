@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-17)
 ## Current Position
 
 Phase: 6 of 8 (Attention Management)
-Plan: 0 of 1 in current phase
-Status: Ready for planning
-Last activity: 2026-01-18 - Completed Phase 5 (Mentions & Notifications)
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-01-18 - Completed 06-01-PLAN.md
 
-Progress: ████████████████░ 80%
+Progress: ████████████████▓░ 82%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 17
-- Average duration: 4.5 min
-- Total execution time: 79 min
+- Total plans completed: 18
+- Average duration: 4.4 min
+- Total execution time: 83 min
 
 **By Phase:**
 
@@ -32,9 +32,10 @@ Progress: ████████████████░ 80%
 | 3-real-time-messaging | 3/3 | 16 min | ~5 min |
 | 4-threading-reactions | 3/3 | 17 min | ~6 min |
 | 5-mentions-notifications | 3/3 | 13 min | ~4 min |
+| 6-attention-management | 1/2 | 4 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 9 min, 5 min, 6 min, 3 min, 4 min
+- Last 5 plans: 5 min, 6 min, 3 min, 4 min, 4 min
 - Trend: Stable
 
 ## Accumulated Context
@@ -90,6 +91,9 @@ Recent decisions affecting current work:
 | 5-03 | No entry = "all" mode | Only store settings when user changes from default |
 | 5-03 | Delete row for "all" mode | Upsert non-default, delete default values |
 | 5-03 | shouldNotify() filtering | Check settings at notification creation time |
+| 6-01 | Sequence-based tracking | Uses message.sequence field for unread counts |
+| 6-01 | Single table for channels/DMs | channelReadState handles both with optional FK |
+| 6-01 | 60s Redis TTL | Balances cache freshness with Redis load |
 
 ### Pending Todos
 
@@ -103,5 +107,5 @@ Database connection required before `npm run db:push` can verify schema.
 ## Session Continuity
 
 Last session: 2026-01-18
-Stopped at: Completed Phase 5 - Ready for Phase 6 planning
+Stopped at: Completed 06-01-PLAN.md
 Resume file: None
