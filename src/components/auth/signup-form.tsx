@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { PasswordStrengthMeter } from "@/components/auth/password-strength-meter";
+import { PasswordRequirements } from "@/components/auth/password-requirements";
 import Link from "next/link";
 
 export function SignupForm() {
@@ -79,6 +81,12 @@ export function SignupForm() {
               minLength={8}
               required
             />
+            {password && (
+              <div className="space-y-2 pt-1">
+                <PasswordStrengthMeter password={password} />
+                <PasswordRequirements password={password} />
+              </div>
+            )}
           </div>
           {error && <p className="text-sm text-red-600">{error}</p>}
           <Button type="submit" className="w-full" disabled={loading}>
