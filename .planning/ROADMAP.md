@@ -99,11 +99,14 @@ Plans:
   1. Weak passwords rejected at signup and password change
   2. Account locks after repeated failed login attempts
   3. Locked users see clear message with unlock path
-**Research**: Unlikely (better-auth has built-in features)
-**Plans**: TBD
+**Research**: Complete (12-RESEARCH.md)
+**Plans**: 4 plans in 3 waves
 
 Plans:
-- [ ] 12-01: TBD
+- [ ] 12-01: Lockout schema and auth hooks (password validation, failure tracking, progressive delays)
+- [ ] 12-02: Password strength UI (zxcvbn meter, requirements checklist)
+- [ ] 12-03: Unlock flow (email notification, forgot-password page, admin unlock)
+- [ ] 12-04: Verify authentication hardening (checkpoint)
 
 ### Phase 13: Audit Logging
 **Goal**: Security events visible for investigation
@@ -130,5 +133,5 @@ Phases execute in numeric order: 9 -> 10 -> 11 -> 12 -> 13
 | 9. Authorization & Data Integrity | v0.2.0 | 11/11 | Complete | 2026-01-18 |
 | 10. Transport Security | v0.2.0 | 3/3 | Complete | 2026-01-18 |
 | 11. Request Hardening | v0.2.0 | 2/2 | Complete | 2026-01-18 |
-| 12. Authentication Hardening | v0.2.0 | 0/? | Not started | - |
+| 12. Authentication Hardening | v0.2.0 | 0/4 | Planning complete | - |
 | 13. Audit Logging | v0.2.0 | 0/? | Not started | - |
