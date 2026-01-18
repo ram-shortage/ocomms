@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, uuid, integer, index, type AnyPgColumn, customType } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, uuid, integer, index, uniqueIndex, type AnyPgColumn, customType } from "drizzle-orm/pg-core";
 import { relations, SQL, sql } from "drizzle-orm";
 import { users } from "./auth";
 import { channels } from "./channel";
@@ -34,6 +34,9 @@ export const messages = pgTable("messages", {
   index("messages_author_idx").on(table.authorId),
   index("messages_parent_idx").on(table.parentId),
   index("messages_search_idx").using("gin", table.searchContent),
+  // Unique constraints for sequence integrity (prevents race condition duplicates)
+  uniqueIndex("messages_channel_seq_unique_idx").on(table.channelId, table.sequence),
+  uniqueIndex("messages_conversation_seq_unique_idx").on(table.conversationId, table.sequence),
 ]);
 
 export const messagesRelations = relations(messages, ({ one, many }) => ({
