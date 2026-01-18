@@ -4,3 +4,4 @@ export * from "./channel";
 export * from "./conversation";
 export * from "./message";
 export * from "./reaction";
+export * from "./thread-participant";
