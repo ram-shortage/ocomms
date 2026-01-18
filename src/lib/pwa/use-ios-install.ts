@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState, useSyncExternalStore } from "react";
 
 const STORAGE_KEY = "pwa-ios-dismissed";
 
@@ -9,7 +9,7 @@ function isIOS(): boolean {
   return /iphone|ipad|ipod/i.test(navigator.userAgent);
 }
 
-function isStandalone(): boolean {
+function getIsStandalone(): boolean {
   if (typeof window === "undefined") return false;
   return (
     (window.navigator as Navigator & { standalone?: boolean }).standalone ===
@@ -17,26 +17,41 @@ function isStandalone(): boolean {
   );
 }
 
-function isDismissed(): boolean {
+function getIsDismissed(): boolean {
   if (typeof window === "undefined") return false;
   return localStorage.getItem(STORAGE_KEY) === "true";
 }
 
+// Subscribe to standalone mode changes (iOS uses navigator.standalone)
+function subscribeStandalone(callback: () => void) {
+  // iOS standalone doesn't change at runtime, but we subscribe for consistency
+  if (typeof window === "undefined") return () => {};
+  // No event for navigator.standalone, so just return no-op cleanup
+  return () => {};
+}
+
+// Compute if we should show iOS prompt
+function computeShouldShow(): boolean {
+  return isIOS() && !getIsStandalone() && !getIsDismissed();
+}
+
 export function useIOSInstall() {
-  const [shouldShowIOSPrompt, setShouldShowIOSPrompt] = useState(false);
+  // Use useSyncExternalStore for standalone state
+  const isStandalone = useSyncExternalStore(
+    subscribeStandalone,
+    getIsStandalone,
+    () => false
+  );
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
+  const [dismissed, setDismissed] = useState(getIsDismissed);
 
-    // Show prompt if: iOS + not already standalone + not dismissed
-    const shouldShow = isIOS() && !isStandalone() && !isDismissed();
-    setShouldShowIOSPrompt(shouldShow);
-  }, []);
+  // Derived state - only show if iOS, not standalone, and not dismissed
+  const shouldShowIOSPrompt = isIOS() && !isStandalone && !dismissed;
 
   const dismissIOSPrompt = useCallback(() => {
     if (typeof window === "undefined") return;
     localStorage.setItem(STORAGE_KEY, "true");
-    setShouldShowIOSPrompt(false);
+    setDismissed(true);
   }, []);
 
   return {

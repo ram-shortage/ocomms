@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 // BeforeInstallPromptEvent is not in standard TypeScript lib
 interface BeforeInstallPromptEvent extends Event {
@@ -49,7 +49,7 @@ function isDismissed(): boolean {
   return localStorage.getItem(STORAGE_KEY) === "true";
 }
 
-function isStandalone(): boolean {
+function getIsStandalone(): boolean {
   if (typeof window === "undefined") return false;
   return (
     window.matchMedia("(display-mode: standalone)").matches ||
@@ -58,55 +58,70 @@ function isStandalone(): boolean {
   );
 }
 
+// Check if engagement threshold met (3 pages OR 30 seconds)
+function checkEngagementThreshold(): boolean {
+  const engagement = getEngagement();
+  const now = Date.now();
+  const timeSpent = now - engagement.firstVisit;
+  return engagement.pageViews >= 3 || timeSpent >= 30 * 1000;
+}
+
+// Subscribe to standalone mode changes
+function subscribeStandalone(callback: () => void) {
+  if (typeof window === "undefined") return () => {};
+  const mq = window.matchMedia("(display-mode: standalone)");
+  mq.addEventListener("change", callback);
+  return () => mq.removeEventListener("change", callback);
+}
+
+// Helper to increment engagement on first call
+function incrementEngagementOnce(): boolean {
+  if (typeof window === "undefined") return checkEngagementThreshold();
+
+  // Use a flag in sessionStorage to prevent double-increment in strict mode
+  const incrementedKey = "pwa-engagement-incremented";
+  if (sessionStorage.getItem(incrementedKey)) {
+    return checkEngagementThreshold();
+  }
+  sessionStorage.setItem(incrementedKey, "true");
+
+  const engagement = getEngagement();
+  engagement.pageViews += 1;
+  saveEngagement(engagement);
+
+  return checkEngagementThreshold();
+}
+
 export function useInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
-  const [isInstalled, setIsInstalled] = useState(false);
-  const [isInstallable, setIsInstallable] = useState(false);
-  const [meetsEngagement, setMeetsEngagement] = useState(false);
+  // Initialize engagement state by incrementing page views during init
+  const [meetsEngagement, setMeetsEngagement] = useState(incrementEngagementOnce);
+  const [dismissedState, setDismissedState] = useState(isDismissed);
 
-  // Check engagement threshold: 3 pages OR 30 seconds
+  // Use useSyncExternalStore for standalone detection
+  const isInstalled = useSyncExternalStore(
+    subscribeStandalone,
+    getIsStandalone,
+    () => false // server snapshot
+  );
+
+  // Check engagement threshold after 30 seconds if not already met
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined" || meetsEngagement) return;
 
-    const engagement = getEngagement();
-
-    // Increment page views
-    engagement.pageViews += 1;
-    saveEngagement(engagement);
-
-    // Check if already meets threshold
-    const checkThreshold = () => {
-      const now = Date.now();
-      const timeSpent = now - engagement.firstVisit;
-      const meetsCriteria =
-        engagement.pageViews >= 3 || timeSpent >= 30 * 1000;
-      if (meetsCriteria) {
+    const timer = setTimeout(() => {
+      if (checkEngagementThreshold()) {
         setMeetsEngagement(true);
       }
-    };
-
-    checkThreshold();
-
-    // Also check after 30 seconds if not already met
-    const timer = setTimeout(checkThreshold, 30 * 1000);
+    }, 30 * 1000);
     return () => clearTimeout(timer);
-  }, []);
+  }, [meetsEngagement]);
 
   // Listen for beforeinstallprompt
   useEffect(() => {
     if (typeof window === "undefined") return;
-
-    // Check if already in standalone mode
-    if (isStandalone()) {
-      setIsInstalled(true);
-      return;
-    }
-
-    // Check if user previously dismissed
-    if (isDismissed()) {
-      return;
-    }
+    if (isInstalled || dismissedState) return;
 
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
@@ -114,7 +129,6 @@ export function useInstallPrompt() {
     };
 
     const handleAppInstalled = () => {
-      setIsInstalled(true);
       setDeferredPrompt(null);
     };
 
@@ -128,12 +142,10 @@ export function useInstallPrompt() {
       );
       window.removeEventListener("appinstalled", handleAppInstalled);
     };
-  }, []);
+  }, [isInstalled, dismissedState]);
 
-  // Update isInstallable when we have prompt AND meet engagement
-  useEffect(() => {
-    setIsInstallable(deferredPrompt !== null && meetsEngagement && !isDismissed());
-  }, [deferredPrompt, meetsEngagement]);
+  // Derived state: isInstallable
+  const isInstallable = deferredPrompt !== null && meetsEngagement && !dismissedState && !isInstalled;
 
   const promptInstall = useCallback(async () => {
     if (!deferredPrompt) return;
@@ -142,16 +154,15 @@ export function useInstallPrompt() {
     const { outcome } = await deferredPrompt.userChoice;
 
     if (outcome === "accepted") {
-      setIsInstalled(true);
+      // isInstalled will update via useSyncExternalStore
     }
     setDeferredPrompt(null);
-    setIsInstallable(false);
   }, [deferredPrompt]);
 
   const dismiss = useCallback(() => {
     if (typeof window === "undefined") return;
     localStorage.setItem(STORAGE_KEY, "true");
-    setIsInstallable(false);
+    setDismissedState(true);
     setDeferredPrompt(null);
   }, []);
 
