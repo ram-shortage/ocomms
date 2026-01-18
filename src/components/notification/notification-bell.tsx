@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +19,7 @@ interface NotificationBellProps {
 }
 
 export function NotificationBell({ workspaceSlug }: NotificationBellProps) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -90,13 +92,15 @@ export function NotificationBell({ workspaceSlug }: NotificationBellProps) {
       setOpen(false);
 
       // Navigate to message location
-      if (notification.channelId && notification.channelName) {
-        // Note: We'd need channel slug here. For now, we can use a channel lookup
-        // This is a simplification - in production you'd want to resolve the slug
-        // For now, just close the popover. Full navigation would require more context.
+      if (notification.channelSlug) {
+        // Navigate to channel
+        router.push(`/${workspaceSlug}/channels/${notification.channelSlug}`);
+      } else if (notification.conversationId) {
+        // Navigate to DM conversation
+        router.push(`/${workspaceSlug}/dm/${notification.conversationId}`);
       }
     },
-    []
+    [router, workspaceSlug]
   );
 
   // Format badge count

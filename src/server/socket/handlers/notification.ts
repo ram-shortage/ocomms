@@ -82,15 +82,17 @@ export async function createNotifications(params: {
   // Track notified users to avoid duplicates
   const notifiedUserIds = new Set<string>();
 
-  // Get channel name if in channel context
+  // Get channel name and slug if in channel context
   let channelName: string | undefined;
+  let channelSlug: string | undefined;
   if (channelId) {
     const [channelData] = await db
-      .select({ name: channels.name })
+      .select({ name: channels.name, slug: channels.slug })
       .from(channels)
       .where(eq(channels.id, channelId))
       .limit(1);
     channelName = channelData?.name;
+    channelSlug = channelData?.slug;
   }
 
   for (const mention of mentions) {
@@ -200,6 +202,7 @@ export async function createNotifications(params: {
       type: notification.type as "mention" | "channel" | "here",
       messageId: notification.messageId,
       channelId: notification.channelId,
+      channelSlug,
       conversationId: notification.conversationId,
       actorId: notification.actorId,
       actorName: actor?.name ?? null,
@@ -246,43 +249,38 @@ export function handleNotificationEvents(socket: SocketWithData, io: SocketIOSer
         .orderBy(desc(notifications.createdAt))
         .limit(limit);
 
-      // Get channel names for notifications in channels
+      // Get channel names and slugs for notifications in channels
       const channelIds = [...new Set(notificationRows.filter(n => n.channelId).map(n => n.channelId!))];
-      const channelNamesMap = new Map<string, string>();
+      const channelDataMap = new Map<string, { name: string; slug: string }>();
 
       if (channelIds.length > 0) {
-        const channelData = await db
-          .select({ id: channels.id, name: channels.name })
-          .from(channels)
-          .where(eq(channels.id, channelIds[0])); // For now, fetch one at a time
-
-        for (const ch of channelData) {
-          channelNamesMap.set(ch.id, ch.name);
-        }
-
-        // Fetch remaining channels if multiple
-        for (const chId of channelIds.slice(1)) {
+        // Fetch all channels in one query using individual fetches
+        for (const chId of channelIds) {
           const [ch] = await db
-            .select({ id: channels.id, name: channels.name })
+            .select({ id: channels.id, name: channels.name, slug: channels.slug })
             .from(channels)
             .where(eq(channels.id, chId));
-          if (ch) channelNamesMap.set(ch.id, ch.name);
+          if (ch) channelDataMap.set(ch.id, { name: ch.name, slug: ch.slug });
         }
       }
 
-      const notificationList: Notification[] = notificationRows.map(n => ({
-        id: n.id,
-        type: n.type as "mention" | "channel" | "here" | "thread_reply",
-        messageId: n.messageId,
-        channelId: n.channelId,
-        conversationId: n.conversationId,
-        actorId: n.actorId,
-        actorName: n.actorName,
-        content: n.content,
-        channelName: n.channelId ? channelNamesMap.get(n.channelId) : undefined,
-        readAt: n.readAt,
-        createdAt: n.createdAt,
-      }));
+      const notificationList: Notification[] = notificationRows.map(n => {
+        const channelData = n.channelId ? channelDataMap.get(n.channelId) : undefined;
+        return {
+          id: n.id,
+          type: n.type as "mention" | "channel" | "here" | "thread_reply",
+          messageId: n.messageId,
+          channelId: n.channelId,
+          channelSlug: channelData?.slug,
+          conversationId: n.conversationId,
+          actorId: n.actorId,
+          actorName: n.actorName,
+          content: n.content,
+          channelName: channelData?.name,
+          readAt: n.readAt,
+          createdAt: n.createdAt,
+        };
+      });
 
       // Count unread
       const unreadCount = notificationList.filter(n => !n.readAt).length;

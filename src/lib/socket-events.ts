@@ -34,6 +34,7 @@ export interface Notification {
   type: "mention" | "channel" | "here" | "thread_reply";
   messageId: string | null;
   channelId: string | null;
+  channelSlug?: string;
   conversationId: string | null;
   actorId: string | null;
   actorName: string | null;

@@ -90,7 +90,7 @@ export default async function DMPage({
   }));
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-full">
       <DMHeader
         conversation={conversation}
         organizationId={workspace.id}

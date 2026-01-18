@@ -111,34 +111,32 @@ export default async function ThreadsPage({
   const threads = await getThreadsForUser(session.user.id, workspace.id);
 
   return (
-    <div className="flex h-screen">
-      <main className="flex-1 flex flex-col">
-        <div className="border-b px-6 py-4">
-          <h1 className="text-xl font-bold">Threads</h1>
-          <p className="text-sm text-muted-foreground">
-            Conversations you are participating in
-          </p>
-        </div>
+    <div className="flex flex-col h-full">
+      <div className="border-b px-6 py-4">
+        <h1 className="text-xl font-bold">Threads</h1>
+        <p className="text-sm text-muted-foreground">
+          Conversations you are participating in
+        </p>
+      </div>
 
-        <div className="flex-1 overflow-y-auto">
-          {threads.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
-              <p className="text-lg text-muted-foreground mb-2">
-                No threads yet
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Reply to a message to start a thread
-              </p>
-            </div>
-          ) : (
-            <ThreadList
-              threads={threads}
-              currentUserId={session.user.id}
-              workspaceSlug={workspaceSlug}
-            />
-          )}
-        </div>
-      </main>
+      <div className="flex-1 overflow-y-auto">
+        {threads.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
+            <p className="text-lg text-muted-foreground mb-2">
+              No threads yet
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Reply to a message to start a thread
+            </p>
+          </div>
+        ) : (
+          <ThreadList
+            threads={threads}
+            currentUserId={session.user.id}
+            workspaceSlug={workspaceSlug}
+          />
+        )}
+      </div>
     </div>
   );
 }

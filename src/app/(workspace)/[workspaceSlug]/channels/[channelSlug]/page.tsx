@@ -118,7 +118,7 @@ export default async function ChannelPage({
   const notificationMode: NotificationMode = (notificationSettingsData?.mode as NotificationMode) ?? "all";
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-full">
       <ChannelHeader
         channel={{
           id: channel.id,
