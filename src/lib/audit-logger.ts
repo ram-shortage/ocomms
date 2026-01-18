@@ -1,4 +1,5 @@
-import * as fs from "fs";
+import { appendFile, mkdir } from "fs/promises";
+import { existsSync, readdirSync, unlinkSync } from "fs";
 import * as path from "path";
 
 /**
@@ -51,10 +52,10 @@ function getLogFilename(): string {
 /**
  * Ensure logs directory exists
  */
-function ensureLogsDir(): void {
+async function ensureLogsDir(): Promise<void> {
   const logsDir = getLogsDir();
-  if (!fs.existsSync(logsDir)) {
-    fs.mkdirSync(logsDir, { recursive: true });
+  if (!existsSync(logsDir)) {
+    await mkdir(logsDir, { recursive: true });
   }
 }
 
@@ -100,20 +101,20 @@ export function getUserAgent(
  * Fire-and-forget pattern - does not block on write
  * Failures are logged to console but don't throw
  */
-export function auditLog(data: AuditEventData): void {
+export async function auditLog(data: AuditEventData): Promise<void> {
   try {
     const event: AuditEvent = {
       ...data,
       timestamp: new Date().toISOString(),
     };
 
-    ensureLogsDir();
+    await ensureLogsDir();
 
     const logPath = path.join(getLogsDir(), getLogFilename());
     const line = JSON.stringify(event) + "\n";
 
-    // Append synchronously for atomic single-line writes
-    fs.appendFileSync(logPath, line);
+    // SECFIX-08: Async append - non-blocking
+    await appendFile(logPath, line);
   } catch (error) {
     // Fire-and-forget - log errors but don't throw
     console.error("Audit log write failed:", error);
@@ -134,12 +135,12 @@ export function auditLog(data: AuditEventData): void {
 export function cleanupOldLogs(retentionDays: number = 90): number {
   const logsDir = getLogsDir();
 
-  if (!fs.existsSync(logsDir)) {
+  if (!existsSync(logsDir)) {
     console.log("Audit log cleanup: No logs directory found");
     return 0;
   }
 
-  const files = fs.readdirSync(logsDir);
+  const files = readdirSync(logsDir);
   const cutoffDate = new Date();
   cutoffDate.setDate(cutoffDate.getDate() - retentionDays);
   const cutoffDateOnly = new Date(cutoffDate.toISOString().split("T")[0] + "T00:00:00Z");
@@ -163,7 +164,7 @@ export function cleanupOldLogs(retentionDays: number = 90): number {
     if (fileDate < cutoffDateOnly) {
       try {
         const filePath = path.join(logsDir, file);
-        fs.unlinkSync(filePath);
+        unlinkSync(filePath);
         deletedCount++;
         console.log(`Audit log cleanup: Deleted ${file}`);
       } catch (error) {
