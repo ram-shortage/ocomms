@@ -1,13 +1,23 @@
 import type { Server, Socket } from "socket.io";
 import { db } from "@/db";
 import { messages, channelMembers, conversationParticipants, channels } from "@/db/schema";
-import { eq, and, isNull, sql, max } from "drizzle-orm";
+import { eq, and, isNull, sql } from "drizzle-orm";
+import { RateLimiterMemory } from "rate-limiter-flexible";
 import { getRoomName } from "../rooms";
 import type { ClientToServerEvents, ServerToClientEvents, SocketData, Message } from "@/lib/socket-events";
 import { users } from "@/db/schema";
 import { parseMentions } from "@/lib/mentions";
 import { createNotifications } from "./notification";
 import { getPresenceManager, getUnreadManager } from "../index";
+
+const MAX_MESSAGE_LENGTH = 10_000;
+
+// SECFIX-06: Rate limiter - 10 messages per 60 seconds per user
+const messageRateLimiter = new RateLimiterMemory({
+  points: 10,
+  duration: 60,
+  keyPrefix: "message",
+});
 
 type SocketIOServer = Server<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
 type SocketWithData = Socket<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
@@ -26,6 +36,30 @@ async function handleSendMessage(
   const { targetId, targetType, content } = data;
 
   try {
+    // SECFIX-06: Rate limit check
+    try {
+      await messageRateLimiter.consume(userId);
+    } catch (rejRes: unknown) {
+      const rateLimitResult = rejRes as { msBeforeNext: number };
+      socket.emit("error", {
+        message: "Message rate limit reached. Please wait.",
+        code: "RATE_LIMITED",
+        retryAfter: Math.ceil(rateLimitResult.msBeforeNext / 1000),
+      });
+      callback?.({ success: false });
+      return;
+    }
+
+    // SECFIX-05: Server-side length validation
+    if (content.length > MAX_MESSAGE_LENGTH) {
+      socket.emit("error", {
+        message: `Message exceeds maximum length of ${MAX_MESSAGE_LENGTH.toLocaleString()} characters`,
+        code: "MESSAGE_TOO_LONG",
+      });
+      callback?.({ success: false });
+      return;
+    }
+
     // Validate membership
     if (targetType === "channel") {
       const membership = await db
@@ -53,29 +87,38 @@ async function handleSendMessage(
       }
     }
 
-    // Get next sequence number
-    const condition = targetType === "channel"
-      ? eq(messages.channelId, targetId)
-      : eq(messages.conversationId, targetId);
+    // SECFIX-03: Atomic sequence generation with retry
+    const insertMessageWithRetry = async (retries = 3): Promise<typeof messages.$inferSelect> => {
+      const condition = targetType === "channel"
+        ? sql`channel_id = ${targetId}`
+        : sql`conversation_id = ${targetId}`;
 
-    const [maxSeq] = await db
-      .select({ maxSequence: max(messages.sequence) })
-      .from(messages)
-      .where(condition);
+      for (let attempt = 0; attempt < retries; attempt++) {
+        try {
+          const [newMsg] = await db
+            .insert(messages)
+            .values({
+              content,
+              authorId: userId,
+              channelId: targetType === "channel" ? targetId : null,
+              conversationId: targetType === "dm" ? targetId : null,
+              sequence: sql`(SELECT COALESCE(MAX(sequence), 0) + 1 FROM messages WHERE ${condition})`,
+            })
+            .returning();
+          return newMsg;
+        } catch (error: unknown) {
+          const dbError = error as { code?: string };
+          // PostgreSQL unique constraint violation - retry
+          if (dbError.code === "23505" && attempt < retries - 1) {
+            continue;
+          }
+          throw error;
+        }
+      }
+      throw new Error("Failed to insert message after retries");
+    };
 
-    const sequence = (maxSeq?.maxSequence ?? 0) + 1;
-
-    // Insert message
-    const [newMessage] = await db
-      .insert(messages)
-      .values({
-        content,
-        authorId: userId,
-        channelId: targetType === "channel" ? targetId : null,
-        conversationId: targetType === "dm" ? targetId : null,
-        sequence,
-      })
-      .returning();
+    const newMessage = await insertMessageWithRetry();
 
     // Get author info for broadcast
     const [author] = await db
@@ -140,11 +183,11 @@ async function handleSendMessage(
     const unreadManager = getUnreadManager();
     if (unreadManager) {
       if (targetType === "channel") {
-        unreadManager.notifyUnreadIncrement(targetId, userId, sequence).catch((err) => {
+        unreadManager.notifyUnreadIncrement(targetId, userId, newMessage.sequence).catch((err) => {
           console.error("[Message] Error notifying unread increment:", err);
         });
       } else {
-        unreadManager.notifyConversationUnreadIncrement(targetId, userId, sequence).catch((err) => {
+        unreadManager.notifyConversationUnreadIncrement(targetId, userId, newMessage.sequence).catch((err) => {
           console.error("[Message] Error notifying conversation unread increment:", err);
         });
       }
