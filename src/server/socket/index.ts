@@ -7,6 +7,7 @@ import { setupPresence, handlePresenceEvents, type PresenceManager } from "./han
 import { handleMessageEvents } from "./handlers/message";
 import { handleReactionEvents } from "./handlers/reaction";
 import { handleThreadEvents } from "./handlers/thread";
+import { handleNotificationEvents } from "./handlers/notification";
 
 type SocketIOServer = Server<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
 type TypedSocket = Socket<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
@@ -63,6 +64,9 @@ export function setupSocketHandlers(io: SocketIOServer, redis?: Redis | null) {
 
     // Setup thread event handlers
     handleThreadEvents(socket, io);
+
+    // Setup notification event handlers
+    handleNotificationEvents(socket, io);
 
     // Join user to their authorized rooms
     try {

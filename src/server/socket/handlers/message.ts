@@ -1,10 +1,13 @@
 import type { Server, Socket } from "socket.io";
 import { db } from "@/db";
-import { messages, channelMembers, conversationParticipants } from "@/db/schema";
+import { messages, channelMembers, conversationParticipants, channels } from "@/db/schema";
 import { eq, and, isNull, sql, max } from "drizzle-orm";
 import { getRoomName } from "../rooms";
 import type { ClientToServerEvents, ServerToClientEvents, SocketData, Message } from "@/lib/socket-events";
 import { users } from "@/db/schema";
+import { parseMentions } from "@/lib/mentions";
+import { createNotifications } from "./notification";
+import { getPresenceManager } from "../index";
 
 type SocketIOServer = Server<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
 type SocketWithData = Socket<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
@@ -104,6 +107,34 @@ async function handleSendMessage(
     callback?.({ success: true, messageId: newMessage.id });
 
     console.log(`[Message] User ${userId} sent message ${newMessage.id} to ${targetType}:${targetId}`);
+
+    // Create notifications for mentions
+    const mentions = parseMentions(content);
+    if (mentions.length > 0) {
+      // Get workspaceId from channel if in channel context
+      let workspaceId: string | undefined;
+      if (targetType === "channel") {
+        const [channelData] = await db
+          .select({ organizationId: channels.organizationId })
+          .from(channels)
+          .where(eq(channels.id, targetId))
+          .limit(1);
+        workspaceId = channelData?.organizationId;
+      }
+
+      createNotifications({
+        io,
+        message: messageWithAuthor,
+        mentions,
+        senderId: userId,
+        channelId: targetType === "channel" ? targetId : null,
+        conversationId: targetType === "dm" ? targetId : null,
+        presenceManager: getPresenceManager(),
+        workspaceId,
+      }).catch((err) => {
+        console.error("[Message] Error creating notifications:", err);
+      });
+    }
   } catch (error) {
     console.error("[Message] Error sending message:", error);
     socket.emit("error", { message: "Failed to send message" });
