@@ -9,6 +9,8 @@ export interface Message {
   authorId: string;
   channelId?: string | null;
   conversationId?: string | null;
+  parentId?: string | null;
+  replyCount?: number;
   sequence: number;
   deletedAt?: Date | null;
   createdAt: Date;
@@ -30,6 +32,7 @@ export interface ReactionGroup {
 export interface ServerToClientEvents {
   "message:new": (message: Message) => void;
   "message:deleted": (data: { messageId: string; deletedAt: Date }) => void;
+  "message:replyCount": (data: { messageId: string; replyCount: number }) => void;
   "typing:update": (data: {
     userId: string;
     userName: string;
@@ -47,6 +50,7 @@ export interface ServerToClientEvents {
     userName: string;
     action: "added" | "removed";
   }) => void;
+  "thread:newReply": (data: Message) => void;
   error: (data: { message: string }) => void;
 }
 
@@ -68,6 +72,16 @@ export interface ClientToServerEvents {
   "reaction:get": (
     data: { messageId: string },
     callback: (response: { success: boolean; reactions?: ReactionGroup[] }) => void
+  ) => void;
+  "thread:reply": (
+    data: { parentId: string; content: string },
+    callback?: (response: { success: boolean; messageId?: string }) => void
+  ) => void;
+  "thread:join": (data: { threadId: string }) => void;
+  "thread:leave": (data: { threadId: string }) => void;
+  "thread:getReplies": (
+    data: { threadId: string },
+    callback: (response: { success: boolean; replies?: Message[] }) => void
   ) => void;
   "room:join": (data: { roomId: string; roomType: "channel" | "dm" }) => void;
   "room:leave": (data: { roomId: string; roomType: "channel" | "dm" }) => void;

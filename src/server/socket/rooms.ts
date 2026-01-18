@@ -20,6 +20,8 @@ export const getRoomName = {
   workspace: (workspaceId: string) => `workspace:${workspaceId}`,
   /** User room for user-specific events */
   user: (userId: string) => `user:${userId}`,
+  /** Thread room for thread-specific events */
+  thread: (threadId: string) => `thread:${threadId}`,
 };
 
 /**
