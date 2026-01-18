@@ -52,3 +52,24 @@ export async function sendInviteEmail({
     `,
   });
 }
+
+export async function sendUnlockEmail({
+  to,
+  resetUrl,
+}: {
+  to: string;
+  resetUrl: string;
+}) {
+  await transporter.sendMail({
+    from: process.env.EMAIL_FROM,
+    to,
+    subject: "Account Access - OComms",
+    html: `
+      <h1>Account Access</h1>
+      <p>We noticed multiple failed login attempts on your account.</p>
+      <p>If this was you, you can wait for the lockout to expire or reset your password:</p>
+      <a href="${resetUrl}">Reset Password</a>
+      <p>If this wasn't you, we recommend changing your password immediately.</p>
+    `,
+  });
+}
