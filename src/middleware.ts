@@ -27,6 +27,18 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
+  // Skip full validation if we validated recently (within last 5 minutes)
+  // This reduces latency for frequent requests while maintaining security
+  const lastValidated = request.cookies.get("_session_validated");
+  if (lastValidated) {
+    const validatedAt = parseInt(lastValidated.value, 10);
+    const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
+    if (validatedAt > fiveMinutesAgo) {
+      // Recently validated, skip full check
+      return NextResponse.next();
+    }
+  }
+
   // Validate session with better-auth API
   try {
     // Call the session endpoint to validate
@@ -52,8 +64,14 @@ export async function middleware(request: NextRequest) {
       return response;
     }
 
-    // Session valid - proceed
-    return NextResponse.next();
+    // Session valid - set validation timestamp and proceed
+    const response = NextResponse.next();
+    response.cookies.set("_session_validated", Date.now().toString(), {
+      httpOnly: true,
+      sameSite: "lax",
+      maxAge: 300, // 5 minutes
+    });
+    return response;
   } catch (error) {
     console.error("[Middleware] Session validation error:", error);
     // On error, allow through (fail open for availability)
