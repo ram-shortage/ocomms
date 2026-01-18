@@ -65,6 +65,11 @@ export interface ServerToClientEvents {
     action: "added" | "removed";
   }) => void;
   "thread:newReply": (data: Message) => void;
+  "unread:update": (data: {
+    channelId?: string;
+    conversationId?: string;
+    unreadCount: number;
+  }) => void;
   "notification:new": (notification: Notification) => void;
   "notification:read": (data: { notificationId: string }) => void;
   "notification:readAll": () => void;
@@ -108,6 +113,21 @@ export interface ClientToServerEvents {
   "notification:fetch": (
     data: { limit?: number },
     callback: (response: { notifications: Notification[]; unreadCount: number }) => void
+  ) => void;
+  "unread:markRead": (
+    data: { channelId?: string; conversationId?: string },
+    callback: (response: { success: boolean }) => void
+  ) => void;
+  "unread:markMessageUnread": (
+    data: { messageId: string },
+    callback: (response: { success: boolean }) => void
+  ) => void;
+  "unread:fetch": (
+    data: { channelIds?: string[]; conversationIds?: string[] },
+    callback: (response: {
+      channels: Record<string, number>;
+      conversations: Record<string, number>;
+    }) => void
   ) => void;
 }
 
