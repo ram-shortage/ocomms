@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-18)
 ## Current Position
 
 Phase: 11 of 13 (Request Hardening)
-Plan: Not started
-Status: Ready to plan
-Last activity: 2026-01-18 — Phase 10 complete (3 plans, 2 requirements verified)
+Plan: 1 of 1
+Status: In progress
+Last activity: 2026-01-18 — Completed 11-01-PLAN.md (Security Headers & Rate Limiting)
 
-Progress: █████████░ 90% (v0.1.0 complete, v0.2.0 phases 9-10 complete)
+Progress: █████████░ 92% (v0.1.0 complete, v0.2.0 phases 9-11 in progress)
 
 ## Shipped Milestones
 
@@ -25,9 +25,9 @@ Progress: █████████░ 90% (v0.1.0 complete, v0.2.0 phases 9-1
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 14 (v0.2.0)
+- Total plans completed: 15 (v0.2.0)
 - Average duration: 2 min
-- Total execution time: 31 min
+- Total execution time: 34 min
 
 **By Phase:**
 
@@ -35,10 +35,11 @@ Progress: █████████░ 90% (v0.1.0 complete, v0.2.0 phases 9-1
 |-------|-------|-------|----------|
 | 09 | 11/11 | 24min | 2.2min |
 | 10 | 3/3 | 7min | 2.3min |
+| 11 | 1/1 | 3min | 3min |
 
 **Recent Trend:**
-- Last 5 plans: 09-10 (2min), 09-11 (2min), 10-01 (2min), 10-02 (2min), 10-03 (3min)
-- Trend: Stable at ~2min/plan
+- Last 5 plans: 09-11 (2min), 10-01 (2min), 10-02 (2min), 10-03 (3min), 11-01 (3min)
+- Trend: Stable at ~2-3min/plan
 
 ## Accumulated Context
 
@@ -70,6 +71,8 @@ Key decisions from v0.1.0 are documented in PROJECT.md Key Decisions table.
 | 2026-01-18 | 10-02 | 1-hour HSTS max-age initially | Conservative value; increase to 31536000 after production verification |
 | 2026-01-18 | 10-02 | Removed external db port exposure | PostgreSQL only accessible within Docker network (security improvement) |
 | 2026-01-18 | 10-03 | Production verification deferred | Infrastructure validated locally; full HTTPS verification requires domain deployment |
+| 2026-01-18 | 11-01 | CSP allows unsafe-inline/unsafe-eval | Required for Next.js and Tailwind CSS runtime |
+| 2026-01-18 | 11-01 | In-memory rate limiting | Appropriate for single-server deployment; Redis for horizontal scaling |
 
 ### Pending Todos
 
@@ -86,5 +89,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-18
-Stopped at: Completed 10-03-PLAN.md (Verify Transport Security) - Phase 10 complete
+Stopped at: Completed 11-01-PLAN.md (Security Headers & Rate Limiting)
 Resume file: None
