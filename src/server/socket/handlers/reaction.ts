@@ -115,9 +115,33 @@ async function handleGetReactions(
   data: { messageId: string },
   callback: (response: { success: boolean; reactions?: ReactionGroup[] }) => void
 ): Promise<void> {
+  const userId = socket.data.userId;
   const { messageId } = data;
 
   try {
+    // Verify user has access to the message's channel/DM
+    const context = await getMessageContext(messageId);
+    if (!context) {
+      callback({ success: false });
+      return;
+    }
+
+    if (context.channelId) {
+      const isMember = await isChannelMember(userId, context.channelId);
+      if (!isMember) {
+        socket.emit("error", { message: "Not authorized to view reactions on this message" });
+        callback({ success: false });
+        return;
+      }
+    } else if (context.conversationId) {
+      const isParticipant = await isConversationParticipant(userId, context.conversationId);
+      if (!isParticipant) {
+        socket.emit("error", { message: "Not authorized to view reactions on this message" });
+        callback({ success: false });
+        return;
+      }
+    }
+
     // Query reactions grouped by emoji with user info
     const result = await db
       .select({
