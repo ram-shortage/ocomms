@@ -8,31 +8,22 @@ OComms is a self-hosted team communication platform - a Slack-like experience th
 
 **Data sovereignty**: Complete control over communication data, no third-party dependencies
 
-## Current Milestone: v0.2.0 Security Hardening
+## Current State
 
-**Goal:** Production-ready security baseline with encrypted transport, hardened authentication, and audit trail.
+**Version:** v0.2.0 (Security Hardening) - Shipped 2026-01-18
 
-**Target features:**
-- HTTPS/SSL with Let's Encrypt auto-renewal
-- Security headers (CSP, HSTS, X-Frame-Options, X-Content-Type-Options)
-- Rate limiting on authentication and API endpoints
-- Password strength validation
-- Database connection encryption (SSL)
-- Audit logging for security events
-- Account lockout after failed login attempts
+Delivered production-ready security baseline with authorization fixes, encrypted transport, hardened authentication, and audit trail.
 
 ---
 
 ## Current State
 
-**Version:** v0.1.0 (Full Conversation) - Shipped 2026-01-18
-
 **Tech Stack:**
 - Next.js 15 with App Router
-- TypeScript (~12,000 LOC)
-- PostgreSQL with Drizzle ORM
+- TypeScript (~16,000 LOC)
+- PostgreSQL with Drizzle ORM (SSL encrypted)
 - Socket.IO with Redis pub-sub
-- Docker Compose deployment
+- Docker Compose deployment (HTTPS with Let's Encrypt)
 
 **What's Working:**
 - Real-time messaging in channels and DMs
@@ -44,6 +35,13 @@ OComms is a self-hosted team communication platform - a Slack-like experience th
 - Full-text search with PostgreSQL FTS
 - Presence (active/away/offline)
 - Docker deployment with backup/restore
+- **v0.2.0:** Authorization validation on all socket handlers
+- **v0.2.0:** HTTPS with auto-renewing Let's Encrypt certificates
+- **v0.2.0:** Security headers (CSP, HSTS, X-Frame-Options, X-Content-Type-Options)
+- **v0.2.0:** Rate limiting on auth endpoints
+- **v0.2.0:** Password strength validation with zxcvbn
+- **v0.2.0:** Account lockout with progressive delays
+- **v0.2.0:** Audit logging for security events
 
 ## Target Users
 
@@ -76,17 +74,21 @@ Requirements shipped and working in production:
   - REAC-01 to REAC-03: Emoji reactions
   - INFR-01 to INFR-05: Docker deployment, backup/restore
 
+- **v0.2.0 - Security Hardening** (19 requirements)
+  - AUTHZ-01 to AUTHZ-07: Socket.IO authorization validation
+  - INTG-01 to INTG-03: Data integrity (sequences, FK constraints, export scoping)
+  - VAL-01 to VAL-02: Input validation (file signatures, session validity)
+  - SEC-01: HTTPS/SSL with Let's Encrypt auto-renewal
+  - SEC-02: Security headers (CSP, HSTS, X-Frame-Options, X-Content-Type-Options)
+  - SEC-03: Rate limiting on auth endpoints
+  - SEC-04: Password strength validation with zxcvbn
+  - SEC-05: Database connection SSL encryption
+  - SEC-06: Audit logging for security events
+  - SEC-07: Account lockout with progressive delays
+
 ### Active
 
-Requirements for v0.2.0 Security Hardening:
-
-- [ ] SEC-01: HTTPS/SSL with Let's Encrypt auto-renewal
-- [ ] SEC-02: Security headers (CSP, HSTS, X-Frame-Options, X-Content-Type-Options)
-- [ ] SEC-03: Rate limiting on login, signup, and sensitive API endpoints
-- [ ] SEC-04: Password strength validation (minimum length, complexity rules)
-- [ ] SEC-05: Database connection SSL encryption
-- [ ] SEC-06: Audit logging for security events (logins, failed attempts, admin actions)
-- [ ] SEC-07: Account lockout after repeated failed login attempts
+(None - planning next milestone)
 
 ### Out of Scope
 
@@ -113,6 +115,11 @@ Requirements for v0.2.0 Security Hardening:
 | frimousse emoji picker | <5KB vs 50KB alternatives | Good |
 | PostgreSQL native FTS | Data sovereignty over Meilisearch | Good |
 | esbuild for server bundling | Fastest bundler, handles node externals | Good |
+| vitest for unit testing | Fast, Vite-compatible, TypeScript-first | Good |
+| zxcvbn for password strength | 400KB but dynamic import, best analysis | Good |
+| In-memory rate limiting | Single-server appropriate, Redis for scaling | Good |
+| Fire-and-forget audit logging | Never blocks request flow | Good |
+| 5-min session validation cache | Balance security and performance | Good |
 
 ---
 
@@ -135,4 +142,5 @@ Requirements for v0.2.0 Security Hardening:
 
 ---
 
-*Last updated: 2026-01-18 after starting v0.2.0 milestone*
+---
+*Last updated: 2026-01-18 after v0.2.0 milestone*

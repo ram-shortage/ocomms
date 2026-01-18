@@ -1,5 +1,34 @@
 # Project Milestones: OComms
 
+## v0.2.0 Security Hardening (Shipped: 2026-01-18)
+
+**Delivered:** Production-ready security baseline with authorization fixes, encrypted transport, hardened authentication, and audit trail.
+
+**Phases completed:** 9-13 (24 plans total)
+
+**Key accomplishments:**
+
+- Fixed all authorization bypass vulnerabilities in Socket.IO handlers
+- Transport security with HTTPS/Let's Encrypt and PostgreSQL SSL encryption
+- Security headers (CSP, HSTS, X-Frame-Options, X-Content-Type-Options)
+- Rate limiting on authentication and sensitive API endpoints
+- Password strength validation with zxcvbn and real-time UI feedback
+- Account lockout after 5 failed attempts with progressive delays
+- Audit logging for security events with query API
+
+**Stats:**
+
+- 95 files created/modified
+- ~16,000 lines of TypeScript
+- 5 phases, 24 plans, 19 requirements
+- 1 day from start to ship
+
+**Git range:** `feat(09-01)` → `feat(13-03)`
+
+**What's next:** Planning next milestone
+
+---
+
 ## v0.1.0 Full Conversation (Shipped: 2026-01-18)
 
 **Delivered:** Complete self-hosted team communication platform with real-time messaging, threading, notifications, search, and Docker deployment.
