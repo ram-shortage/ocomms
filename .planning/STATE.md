@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-17)
 ## Current Position
 
 Phase: 5 of 8 (Mentions & Notifications)
-Plan: 0 of 3 in current phase
-Status: Ready for planning
-Last activity: 2026-01-18 - Completed Phase 4 (Threading & Reactions)
+Plan: 1 of 3 in current phase
+Status: In progress
+Last activity: 2026-01-18 - Completed 05-01-PLAN.md (Mention Parsing & UI)
 
-Progress: ██████████░ 65%
+Progress: ███████████░ 68%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 14
-- Average duration: 4.6 min
-- Total execution time: 66 min
+- Total plans completed: 15
+- Average duration: 4.7 min
+- Total execution time: 72 min
 
 **By Phase:**
 
@@ -31,9 +31,10 @@ Progress: ██████████░ 65%
 | 2-channels-dms | 3/3 | 17 min | ~6 min |
 | 3-real-time-messaging | 3/3 | 16 min | ~5 min |
 | 4-threading-reactions | 3/3 | 17 min | ~6 min |
+| 5-mentions-notifications | 1/3 | 6 min | 6 min |
 
 **Recent Trend:**
-- Last 5 plans: 3 min, 8 min, 3 min, 9 min, 5 min
+- Last 5 plans: 8 min, 3 min, 9 min, 5 min, 6 min
 - Trend: Stable
 
 ## Accumulated Context
@@ -80,6 +81,9 @@ Recent decisions affecting current work:
 | 4-03 | REST API for pins | Low frequency ops, no real-time broadcast needed |
 | 4-03 | Client wrapper for pin state | Separate server fetching from client state |
 | 4-03 | Optimistic pin updates | Immediate UI feedback, revert on failure |
+| 5-01 | Quoted name support in mentions | @"John Doe" for display names with spaces |
+| 5-01 | currentUsername prop drilling | Pass through hierarchy for self-mention emphasis |
+| 5-01 | Special mention colors | Amber for @channel/@here, blue for user mentions |
 
 ### Pending Todos
 
@@ -92,6 +96,6 @@ Database connection required before `npm run db:push` can verify schema.
 
 ## Session Continuity
 
-Last session: 2026-01-18
-Stopped at: Completed Phase 4 - Ready for Phase 5 planning
+Last session: 2026-01-18T09:21:38Z
+Stopped at: Completed 05-01-PLAN.md (Mention Parsing & UI)
 Resume file: None
