@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-18)
 ## Current Position
 
 Phase: 15 of 20 (PWA Foundation)
-Plan: 2 of 4 in current phase
+Plan: 3 of 4 in current phase
 Status: In progress
-Last activity: 2026-01-18 - Completed 15-02-PLAN.md
+Last activity: 2026-01-18 - Completed 15-03-PLAN.md
 
 Progress: [###########.............] 70% (14/20 phases)
 
@@ -48,6 +48,8 @@ Progress: [###########.............] 70% (14/20 phases)
 | Disable Serwist in development | Avoids stale cache issues during dev | 15-01 |
 | Use --webpack flag for production builds | Turbopack doesn't support Serwist, webpack required for SW generation | 15-02 |
 | skipWaiting: false for user-controlled updates | User decides when to apply SW updates | 15-02 |
+| useSyncExternalStore for browser APIs | Avoids setState in effects lint errors, proper SSR handling | 15-03 |
+| Engagement threshold: 3 pages OR 30 seconds | Per CONTEXT.md, shows install prompt after meaningful engagement | 15-03 |
 
 ### Decisions (Phase 14)
 
@@ -81,5 +83,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-18
-Stopped at: Completed 15-02-PLAN.md
+Stopped at: Completed 15-03-PLAN.md
 Resume file: None
