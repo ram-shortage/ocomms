@@ -135,6 +135,11 @@ export default async function ChannelPage({
         initialMessages={initialMessages}
         initialPinnedMessageIds={initialPinnedMessageIds}
         currentUserId={session.user.id}
+        members={channel.members.map((m) => ({
+          id: m.userId,
+          name: m.user.name,
+          email: m.user.email,
+        }))}
       />
     </div>
   );

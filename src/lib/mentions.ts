@@ -130,8 +130,7 @@ export function highlightMentions(
     nodes.push(
       createElement(
         MentionSpan,
-        { type: mention.type, isSelf, key: `mention-${index}` },
-        mention.raw
+        { type: mention.type, isSelf, children: mention.raw, key: `mention-${index}` }
       )
     );
 

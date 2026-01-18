@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { MessageList, MessageInput } from "@/components/message";
+import { MessageList, MessageInput, type MentionMember } from "@/components/message";
 import type { Message } from "@/lib/socket-events";
 
 interface ChannelContentProps {
@@ -9,6 +9,7 @@ interface ChannelContentProps {
   initialMessages: Message[];
   initialPinnedMessageIds: string[];
   currentUserId: string;
+  members: MentionMember[];
 }
 
 export function ChannelContent({
@@ -16,6 +17,7 @@ export function ChannelContent({
   initialMessages,
   initialPinnedMessageIds,
   currentUserId,
+  members,
 }: ChannelContentProps) {
   const [pinnedMessageIds, setPinnedMessageIds] = useState<Set<string>>(
     () => new Set(initialPinnedMessageIds)
@@ -84,7 +86,7 @@ export function ChannelContent({
       />
 
       {/* Message input - fixed at bottom */}
-      <MessageInput targetId={channelId} targetType="channel" />
+      <MessageInput targetId={channelId} targetType="channel" members={members} />
     </>
   );
 }
