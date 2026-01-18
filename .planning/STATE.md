@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-17)
 
 **Core value:** Data sovereignty - Complete control over communication data, no third-party dependencies
-**Current focus:** Phase 6 - Attention Management
+**Current focus:** Phase 7 - Search
 
 ## Current Position
 
-Phase: 6 of 8 (Attention Management)
-Plan: 2 of 2 in current phase
-Status: Phase complete
-Last activity: 2026-01-18 - Completed 06-02-PLAN.md
+Phase: 7 of 8 (Search)
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-01-18 - Completed 07-01-PLAN.md
 
-Progress: █████████████████░ 86%
+Progress: ██████████████████░ 91%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 19
-- Average duration: 4.5 min
-- Total execution time: 86 min
+- Total plans completed: 20
+- Average duration: 4.4 min
+- Total execution time: 87 min
 
 **By Phase:**
 
@@ -33,9 +33,10 @@ Progress: █████████████████░ 86%
 | 4-threading-reactions | 3/3 | 17 min | ~6 min |
 | 5-mentions-notifications | 3/3 | 13 min | ~4 min |
 | 6-attention-management | 2/2 | 7 min | ~3.5 min |
+| 7-search | 1/2 | 1 min | 1 min |
 
 **Recent Trend:**
-- Last 5 plans: 6 min, 3 min, 4 min, 4 min, 3 min
+- Last 5 plans: 3 min, 4 min, 4 min, 3 min, 1 min
 - Trend: Stable
 
 ## Accumulated Context
@@ -97,6 +98,10 @@ Recent decisions affecting current work:
 | 6-02 | ChannelListClient separation | Server fetches channels, client handles real-time |
 | 6-02 | DMContent wrapper | Parallel pattern to ChannelContent for DMs |
 | 6-02 | Mark unread only for others | Cannot mark own messages as unread |
+| 7-01 | PostgreSQL native FTS | Data sovereignty over Meilisearch |
+| 7-01 | Generated tsvector column | Automatic index updates without triggers |
+| 7-01 | websearch_to_tsquery | Natural language query parsing |
+| 7-01 | Query-time permission filtering | Consistent access control via joins |
 
 ### Pending Todos
 
@@ -110,5 +115,5 @@ Database connection required before `npm run db:push` can verify schema.
 ## Session Continuity
 
 Last session: 2026-01-18
-Stopped at: Completed 06-02-PLAN.md (Phase 6 complete)
+Stopped at: Completed 07-01-PLAN.md
 Resume file: None
