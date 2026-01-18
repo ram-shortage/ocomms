@@ -45,3 +45,6 @@ next-env.d.ts
 public/uploads/avatars/*
 !public/uploads/avatars/.gitkeep
 TROUBLESHOOTING.md
+
+# Test artifacts
+cookies.txt

@@ -7,3 +7,6 @@ dist-server
 .env.local
 *.log
 .planning
+scripts
+tests
+TROUBLESHOOTING.md

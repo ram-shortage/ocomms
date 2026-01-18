@@ -96,26 +96,21 @@ async function seed() {
   console.log("Creating profiles...");
 
   const profilesData = [
-    { userId: usersData[0].id, displayName: "Alice", title: "Engineering Lead", timezone: "America/New_York", status: "Working on the new API" },
-    { userId: usersData[1].id, displayName: "Bob", title: "Senior Developer", timezone: "America/Los_Angeles", status: "In meetings until 3pm" },
-    { userId: usersData[2].id, displayName: "Carol", title: "Product Manager", timezone: "America/Chicago", status: "Reviewing sprint planning" },
-    { userId: usersData[3].id, displayName: "David", title: "DevOps Engineer", timezone: "Asia/Seoul", status: "Deploying to staging" },
-    { userId: usersData[4].id, displayName: "Emma", title: "UX Designer", timezone: "Europe/London", status: "Design review at 2pm" },
-    { userId: usersData[5].id, displayName: "Frank", title: "QA Engineer", timezone: "America/Denver", status: "Testing new features" },
-    { userId: usersData[6].id, displayName: "Grace", title: "Frontend Developer", timezone: "Asia/Tokyo", status: "Working from home" },
-    { userId: usersData[7].id, displayName: "Henry", title: "Backend Developer", timezone: "Europe/Berlin", status: "Code review time" },
+    { userId: usersData[0].id, displayName: "Alice", bio: "Engineering Lead - Working on the new API" },
+    { userId: usersData[1].id, displayName: "Bob", bio: "Senior Developer - In meetings until 3pm" },
+    { userId: usersData[2].id, displayName: "Carol", bio: "Product Manager - Reviewing sprint planning" },
+    { userId: usersData[3].id, displayName: "David", bio: "DevOps Engineer - Deploying to staging" },
+    { userId: usersData[4].id, displayName: "Emma", bio: "UX Designer - Design review at 2pm" },
+    { userId: usersData[5].id, displayName: "Frank", bio: "QA Engineer - Testing new features" },
+    { userId: usersData[6].id, displayName: "Grace", bio: "Frontend Developer - Working from home" },
+    { userId: usersData[7].id, displayName: "Henry", bio: "Backend Developer - Code review time" },
   ];
 
   for (const profile of profilesData) {
     await db.insert(schema.profiles).values({
-      id: crypto.randomUUID(),
       userId: profile.userId,
       displayName: profile.displayName,
-      title: profile.title,
-      timezone: profile.timezone,
-      status: profile.status,
-      createdAt: now,
-      updatedAt: now,
+      bio: profile.bio,
     });
   }
   console.log(`  Created ${profilesData.length} profiles\n`);
