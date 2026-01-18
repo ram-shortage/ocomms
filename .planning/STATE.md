@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-18)
 
 **Core value:** Data sovereignty — complete control over communication data
-**Current focus:** Phase 9 — Authorization & Data Integrity Fixes
+**Current focus:** Phase 9 — Authorization & Data Integrity Fixes (COMPLETE)
 
 ## Current Position
 
 Phase: 9 of 13 (Authorization & Data Integrity Fixes)
-Plan: 10 of 11 complete
-Status: In progress
-Last activity: 2026-01-18 — Completed 09-10-PLAN.md (Avatar Upload File Signature Validation)
+Plan: 11 of 11 complete
+Status: Phase complete
+Last activity: 2026-01-18 — Completed 09-11-PLAN.md (Middleware Session Validation)
 
-Progress: █████████░ 82% (v0.1.0 complete, v0.2.0 phase 9 in progress)
+Progress: █████████░ 85% (v0.1.0 complete, v0.2.0 phase 9 complete)
 
 ## Shipped Milestones
 
@@ -25,18 +25,18 @@ Progress: █████████░ 82% (v0.1.0 complete, v0.2.0 phase 9 in
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 10 (v0.2.0)
+- Total plans completed: 11 (v0.2.0)
 - Average duration: 2 min
-- Total execution time: 22 min
+- Total execution time: 24 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 09 | 10/11 | 22min | 2.2min |
+| 09 | 11/11 | 24min | 2.2min |
 
 **Recent Trend:**
-- Last 5 plans: 09-06 (2min), 09-09 (2min), 09-07 (2min), 09-08 (3min), 09-10 (2min)
+- Last 5 plans: 09-07 (2min), 09-08 (3min), 09-09 (2min), 09-10 (2min), 09-11 (2min)
 - Trend: Stable at ~2min/plan
 
 ## Accumulated Context
@@ -64,6 +64,8 @@ Key decisions from v0.1.0 are documented in PROJECT.md Key Decisions table.
 | 2026-01-18 | 09-08 | Nullable creator columns with onDelete set null | Schema consistency - notNull+set null is contradictory |
 | 2026-01-18 | 09-10 | Magic byte validation over MIME type | Client MIME type can be spoofed; magic bytes are actual file content |
 | 2026-01-18 | 09-10 | Server-derived file extension | Validated signature determines extension, not client filename |
+| 2026-01-18 | 09-11 | Fail-open on middleware validation errors | Prevents lockout; downstream pages re-check anyway |
+| 2026-01-18 | 09-11 | 5-minute session validation cache | Balances security (revalidate regularly) with performance (~1ms after first check) |
 
 ### Pending Todos
 
@@ -78,5 +80,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-18
-Stopped at: Completed 09-10-PLAN.md (Avatar Upload File Signature Validation)
+Stopped at: Completed 09-11-PLAN.md (Middleware Session Validation) - Phase 9 complete
 Resume file: None
