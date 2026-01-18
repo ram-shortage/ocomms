@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-17)
 
 **Core value:** Data sovereignty - Complete control over communication data, no third-party dependencies
-**Current focus:** Phase 7 - Search
+**Current focus:** Phase 8 - Self-Hosted Packaging
 
 ## Current Position
 
-Phase: 7 of 8 (Search)
-Plan: 2 of 2 in current phase
-Status: Phase complete
-Last activity: 2026-01-18 - Completed 07-02-PLAN.md
+Phase: 8 of 8 (Self-Hosted Packaging)
+Plan: 1 of 3 in current phase
+Status: In progress
+Last activity: 2026-01-18 - Completed 08-01-PLAN.md
 
-Progress: ███████████████████░ 95%
+Progress: ████████████████████░ 96%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 21
+- Total plans completed: 22
 - Average duration: 4.2 min
-- Total execution time: 89 min
+- Total execution time: 92 min
 
 **By Phase:**
 
@@ -34,9 +34,10 @@ Progress: ███████████████████░ 95%
 | 5-mentions-notifications | 3/3 | 13 min | ~4 min |
 | 6-attention-management | 2/2 | 7 min | ~3.5 min |
 | 7-search | 2/2 | 3 min | ~1.5 min |
+| 8-self-hosted-packaging | 1/3 | 3 min | 3 min |
 
 **Recent Trend:**
-- Last 5 plans: 4 min, 4 min, 3 min, 1 min, 2 min
+- Last 5 plans: 3 min, 1 min, 2 min, 3 min
 - Trend: Stable
 
 ## Accumulated Context
@@ -105,6 +106,10 @@ Recent decisions affecting current work:
 | 7-02 | URL-based search state | Shareable/bookmarkable search links via ?q= param |
 | 7-02 | Client wrapper pattern | SearchInputClient handles URL navigation |
 | 7-02 | useTransition for loading | Smooth navigation without blocking UI |
+| 8-01 | esbuild for server bundling | Fastest bundler, handles node externals |
+| 8-01 | Multi-stage Docker build | 70-80% smaller images |
+| 8-01 | Non-root container user | Security best practice |
+| 8-01 | Health check dependencies | Declarative startup ordering via service_healthy |
 
 ### Pending Todos
 
@@ -118,5 +123,5 @@ Database connection required before `npm run db:push` can verify schema.
 ## Session Continuity
 
 Last session: 2026-01-18
-Stopped at: Completed 07-02-PLAN.md (Phase 7 complete)
+Stopped at: Completed 08-01-PLAN.md
 Resume file: None
