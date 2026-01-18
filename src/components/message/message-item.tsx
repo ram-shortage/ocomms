@@ -3,15 +3,25 @@
 import { formatDistanceToNow } from "date-fns";
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { Message } from "@/lib/socket-events";
+import type { Message, ReactionGroup } from "@/lib/socket-events";
+import { ReactionPicker } from "./reaction-picker";
+import { ReactionDisplay } from "./reaction-display";
 
 interface MessageItemProps {
   message: Message;
   currentUserId: string;
   onDelete: (messageId: string) => void;
+  reactions: ReactionGroup[];
+  onToggleReaction: (messageId: string, emoji: string) => void;
 }
 
-export function MessageItem({ message, currentUserId, onDelete }: MessageItemProps) {
+export function MessageItem({
+  message,
+  currentUserId,
+  onDelete,
+  reactions,
+  onToggleReaction,
+}: MessageItemProps) {
   const isOwn = message.authorId === currentUserId;
   const isDeleted = message.deletedAt !== null && message.deletedAt !== undefined;
 
@@ -35,21 +45,33 @@ export function MessageItem({ message, currentUserId, onDelete }: MessageItemPro
         {isDeleted ? (
           <p className="text-gray-400 italic text-sm">[Message deleted]</p>
         ) : (
-          <p className="text-gray-700 whitespace-pre-wrap break-words">{message.content}</p>
+          <>
+            <p className="text-gray-700 whitespace-pre-wrap break-words">{message.content}</p>
+            <ReactionDisplay
+              reactions={reactions}
+              currentUserId={currentUserId}
+              onToggle={(emoji) => onToggleReaction(message.id, emoji)}
+            />
+          </>
         )}
       </div>
 
-      {/* Delete button - only for own non-deleted messages */}
-      {isOwn && !isDeleted && (
-        <Button
-          variant="ghost"
-          size="sm"
-          className="opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 p-0 text-gray-400 hover:text-red-500"
-          onClick={() => onDelete(message.id)}
-        >
-          <Trash2 className="h-4 w-4" />
-          <span className="sr-only">Delete message</span>
-        </Button>
+      {/* Action buttons - visible on hover for non-deleted messages */}
+      {!isDeleted && (
+        <div className="flex items-center gap-1">
+          <ReactionPicker onSelectEmoji={(emoji) => onToggleReaction(message.id, emoji)} />
+          {isOwn && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="opacity-0 group-hover:opacity-100 transition-opacity h-7 w-7 p-0 text-gray-400 hover:text-red-500"
+              onClick={() => onDelete(message.id)}
+            >
+              <Trash2 className="h-4 w-4" />
+              <span className="sr-only">Delete message</span>
+            </Button>
+          )}
+        </div>
       )}
     </div>
   );

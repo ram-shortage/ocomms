@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useSocket } from "@/lib/socket-client";
 import { MessageItem } from "./message-item";
-import type { Message } from "@/lib/socket-events";
+import type { Message, ReactionGroup } from "@/lib/socket-events";
 
 interface MessageListProps {
   initialMessages: Message[];
@@ -12,6 +12,9 @@ interface MessageListProps {
   currentUserId: string;
 }
 
+// Track reactions per message
+type ReactionsMap = Record<string, ReactionGroup[]>;
+
 export function MessageList({
   initialMessages,
   targetId,
@@ -19,6 +22,7 @@ export function MessageList({
   currentUserId,
 }: MessageListProps) {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
+  const [reactionsMap, setReactionsMap] = useState<ReactionsMap>({});
   const bottomRef = useRef<HTMLDivElement>(null);
   const socket = useSocket();
 
@@ -26,6 +30,25 @@ export function MessageList({
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  // Fetch reactions for all messages on mount and when messages change
+  useEffect(() => {
+    const messageIds = messages.map((m) => m.id);
+
+    for (const messageId of messageIds) {
+      // Skip if we already have reactions for this message
+      if (reactionsMap[messageId] !== undefined) continue;
+
+      socket.emit("reaction:get", { messageId }, (response) => {
+        if (response.success && response.reactions) {
+          setReactionsMap((prev) => ({
+            ...prev,
+            [messageId]: response.reactions!,
+          }));
+        }
+      });
+    }
+  }, [messages, socket, reactionsMap]);
 
   // Subscribe to real-time message events
   useEffect(() => {
@@ -37,6 +60,11 @@ export function MessageList({
 
       if (belongsToTarget) {
         setMessages((prev) => [...prev, message]);
+        // Initialize empty reactions for new message
+        setReactionsMap((prev) => ({
+          ...prev,
+          [message.id]: [],
+        }));
       }
     }
 
@@ -50,18 +78,88 @@ export function MessageList({
       );
     }
 
+    function handleReactionUpdate(data: {
+      messageId: string;
+      emoji: string;
+      userId: string;
+      userName: string;
+      action: "added" | "removed";
+    }) {
+      setReactionsMap((prev) => {
+        const messageReactions = [...(prev[data.messageId] || [])];
+        const existingIndex = messageReactions.findIndex((r) => r.emoji === data.emoji);
+
+        if (data.action === "added") {
+          if (existingIndex >= 0) {
+            // Add user to existing reaction group
+            const existing = messageReactions[existingIndex];
+            if (!existing.userIds.includes(data.userId)) {
+              messageReactions[existingIndex] = {
+                ...existing,
+                count: existing.count + 1,
+                userIds: [...existing.userIds, data.userId],
+                userNames: [...existing.userNames, data.userName],
+              };
+            }
+          } else {
+            // Create new reaction group
+            messageReactions.push({
+              emoji: data.emoji,
+              count: 1,
+              userIds: [data.userId],
+              userNames: [data.userName],
+            });
+          }
+        } else {
+          // action === "removed"
+          if (existingIndex >= 0) {
+            const existing = messageReactions[existingIndex];
+            const userIndex = existing.userIds.indexOf(data.userId);
+            if (userIndex >= 0) {
+              if (existing.count === 1) {
+                // Remove the entire reaction group
+                messageReactions.splice(existingIndex, 1);
+              } else {
+                // Remove user from reaction group
+                messageReactions[existingIndex] = {
+                  ...existing,
+                  count: existing.count - 1,
+                  userIds: existing.userIds.filter((id) => id !== data.userId),
+                  userNames: existing.userNames.filter((_, i) => i !== userIndex),
+                };
+              }
+            }
+          }
+        }
+
+        return {
+          ...prev,
+          [data.messageId]: messageReactions,
+        };
+      });
+    }
+
     socket.on("message:new", handleNewMessage);
     socket.on("message:deleted", handleDeletedMessage);
+    socket.on("reaction:update", handleReactionUpdate);
 
     return () => {
       socket.off("message:new", handleNewMessage);
       socket.off("message:deleted", handleDeletedMessage);
+      socket.off("reaction:update", handleReactionUpdate);
     };
   }, [socket, targetId, targetType]);
 
   const handleDelete = useCallback(
     (messageId: string) => {
       socket.emit("message:delete", { messageId });
+    },
+    [socket]
+  );
+
+  const handleToggleReaction = useCallback(
+    (messageId: string, emoji: string) => {
+      socket.emit("reaction:toggle", { messageId, emoji });
     },
     [socket]
   );
@@ -82,6 +180,8 @@ export function MessageList({
           message={message}
           currentUserId={currentUserId}
           onDelete={handleDelete}
+          reactions={reactionsMap[message.id] || []}
+          onToggleReaction={handleToggleReaction}
         />
       ))}
       <div ref={bottomRef} />
