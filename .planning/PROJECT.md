@@ -8,6 +8,20 @@ OComms is a self-hosted team communication platform - a Slack-like experience th
 
 **Data sovereignty**: Complete control over communication data, no third-party dependencies
 
+## Current Milestone: v0.3.0 Mobile & Polish
+
+**Goal:** Complete UI gaps, add PWA support with offline capability and push notifications for mobile access.
+
+**Target features:**
+- UI polish: sidebar navigation, logout button, admin UIs (audit viewer, data export)
+- PWA foundation: manifest, service worker, install prompt
+- Mobile layout: bottom tab bar navigation, responsive design
+- Offline support: 7-day message cache with IndexedDB, offline send queue, background sync
+- Push notifications: Web Push API, subscription management, mentions/DM alerts
+- Documentation: Complete USER-SETUP.md, increase HSTS max-age
+
+---
+
 ## Current State
 
 **Version:** v0.2.0 (Security Hardening) - Shipped 2026-01-18
@@ -88,7 +102,13 @@ Requirements shipped and working in production:
 
 ### Active
 
-(None - planning next milestone)
+**v0.3.0 - Mobile & Polish:**
+- UI Polish: Sidebar navigation, logout button, admin UIs
+- PWA: Manifest, service worker, install prompt
+- Mobile: Bottom tab bar, responsive layout
+- Offline: IndexedDB cache (7 days), send queue, background sync
+- Push: Web Push API notifications for mentions/DMs
+- Docs: USER-SETUP.md, HSTS hardening
 
 ### Out of Scope
 
@@ -101,7 +121,7 @@ Requirements shipped and working in production:
 | Canvas/Docs | Different product |
 | Nested threading | Complexity trap, no major platform does this |
 | Read receipts | Privacy concerns, complexity at scale |
-| Mobile native apps | Web-first for now |
+| Mobile native apps | PWA provides mobile access; native apps not needed |
 
 ---
 
@@ -143,4 +163,4 @@ Requirements shipped and working in production:
 ---
 
 ---
-*Last updated: 2026-01-18 after v0.2.0 milestone*
+*Last updated: 2026-01-18 after v0.3.0 milestone planning*
