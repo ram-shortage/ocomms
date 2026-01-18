@@ -17,15 +17,11 @@ import { db } from "../src/db";
 import * as schema from "../src/db/schema";
 import { eq } from "drizzle-orm";
 import { nanoid } from "nanoid";
-import * as bcrypt from "bcryptjs";
+// Use better-auth's password hashing (scrypt-based)
+import { hashPassword } from "better-auth/crypto";
 
 // Helper to generate IDs like better-auth does
 const genId = () => nanoid(24);
-
-// Hash password like better-auth
-async function hashPassword(password: string): Promise<string> {
-  return bcrypt.hash(password, 10);
-}
 
 // Test users data
 const TEST_PASSWORD = "password123"; // All test users use this password
