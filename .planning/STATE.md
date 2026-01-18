@@ -43,6 +43,9 @@ Progress: [##########..............] 65% (13/20 phases)
 
 | Decision | Rationale | Plan |
 |----------|-----------|------|
+| SECFIX-02: Middleware fails closed | Redirect to /login on validation error | 14-01 |
+| SECFIX-04: getChannel returns null for non-org-members | Prevents revealing channel existence | 14-01 |
+| SECFIX-08: Audit logger uses async fs/promises | Non-blocking writes | 14-01 |
 | Rate limit: 10 messages/60s | Balance UX with spam prevention | 14-02 |
 | Message length: 10,000 chars | Per CONTEXT.md decision | 14-02 |
 | Sequence retry: 3 attempts | Handle race conditions gracefully | 14-02 |
