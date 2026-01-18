@@ -2,7 +2,8 @@ import { pgTable, text, timestamp, boolean, uuid } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
 // better-auth core tables
-export const users = pgTable("users", {
+// Export as 'user' (singular) for better-auth adapter compatibility
+export const user = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
@@ -12,11 +13,11 @@ export const users = pgTable("users", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
-export const sessions = pgTable("sessions", {
+export const session = pgTable("sessions", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id")
     .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
+    .references(() => user.id, { onDelete: "cascade" }),
   token: text("token").notNull().unique(),
   expiresAt: timestamp("expires_at").notNull(),
   ipAddress: text("ip_address"),
@@ -25,11 +26,11 @@ export const sessions = pgTable("sessions", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
-export const accounts = pgTable("accounts", {
+export const account = pgTable("accounts", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id")
     .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
+    .references(() => user.id, { onDelete: "cascade" }),
   accountId: text("account_id").notNull(),
   providerId: text("provider_id").notNull(),
   accessToken: text("access_token"),
@@ -43,7 +44,7 @@ export const accounts = pgTable("accounts", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
-export const verifications = pgTable("verifications", {
+export const verification = pgTable("verifications", {
   id: uuid("id").primaryKey().defaultRandom(),
   identifier: text("identifier").notNull(),
   value: text("value").notNull(),
@@ -53,7 +54,7 @@ export const verifications = pgTable("verifications", {
 });
 
 // better-auth organization plugin tables
-export const organizations = pgTable("organizations", {
+export const organization = pgTable("organizations", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull(),
   slug: text("slug").unique(),
@@ -62,27 +63,27 @@ export const organizations = pgTable("organizations", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
-export const members = pgTable("members", {
+export const member = pgTable("members", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id")
     .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
+    .references(() => user.id, { onDelete: "cascade" }),
   organizationId: uuid("organization_id")
     .notNull()
-    .references(() => organizations.id, { onDelete: "cascade" }),
+    .references(() => organization.id, { onDelete: "cascade" }),
   role: text("role").notNull().default("member"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
-export const invitations = pgTable("invitations", {
+export const invitation = pgTable("invitations", {
   id: uuid("id").primaryKey().defaultRandom(),
   email: text("email").notNull(),
   organizationId: uuid("organization_id")
     .notNull()
-    .references(() => organizations.id, { onDelete: "cascade" }),
+    .references(() => organization.id, { onDelete: "cascade" }),
   inviterId: uuid("inviter_id")
     .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
+    .references(() => user.id, { onDelete: "cascade" }),
   role: text("role").notNull().default("member"),
   status: text("status").notNull().default("pending"),
   expiresAt: timestamp("expires_at").notNull(),
@@ -90,13 +91,22 @@ export const invitations = pgTable("invitations", {
 });
 
 // Relations for organization members
-export const membersRelations = relations(members, ({ one }) => ({
-  user: one(users, {
-    fields: [members.userId],
-    references: [users.id],
+export const memberRelations = relations(member, ({ one }) => ({
+  user: one(user, {
+    fields: [member.userId],
+    references: [user.id],
   }),
-  organization: one(organizations, {
-    fields: [members.organizationId],
-    references: [organizations.id],
+  organization: one(organization, {
+    fields: [member.organizationId],
+    references: [organization.id],
   }),
 }));
+
+// Backward-compatible aliases (plural forms used throughout codebase)
+export const users = user;
+export const sessions = session;
+export const accounts = account;
+export const verifications = verification;
+export const organizations = organization;
+export const members = member;
+export const invitations = invitation;
