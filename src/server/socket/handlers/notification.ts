@@ -1,6 +1,6 @@
 import type { Server, Socket } from "socket.io";
 import { db } from "@/db";
-import { notifications, users, channelMembers, channels, channelNotificationSettings } from "@/db/schema";
+import { notifications, users, channelMembers, channels, channelNotificationSettings, members } from "@/db/schema";
 import { eq, and, isNull, desc } from "drizzle-orm";
 import { getRoomName } from "../rooms";
 import type { ClientToServerEvents, ServerToClientEvents, SocketData, Message, Notification } from "@/lib/socket-events";
@@ -97,12 +97,32 @@ export async function createNotifications(params: {
 
   for (const mention of mentions) {
     if (mention.type === "user") {
-      // Find user by name or username
-      const [targetUser] = await db
-        .select({ id: users.id })
-        .from(users)
-        .where(eq(users.name, mention.value))
-        .limit(1);
+      // SECFIX-01: Scope user lookup to organization
+      let targetUser: { id: string } | undefined;
+
+      if (workspaceId) {
+        // Channel context - require org membership
+        const [result] = await db
+          .select({ id: users.id })
+          .from(users)
+          .innerJoin(members, eq(members.userId, users.id))
+          .where(
+            and(
+              eq(users.name, mention.value),
+              eq(members.organizationId, workspaceId)
+            )
+          )
+          .limit(1);
+        targetUser = result;
+      } else if (conversationId) {
+        // DM context - lookup by name (DMs are already scoped to conversation participants)
+        const [result] = await db
+          .select({ id: users.id })
+          .from(users)
+          .where(eq(users.name, mention.value))
+          .limit(1);
+        targetUser = result;
+      }
 
       if (targetUser && targetUser.id !== senderId && !notifiedUserIds.has(targetUser.id)) {
         // Check notification settings if in channel context

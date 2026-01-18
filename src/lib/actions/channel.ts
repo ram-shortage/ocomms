@@ -209,6 +209,12 @@ export async function getChannel(organizationId: string, slug: string) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) throw new Error("Unauthorized");
 
+  // SECFIX-04: Verify organization membership FIRST
+  const isOrgMember = await verifyOrgMembership(session.user.id, organizationId);
+  if (!isOrgMember) {
+    return null; // Don't reveal channel exists - per CONTEXT.md
+  }
+
   const channel = await db.query.channels.findFirst({
     where: and(
       eq(channels.organizationId, organizationId),
