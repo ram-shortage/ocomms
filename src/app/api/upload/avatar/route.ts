@@ -8,8 +8,60 @@ import { db } from "@/db";
 import { profiles } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
-const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 const MAX_SIZE = 2 * 1024 * 1024; // 2MB
+
+/**
+ * Validate file signature (magic bytes) and return detected extension.
+ * Returns null if file signature doesn't match any allowed image type.
+ */
+function validateFileSignature(bytes: Uint8Array): string | null {
+  // Check JPEG: starts with FF D8 FF
+  if (bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) {
+    return "jpg";
+  }
+
+  // Check PNG: starts with 89 50 4E 47 0D 0A 1A 0A
+  if (
+    bytes[0] === 0x89 &&
+    bytes[1] === 0x50 &&
+    bytes[2] === 0x4e &&
+    bytes[3] === 0x47 &&
+    bytes[4] === 0x0d &&
+    bytes[5] === 0x0a &&
+    bytes[6] === 0x1a &&
+    bytes[7] === 0x0a
+  ) {
+    return "png";
+  }
+
+  // Check GIF: starts with GIF87a or GIF89a
+  if (
+    bytes[0] === 0x47 &&
+    bytes[1] === 0x49 &&
+    bytes[2] === 0x46 &&
+    bytes[3] === 0x38 &&
+    (bytes[4] === 0x37 || bytes[4] === 0x39) &&
+    bytes[5] === 0x61
+  ) {
+    return "gif";
+  }
+
+  // Check WebP: starts with RIFF....WEBP
+  if (
+    bytes[0] === 0x52 &&
+    bytes[1] === 0x49 &&
+    bytes[2] === 0x46 &&
+    bytes[3] === 0x46 &&
+    bytes[8] === 0x57 &&
+    bytes[9] === 0x45 &&
+    bytes[10] === 0x42 &&
+    bytes[11] === 0x50
+  ) {
+    return "webp";
+  }
+
+  return null;
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -29,10 +81,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    // Validate file type
-    if (!ALLOWED_TYPES.includes(file.type)) {
+    // Read file bytes for signature validation
+    const arrayBuffer = await file.arrayBuffer();
+    const uint8 = new Uint8Array(arrayBuffer);
+
+    // Validate file signature (magic bytes) - don't trust client MIME type
+    const validatedExtension = validateFileSignature(uint8);
+    if (!validatedExtension) {
       return NextResponse.json(
-        { error: "Invalid file type. Allowed: JPEG, PNG, WebP, GIF" },
+        {
+          error:
+            "Invalid file type. File signature doesn't match allowed image types (JPEG, PNG, WebP, GIF)",
+        },
         { status: 400 }
       );
     }
@@ -45,18 +105,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate unique filename
-    const ext = file.name.split(".").pop() || "jpg";
-    const filename = `${uuid()}.${ext}`;
+    // Generate unique filename with validated extension (not client-provided)
+    const filename = `${uuid()}.${validatedExtension}`;
     const uploadDir = join(process.cwd(), "public", "uploads", "avatars");
     const filepath = join(uploadDir, filename);
 
     // Ensure upload directory exists
     await mkdir(uploadDir, { recursive: true });
 
-    // Write file to disk
-    const bytes = await file.arrayBuffer();
-    await writeFile(filepath, Buffer.from(bytes));
+    // Write file to disk (bytes already read above for validation)
+    await writeFile(filepath, Buffer.from(arrayBuffer));
 
     // Path to store in database (public URL path)
     const avatarPath = `/uploads/avatars/${filename}`;
