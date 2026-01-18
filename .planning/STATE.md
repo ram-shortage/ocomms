@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-18)
 ## Current Position
 
 Phase: 13 of 13 (Audit Logging)
-Plan: Not started
-Status: Ready to plan
-Last activity: 2026-01-18 — Phase 12 complete (4 plans, 2 requirements verified)
+Plan: 1 of ? (Audit Logger Module)
+Status: In progress
+Last activity: 2026-01-18 — Completed 13-01-PLAN.md (Audit Logger Module)
 
-Progress: █████████░ 97% (v0.1.0 complete, v0.2.0 phases 9-12 complete)
+Progress: █████████░ 97% (v0.1.0 complete, v0.2.0 phases 9-12 complete, phase 13 started)
 
 ## Shipped Milestones
 
@@ -82,6 +82,8 @@ Key decisions from v0.1.0 are documented in PROJECT.md Key Decisions table.
 | 2026-01-18 | 12-03 | requestPasswordReset uses direct fetch | better-auth client doesn't export password reset method |
 | 2026-01-18 | 12-03 | Password reset hook queries verification.identifier | better-auth stores tokens as reset-password:{token} in identifier |
 | 2026-01-18 | 12-03 | Unlock button visible for all non-self members | Harmless to unlock non-locked user; simpler UX |
+| 2026-01-18 | 13-01 | Only log failures for existing users | Prevents confirming account existence via audit logs |
+| 2026-01-18 | 13-01 | Fire-and-forget audit logging | Never blocks request flow; errors logged to console |
 
 ### Pending Todos
 
@@ -97,6 +99,6 @@ None active.
 
 ## Session Continuity
 
-Last session: 2026-01-18T18:03Z
-Stopped at: Completed 12-04-PLAN.md (Verify Authentication Hardening) - Phase 12 complete
+Last session: 2026-01-18T18:54Z
+Stopped at: Completed 13-01-PLAN.md (Audit Logger Module)
 Resume file: None
