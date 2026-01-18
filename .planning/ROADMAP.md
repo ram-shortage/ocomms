@@ -19,7 +19,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 5: Mentions & Notifications** - @mentions, notification routing
 - [x] **Phase 6: Attention Management** - Unread counts, read state
 - [x] **Phase 7: Search** - Full-text message search
-- [ ] **Phase 8: Self-Hosted Packaging** - Docker deployment, backup/restore
+- [x] **Phase 8: Self-Hosted Packaging** - Docker deployment, backup/restore
 
 ## Phase Details
 
@@ -174,9 +174,9 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 08-01: Docker Compose configuration
-- [ ] 08-02: Backup and restore tooling
-- [ ] 08-03: Data export
+- [x] 08-01: Docker Compose configuration
+- [x] 08-02: Backup and restore tooling
+- [x] 08-03: Data export
 
 ## Progress
 
@@ -192,6 +192,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 5. Mentions & Notifications | 3/3 | Complete | 2026-01-18 |
 | 6. Attention Management | 2/2 | Complete | 2026-01-18 |
 | 7. Search | 2/2 | Complete | 2026-01-18 |
-| 8. Self-Hosted Packaging | 0/3 | Not started | - |
+| 8. Self-Hosted Packaging | 3/3 | Complete | 2026-01-18 |
 
-**Total:** 20/23 plans complete
+**Total:** 23/23 plans complete

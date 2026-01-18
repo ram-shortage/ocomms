@@ -94,11 +94,11 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Self-Hosted Infrastructure
 
-- [ ] **INFR-01**: Platform deploys with single docker-compose command
-- [ ] **INFR-02**: Platform runs without external service dependencies
-- [ ] **INFR-03**: Admin can backup all data
-- [ ] **INFR-04**: Admin can restore from backup
-- [ ] **INFR-05**: Admin can export all data in standard format
+- [x] **INFR-01**: Platform deploys with single docker-compose command
+- [x] **INFR-02**: Platform runs without external service dependencies
+- [x] **INFR-03**: Admin can backup all data
+- [x] **INFR-04**: Admin can restore from backup
+- [x] **INFR-05**: Admin can export all data in standard format
 
 ## v2 Requirements
 
@@ -218,11 +218,11 @@ Which phases cover which requirements.
 | REAC-01 | Phase 4 | Complete |
 | REAC-02 | Phase 4 | Complete |
 | REAC-03 | Phase 4 | Complete |
-| INFR-01 | Phase 8 | Pending |
-| INFR-02 | Phase 8 | Pending |
-| INFR-03 | Phase 8 | Pending |
-| INFR-04 | Phase 8 | Pending |
-| INFR-05 | Phase 8 | Pending |
+| INFR-01 | Phase 8 | Complete |
+| INFR-02 | Phase 8 | Complete |
+| INFR-03 | Phase 8 | Complete |
+| INFR-04 | Phase 8 | Complete |
+| INFR-05 | Phase 8 | Complete |
 
 **Coverage:**
 - v1 requirements: 51 total
@@ -231,4 +231,4 @@ Which phases cover which requirements.
 
 ---
 *Requirements defined: 2026-01-17*
-*Last updated: 2026-01-18 after Phase 7 completion*
+*Last updated: 2026-01-18 after Phase 8 completion*
