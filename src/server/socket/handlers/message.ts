@@ -7,7 +7,7 @@ import type { ClientToServerEvents, ServerToClientEvents, SocketData, Message } 
 import { users } from "@/db/schema";
 import { parseMentions } from "@/lib/mentions";
 import { createNotifications } from "./notification";
-import { getPresenceManager } from "../index";
+import { getPresenceManager, getUnreadManager } from "../index";
 
 type SocketIOServer = Server<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
 type SocketWithData = Socket<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
@@ -134,6 +134,20 @@ async function handleSendMessage(
       }).catch((err) => {
         console.error("[Message] Error creating notifications:", err);
       });
+    }
+
+    // Notify members of unread count increment
+    const unreadManager = getUnreadManager();
+    if (unreadManager) {
+      if (targetType === "channel") {
+        unreadManager.notifyUnreadIncrement(targetId, userId, sequence).catch((err) => {
+          console.error("[Message] Error notifying unread increment:", err);
+        });
+      } else {
+        unreadManager.notifyConversationUnreadIncrement(targetId, userId, sequence).catch((err) => {
+          console.error("[Message] Error notifying conversation unread increment:", err);
+        });
+      }
     }
   } catch (error) {
     console.error("[Message] Error sending message:", error);

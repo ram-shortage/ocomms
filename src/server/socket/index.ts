@@ -8,6 +8,7 @@ import { handleMessageEvents } from "./handlers/message";
 import { handleReactionEvents } from "./handlers/reaction";
 import { handleThreadEvents } from "./handlers/thread";
 import { handleNotificationEvents } from "./handlers/notification";
+import { setupUnreadHandlers, handleUnreadEvents, type UnreadManager } from "./handlers/unread";
 
 type SocketIOServer = Server<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
 type TypedSocket = Socket<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
@@ -20,12 +21,23 @@ interface SocketWithPresence extends TypedSocket {
 // Module-level presence manager (set during setup)
 let presenceManager: PresenceManager | null = null;
 
+// Module-level unread manager (always available)
+let unreadManager: UnreadManager | null = null;
+
 /**
  * Get the presence manager instance.
  * Returns null if Redis is not configured.
  */
 export function getPresenceManager(): PresenceManager | null {
   return presenceManager;
+}
+
+/**
+ * Get the unread manager instance.
+ * Returns null only before setupSocketHandlers is called.
+ */
+export function getUnreadManager(): UnreadManager | null {
+  return unreadManager;
 }
 
 /**
@@ -43,6 +55,10 @@ export function setupSocketHandlers(io: SocketIOServer, redis?: Redis | null) {
   } else {
     console.log("[Socket.IO] Presence features disabled (no Redis)");
   }
+
+  // Setup unread manager (works with or without Redis)
+  unreadManager = setupUnreadHandlers(io, redis ?? null);
+  console.log("[Socket.IO] Unread manager initialized");
 
   // Apply authentication middleware
   io.use(authMiddleware);
@@ -67,6 +83,11 @@ export function setupSocketHandlers(io: SocketIOServer, redis?: Redis | null) {
 
     // Setup notification event handlers
     handleNotificationEvents(socket, io);
+
+    // Setup unread event handlers
+    if (unreadManager) {
+      handleUnreadEvents(socket, io, unreadManager);
+    }
 
     // Join user to their authorized rooms
     try {
