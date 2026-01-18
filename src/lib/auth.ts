@@ -12,7 +12,7 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
-    requireEmailVerification: true,
+    requireEmailVerification: !!process.env.SMTP_HOST, // Only require if SMTP configured
     minPasswordLength: 8,
   },
   emailVerification: {
