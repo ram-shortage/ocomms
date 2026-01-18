@@ -10,6 +10,7 @@ import { handleThreadEvents } from "./handlers/thread";
 import { handleNotificationEvents } from "./handlers/notification";
 import { setupUnreadHandlers, handleUnreadEvents, type UnreadManager } from "./handlers/unread";
 import { isChannelMember, isConversationParticipant, isOrganizationMember } from "./authz";
+import { auditLog, AuditEventType } from "@/lib/audit-logger";
 
 type SocketIOServer = Server<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
 type TypedSocket = Socket<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
@@ -105,6 +106,15 @@ export function setupSocketHandlers(io: SocketIOServer, redis?: Redis | null) {
         if (!isMember) {
           socket.emit("error", { message: "Not authorized to join this channel" });
           console.log(`[Socket.IO] Unauthorized room:join attempt: user ${userId} -> channel ${data.roomId}`);
+          auditLog({
+            eventType: AuditEventType.AUTHZ_FAILURE,
+            userId,
+            details: {
+              action: "room:join",
+              resourceType: "channel",
+              resourceId: data.roomId,
+            },
+          });
           return;
         }
       } else {
@@ -112,6 +122,15 @@ export function setupSocketHandlers(io: SocketIOServer, redis?: Redis | null) {
         if (!isParticipant) {
           socket.emit("error", { message: "Not authorized to join this conversation" });
           console.log(`[Socket.IO] Unauthorized room:join attempt: user ${userId} -> dm ${data.roomId}`);
+          auditLog({
+            eventType: AuditEventType.AUTHZ_FAILURE,
+            userId,
+            details: {
+              action: "room:join",
+              resourceType: "conversation",
+              resourceId: data.roomId,
+            },
+          });
           return;
         }
       }
@@ -132,6 +151,15 @@ export function setupSocketHandlers(io: SocketIOServer, redis?: Redis | null) {
       if (!isMember) {
         socket.emit("error", { message: "Not authorized to join this workspace" });
         console.log(`[Socket.IO] Unauthorized workspace:join attempt: user ${userId} -> workspace ${workspaceId}`);
+        auditLog({
+          eventType: AuditEventType.AUTHZ_FAILURE,
+          userId,
+          details: {
+            action: "workspace:join",
+            resourceType: "organization",
+            resourceId: workspaceId,
+          },
+        });
         return;
       }
 
