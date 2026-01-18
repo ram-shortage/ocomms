@@ -44,6 +44,9 @@ next-env.d.ts
 # Uploaded files
 public/uploads/avatars/*
 !public/uploads/avatars/.gitkeep
+
+# SSL certificates (generated at deployment)
+/certs/
 TROUBLESHOOTING.md
 
 # Test artifacts
