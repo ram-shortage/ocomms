@@ -5,19 +5,40 @@ import * as schema from "./schema";
 
 export { sql };
 
-const connectionString = process.env.DATABASE_URL!;
+const connectionString = process.env.DATABASE_URL;
 
-// Determine SSL mode: use sslmode from URL if specified, otherwise require in production
-const useSSL =
-  connectionString.includes("sslmode=") ||
-  process.env.NODE_ENV === "production";
+// Create database connection only when DATABASE_URL is available
+// During Next.js build phase, DATABASE_URL may not be set
+function createDb() {
+  if (!connectionString) {
+    throw new Error("DATABASE_URL environment variable is required");
+  }
 
-const client = postgres(connectionString, {
-  // postgres.js accepts: false, true, 'require', 'prefer', or tls.connect options
-  ssl: useSSL ? "require" : false,
-});
+  // Determine SSL mode: use sslmode from URL if specified, otherwise require in production
+  const useSSL =
+    connectionString.includes("sslmode=") ||
+    process.env.NODE_ENV === "production";
 
-export const db = drizzle(client, {
-  schema,
-  casing: "snake_case",
+  const client = postgres(connectionString, {
+    // postgres.js accepts: false, true, 'require', 'prefer', or tls.connect options
+    ssl: useSSL ? "require" : false,
+  });
+
+  return drizzle(client, {
+    schema,
+    casing: "snake_case",
+  });
+}
+
+// Lazy initialization - db is only created when first accessed at runtime
+// This allows Next.js build to complete without DATABASE_URL
+let _db: ReturnType<typeof createDb> | null = null;
+
+export const db = new Proxy({} as ReturnType<typeof createDb>, {
+  get(_target, prop) {
+    if (!_db) {
+      _db = createDb();
+    }
+    return (_db as unknown as Record<string | symbol, unknown>)[prop];
+  },
 });
