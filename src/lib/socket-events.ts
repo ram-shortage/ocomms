@@ -74,7 +74,7 @@ export interface ServerToClientEvents {
   "notification:new": (notification: Notification) => void;
   "notification:read": (data: { notificationId: string }) => void;
   "notification:readAll": () => void;
-  error: (data: { message: string }) => void;
+  error: (data: { message: string; code?: string; retryAfter?: number }) => void;
 }
 
 export interface ClientToServerEvents {
