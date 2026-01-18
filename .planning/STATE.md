@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-17)
 
 **Core value:** Data sovereignty - Complete control over communication data, no third-party dependencies
-**Current focus:** Phase 4 - Threading & Reactions
+**Current focus:** Phase 4 Complete - Moving to Phase 5
 
 ## Current Position
 
 Phase: 4 of 8 (Threading & Reactions)
-Plan: 2 of 3 in current phase
-Status: In progress
-Last activity: 2026-01-18 - Completed 04-01-PLAN.md (Message Threading)
+Plan: 3 of 3 in current phase
+Status: Phase complete
+Last activity: 2026-01-18 - Completed 04-03-PLAN.md (Pinned Messages)
 
-Progress: █████████░ 54%
+Progress: ██████████░ 58%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 13
-- Average duration: 4.7 min
-- Total execution time: 61 min
+- Total plans completed: 14
+- Average duration: 4.6 min
+- Total execution time: 66 min
 
 **By Phase:**
 
@@ -30,10 +30,10 @@ Progress: █████████░ 54%
 | 1-foundation | 4/4 | 16 min | 4 min |
 | 2-channels-dms | 3/3 | 17 min | ~6 min |
 | 3-real-time-messaging | 3/3 | 16 min | ~5 min |
-| 4-threading-reactions | 2/3 | 12 min | 6 min |
+| 4-threading-reactions | 3/3 | 17 min | ~6 min |
 
 **Recent Trend:**
-- Last 5 plans: 5 min, 3 min, 8 min, 3 min, 9 min
+- Last 5 plans: 3 min, 8 min, 3 min, 9 min, 5 min
 - Trend: Stable
 
 ## Accumulated Context
@@ -78,6 +78,8 @@ Recent decisions affecting current work:
 | 4-02 | frimousse emoji picker | <5KB vs 50KB alternatives, shadcn integration |
 | 4-02 | Composite unique for reactions | Race-safe, prevents duplicate emoji per user |
 | 4-03 | REST API for pins | Low frequency ops, no real-time broadcast needed |
+| 4-03 | Client wrapper for pin state | Separate server fetching from client state |
+| 4-03 | Optimistic pin updates | Immediate UI feedback, revert on failure |
 
 ### Pending Todos
 
@@ -91,5 +93,5 @@ Database connection required before `npm run db:push` can verify schema.
 ## Session Continuity
 
 Last session: 2026-01-18
-Stopped at: Completed 04-01-PLAN.md (Message Threading)
+Stopped at: Completed 04-03-PLAN.md (Pinned Messages) - Phase 4 complete
 Resume file: None
