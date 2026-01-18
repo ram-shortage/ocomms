@@ -8,6 +8,21 @@ OComms is a self-hosted team communication platform - a Slack-like experience th
 
 **Data sovereignty**: Complete control over communication data, no third-party dependencies
 
+## Current Milestone: v0.2.0 Security Hardening
+
+**Goal:** Production-ready security baseline with encrypted transport, hardened authentication, and audit trail.
+
+**Target features:**
+- HTTPS/SSL with Let's Encrypt auto-renewal
+- Security headers (CSP, HSTS, X-Frame-Options, X-Content-Type-Options)
+- Rate limiting on authentication and API endpoints
+- Password strength validation
+- Database connection encryption (SSL)
+- Audit logging for security events
+- Account lockout after failed login attempts
+
+---
+
 ## Current State
 
 **Version:** v0.1.0 (Full Conversation) - Shipped 2026-01-18
@@ -63,9 +78,15 @@ Requirements shipped and working in production:
 
 ### Active
 
-Requirements for next milestone (to be defined):
+Requirements for v0.2.0 Security Hardening:
 
-- None yet - run `/gsd:define-requirements` for next milestone
+- [ ] SEC-01: HTTPS/SSL with Let's Encrypt auto-renewal
+- [ ] SEC-02: Security headers (CSP, HSTS, X-Frame-Options, X-Content-Type-Options)
+- [ ] SEC-03: Rate limiting on login, signup, and sensitive API endpoints
+- [ ] SEC-04: Password strength validation (minimum length, complexity rules)
+- [ ] SEC-05: Database connection SSL encryption
+- [ ] SEC-06: Audit logging for security events (logins, failed attempts, admin actions)
+- [ ] SEC-07: Account lockout after repeated failed login attempts
 
 ### Out of Scope
 
@@ -114,4 +135,4 @@ Requirements for next milestone (to be defined):
 
 ---
 
-*Last updated: 2026-01-18 after v0.1.0 milestone*
+*Last updated: 2026-01-18 after starting v0.2.0 milestone*

@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-18)
 
 **Core value:** Data sovereignty - Complete control over communication data, no third-party dependencies
-**Current focus:** Planning next milestone
+**Current focus:** v0.2.0 Security Hardening
 
 ## Current Position
 
-Phase: Milestone complete
-Plan: N/A
-Status: Ready for next milestone
-Last activity: 2026-01-18 — v0.1.0 milestone archived
+Phase: Not started
+Plan: —
+Status: Defining requirements
+Last activity: 2026-01-18 — Milestone v0.2.0 started
 
-Progress: Milestone v0.1.0 shipped
+Progress: Requirements defined, ready for roadmap
 
 ## Shipped Milestones
 
@@ -46,7 +46,6 @@ Resume file: None
 
 ## Next Steps
 
-1. `/gsd:discuss-milestone` — thinking partner for next milestone direction
-2. `/gsd:new-milestone` — update PROJECT.md with new goals
-3. `/gsd:define-requirements` — scope what to build next
-4. `/gsd:create-roadmap` — plan how to build it
+1. `/gsd:create-roadmap` — create phases for v0.2.0 Security Hardening
+2. `/gsd:plan-phase 1` — plan first phase
+3. `/gsd:execute-phase 1` — implement first phase
