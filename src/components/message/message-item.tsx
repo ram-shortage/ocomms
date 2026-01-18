@@ -1,7 +1,7 @@
 "use client";
 
 import { formatDistanceToNow } from "date-fns";
-import { Trash2, MessageSquare, Pin } from "lucide-react";
+import { Trash2, MessageSquare, Pin, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Message, ReactionGroup } from "@/lib/socket-events";
 import { ReactionPicker } from "./reaction-picker";
@@ -20,6 +20,7 @@ interface MessageItemProps {
   onPin?: (messageId: string) => void;
   onUnpin?: (messageId: string) => void;
   isChannelMessage?: boolean;
+  onMarkUnread?: (messageId: string) => void;
 }
 
 export function MessageItem({
@@ -34,6 +35,7 @@ export function MessageItem({
   onPin,
   onUnpin,
   isChannelMessage = false,
+  onMarkUnread,
 }: MessageItemProps) {
   const isOwn = message.authorId === currentUserId;
   const isDeleted = message.deletedAt !== null && message.deletedAt !== undefined;
@@ -75,6 +77,18 @@ export function MessageItem({
       {!isDeleted && (
         <div className="flex items-center gap-1">
           <ReactionPicker onSelectEmoji={(emoji) => onToggleReaction(message.id, emoji)} />
+          {/* Mark as unread - only for other users' messages */}
+          {!isOwn && onMarkUnread && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="opacity-0 group-hover:opacity-100 transition-opacity h-7 w-7 p-0 text-gray-400 hover:text-blue-500"
+              onClick={() => onMarkUnread(message.id)}
+            >
+              <EyeOff className="h-4 w-4" />
+              <span className="sr-only">Mark as unread</span>
+            </Button>
+          )}
           {/* Pin button - only for channel messages (not DMs) */}
           {isChannelMessage && (onPin || onUnpin) && (
             <Button
