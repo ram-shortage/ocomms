@@ -1,4 +1,4 @@
-import { pgTable, uuid, timestamp, uniqueIndex, index } from "drizzle-orm/pg-core";
+import { pgTable, uuid, text, timestamp, uniqueIndex, index } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { messages } from "./message";
 import { channels } from "./channel";
@@ -12,7 +12,7 @@ export const pinnedMessages = pgTable("pinned_messages", {
   channelId: uuid("channel_id")
     .notNull()
     .references(() => channels.id, { onDelete: "cascade" }),
-  pinnedBy: uuid("pinned_by")
+  pinnedBy: text("pinned_by")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   pinnedAt: timestamp("pinned_at").notNull().defaultNow(),

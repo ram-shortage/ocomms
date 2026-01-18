@@ -3,8 +3,9 @@ import { relations } from "drizzle-orm";
 
 // better-auth core tables
 // Export as 'user' (singular) for better-auth adapter compatibility
+// Note: better-auth generates its own string IDs (nanoid), not UUIDs
 export const user = pgTable("users", {
-  id: uuid("id").primaryKey().defaultRandom(),
+  id: text("id").primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
   emailVerified: boolean("email_verified").notNull().default(false),
@@ -14,8 +15,8 @@ export const user = pgTable("users", {
 });
 
 export const session = pgTable("sessions", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id")
+  id: text("id").primaryKey(),
+  userId: text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
   token: text("token").notNull().unique(),
@@ -27,8 +28,8 @@ export const session = pgTable("sessions", {
 });
 
 export const account = pgTable("accounts", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id")
+  id: text("id").primaryKey(),
+  userId: text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
   accountId: text("account_id").notNull(),
@@ -45,7 +46,7 @@ export const account = pgTable("accounts", {
 });
 
 export const verification = pgTable("verifications", {
-  id: uuid("id").primaryKey().defaultRandom(),
+  id: text("id").primaryKey(),
   identifier: text("identifier").notNull(),
   value: text("value").notNull(),
   expiresAt: timestamp("expires_at").notNull(),
@@ -55,7 +56,7 @@ export const verification = pgTable("verifications", {
 
 // better-auth organization plugin tables
 export const organization = pgTable("organizations", {
-  id: uuid("id").primaryKey().defaultRandom(),
+  id: text("id").primaryKey(),
   name: text("name").notNull(),
   slug: text("slug").unique(),
   logo: text("logo"),
@@ -64,11 +65,11 @@ export const organization = pgTable("organizations", {
 });
 
 export const member = pgTable("members", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id")
+  id: text("id").primaryKey(),
+  userId: text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
-  organizationId: uuid("organization_id")
+  organizationId: text("organization_id")
     .notNull()
     .references(() => organization.id, { onDelete: "cascade" }),
   role: text("role").notNull().default("member"),
@@ -76,12 +77,12 @@ export const member = pgTable("members", {
 });
 
 export const invitation = pgTable("invitations", {
-  id: uuid("id").primaryKey().defaultRandom(),
+  id: text("id").primaryKey(),
   email: text("email").notNull(),
-  organizationId: uuid("organization_id")
+  organizationId: text("organization_id")
     .notNull()
     .references(() => organization.id, { onDelete: "cascade" }),
-  inviterId: uuid("inviter_id")
+  inviterId: text("inviter_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
   role: text("role").notNull().default("member"),

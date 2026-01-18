@@ -1,4 +1,4 @@
-import { pgTable, uuid, integer, timestamp, uniqueIndex, index } from "drizzle-orm/pg-core";
+import { pgTable, text, uuid, integer, timestamp, uniqueIndex, index } from "drizzle-orm/pg-core";
 import { relations, sql } from "drizzle-orm";
 import { users } from "./auth";
 import { channels } from "./channel";
@@ -15,7 +15,7 @@ import { conversations } from "./conversation";
  */
 export const channelReadState = pgTable("channel_read_state", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id")
+  userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
 

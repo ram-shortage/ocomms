@@ -4,7 +4,7 @@ import { organizations, users } from "./auth";
 
 export const channels = pgTable("channels", {
   id: uuid("id").primaryKey().defaultRandom(),
-  organizationId: uuid("organization_id")
+  organizationId: text("organization_id")
     .notNull()
     .references(() => organizations.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
@@ -12,7 +12,7 @@ export const channels = pgTable("channels", {
   description: text("description"),
   topic: text("topic"),
   isPrivate: boolean("is_private").notNull().default(false),
-  createdBy: uuid("created_by")
+  createdBy: text("created_by")
     .notNull()
     .references(() => users.id, { onDelete: "set null" }),
   createdAt: timestamp("created_at").notNull().defaultNow(),
@@ -26,7 +26,7 @@ export const channelMembers = pgTable("channel_members", {
   channelId: uuid("channel_id")
     .notNull()
     .references(() => channels.id, { onDelete: "cascade" }),
-  userId: uuid("user_id")
+  userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   role: text("role").notNull().default("member"), // member, admin

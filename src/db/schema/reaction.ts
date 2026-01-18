@@ -8,7 +8,7 @@ export const reactions = pgTable("reactions", {
   messageId: uuid("message_id")
     .notNull()
     .references(() => messages.id, { onDelete: "cascade" }),
-  userId: uuid("user_id")
+  userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   emoji: text("emoji").notNull(), // Unicode emoji: "👍", "❤️", etc.

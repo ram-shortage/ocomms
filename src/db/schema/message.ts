@@ -13,7 +13,7 @@ export const tsvector = customType<{ data: string }>({
 export const messages = pgTable("messages", {
   id: uuid("id").primaryKey().defaultRandom(),
   content: text("content").notNull(),
-  authorId: uuid("author_id")
+  authorId: text("author_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   channelId: uuid("channel_id")

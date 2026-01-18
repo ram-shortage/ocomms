@@ -1,4 +1,4 @@
-import { pgTable, uuid, timestamp, uniqueIndex, index } from "drizzle-orm/pg-core";
+import { pgTable, uuid, text, timestamp, uniqueIndex, index } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { messages } from "./message";
 import { users } from "./auth";
@@ -8,7 +8,7 @@ export const threadParticipants = pgTable("thread_participants", {
   threadId: uuid("thread_id")
     .notNull()
     .references(() => messages.id, { onDelete: "cascade" }),
-  userId: uuid("user_id")
+  userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   lastReadAt: timestamp("last_read_at").notNull().defaultNow(),

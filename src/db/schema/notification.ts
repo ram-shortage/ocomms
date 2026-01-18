@@ -7,7 +7,7 @@ import { conversations } from "./conversation";
 
 export const notifications = pgTable("notifications", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id")
+  userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   type: text("type").notNull(), // "mention" | "channel" | "here" | "thread_reply"
@@ -17,7 +17,7 @@ export const notifications = pgTable("notifications", {
     .references(() => channels.id, { onDelete: "cascade" }),
   conversationId: uuid("conversation_id")
     .references(() => conversations.id, { onDelete: "cascade" }),
-  actorId: uuid("actor_id")
+  actorId: text("actor_id")
     .references(() => users.id, { onDelete: "set null" }),
   content: text("content").notNull(), // Preview of message, first 100 chars
   readAt: timestamp("read_at"),

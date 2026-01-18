@@ -19,7 +19,7 @@ export const channelNotificationSettings = pgTable("channel_notification_setting
   channelId: uuid("channel_id")
     .notNull()
     .references(() => channels.id, { onDelete: "cascade" }),
-  userId: uuid("user_id")
+  userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   mode: text("mode").notNull().default("all"), // "all" | "mentions" | "muted"
