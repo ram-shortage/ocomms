@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-17)
 ## Current Position
 
 Phase: 5 of 8 (Mentions & Notifications)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: In progress
-Last activity: 2026-01-18 - Completed 05-01-PLAN.md (Mention Parsing & UI)
+Last activity: 2026-01-18 - Completed 05-02-PLAN.md (Notification Delivery)
 
-Progress: ███████████░ 68%
+Progress: ████████████░ 73%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 15
-- Average duration: 4.7 min
-- Total execution time: 72 min
+- Total plans completed: 16
+- Average duration: 4.5 min
+- Total execution time: 75 min
 
 **By Phase:**
 
@@ -31,10 +31,10 @@ Progress: ███████████░ 68%
 | 2-channels-dms | 3/3 | 17 min | ~6 min |
 | 3-real-time-messaging | 3/3 | 16 min | ~5 min |
 | 4-threading-reactions | 3/3 | 17 min | ~6 min |
-| 5-mentions-notifications | 1/3 | 6 min | 6 min |
+| 5-mentions-notifications | 2/3 | 9 min | ~5 min |
 
 **Recent Trend:**
-- Last 5 plans: 8 min, 3 min, 9 min, 5 min, 6 min
+- Last 5 plans: 3 min, 9 min, 5 min, 6 min, 3 min
 - Trend: Stable
 
 ## Accumulated Context
@@ -84,6 +84,9 @@ Recent decisions affecting current work:
 | 5-01 | Quoted name support in mentions | @"John Doe" for display names with spaces |
 | 5-01 | currentUsername prop drilling | Pass through hierarchy for self-mention emphasis |
 | 5-01 | Special mention colors | Amber for @channel/@here, blue for user mentions |
+| 5-02 | User lookup by name | @mentions match display names for notification targeting |
+| 5-02 | @here uses presence filter | Only active users receive @here notifications |
+| 5-02 | Notification user rooms | user:{userId} rooms for personal delivery |
 
 ### Pending Todos
 
@@ -96,6 +99,6 @@ Database connection required before `npm run db:push` can verify schema.
 
 ## Session Continuity
 
-Last session: 2026-01-18T09:21:38Z
-Stopped at: Completed 05-01-PLAN.md (Mention Parsing & UI)
+Last session: 2026-01-18T09:27:05Z
+Stopped at: Completed 05-02-PLAN.md (Notification Delivery)
 Resume file: None
