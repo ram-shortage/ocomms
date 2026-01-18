@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-17)
 
 **Core value:** Data sovereignty - Complete control over communication data, no third-party dependencies
-**Current focus:** Phase 5 - Mentions & Notifications
+**Current focus:** Phase 5 Complete - Ready for Phase 6
 
 ## Current Position
 
-Phase: 5 of 8 (Mentions & Notifications)
-Plan: 2 of 3 in current phase
-Status: In progress
-Last activity: 2026-01-18 - Completed 05-02-PLAN.md (Notification Delivery)
+Phase: 5 of 8 (Mentions & Notifications) - COMPLETE
+Plan: 3 of 3 in current phase
+Status: Phase complete
+Last activity: 2026-01-18 - Completed 05-03-PLAN.md (Channel Notification Settings)
 
-Progress: ████████████░ 73%
+Progress: ████████████████░ 77%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 16
+- Total plans completed: 17
 - Average duration: 4.5 min
-- Total execution time: 75 min
+- Total execution time: 79 min
 
 **By Phase:**
 
@@ -31,10 +31,10 @@ Progress: ████████████░ 73%
 | 2-channels-dms | 3/3 | 17 min | ~6 min |
 | 3-real-time-messaging | 3/3 | 16 min | ~5 min |
 | 4-threading-reactions | 3/3 | 17 min | ~6 min |
-| 5-mentions-notifications | 2/3 | 9 min | ~5 min |
+| 5-mentions-notifications | 3/3 | 13 min | ~4 min |
 
 **Recent Trend:**
-- Last 5 plans: 3 min, 9 min, 5 min, 6 min, 3 min
+- Last 5 plans: 9 min, 5 min, 6 min, 3 min, 4 min
 - Trend: Stable
 
 ## Accumulated Context
@@ -87,6 +87,9 @@ Recent decisions affecting current work:
 | 5-02 | User lookup by name | @mentions match display names for notification targeting |
 | 5-02 | @here uses presence filter | Only active users receive @here notifications |
 | 5-02 | Notification user rooms | user:{userId} rooms for personal delivery |
+| 5-03 | No entry = "all" mode | Only store settings when user changes from default |
+| 5-03 | Delete row for "all" mode | Upsert non-default, delete default values |
+| 5-03 | shouldNotify() filtering | Check settings at notification creation time |
 
 ### Pending Todos
 
@@ -99,6 +102,6 @@ Database connection required before `npm run db:push` can verify schema.
 
 ## Session Continuity
 
-Last session: 2026-01-18T09:27:05Z
-Stopped at: Completed 05-02-PLAN.md (Notification Delivery)
+Last session: 2026-01-18
+Stopped at: Completed 05-03-PLAN.md (Channel Notification Settings) - Phase 5 Complete
 Resume file: None
