@@ -5,6 +5,7 @@ import { authMiddleware } from "./middleware/auth";
 import { joinUserRooms, getRoomName } from "./rooms";
 import { setupPresence, handlePresenceEvents, type PresenceManager } from "./handlers/presence";
 import { handleMessageEvents } from "./handlers/message";
+import { handleReactionEvents } from "./handlers/reaction";
 
 type SocketIOServer = Server<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
 type TypedSocket = Socket<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
@@ -55,6 +56,9 @@ export function setupSocketHandlers(io: SocketIOServer, redis?: Redis | null) {
 
     // Setup message event handlers
     handleMessageEvents(socket, io);
+
+    // Setup reaction event handlers
+    handleReactionEvents(socket, io);
 
     // Join user to their authorized rooms
     try {

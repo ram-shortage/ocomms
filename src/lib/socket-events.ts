@@ -20,6 +20,13 @@ export interface Message {
   };
 }
 
+export interface ReactionGroup {
+  emoji: string;
+  count: number;
+  userIds: string[];
+  userNames: string[];
+}
+
 export interface ServerToClientEvents {
   "message:new": (message: Message) => void;
   "message:deleted": (data: { messageId: string; deletedAt: Date }) => void;
@@ -32,6 +39,13 @@ export interface ServerToClientEvents {
   "presence:update": (data: {
     userId: string;
     status: "active" | "away" | "offline";
+  }) => void;
+  "reaction:update": (data: {
+    messageId: string;
+    emoji: string;
+    userId: string;
+    userName: string;
+    action: "added" | "removed";
   }) => void;
   error: (data: { message: string }) => void;
 }
@@ -49,6 +63,11 @@ export interface ClientToServerEvents {
   "presence:fetch": (
     data: { workspaceId: string; userIds: string[] },
     callback: (response: Record<string, "active" | "away" | "offline">) => void
+  ) => void;
+  "reaction:toggle": (data: { messageId: string; emoji: string }) => void;
+  "reaction:get": (
+    data: { messageId: string },
+    callback: (response: { success: boolean; reactions?: ReactionGroup[] }) => void
   ) => void;
   "room:join": (data: { roomId: string; roomType: "channel" | "dm" }) => void;
   "room:leave": (data: { roomId: string; roomType: "channel" | "dm" }) => void;
