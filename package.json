@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "tsx --watch src/server/index.ts",
+    "dev": "tsx watch --clear-screen=false --ignore='logs/**' src/server/index.ts",
     "build": "next build",
     "build:server": "tsc -p tsconfig.server.json",
     "build:docker": "npm run build && tsx scripts/build-server.ts",
