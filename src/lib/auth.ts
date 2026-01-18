@@ -8,6 +8,7 @@ import { userLockout, user } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { sendVerificationEmail, sendInviteEmail, sendUnlockEmail, sendResetPasswordEmail } from "./email";
 import { validatePasswordComplexity } from "./password-validation";
+import { auditLog, AuditEventType, getClientIP, getUserAgent } from "./audit-logger";
 
 /**
  * Progressive delay based on failed attempt count.
@@ -174,7 +175,19 @@ export const auth = betterAuth({
             responseObj.statusCode === 401;
         }
 
+        // Extract request info for audit logging
+        const ip = getClientIP(ctx.headers);
+        const userAgent = getUserAgent(ctx.headers);
+
         if (loginFailed) {
+          // Log failed login attempt
+          auditLog({
+            eventType: AuditEventType.AUTH_LOGIN_FAILURE,
+            ip,
+            userAgent,
+            details: { email },
+          });
+
           // Increment failed attempts
           const lockout = await db.query.userLockout.findFirst({
             where: eq(userLockout.userId, existingUser.id),
@@ -234,6 +247,14 @@ export const auth = betterAuth({
             }
           }
         } else {
+          // Log successful login
+          auditLog({
+            eventType: AuditEventType.AUTH_LOGIN_SUCCESS,
+            userId: existingUser.id,
+            ip,
+            userAgent,
+          });
+
           // Login succeeded - reset failed attempts (keep lockoutCount for history)
           const lockout = await db.query.userLockout.findFirst({
             where: eq(userLockout.userId, existingUser.id),
@@ -277,6 +298,14 @@ export const auth = betterAuth({
             if (verification?.value) {
               // value contains the userId
               const userId = verification.value;
+
+              // Log password reset
+              auditLog({
+                eventType: AuditEventType.AUTH_PASSWORD_RESET,
+                userId,
+                ip: getClientIP(ctx.headers),
+              });
+
               // Clear lockout (keep lockoutCount for history)
               await db
                 .update(userLockout)
@@ -287,6 +316,30 @@ export const auth = betterAuth({
                 })
                 .where(eq(userLockout.userId, userId));
             }
+          }
+        }
+      }
+
+      // Handle logout
+      if (ctx.path === "/sign-out") {
+        const response = ctx.context.returned;
+        // Check if logout was successful
+        let logoutSuccessful = false;
+        if (response instanceof Response) {
+          logoutSuccessful = response.ok;
+        } else if (response && !(response instanceof Error)) {
+          logoutSuccessful = true;
+        }
+
+        if (logoutSuccessful) {
+          // Try to get user from session context
+          const session = ctx.context.session;
+          if (session?.user?.id) {
+            auditLog({
+              eventType: AuditEventType.AUTH_LOGOUT,
+              userId: session.user.id,
+              ip: getClientIP(ctx.headers),
+            });
           }
         }
       }

@@ -62,8 +62,9 @@ function ensureLogsDir(): void {
  * Extract client IP from request headers
  */
 export function getClientIP(
-  request: Request | Headers
+  request: Request | Headers | undefined
 ): string | undefined {
+  if (!request) return undefined;
   const headers = request instanceof Request ? request.headers : request;
 
   // Check x-forwarded-for first (common in proxied environments)
@@ -86,8 +87,9 @@ export function getClientIP(
  * Extract user agent from request headers
  */
 export function getUserAgent(
-  request: Request | Headers
+  request: Request | Headers | undefined
 ): string | undefined {
+  if (!request) return undefined;
   const headers = request instanceof Request ? request.headers : request;
   return headers.get("user-agent") ?? undefined;
 }
