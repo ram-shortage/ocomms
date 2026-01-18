@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-18)
 ## Current Position
 
 Phase: 15 of 20 (PWA Foundation)
-Plan: 0 of TBD in current phase
-Status: Ready to plan
-Last activity: 2026-01-18 - Phase 14 verified and complete
+Plan: 1 of 4 in current phase
+Status: In progress
+Last activity: 2026-01-18 - Completed 15-01-PLAN.md
 
 Progress: [###########.............] 70% (14/20 phases)
 
@@ -29,7 +29,7 @@ Progress: [###########.............] 70% (14/20 phases)
 ## Performance Metrics
 
 **Cumulative:**
-- Total plans completed: 50 (23 + 24 + 3)
+- Total plans completed: 51 (23 + 24 + 3 + 1)
 - Total requirements delivered: 78 (51 + 19 + 8)
 - Total phases completed: 14
 
@@ -38,6 +38,14 @@ Progress: [###########.............] 70% (14/20 phases)
 - Requirements: 38
 
 ## Accumulated Context
+
+### Decisions (Phase 15)
+
+| Decision | Rationale | Plan |
+|----------|-----------|------|
+| Use Serwist for Next.js SW integration | Maintained Workbox fork, works with App Router | 15-01 |
+| Add turbopack: {} for Next.js 16 | Acknowledges webpack plugin while allowing Turbopack | 15-01 |
+| Disable Serwist in development | Avoids stale cache issues during dev | 15-01 |
 
 ### Decisions (Phase 14)
 
@@ -71,5 +79,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-18
-Stopped at: Phase 14 verified complete, ready for Phase 15
+Stopped at: Completed 15-01-PLAN.md
 Resume file: None
