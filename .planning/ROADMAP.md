@@ -48,9 +48,9 @@ See: .planning/milestones/v0.2.0-ROADMAP.md
   5. Server rejects messages exceeding size limit; rate-limited users receive clear feedback
 **Plans**: 3 plans
 Plans:
-- [ ] 14-01-PLAN.md — Server-side security (fail-closed middleware, getChannel org check, async audit)
-- [ ] 14-02-PLAN.md — Message handler fixes (atomic sequence, length limit, rate limiting)
-- [ ] 14-03-PLAN.md — Client UX and scoping (@mention org scope, character counter, rate limit UI)
+- [x] 14-01-PLAN.md — Server-side security (fail-closed middleware, getChannel org check, async audit)
+- [x] 14-02-PLAN.md — Message handler fixes (atomic sequence, length limit, rate limiting)
+- [x] 14-03-PLAN.md — Client UX and scoping (@mention org scope, character counter, rate limit UI)
 
 ### Phase 15: PWA Foundation
 **Goal**: Users can install the app to their home screen with fast initial load
@@ -62,7 +62,11 @@ Plans:
   3. Custom offline page displays when network unavailable (not browser error)
   4. Update notification appears when new version available; user can refresh to update
   5. iOS users see "Add to Home Screen" instructions (Safari doesn't have native install)
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 15-01-PLAN.md — PWA infrastructure (manifest, Serwist config, icons)
+- [ ] 15-02-PLAN.md — Service worker and offline page
+- [ ] 15-03-PLAN.md — PWA components (install prompt, iOS guide, update notification, offline banner)
 
 ### Phase 16: Message Caching
 **Goal**: Users can read recent messages when offline
@@ -129,7 +133,7 @@ Plans:
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 14. Security Fixes | v0.3.0 | 3/3 | Complete | 2026-01-18 |
-| 15. PWA Foundation | v0.3.0 | 0/TBD | Not started | - |
+| 15. PWA Foundation | v0.3.0 | 0/3 | Planned | - |
 | 16. Message Caching | v0.3.0 | 0/TBD | Not started | - |
 | 17. Offline Send Queue | v0.3.0 | 0/TBD | Not started | - |
 | 18. Push Notifications | v0.3.0 | 0/TBD | Not started | - |
@@ -138,4 +142,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-01-18*
-*Last updated: 2026-01-18 after Phase 14 completion*
+*Last updated: 2026-01-18 after Phase 15 planning*
