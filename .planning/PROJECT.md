@@ -2,14 +2,33 @@
 
 ## What This Is
 
-OComms is a self-hosted team communication platform - a Slack-like experience that organizations can run on their own infrastructure. It provides real-time messaging, channels, threads, and presence features while giving teams full control over their data.
+OComms is a self-hosted team communication platform - a Slack-like experience that organizations can run on their own infrastructure. It provides real-time messaging, channels, threads, mentions, search, and presence features while giving teams full control over their data.
 
 ## Core Value
 
-- **Data sovereignty**: Complete control over communication data, no third-party dependencies
-- **Self-hosted**: Deploy on your own infrastructure (cloud or on-premise)
-- **Deep customization**: Modify and extend without vendor limitations
-- **Cost control**: No per-seat pricing at scale
+**Data sovereignty**: Complete control over communication data, no third-party dependencies
+
+## Current State
+
+**Version:** v0.1.0 (Full Conversation) - Shipped 2026-01-18
+
+**Tech Stack:**
+- Next.js 15 with App Router
+- TypeScript (~12,000 LOC)
+- PostgreSQL with Drizzle ORM
+- Socket.IO with Redis pub-sub
+- Docker Compose deployment
+
+**What's Working:**
+- Real-time messaging in channels and DMs
+- Public/private channels with membership
+- Single-level message threading
+- Emoji reactions with frimousse picker
+- @user, @channel, @here mentions with notifications
+- Unread counts and mark-as-read
+- Full-text search with PostgreSQL FTS
+- Presence (active/away/offline)
+- Docker deployment with backup/restore
 
 ## Target Users
 
@@ -17,56 +36,62 @@ Internal tool for organizations with 500+ concurrent users who need:
 - Real-time team communication
 - Full control over their data
 - Self-hosting capability
-- Multi-platform access (Web, Desktop, Mobile)
+- Web-first access (mobile/desktop web)
 
 ---
 
-## Active Milestone: Full Conversation
+## Requirements
 
-The first milestone delivers the core communication experience - everything needed for teams to have effective conversations.
+### Validated
 
-### Requirements
+Requirements shipped and working in production:
 
-#### Core Primitives
-- **Workspace**: Tenant boundary isolating organizations
-- **Member**: User identity within a workspace with roles (member, admin, owner)
-- **Channel**: Shared conversation space (public or private)
-- **DM**: Direct messages between members
-- **Message**: Content unit with rich text support
-- **Thread**: Replies branching from a parent message
+- **v0.1.0 - Full Conversation** (51 requirements)
+  - AUTH-01 to AUTH-04: Email/password auth with sessions
+  - WKSP-01 to WKSP-03: Workspace creation and invitations
+  - MEMB-01 to MEMB-06: Member roles, profiles, avatars
+  - CHAN-01 to CHAN-09: Channels, membership, pins
+  - DM-01 to DM-03: Direct messages
+  - MSG-01 to MSG-04: Real-time messaging
+  - THRD-01 to THRD-04: Threading
+  - NOTF-01 to NOTF-06: Mentions and notifications
+  - SRCH-01 to SRCH-02: Full-text search
+  - PRES-01 to PRES-02: Presence
+  - UNRD-01 to UNRD-03: Unread management
+  - REAC-01 to REAC-03: Emoji reactions
+  - INFR-01 to INFR-05: Docker deployment, backup/restore
 
-#### 1. Conversation Structure
-- **1.1 Channels**: Public channels (discoverable, joinable) and private channels (invite-only)
-- **1.2 Threads**: Reply to any message to create a threaded discussion
-- **1.3 Channel metadata**: Topic and description for channel context
-- **1.4 Pins/bookmarks**: Pin important messages for quick reference
+### Active
 
-#### 2. Findability
-- **2.1 Power search**: Search across messages, files, people, and channels
+Requirements for next milestone (to be defined):
 
-#### 3. Attention Management
-- **3.1 DND + schedules**: Do Not Disturb mode with configurable notification schedules
-- **3.2 Status + presence**: Availability indicators (online, away, busy, offline) with custom status
-- **3.3 Mentions**: @person, @channel, @here with proper notification routing
-- **3.4 Unreads management**: Mark unread, drafts persistence, unified unreads view
+- None yet - run `/gsd:define-requirements` for next milestone
 
-#### 4. Acknowledgment
-- **4.1 Emoji reactions**: React to messages with emoji
-
----
-
-## Out of Scope (This Milestone)
+### Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| AI features (summaries, Q&A) | Enhancement layer, not core communication |
-| Canvas (document surface) | Content creation, separate from messaging |
-| Lists (task tracking) | Workflow feature, not communication |
-| Huddles (audio/video) | Synchronous communication, complex infrastructure |
-| Clips (async video) | Media feature, not core messaging |
-| Workflow Builder | Automation layer, builds on messaging |
-| Shared channels | External collaboration adds multi-tenant complexity |
-| Integrations/apps | Ecosystem feature, requires stable core first |
+| AI summaries/Q&A | Breaks self-hosted value prop (external API dependencies) |
+| Video/audio calls | Massive infrastructure complexity (WebRTC, TURN servers) |
+| Workflow Builder | Enterprise scope creep |
+| Shared channels | Multi-tenant complexity |
+| Canvas/Docs | Different product |
+| Nested threading | Complexity trap, no major platform does this |
+| Read receipts | Privacy concerns, complexity at scale |
+| Mobile native apps | Web-first for now |
+
+---
+
+## Key Decisions
+
+| Decision | Rationale | Outcome |
+|----------|-----------|---------|
+| better-auth for authentication | Best Next.js integration, organization plugin | Good |
+| Socket.IO with Redis adapter | Horizontal scaling, graceful fallback | Good |
+| Self-referencing parentId for threads | No separate threads table needed | Good |
+| frimousse emoji picker | <5KB vs 50KB alternatives | Good |
+| PostgreSQL native FTS | Data sovereignty over Meilisearch | Good |
+| esbuild for server bundling | Fastest bundler, handles node externals | Good |
 
 ---
 
@@ -79,42 +104,14 @@ The first milestone delivers the core communication experience - everything need
 
 ### Real-time
 - Instant message delivery via WebSockets
-- Typing indicators with minimal latency
 - Presence updates propagated immediately
 - No polling-based fallbacks for core features
 
-### Multi-platform
-- Web (primary)
-- Desktop (Electron or similar)
-- Mobile (iOS + Android)
-- Consistent experience across platforms
-
 ### Self-hosted
-- Single-command deployment target
+- Single-command deployment (`docker-compose up`)
 - No external service dependencies for core features
 - Reasonable hardware requirements
-- Clear operational documentation
 
 ---
 
-## Key Decisions
-
-### Authentication
-- Built-in authentication (email/password, magic links)
-- Optional SSO/SAML integration for enterprise
-- Session management with secure token handling
-
-### Real-time Architecture
-- WebSocket-based for all real-time features
-- Connection multiplexing per client
-- Graceful reconnection handling
-- Server-side event ordering
-
----
-
-## Open Questions
-
-- Tech stack selection (pending research)
-- Database choice for message storage at scale
-- File storage approach
-- Search infrastructure
+*Last updated: 2026-01-18 after v0.1.0 milestone*
