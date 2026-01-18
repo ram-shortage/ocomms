@@ -1,36 +1,185 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# OComms
 
-## Getting Started
+A self-hosted team communication platform. Think Slack, but you own your data.
 
-First, run the development server:
+## Why OComms?
+
+Organizations increasingly need real-time communication tools, but cloud-hosted solutions come with trade-offs: data leaves your control, per-seat pricing scales expensively, and you're dependent on vendor decisions. OComms gives you a full-featured team chat platform that runs entirely on your infrastructure.
+
+**Data Sovereignty** — Your messages, files, and user data never leave servers you control. No third-party analytics, no data mining, no external API dependencies for core features.
+
+**Self-Hosted** — Deploy with a single `docker-compose up` command. Runs on any infrastructure: cloud VMs, on-premise servers, or even a Raspberry Pi for small teams.
+
+**No Per-Seat Pricing** — One deployment supports your entire organization. Scale to hundreds of concurrent users without scaling costs.
+
+## Features
+
+### Real-Time Messaging
+- Instant message delivery via WebSockets
+- Channels (public and private) with membership management
+- Direct messages (1:1 and group conversations)
+- Message threading with dedicated thread panel
+- Emoji reactions
+
+### Organization & Discovery
+- Workspaces with tenant isolation
+- Channel directory for browsing and joining
+- Full-text search across all accessible messages
+- Member profiles with avatars
+
+### Attention Management
+- @user, @channel, and @here mentions
+- Real-time notifications with customizable settings
+- Per-channel mute and mention-only modes
+- Unread counts and mark-as-read
+
+### Presence
+- Online/away/offline status indicators
+- Real-time presence updates across all clients
+
+### Self-Hosted Ready
+- Single-command Docker deployment
+- PostgreSQL backup and restore scripts
+- GDPR-compliant data export
+- No external service dependencies
+
+## Tech Stack
+
+- **Frontend:** Next.js 15, React, Tailwind CSS, shadcn/ui
+- **Backend:** Node.js, Socket.IO, Drizzle ORM
+- **Database:** PostgreSQL with native full-text search
+- **Real-Time:** Socket.IO with Redis pub/sub for horizontal scaling
+- **Deployment:** Docker Compose with nginx reverse proxy
+
+## Quick Start
+
+### Prerequisites
+
+- Docker and Docker Compose
+- (Optional) SMTP server for email verification
+
+### Deploy
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Clone the repository
+git clone https://github.com/ram-shortage/ocomms.git
+cd ocomms
+
+# Copy environment template
+cp .env.example .env
+
+# Edit .env with your settings
+# At minimum, set:
+# - DATABASE_URL
+# - BETTER_AUTH_SECRET
+# - NEXT_PUBLIC_APP_URL
+
+# Start all services
+docker-compose up -d
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The application will be available at `http://localhost` (or your configured domain).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Development
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+# Install dependencies
+npm install
 
-## Learn More
+# Start PostgreSQL and Redis (dev containers)
+docker-compose -f docker-compose.dev.yml up -d
 
-To learn more about Next.js, take a look at the following resources:
+# Run database migrations
+npm run db:push
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Start development server
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Configuration
 
-## Deploy on Vercel
+### Environment Variables
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `DATABASE_URL` | PostgreSQL connection string | Yes |
+| `BETTER_AUTH_SECRET` | Secret for session encryption | Yes |
+| `NEXT_PUBLIC_APP_URL` | Public URL of your deployment | Yes |
+| `REDIS_URL` | Redis connection for scaling (optional) | No |
+| `SMTP_HOST` | SMTP server for emails | No |
+| `SMTP_PORT` | SMTP port | No |
+| `SMTP_USER` | SMTP username | No |
+| `SMTP_PASS` | SMTP password | No |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Backup & Restore
+
+```bash
+# Create backup
+docker-compose exec db /backups/backup.sh
+
+# List backups
+ls backups/
+
+# Restore from backup
+docker-compose exec db /backups/restore.sh /backups/ocomms_YYYYMMDD_HHMMSS.dump
+```
+
+### Data Export
+
+For GDPR compliance or data portability:
+
+```bash
+# CLI export
+npx tsx scripts/export-data.ts <organization-id> ./export
+
+# Or via API (requires owner role)
+curl -X POST https://your-domain/api/admin/export \
+  -H "Content-Type: application/json" \
+  -d '{"organizationId": "your-org-id"}'
+```
+
+## Architecture
+
+```
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│   nginx     │────▶│   Next.js   │────▶│ PostgreSQL  │
+│   :80/443   │     │   + Socket  │     │   :5432     │
+└─────────────┘     └─────────────┘     └─────────────┘
+                           │
+                           ▼
+                    ┌─────────────┐
+                    │    Redis    │
+                    │   :6379     │
+                    └─────────────┘
+```
+
+- **nginx** — Reverse proxy with WebSocket upgrade support
+- **Next.js + Socket.IO** — Application server handling HTTP and WebSocket connections
+- **PostgreSQL** — Primary database with full-text search
+- **Redis** — Pub/sub for real-time message distribution across instances (optional for single-instance deployments)
+
+## Roadmap
+
+OComms v0.1.0 delivers core team communication features. Future versions may include:
+
+- [ ] Message editing
+- [ ] Rich text formatting
+- [ ] Custom emoji
+- [ ] File uploads and sharing
+- [ ] SSO/SAML integration
+- [ ] Custom status with expiration
+- [ ] Do Not Disturb schedules
+
+See [.planning/PROJECT.md](.planning/PROJECT.md) for detailed planning documents.
+
+## Contributing
+
+Contributions are welcome! Please read the codebase documentation in `.planning/` to understand the architecture and conventions.
+
+## License
+
+[MIT](LICENSE)
+
+---
+
+Built with the belief that team communication tools shouldn't require giving up control of your data.
