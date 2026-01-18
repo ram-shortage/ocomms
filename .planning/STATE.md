@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-17)
 
 **Core value:** Data sovereignty - Complete control over communication data, no third-party dependencies
-**Current focus:** Phase 5 Complete - Ready for Phase 6
+**Current focus:** Phase 6 - Attention Management
 
 ## Current Position
 
-Phase: 5 of 8 (Mentions & Notifications) - COMPLETE
-Plan: 3 of 3 in current phase
-Status: Phase complete
-Last activity: 2026-01-18 - Completed 05-03-PLAN.md (Channel Notification Settings)
+Phase: 6 of 8 (Attention Management)
+Plan: 0 of 1 in current phase
+Status: Ready for planning
+Last activity: 2026-01-18 - Completed Phase 5 (Mentions & Notifications)
 
-Progress: ████████████████░ 77%
+Progress: ████████████████░ 80%
 
 ## Performance Metrics
 
@@ -103,5 +103,5 @@ Database connection required before `npm run db:push` can verify schema.
 ## Session Continuity
 
 Last session: 2026-01-18
-Stopped at: Completed 05-03-PLAN.md (Channel Notification Settings) - Phase 5 Complete
+Stopped at: Completed Phase 5 - Ready for Phase 6 planning
 Resume file: None

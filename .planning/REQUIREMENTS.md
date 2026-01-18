@@ -63,12 +63,12 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Mentions & Notifications
 
-- [ ] **NOTF-01**: Member can @mention another member
-- [ ] **NOTF-02**: Mentioned member receives notification
-- [ ] **NOTF-03**: Member can use @channel to notify all channel members
-- [ ] **NOTF-04**: Member can use @here to notify active channel members
-- [ ] **NOTF-05**: Member can mute a channel
-- [ ] **NOTF-06**: Member can set channel to mention-only mode
+- [x] **NOTF-01**: Member can @mention another member
+- [x] **NOTF-02**: Mentioned member receives notification
+- [x] **NOTF-03**: Member can use @channel to notify all channel members
+- [x] **NOTF-04**: Member can use @here to notify active channel members
+- [x] **NOTF-05**: Member can mute a channel
+- [x] **NOTF-06**: Member can set channel to mention-only mode
 
 ### Search
 
@@ -202,12 +202,12 @@ Which phases cover which requirements.
 | THRD-02 | Phase 4 | Complete |
 | THRD-03 | Phase 4 | Complete |
 | THRD-04 | Phase 4 | Complete |
-| NOTF-01 | Phase 5 | Pending |
-| NOTF-02 | Phase 5 | Pending |
-| NOTF-03 | Phase 5 | Pending |
-| NOTF-04 | Phase 5 | Pending |
-| NOTF-05 | Phase 5 | Pending |
-| NOTF-06 | Phase 5 | Pending |
+| NOTF-01 | Phase 5 | Complete |
+| NOTF-02 | Phase 5 | Complete |
+| NOTF-03 | Phase 5 | Complete |
+| NOTF-04 | Phase 5 | Complete |
+| NOTF-05 | Phase 5 | Complete |
+| NOTF-06 | Phase 5 | Complete |
 | SRCH-01 | Phase 7 | Pending |
 | SRCH-02 | Phase 7 | Pending |
 | PRES-01 | Phase 3 | Complete |
@@ -231,4 +231,4 @@ Which phases cover which requirements.
 
 ---
 *Requirements defined: 2026-01-17*
-*Last updated: 2026-01-18 after Phase 4 completion*
+*Last updated: 2026-01-18 after Phase 5 completion*
