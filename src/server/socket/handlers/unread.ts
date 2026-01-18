@@ -433,8 +433,20 @@ export function handleUnreadEvents(
   socket.on("unread:markRead", async (data, callback) => {
     try {
       if (data.channelId) {
+        const isMember = await isChannelMember(userId, data.channelId);
+        if (!isMember) {
+          socket.emit("error", { message: "Not authorized to mark this channel as read" });
+          callback({ success: false });
+          return;
+        }
         await unreadManager.markChannelAsRead(userId, data.channelId);
       } else if (data.conversationId) {
+        const isParticipant = await isConversationParticipant(userId, data.conversationId);
+        if (!isParticipant) {
+          socket.emit("error", { message: "Not authorized to mark this conversation as read" });
+          callback({ success: false });
+          return;
+        }
         await unreadManager.markConversationAsRead(userId, data.conversationId);
       }
       callback({ success: true });
@@ -447,6 +459,30 @@ export function handleUnreadEvents(
   // Mark message as unread
   socket.on("unread:markMessageUnread", async (data, callback) => {
     try {
+      // Get message context to verify access
+      const context = await getMessageContext(data.messageId);
+      if (!context) {
+        callback({ success: false });
+        return;
+      }
+
+      // Verify membership
+      if (context.channelId) {
+        const isMember = await isChannelMember(userId, context.channelId);
+        if (!isMember) {
+          socket.emit("error", { message: "Not authorized to modify unread state" });
+          callback({ success: false });
+          return;
+        }
+      } else if (context.conversationId) {
+        const isParticipant = await isConversationParticipant(userId, context.conversationId);
+        if (!isParticipant) {
+          socket.emit("error", { message: "Not authorized to modify unread state" });
+          callback({ success: false });
+          return;
+        }
+      }
+
       await unreadManager.markMessageAsUnread(userId, data.messageId);
       callback({ success: true });
     } catch (error) {
