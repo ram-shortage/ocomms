@@ -9,6 +9,7 @@ import { handleReactionEvents } from "./handlers/reaction";
 import { handleThreadEvents } from "./handlers/thread";
 import { handleNotificationEvents } from "./handlers/notification";
 import { setupUnreadHandlers, handleUnreadEvents, type UnreadManager } from "./handlers/unread";
+import { isChannelMember, isConversationParticipant, isOrganizationMember } from "./authz";
 
 type SocketIOServer = Server<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
 type TypedSocket = Socket<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
@@ -98,6 +99,23 @@ export function setupSocketHandlers(io: SocketIOServer, redis?: Redis | null) {
 
     // Handle room:join for dynamic room joining (e.g., when user joins new channel)
     socket.on("room:join", async (data) => {
+      // Validate membership before joining room
+      if (data.roomType === "channel") {
+        const isMember = await isChannelMember(userId, data.roomId);
+        if (!isMember) {
+          socket.emit("error", { message: "Not authorized to join this channel" });
+          console.log(`[Socket.IO] Unauthorized room:join attempt: user ${userId} -> channel ${data.roomId}`);
+          return;
+        }
+      } else {
+        const isParticipant = await isConversationParticipant(userId, data.roomId);
+        if (!isParticipant) {
+          socket.emit("error", { message: "Not authorized to join this conversation" });
+          console.log(`[Socket.IO] Unauthorized room:join attempt: user ${userId} -> dm ${data.roomId}`);
+          return;
+        }
+      }
+
       const roomName = data.roomType === "channel"
         ? getRoomName.channel(data.roomId)
         : getRoomName.conversation(data.roomId);
