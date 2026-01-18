@@ -31,6 +31,25 @@ export const auth = betterAuth({
       maxAge: 5 * 60, // 5 minute cache
     },
   },
+  rateLimit: {
+    enabled: true,
+    window: 60, // seconds
+    max: 100, // requests per window
+    customRules: {
+      "/sign-in/email": {
+        window: 60,
+        max: 5,
+      },
+      "/sign-up/email": {
+        window: 60,
+        max: 3,
+      },
+      "/forgot-password": {
+        window: 60,
+        max: 3,
+      },
+    },
+  },
   plugins: [
     organization({
       sendInvitationEmail: async ({ invitation, inviter, organization }) => {
