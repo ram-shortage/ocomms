@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "tsx watch --clear-screen=false --ignore='logs/**' src/server/index.ts",
-    "build": "next build",
+    "build": "next build --webpack",
     "build:server": "tsc -p tsconfig.server.json",
     "build:docker": "npm run build && tsx scripts/build-server.ts",
     "start": "node dist/server/index.js",
