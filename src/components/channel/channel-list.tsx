@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getUserChannels } from "@/lib/actions/channel";
-import { Hash, Lock } from "lucide-react";
+import { ChannelListClient } from "./channel-list-client";
 
 interface ChannelListProps {
   organizationId: string;
@@ -27,22 +27,15 @@ export async function ChannelList({
     );
   }
 
+  // Transform to minimal channel data for client component
+  const channelData = channels.map((channel) => ({
+    id: channel.id,
+    name: channel.name,
+    slug: channel.slug,
+    isPrivate: channel.isPrivate,
+  }));
+
   return (
-    <nav className="space-y-1">
-      {channels.map((channel) => (
-        <Link
-          key={channel.id}
-          href={`/${workspaceSlug}/channels/${channel.slug}`}
-          className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-md hover:bg-accent transition-colors"
-        >
-          {channel.isPrivate ? (
-            <Lock className="h-4 w-4 text-muted-foreground" />
-          ) : (
-            <Hash className="h-4 w-4 text-muted-foreground" />
-          )}
-          <span className="truncate">{channel.name}</span>
-        </Link>
-      ))}
-    </nav>
+    <ChannelListClient channels={channelData} workspaceSlug={workspaceSlug} />
   );
 }
