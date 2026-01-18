@@ -54,3 +54,7 @@ cookies.txt
 
 # Audit logs
 /logs/*.jsonl
+
+# Service Worker (generated)
+public/sw*
+public/swe-worker*
