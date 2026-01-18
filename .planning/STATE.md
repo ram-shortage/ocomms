@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-18)
 ## Current Position
 
 Phase: 9 of 13 (Authorization & Data Integrity Fixes)
-Plan: 6 of 11 complete
+Plan: 7 of 11 complete
 Status: In progress
-Last activity: 2026-01-18 — Completed 09-06-PLAN.md (Server Action Authorization)
+Last activity: 2026-01-18 — Completed 09-09-PLAN.md (Export Endpoint Authorization)
 
-Progress: ████████░░ 72% (v0.1.0 complete, v0.2.0 phase 9 in progress)
+Progress: ████████░░ 74% (v0.1.0 complete, v0.2.0 phase 9 in progress)
 
 ## Shipped Milestones
 
@@ -25,18 +25,18 @@ Progress: ████████░░ 72% (v0.1.0 complete, v0.2.0 phase 9 in
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 6 (v0.2.0)
+- Total plans completed: 7 (v0.2.0)
 - Average duration: 2 min
-- Total execution time: 13 min
+- Total execution time: 15 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 09 | 6/11 | 13min | 2.2min |
+| 09 | 7/11 | 15min | 2.1min |
 
 **Recent Trend:**
-- Last 5 plans: 09-05 (2min), 09-03 (2min), 09-02 (2min), 09-04 (3min), 09-06 (2min)
+- Last 5 plans: 09-03 (2min), 09-02 (2min), 09-04 (3min), 09-06 (2min), 09-09 (2min)
 - Trend: Stable at ~2min/plan
 
 ## Accumulated Context
@@ -58,6 +58,8 @@ Key decisions from v0.1.0 are documented in PROJECT.md Key Decisions table.
 | 2026-01-18 | 09-05 | Error emit for unauthorized write ops | Gives users clear feedback when operation is denied |
 | 2026-01-18 | 09-04 | Reused getMessageContext for room determination | Eliminated duplicate message query in reaction:toggle handler |
 | 2026-01-18 | 09-06 | Duplicate verifyOrgMembership per file | Keeps server actions self-contained, avoids cross-file dependencies |
+| 2026-01-18 | 09-09 | Single and() query for ownership check | Simpler and more correct than 2-query approach |
+| 2026-01-18 | 09-09 | Create ID arrays before filtering loops | Cleaner org-scoped filtering pattern |
 
 ### Pending Todos
 
@@ -72,5 +74,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-18
-Stopped at: Completed 09-06-PLAN.md (Server Action Authorization)
+Stopped at: Completed 09-09-PLAN.md (Export Endpoint Authorization)
 Resume file: None
