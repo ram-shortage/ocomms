@@ -5,9 +5,10 @@ import { getChannel } from "@/lib/actions/channel";
 import { ChannelHeader } from "@/components/channel/channel-header";
 import { ChannelContent } from "@/components/channel/channel-content";
 import { db } from "@/db";
-import { messages, users, pinnedMessages } from "@/db/schema";
+import { messages, users, pinnedMessages, channelNotificationSettings } from "@/db/schema";
 import { eq, and, isNull, asc } from "drizzle-orm";
 import type { Message } from "@/lib/socket-events";
+import type { NotificationMode } from "@/db/schema/channel-notification-settings";
 
 export default async function ChannelPage({
   params,
@@ -105,6 +106,17 @@ export default async function ChannelPage({
 
   const initialPinnedMessageIds = pinnedMessagesData.map((p) => p.messageId);
 
+  // Fetch notification settings for current user in this channel
+  const notificationSettingsData = await db.query.channelNotificationSettings.findFirst({
+    where: and(
+      eq(channelNotificationSettings.channelId, channel.id),
+      eq(channelNotificationSettings.userId, session.user.id)
+    ),
+  });
+
+  // No settings = "all" mode (default)
+  const notificationMode: NotificationMode = (notificationSettingsData?.mode as NotificationMode) ?? "all";
+
   return (
     <div className="flex flex-col h-screen">
       <ChannelHeader
@@ -128,6 +140,7 @@ export default async function ChannelPage({
           role: m.role,
         }))}
         currentUserId={session.user.id}
+        notificationMode={notificationMode}
       />
 
       <ChannelContent

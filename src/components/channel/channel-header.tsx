@@ -19,6 +19,8 @@ import { leaveChannel, updateChannelTopic } from "@/lib/actions/channel";
 import { InviteToChannelDialog } from "./invite-to-channel-dialog";
 import { PinnedMessagesDialog } from "./pinned-messages-dialog";
 import { NotificationBell } from "@/components/notification/notification-bell";
+import { NotificationSettingsDialog } from "./notification-settings-dialog";
+import type { NotificationMode } from "@/db/schema/channel-notification-settings";
 
 interface ChannelMember {
   id: string;
@@ -43,6 +45,7 @@ interface ChannelHeaderProps {
   isAdmin: boolean;
   members: ChannelMember[];
   currentUserId: string;
+  notificationMode: NotificationMode;
 }
 
 export function ChannelHeader({
@@ -52,6 +55,7 @@ export function ChannelHeader({
   isAdmin,
   members,
   currentUserId,
+  notificationMode,
 }: ChannelHeaderProps) {
   const router = useRouter();
   const [isEditingTopic, setIsEditingTopic] = useState(false);
@@ -61,6 +65,7 @@ export function ChannelHeader({
   const [showMembersDialog, setShowMembersDialog] = useState(false);
   const [leaving, setLeaving] = useState(false);
   const [error, setError] = useState("");
+  const [currentNotificationMode, setCurrentNotificationMode] = useState<NotificationMode>(notificationMode);
 
   const handleSaveTopic = async () => {
     setSavingTopic(true);
@@ -158,7 +163,15 @@ export function ChannelHeader({
             <span className="text-sm text-red-600">{error}</span>
           )}
 
-          {/* Notifications */}
+          {/* Channel notification settings */}
+          <NotificationSettingsDialog
+            channelId={channel.id}
+            channelName={channel.name}
+            currentMode={currentNotificationMode}
+            onModeChange={setCurrentNotificationMode}
+          />
+
+          {/* Global notifications */}
           <NotificationBell workspaceSlug={workspaceSlug} />
 
           {/* Pinned messages */}
