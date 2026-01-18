@@ -51,3 +51,6 @@ TROUBLESHOOTING.md
 
 # Test artifacts
 cookies.txt
+
+# Audit logs
+/logs/*.jsonl
