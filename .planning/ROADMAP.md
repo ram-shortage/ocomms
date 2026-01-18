@@ -18,7 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 4: Threading & Reactions** - Threads, emoji reactions, pins
 - [x] **Phase 5: Mentions & Notifications** - @mentions, notification routing
 - [x] **Phase 6: Attention Management** - Unread counts, read state
-- [ ] **Phase 7: Search** - Full-text message search
+- [x] **Phase 7: Search** - Full-text message search
 - [ ] **Phase 8: Self-Hosted Packaging** - Docker deployment, backup/restore
 
 ## Phase Details
@@ -156,7 +156,8 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 07-01: Search indexing and query
+- [x] 07-01: Search indexing and query
+- [x] 07-02: Search UI and navigation
 
 ### Phase 8: Self-Hosted Packaging
 **Goal**: Production-ready Docker deployment with data management
@@ -190,7 +191,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 4. Threading & Reactions | 3/3 | Complete | 2026-01-18 |
 | 5. Mentions & Notifications | 3/3 | Complete | 2026-01-18 |
 | 6. Attention Management | 2/2 | Complete | 2026-01-18 |
-| 7. Search | 0/1 | Not started | - |
+| 7. Search | 2/2 | Complete | 2026-01-18 |
 | 8. Self-Hosted Packaging | 0/3 | Not started | - |
 
-**Total:** 18/22 plans complete
+**Total:** 20/23 plans complete

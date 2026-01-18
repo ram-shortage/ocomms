@@ -72,8 +72,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Search
 
-- [ ] **SRCH-01**: Member can search messages by keyword
-- [ ] **SRCH-02**: Search returns relevant results across channels member has access to
+- [x] **SRCH-01**: Member can search messages by keyword
+- [x] **SRCH-02**: Search returns relevant results across channels member has access to
 
 ### Presence
 
@@ -208,8 +208,8 @@ Which phases cover which requirements.
 | NOTF-04 | Phase 5 | Complete |
 | NOTF-05 | Phase 5 | Complete |
 | NOTF-06 | Phase 5 | Complete |
-| SRCH-01 | Phase 7 | Pending |
-| SRCH-02 | Phase 7 | Pending |
+| SRCH-01 | Phase 7 | Complete |
+| SRCH-02 | Phase 7 | Complete |
 | PRES-01 | Phase 3 | Complete |
 | PRES-02 | Phase 3 | Complete |
 | UNRD-01 | Phase 6 | Complete |
@@ -231,4 +231,4 @@ Which phases cover which requirements.
 
 ---
 *Requirements defined: 2026-01-17*
-*Last updated: 2026-01-18 after Phase 6 completion*
+*Last updated: 2026-01-18 after Phase 7 completion*
