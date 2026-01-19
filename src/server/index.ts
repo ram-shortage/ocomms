@@ -1,4 +1,11 @@
-import "dotenv/config";
+import { config } from "dotenv";
+import { existsSync } from "node:fs";
+
+// Load .env.local first (higher priority), then .env (like Next.js)
+if (existsSync(".env.local")) {
+  config({ path: ".env.local" });
+}
+config(); // loads .env, won't override existing values
 import { createServer } from "node:http";
 import next from "next";
 import { Server as SocketServer } from "socket.io";
