@@ -121,5 +121,12 @@
   }
   body {
     @apply bg-background text-foreground;
+    overscroll-behavior-y: contain;
+  }
+}
+
+@layer utilities {
+  .touch-target {
+    @apply min-h-11 min-w-11;
   }
 }
