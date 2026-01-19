@@ -2,8 +2,10 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useSocket } from "@/lib/socket-client";
+import { useRouter } from "next/navigation";
 import { MessageItem } from "./message-item";
 import { ThreadPanel } from "../thread/thread-panel";
+import { PullToRefresh } from "@/components/layout";
 import type { Message, ReactionGroup } from "@/lib/socket-events";
 import {
   cacheMessage,
@@ -49,6 +51,7 @@ export function MessageList({
   const [isThreadPanelOpen, setIsThreadPanelOpen] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const socket = useSocket();
+  const router = useRouter();
 
   // Offline support: online status and cached messages
   const { isOnline } = useOnlineStatus();
@@ -250,6 +253,13 @@ export function MessageList({
     processQueue(socket).catch(console.error);
   }, [socket]);
 
+  // Pull-to-refresh handler - reloads the current route
+  const handleRefresh = useCallback(async () => {
+    router.refresh();
+    // Small delay to let the refresh complete visually
+    await new Promise((resolve) => setTimeout(resolve, 500));
+  }, [router]);
+
   // When offline, fall back to cached messages
   const serverMessages = isOnline
     ? messages // Real-time state (existing behavior)
@@ -310,7 +320,7 @@ export function MessageList({
 
   return (
     <>
-      <div className="flex-1 overflow-y-auto py-4">
+      <PullToRefresh onRefresh={handleRefresh} className="flex-1 py-4">
         {normalizedMessages.map((message) => (
           <MessageItem
             key={message.id}
@@ -332,7 +342,7 @@ export function MessageList({
           />
         ))}
         <div ref={bottomRef} />
-      </div>
+      </PullToRefresh>
 
       <ThreadPanel
         isOpen={isThreadPanelOpen}
