@@ -30,7 +30,7 @@ See: .planning/milestones/v0.2.0-ROADMAP.md
 - [x] **Phase 15: PWA Foundation** - Installable PWA with app shell caching
 - [x] **Phase 16: Message Caching** - IndexedDB schema and offline reading
 - [x] **Phase 17: Offline Send Queue** - Compose offline with auto-sync
-- [ ] **Phase 18: Push Notifications** - Web Push for DMs and mentions
+- [x] **Phase 18: Push Notifications** - Web Push for DMs and mentions
 - [ ] **Phase 19: Mobile Layout** - Bottom tabs and responsive design
 - [ ] **Phase 20: UI Polish** - Admin UIs, sidebar nav, documentation
 
@@ -111,11 +111,11 @@ Plans:
   6. User can configure per-channel notification preferences (all/mentions/none)
 **Plans**: 5 plans
 Plans:
-- [ ] 18-01-PLAN.md — Push infrastructure (VAPID config, push subscription schema, SW push handlers)
-- [ ] 18-02-PLAN.md — Subscription API (VAPID public key endpoint, subscribe/unsubscribe routes)
-- [ ] 18-03-PLAN.md — Push delivery (sendPushToUser utility, mention and DM push triggers)
-- [ ] 18-04-PLAN.md — Push UI (usePushSubscription hook, permission prompt, settings panel)
-- [ ] 18-05-PLAN.md — Integration and verification (PWAProvider integration, settings page, e2e testing)
+- [x] 18-01-PLAN.md — Push infrastructure (VAPID config, push subscription schema, SW push handlers)
+- [x] 18-02-PLAN.md — Subscription API (VAPID public key endpoint, subscribe/unsubscribe routes)
+- [x] 18-03-PLAN.md — Push delivery (sendPushToUser utility, mention and DM push triggers)
+- [x] 18-04-PLAN.md — Push UI (usePushSubscription hook, permission prompt, settings panel)
+- [x] 18-05-PLAN.md — Integration and verification (PWAProvider integration, settings page, e2e testing)
 
 ### Phase 19: Mobile Layout
 **Goal**: App provides native-like mobile experience
@@ -154,10 +154,10 @@ Plans:
 | 15. PWA Foundation | v0.3.0 | 3/3 | Complete | 2026-01-18 |
 | 16. Message Caching | v0.3.0 | 2/2 | Complete | 2026-01-19 |
 | 17. Offline Send Queue | v0.3.0 | 4/4 | Complete | 2026-01-19 |
-| 18. Push Notifications | v0.3.0 | 0/5 | Planned | - |
+| 18. Push Notifications | v0.3.0 | 5/5 | Complete | 2026-01-19 |
 | 19. Mobile Layout | v0.3.0 | 0/3 | Planned | - |
 | 20. UI Polish | v0.3.0 | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-01-18*
-*Last updated: 2026-01-19 after Phase 19 planning*
+*Last updated: 2026-01-19 after Phase 18 complete*

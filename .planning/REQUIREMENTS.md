@@ -28,12 +28,12 @@ Requirements for Mobile & Polish milestone. Each maps to roadmap phases.
 
 ### Push Notifications
 
-- [ ] **PUSH-01**: Server generates VAPID keys for Web Push
-- [ ] **PUSH-02**: User can subscribe to push notifications
-- [ ] **PUSH-03**: User receives push for direct messages
-- [ ] **PUSH-04**: User receives push for @mentions
-- [ ] **PUSH-05**: Clicking notification opens specific conversation
-- [ ] **PUSH-06**: User can configure notification preferences per channel
+- [x] **PUSH-01**: Server generates VAPID keys for Web Push
+- [x] **PUSH-02**: User can subscribe to push notifications
+- [x] **PUSH-03**: User receives push for direct messages
+- [x] **PUSH-04**: User receives push for @mentions
+- [x] **PUSH-05**: Clicking notification opens specific conversation
+- [x] **PUSH-06**: User can configure notification preferences per channel
 
 ### Mobile UI
 
@@ -130,19 +130,19 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PWA-04 | Phase 15 | Complete |
 | PWA-05 | Phase 15 | Complete |
 | PWA-06 | Phase 15 | Complete |
-| OFFL-01 | Phase 16 | Pending |
-| OFFL-02 | Phase 16 | Pending |
-| OFFL-03 | Phase 17 | Pending |
-| OFFL-04 | Phase 17 | Pending |
-| OFFL-05 | Phase 17 | Pending |
-| OFFL-06 | Phase 17 | Pending |
-| OFFL-07 | Phase 17 | Pending |
-| PUSH-01 | Phase 18 | Pending |
-| PUSH-02 | Phase 18 | Pending |
-| PUSH-03 | Phase 18 | Pending |
-| PUSH-04 | Phase 18 | Pending |
-| PUSH-05 | Phase 18 | Pending |
-| PUSH-06 | Phase 18 | Pending |
+| OFFL-01 | Phase 16 | Complete |
+| OFFL-02 | Phase 16 | Complete |
+| OFFL-03 | Phase 17 | Complete |
+| OFFL-04 | Phase 17 | Complete |
+| OFFL-05 | Phase 17 | Complete |
+| OFFL-06 | Phase 17 | Complete |
+| OFFL-07 | Phase 17 | Complete |
+| PUSH-01 | Phase 18 | Complete |
+| PUSH-02 | Phase 18 | Complete |
+| PUSH-03 | Phase 18 | Complete |
+| PUSH-04 | Phase 18 | Complete |
+| PUSH-05 | Phase 18 | Complete |
+| PUSH-06 | Phase 18 | Complete |
 | MOBI-01 | Phase 19 | Pending |
 | MOBI-02 | Phase 19 | Pending |
 | MOBI-03 | Phase 19 | Pending |
@@ -170,4 +170,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-18*
-*Last updated: 2026-01-18 after Phase 15 completion*
+*Last updated: 2026-01-19 after Phase 18 completion*
