@@ -28,7 +28,7 @@ See: .planning/milestones/v0.2.0-ROADMAP.md
 
 - [x] **Phase 14: Security Fixes** - Harden existing code before adding features
 - [x] **Phase 15: PWA Foundation** - Installable PWA with app shell caching
-- [ ] **Phase 16: Message Caching** - IndexedDB schema and offline reading
+- [x] **Phase 16: Message Caching** - IndexedDB schema and offline reading
 - [ ] **Phase 17: Offline Send Queue** - Compose offline with auto-sync
 - [ ] **Phase 18: Push Notifications** - Web Push for DMs and mentions
 - [ ] **Phase 19: Mobile Layout** - Bottom tabs and responsive design
@@ -78,8 +78,8 @@ Plans:
   3. Messages older than 7 days are automatically cleaned up
 **Plans**: 2 plans
 Plans:
-- [ ] 16-01-PLAN.md — IndexedDB foundation (Dexie schema, cache operations, initialization)
-- [ ] 16-02-PLAN.md — Cache integration (React hooks, MessageList wiring, offline fallback)
+- [x] 16-01-PLAN.md — IndexedDB foundation (Dexie schema, cache operations, initialization)
+- [x] 16-02-PLAN.md — Cache integration (React hooks, MessageList wiring, offline fallback)
 
 ### Phase 17: Offline Send Queue
 **Goal**: Users can compose and send messages while offline
@@ -142,7 +142,7 @@ Plans:
 |-------|-----------|----------------|--------|-----------|
 | 14. Security Fixes | v0.3.0 | 3/3 | Complete | 2026-01-18 |
 | 15. PWA Foundation | v0.3.0 | 3/3 | Complete | 2026-01-18 |
-| 16. Message Caching | v0.3.0 | 0/2 | Planned | - |
+| 16. Message Caching | v0.3.0 | 2/2 | Complete | 2026-01-19 |
 | 17. Offline Send Queue | v0.3.0 | 0/4 | Planned | - |
 | 18. Push Notifications | v0.3.0 | 0/TBD | Not started | - |
 | 19. Mobile Layout | v0.3.0 | 0/TBD | Not started | - |
@@ -150,4 +150,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-01-18*
-*Last updated: 2026-01-19 after Phase 17 planning*
+*Last updated: 2026-01-19 after Phase 16 complete*

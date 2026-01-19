@@ -18,8 +18,8 @@ Requirements for Mobile & Polish milestone. Each maps to roadmap phases.
 
 ### Offline Support
 
-- [ ] **OFFL-01**: Messages cached in IndexedDB with 7-day retention
-- [ ] **OFFL-02**: User can read cached messages when offline
+- [x] **OFFL-01**: Messages cached in IndexedDB with 7-day retention
+- [x] **OFFL-02**: User can read cached messages when offline
 - [ ] **OFFL-03**: User can compose messages offline (queued locally)
 - [ ] **OFFL-04**: Pending messages show status indicator (pending/sent/failed)
 - [ ] **OFFL-05**: Queued messages sync automatically on reconnect
