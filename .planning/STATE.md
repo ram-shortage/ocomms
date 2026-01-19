@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-18)
 ## Current Position
 
 Phase: 18 of 20 (Push Notifications)
-Plan: 1 of 4 in current phase
+Plan: 2 of 4 in current phase
 Status: In progress
-Last activity: 2026-01-19 - Completed 18-01-PLAN.md (Push Infrastructure)
+Last activity: 2026-01-19 - Completed 18-02-PLAN.md (Subscription API)
 
 Progress: [#################.......] 85% (17/20 phases)
 
@@ -48,6 +48,9 @@ Progress: [#################.......] 85% (17/20 phases)
 | Endpoint as unique key for subscriptions | Browser endpoint URL uniquely identifies a subscription | 18-01 |
 | Notification tag for deduplication | Same tag replaces existing notification instead of stacking | 18-01 |
 | Tab reuse on notification click | Check for existing tabs before opening new window | 18-01 |
+| VAPID public key endpoint is public | No auth required since key is public | 18-02 |
+| Endpoint reassignment on user switch | Replace old subscription if same endpoint | 18-02 |
+| Idempotent subscribe/unsubscribe | Return success even if already subscribed/removed | 18-02 |
 
 ### Decisions (Phase 17)
 
@@ -125,5 +128,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-19
-Stopped at: Completed 18-01-PLAN.md (Push Infrastructure)
+Stopped at: Completed 18-02-PLAN.md (Subscription API)
 Resume file: None
