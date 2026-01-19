@@ -31,7 +31,7 @@ See: .planning/milestones/v0.2.0-ROADMAP.md
 - [x] **Phase 16: Message Caching** - IndexedDB schema and offline reading
 - [x] **Phase 17: Offline Send Queue** - Compose offline with auto-sync
 - [x] **Phase 18: Push Notifications** - Web Push for DMs and mentions
-- [ ] **Phase 19: Mobile Layout** - Bottom tabs and responsive design
+- [x] **Phase 19: Mobile Layout** - Bottom tabs and responsive design
 - [ ] **Phase 20: UI Polish** - Admin UIs, sidebar nav, documentation
 
 ## Phase Details
@@ -129,9 +129,9 @@ Plans:
   5. Virtual keyboard doesn't break input positioning
 **Plans**: 3 plans
 Plans:
-- [ ] 19-01-PLAN.md — Viewport and CSS foundation (viewportFit, overscroll-behavior, dvh, useIsMobile hook)
-- [ ] 19-02-PLAN.md — Bottom tab bar and responsive layout (MobileTabBar, sidebar/tabs switching)
-- [ ] 19-03-PLAN.md — Touch targets and input fixes (pull-to-refresh, message-input safe-area)
+- [x] 19-01-PLAN.md — Viewport and CSS foundation (viewportFit, overscroll-behavior, dvh, useIsMobile hook)
+- [x] 19-02-PLAN.md — Bottom tab bar and responsive layout (MobileTabBar, sidebar/tabs switching)
+- [x] 19-03-PLAN.md — Touch targets and input fixes (pull-to-refresh, message-input safe-area)
 
 ### Phase 20: UI Polish
 **Goal**: Complete remaining UI gaps and documentation
@@ -159,7 +159,7 @@ Plans:
 | 16. Message Caching | v0.3.0 | 2/2 | Complete | 2026-01-19 |
 | 17. Offline Send Queue | v0.3.0 | 4/4 | Complete | 2026-01-19 |
 | 18. Push Notifications | v0.3.0 | 5/5 | Complete | 2026-01-19 |
-| 19. Mobile Layout | v0.3.0 | 0/3 | Planned | - |
+| 19. Mobile Layout | v0.3.0 | 3/3 | Complete | 2026-01-19 |
 | 20. UI Polish | v0.3.0 | 0/3 | Planned | - |
 
 ---

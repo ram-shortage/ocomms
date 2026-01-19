@@ -37,11 +37,11 @@ Requirements for Mobile & Polish milestone. Each maps to roadmap phases.
 
 ### Mobile UI
 
-- [ ] **MOBI-01**: Bottom tab bar navigation (Home, DMs, Mentions, Search, Profile)
-- [ ] **MOBI-02**: Responsive layout adapts to mobile screen sizes
-- [ ] **MOBI-03**: Touch targets meet 44px minimum size
-- [ ] **MOBI-04**: Pull-to-refresh reloads content
-- [ ] **MOBI-05**: Virtual keyboard doesn't break layout
+- [x] **MOBI-01**: Bottom tab bar navigation (Home, DMs, Mentions, Search, Profile)
+- [x] **MOBI-02**: Responsive layout adapts to mobile screen sizes
+- [x] **MOBI-03**: Touch targets meet 44px minimum size
+- [x] **MOBI-04**: Pull-to-refresh reloads content
+- [x] **MOBI-05**: Virtual keyboard doesn't break layout
 
 ### UI Polish
 
