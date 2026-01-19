@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-01-18)
 
 **Core value:** Data sovereignty - complete control over communication data
-**Current focus:** Phase 16 - Message Caching
+**Current focus:** Phase 17 - Offline Send Queue
 
 ## Current Position
 
-Phase: 16 of 20 (Message Caching)
-Plan: 2 of 2 in current phase (COMPLETE)
-Status: Phase complete
-Last activity: 2026-01-19 - Completed 16-02-PLAN.md (Cache Integration)
+Phase: 17 of 20 (Offline Send Queue)
+Plan: 1 of 3 in current phase
+Status: In progress
+Last activity: 2026-01-19 - Completed 17-01-PLAN.md (Queue Infrastructure)
 
 Progress: [################........] 80% (16/20 phases)
 
@@ -29,7 +29,7 @@ Progress: [################........] 80% (16/20 phases)
 ## Performance Metrics
 
 **Cumulative:**
-- Total plans completed: 56 (23 + 24 + 3 + 3 + 2 + 1)
+- Total plans completed: 57 (23 + 24 + 3 + 3 + 2 + 1 + 1)
 - Total requirements delivered: 84 (51 + 19 + 8 + 6)
 - Total phases completed: 16
 
@@ -38,6 +38,16 @@ Progress: [################........] 80% (16/20 phases)
 - Requirements: 38
 
 ## Accumulated Context
+
+### Decisions (Phase 17)
+
+| Decision | Rationale | Plan |
+|----------|-----------|------|
+| Dexie version 2 schema for sendQueue | Adds sendQueue table while preserving existing messages | 17-01 |
+| Compound index [targetId+status] | Enables efficient pending message queries by channel/conversation | 17-01 |
+| AWS-style exponential backoff | baseDelay*2^attempt + jitter prevents thundering herd | 17-01 |
+| Default 5 max retries, 30s max delay | Balance between persistence and giving up on permanently failed | 17-01 |
+| Graceful error handling for queue ops | Log but don't throw - IndexedDB may fail in private browsing | 17-01 |
 
 ### Decisions (Phase 16)
 
@@ -96,5 +106,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-19
-Stopped at: Completed 16-02-PLAN.md (Cache Integration) - Phase 16 complete
+Stopped at: Completed 17-01-PLAN.md (Queue Infrastructure)
 Resume file: None
