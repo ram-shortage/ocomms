@@ -5,18 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-18)
 
 **Core value:** Data sovereignty - complete control over communication data
-**Current focus:** Phase 20 - UI Polish
+**Current focus:** Milestone v0.3.0 complete
 
 ## Current Position
 
 Phase: 20 of 20 (UI Polish)
 Plan: 3 of 3 in current phase
-Status: Phase complete
-Last activity: 2026-01-19 - Completed 20-03-PLAN.md (Admin UI)
+Status: Milestone complete
+Last activity: 2026-01-19 - Phase 20 verified, v0.3.0 ready for audit
 
 Progress: [########################] 100% (20/20 phases)
 
 ## Shipped Milestones
+
+- **v0.3.0 Mobile & Polish** - 2026-01-19
+  - 7 phases (14-20), 23 plans, 38 requirements
+  - PWA, offline, push notifications, mobile layout, admin UI
+  - Pending: Archive to .planning/milestones/
 
 - **v0.2.0 Security Hardening** - 2026-01-18
   - 5 phases (9-13), 24 plans, 19 requirements
@@ -29,13 +34,14 @@ Progress: [########################] 100% (20/20 phases)
 ## Performance Metrics
 
 **Cumulative:**
-- Total plans completed: 66 (23 + 24 + 3 + 3 + 2 + 4 + 5 + 3)
-- Total requirements delivered: 95 (51 + 19 + 8 + 6 + 6 + 5)
-- Total phases completed: 19
+- Total plans completed: 69 (23 + 24 + 3 + 3 + 2 + 4 + 5 + 3 + 3)
+- Total requirements delivered: 101 (51 + 19 + 8 + 6 + 3 + 7 + 5 + 6)
+- Total phases completed: 20
 
-**v0.3.0 Target:**
-- Phases: 7 (14-20)
-- Requirements: 38
+**v0.3.0 Complete:**
+- Phases: 7/7 (14-20)
+- Plans: 23/23
+- Requirements: 38/38
 
 ## Accumulated Context
 
@@ -154,13 +160,13 @@ Progress: [########################] 100% (20/20 phases)
 
 ### Pending Todos
 
-Items carried from previous milestones (now addressed in v0.3.0):
-- ~~Complete USER-SETUP.md (UIPOL-05)~~ DONE in 20-02
-- Add sidebar navigation links for /threads and /search (UIPOL-01)
-- ~~Increase HSTS max-age to 31536000 (UIPOL-06)~~ DONE in 20-01
-- ~~Add logout button to UI (UIPOL-02)~~ DONE in 20-01
-- ~~Create audit log viewer UI (UIPOL-03)~~ DONE in 20-03
-- ~~Create data export UI (UIPOL-04)~~ DONE in 20-03
+All v0.3.0 requirements completed:
+- [x] USER-SETUP.md (UIPOL-05) — 20-02
+- [x] Sidebar nav links (UIPOL-01) — pre-existing
+- [x] HSTS max-age (UIPOL-06) — 20-01
+- [x] Logout button (UIPOL-02) — 20-01
+- [x] Audit log viewer (UIPOL-03) — 20-03
+- [x] Data export UI (UIPOL-04) — 20-03
 
 ### Blockers/Concerns
 
@@ -169,5 +175,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-19
-Stopped at: Completed 20-03-PLAN.md (Admin UI)
+Stopped at: v0.3.0 milestone complete, ready for audit
 Resume file: None

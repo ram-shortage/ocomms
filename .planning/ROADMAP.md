@@ -4,7 +4,7 @@
 
 - [x] **v0.1.0 Full Conversation** - Phases 1-8 (shipped 2026-01-18)
 - [x] **v0.2.0 Security Hardening** - Phases 9-13 (shipped 2026-01-18)
-- [ ] **v0.3.0 Mobile & Polish** - Phases 14-20 (in progress)
+- [x] **v0.3.0 Mobile & Polish** - Phases 14-20 (shipped 2026-01-19)
 
 ## Phases
 
@@ -32,7 +32,7 @@ See: .planning/milestones/v0.2.0-ROADMAP.md
 - [x] **Phase 17: Offline Send Queue** - Compose offline with auto-sync
 - [x] **Phase 18: Push Notifications** - Web Push for DMs and mentions
 - [x] **Phase 19: Mobile Layout** - Bottom tabs and responsive design
-- [ ] **Phase 20: UI Polish** - Admin UIs, sidebar nav, documentation
+- [x] **Phase 20: UI Polish** - Admin UIs, sidebar nav, documentation
 
 ## Phase Details
 
@@ -146,9 +146,9 @@ Plans:
   6. HSTS max-age set to 31536000 (1 year) for production
 **Plans**: 3 plans
 Plans:
-- [ ] 20-01-PLAN.md — HSTS security and logout button (config update, sidebar integration)
-- [ ] 20-02-PLAN.md — USER-SETUP.md documentation (deployment, config, maintenance)
-- [ ] 20-03-PLAN.md — Admin UI (audit log viewer, data export, settings navigation)
+- [x] 20-01-PLAN.md — HSTS security and logout button (config update, sidebar integration)
+- [x] 20-02-PLAN.md — USER-SETUP.md documentation (deployment, config, maintenance)
+- [x] 20-03-PLAN.md — Admin UI (audit log viewer, data export, settings navigation)
 
 ## Progress
 
@@ -160,8 +160,8 @@ Plans:
 | 17. Offline Send Queue | v0.3.0 | 4/4 | Complete | 2026-01-19 |
 | 18. Push Notifications | v0.3.0 | 5/5 | Complete | 2026-01-19 |
 | 19. Mobile Layout | v0.3.0 | 3/3 | Complete | 2026-01-19 |
-| 20. UI Polish | v0.3.0 | 0/3 | Planned | - |
+| 20. UI Polish | v0.3.0 | 3/3 | Complete | 2026-01-19 |
 
 ---
 *Roadmap created: 2026-01-18*
-*Last updated: 2026-01-19 after Phase 20 planning*
+*Last updated: 2026-01-19 after Phase 20 execution*

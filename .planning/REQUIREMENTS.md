@@ -45,12 +45,12 @@ Requirements for Mobile & Polish milestone. Each maps to roadmap phases.
 
 ### UI Polish
 
-- [ ] **UIPOL-01**: Sidebar includes navigation links for /threads and /search
-- [ ] **UIPOL-02**: Logout button visible in layout
-- [ ] **UIPOL-03**: Audit log viewer with table, filtering, and export
-- [ ] **UIPOL-04**: Data export UI for JSON/CSV download
-- [ ] **UIPOL-05**: USER-SETUP.md documentation complete
-- [ ] **UIPOL-06**: HSTS max-age set to production value (31536000)
+- [x] **UIPOL-01**: Sidebar includes navigation links for /threads and /search
+- [x] **UIPOL-02**: Logout button visible in layout
+- [x] **UIPOL-03**: Audit log viewer with table, filtering, and export
+- [x] **UIPOL-04**: Data export UI for JSON/CSV download
+- [x] **UIPOL-05**: USER-SETUP.md documentation complete
+- [x] **UIPOL-06**: HSTS max-age set to production value (31536000)
 
 ### Security Fixes
 
@@ -143,17 +143,17 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PUSH-04 | Phase 18 | Complete |
 | PUSH-05 | Phase 18 | Complete |
 | PUSH-06 | Phase 18 | Complete |
-| MOBI-01 | Phase 19 | Pending |
-| MOBI-02 | Phase 19 | Pending |
-| MOBI-03 | Phase 19 | Pending |
-| MOBI-04 | Phase 19 | Pending |
-| MOBI-05 | Phase 19 | Pending |
-| UIPOL-01 | Phase 20 | Pending |
-| UIPOL-02 | Phase 20 | Pending |
-| UIPOL-03 | Phase 20 | Pending |
-| UIPOL-04 | Phase 20 | Pending |
-| UIPOL-05 | Phase 20 | Pending |
-| UIPOL-06 | Phase 20 | Pending |
+| MOBI-01 | Phase 19 | Complete |
+| MOBI-02 | Phase 19 | Complete |
+| MOBI-03 | Phase 19 | Complete |
+| MOBI-04 | Phase 19 | Complete |
+| MOBI-05 | Phase 19 | Complete |
+| UIPOL-01 | Phase 20 | Complete |
+| UIPOL-02 | Phase 20 | Complete |
+| UIPOL-03 | Phase 20 | Complete |
+| UIPOL-04 | Phase 20 | Complete |
+| UIPOL-05 | Phase 20 | Complete |
+| UIPOL-06 | Phase 20 | Complete |
 | SECFIX-01 | Phase 14 | Complete |
 | SECFIX-02 | Phase 14 | Complete |
 | SECFIX-03 | Phase 14 | Complete |
@@ -170,4 +170,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-18*
-*Last updated: 2026-01-19 after Phase 18 completion*
+*Last updated: 2026-01-19 after Phase 20 completion (v0.3.0 complete)*
