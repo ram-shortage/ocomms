@@ -9,6 +9,7 @@ import { Send, X } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import type { Message } from "@/lib/socket-events";
 import { MessageContent } from "@/components/message/message-content";
+import { useSendMessage } from "@/hooks/use-send-message";
 
 interface ThreadPanelProps {
   isOpen: boolean;
@@ -52,31 +53,37 @@ function ThreadReplyItem({ message, currentUsername }: { message: Message; curre
 
 function ThreadReplyInput({
   parentId,
+  targetId,
+  targetType,
   onReplySent,
 }: {
   parentId: string;
+  targetId: string;
+  targetType: "channel" | "dm";
   onReplySent: () => void;
 }) {
   const [content, setContent] = useState("");
   const [isSending, setIsSending] = useState(false);
-  const socket = useSocket();
+  const { sendMessage, isOnline } = useSendMessage({
+    targetId,
+    targetType,
+    parentId,
+  });
 
-  const sendReply = useCallback(() => {
+  const sendReply = useCallback(async () => {
     if (!content.trim() || isSending) return;
 
     setIsSending(true);
-    socket.emit(
-      "thread:reply",
-      { parentId, content: content.trim() },
-      (response) => {
-        setIsSending(false);
-        if (response.success) {
-          setContent("");
-          onReplySent();
-        }
-      }
-    );
-  }, [content, isSending, socket, parentId, onReplySent]);
+    try {
+      await sendMessage(content.trim());
+      setContent("");
+      onReplySent();
+    } catch (error) {
+      console.error("[ThreadReplyInput] Failed to queue reply:", error);
+    } finally {
+      setIsSending(false);
+    }
+  }, [content, isSending, sendMessage, onReplySent]);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -245,7 +252,12 @@ export function ThreadPanel({ isOpen, onClose, parentMessage, currentUserId, cur
         </div>
 
         {/* Reply input */}
-        <ThreadReplyInput parentId={parentMessage.id} onReplySent={handleReplySent} />
+        <ThreadReplyInput
+          parentId={parentMessage.id}
+          targetId={parentMessage.channelId || parentMessage.conversationId || ""}
+          targetType={parentMessage.channelId ? "channel" : "dm"}
+          onReplySent={handleReplySent}
+        />
       </SheetContent>
     </Sheet>
   );
