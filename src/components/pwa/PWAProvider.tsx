@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { registerServiceWorker, acceptUpdate } from "@/lib/pwa/register-sw";
+import { initializeCache } from "@/lib/cache";
 import { InstallPrompt } from "./InstallPrompt";
 import { IOSInstallGuide } from "./IOSInstallGuide";
 import { UpdateNotification } from "./UpdateNotification";
@@ -15,6 +16,9 @@ export function PWAProvider() {
     registerServiceWorker(() => {
       setHasUpdate(true);
     });
+
+    // Initialize message cache (runs cleanup on 7-day-old messages)
+    initializeCache();
   }, []);
 
   const handleRefresh = () => {
