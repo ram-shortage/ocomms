@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-18)
 ## Current Position
 
 Phase: 17 of 20 (Offline Send Queue)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: In progress
-Last activity: 2026-01-19 - Completed 17-01-PLAN.md (Queue Infrastructure)
+Last activity: 2026-01-19 - Completed 17-02-PLAN.md (Queue Processing)
 
 Progress: [################........] 80% (16/20 phases)
 
@@ -48,6 +48,9 @@ Progress: [################........] 80% (16/20 phases)
 | AWS-style exponential backoff | baseDelay*2^attempt + jitter prevents thundering herd | 17-01 |
 | Default 5 max retries, 30s max delay | Balance between persistence and giving up on permanently failed | 17-01 |
 | Graceful error handling for queue ops | Log but don't throw - IndexedDB may fail in private browsing | 17-01 |
+| 10 second socket send timeout | Balance between giving up too early and hanging too long | 17-02 |
+| Random jitter 0-500ms on socket connect | Prevents thundering herd when server restarts | 17-02 |
+| Rate limit errors use server's retryAfter | Respects server's guidance over exponential backoff | 17-02 |
 
 ### Decisions (Phase 16)
 
@@ -106,5 +109,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-19
-Stopped at: Completed 17-01-PLAN.md (Queue Infrastructure)
+Stopped at: Completed 17-02-PLAN.md (Queue Processing)
 Resume file: None
