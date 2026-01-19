@@ -38,3 +38,9 @@ export {
   useCachedChannelMessages,
   useCachedConversationMessages,
 } from "./use-cached-messages";
+
+// Queue processor
+export { processQueue, registerBackgroundSync } from "./queue-processor";
+
+// Sync-on-reconnect listeners
+export { initSyncOnReconnect, cleanupSyncListeners } from "./sync-on-reconnect";
