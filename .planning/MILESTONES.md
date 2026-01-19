@@ -1,5 +1,33 @@
 # Project Milestones: OComms
 
+## v0.3.0 Mobile & Polish (Shipped: 2026-01-19)
+
+**Delivered:** PWA with offline messaging, push notifications, mobile-first navigation, and admin tools for a complete mobile experience.
+
+**Phases completed:** 14-20 (23 plans total)
+
+**Key accomplishments:**
+
+- PWA Foundation: Installable app with service worker, offline page, install prompt, iOS guidance
+- Offline Support: IndexedDB message cache (7-day retention), send queue, optimistic UI, auto-sync
+- Push Notifications: Web Push with VAPID, subscription management, DM/mention alerts, per-channel settings
+- Mobile Layout: Bottom tab bar, responsive navigation, 44px touch targets, pull-to-refresh, safe-area support
+- Admin UI: Audit log viewer with filtering/CSV export, JSON data export (GDPR), role-based access
+- Security Fixes: @mention org scoping, fail-closed middleware, atomic sequences, rate limiting, message limits
+
+**Stats:**
+
+- 144 files created/modified
+- ~17,900 lines of TypeScript
+- 7 phases, 23 plans, 38 requirements
+- 2 days from start to ship
+
+**Git range:** `a8e131a` → `51288f8`
+
+**What's next:** Planning next milestone
+
+---
+
 ## v0.2.0 Security Hardening (Shipped: 2026-01-18)
 
 **Delivered:** Production-ready security baseline with authorization fixes, encrypted transport, hardened authentication, and audit trail.

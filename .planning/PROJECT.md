@@ -2,42 +2,29 @@
 
 ## What This Is
 
-OComms is a self-hosted team communication platform - a Slack-like experience that organizations can run on their own infrastructure. It provides real-time messaging, channels, threads, mentions, search, and presence features while giving teams full control over their data.
+OComms is a self-hosted team communication platform - a Slack-like experience that organizations can run on their own infrastructure. It provides real-time messaging, channels, threads, mentions, search, and presence features while giving teams full control over their data. Available as an installable PWA with offline support and push notifications for mobile access.
 
 ## Core Value
 
 **Data sovereignty**: Complete control over communication data, no third-party dependencies
 
-## Current Milestone: v0.3.0 Mobile & Polish
-
-**Goal:** Complete UI gaps, add PWA support with offline capability and push notifications for mobile access.
-
-**Target features:**
-- UI polish: sidebar navigation, logout button, admin UIs (audit viewer, data export)
-- PWA foundation: manifest, service worker, install prompt
-- Mobile layout: bottom tab bar navigation, responsive design
-- Offline support: 7-day message cache with IndexedDB, offline send queue, background sync
-- Push notifications: Web Push API, subscription management, mentions/DM alerts
-- Documentation: Complete USER-SETUP.md, increase HSTS max-age
-
 ---
 
 ## Current State
 
-**Version:** v0.2.0 (Security Hardening) - Shipped 2026-01-18
+**Version:** v0.3.0 (Mobile & Polish) - Shipped 2026-01-19
 
-Delivered production-ready security baseline with authorization fixes, encrypted transport, hardened authentication, and audit trail.
-
----
-
-## Current State
+Delivered PWA with offline messaging, push notifications, mobile-first navigation, and admin tools.
 
 **Tech Stack:**
 - Next.js 15 with App Router
-- TypeScript (~16,000 LOC)
+- TypeScript (~17,900 LOC)
 - PostgreSQL with Drizzle ORM (SSL encrypted)
 - Socket.IO with Redis pub-sub
 - Docker Compose deployment (HTTPS with Let's Encrypt)
+- Serwist/Workbox for service worker
+- Dexie.js for IndexedDB
+- Web Push API
 
 **What's Working:**
 - Real-time messaging in channels and DMs
@@ -49,13 +36,19 @@ Delivered production-ready security baseline with authorization fixes, encrypted
 - Full-text search with PostgreSQL FTS
 - Presence (active/away/offline)
 - Docker deployment with backup/restore
-- **v0.2.0:** Authorization validation on all socket handlers
-- **v0.2.0:** HTTPS with auto-renewing Let's Encrypt certificates
-- **v0.2.0:** Security headers (CSP, HSTS, X-Frame-Options, X-Content-Type-Options)
-- **v0.2.0:** Rate limiting on auth endpoints
-- **v0.2.0:** Password strength validation with zxcvbn
-- **v0.2.0:** Account lockout with progressive delays
-- **v0.2.0:** Audit logging for security events
+- Authorization validation on all socket handlers
+- HTTPS with auto-renewing Let's Encrypt certificates
+- Security headers (CSP, HSTS 1-year, X-Frame-Options, X-Content-Type-Options)
+- Rate limiting on auth and message endpoints
+- Password strength validation with zxcvbn
+- Account lockout with progressive delays
+- Audit logging for security events
+- **v0.3.0:** Installable PWA with service worker caching
+- **v0.3.0:** Offline message reading with 7-day IndexedDB cache
+- **v0.3.0:** Offline send queue with optimistic UI and auto-sync
+- **v0.3.0:** Push notifications for DMs and @mentions
+- **v0.3.0:** Mobile bottom tab navigation with responsive layout
+- **v0.3.0:** Admin UI (audit logs, data export)
 
 ## Target Users
 
@@ -100,15 +93,17 @@ Requirements shipped and working in production:
   - SEC-06: Audit logging for security events
   - SEC-07: Account lockout with progressive delays
 
+- **v0.3.0 - Mobile & Polish** (38 requirements)
+  - PWA-01 to PWA-06: Manifest, service worker, offline page, install prompt, iOS guidance
+  - OFFL-01 to OFFL-07: IndexedDB cache, offline reading, send queue, status indicators, sync
+  - PUSH-01 to PUSH-06: VAPID keys, subscription, DM/mention push, per-channel settings
+  - MOBI-01 to MOBI-05: Bottom tabs, responsive layout, touch targets, pull-to-refresh, keyboard
+  - UIPOL-01 to UIPOL-06: Navigation, logout, audit viewer, data export, docs, HSTS
+  - SECFIX-01 to SECFIX-08: Mention scoping, fail-closed, atomic sequence, rate limiting
+
 ### Active
 
-**v0.3.0 - Mobile & Polish:**
-- UI Polish: Sidebar navigation, logout button, admin UIs
-- PWA: Manifest, service worker, install prompt
-- Mobile: Bottom tab bar, responsive layout
-- Offline: IndexedDB cache (7 days), send queue, background sync
-- Push: Web Push API notifications for mentions/DMs
-- Docs: USER-SETUP.md, HSTS hardening
+(None - planning next milestone)
 
 ### Out of Scope
 
@@ -122,6 +117,8 @@ Requirements shipped and working in production:
 | Nested threading | Complexity trap, no major platform does this |
 | Read receipts | Privacy concerns, complexity at scale |
 | Mobile native apps | PWA provides mobile access; native apps not needed |
+| Full offline mode | iOS 50MB storage limit, 7-day ITP eviction |
+| Background sync iOS | Not supported by Safari |
 
 ---
 
@@ -140,6 +137,12 @@ Requirements shipped and working in production:
 | In-memory rate limiting | Single-server appropriate, Redis for scaling | Good |
 | Fire-and-forget audit logging | Never blocks request flow | Good |
 | 5-min session validation cache | Balance security and performance | Good |
+| Serwist for service worker | Maintained Workbox fork, Next.js App Router support | Good |
+| Dexie.js for IndexedDB | React hooks, TypeScript support, compound indexes | Good |
+| 7-day cache retention | Matches Safari ITP policy, reasonable storage | Good |
+| VAPID keys in environment | Generated once, stored securely | Good |
+| Double-permission pattern for push | In-app prompt before browser permission | Good |
+| dvh units for mobile layout | Accounts for browser chrome and virtual keyboards | Good |
 
 ---
 
@@ -160,7 +163,12 @@ Requirements shipped and working in production:
 - No external service dependencies for core features
 - Reasonable hardware requirements
 
+### Mobile/PWA
+- Offline reading with 7-day cache
+- Offline compose with automatic sync
+- Push notifications require VAPID configuration
+
 ---
 
 ---
-*Last updated: 2026-01-18 after v0.3.0 milestone planning*
+*Last updated: 2026-01-19 after v0.3.0 milestone*

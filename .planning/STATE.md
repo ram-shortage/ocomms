@@ -2,171 +2,51 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-01-18)
+See: .planning/PROJECT.md (updated 2026-01-19)
 
 **Core value:** Data sovereignty - complete control over communication data
-**Current focus:** Milestone v0.3.0 complete
+**Current focus:** Planning next milestone
 
 ## Current Position
 
-Phase: 20 of 20 (UI Polish)
-Plan: 3 of 3 in current phase
-Status: Milestone complete
-Last activity: 2026-01-19 - Phase 20 verified, v0.3.0 ready for audit
+Phase: Ready for next milestone
+Plan: N/A
+Status: v0.3.0 archived, awaiting /gsd:new-milestone
+Last activity: 2026-01-19 - v0.3.0 milestone complete
 
-Progress: [########################] 100% (20/20 phases)
+Progress: [########################] 100% (20/20 phases through v0.3.0)
 
 ## Shipped Milestones
 
 - **v0.3.0 Mobile & Polish** - 2026-01-19
   - 7 phases (14-20), 23 plans, 38 requirements
   - PWA, offline, push notifications, mobile layout, admin UI
-  - Pending: Archive to .planning/milestones/
+  - See: .planning/milestones/v0.3.0-ROADMAP.md
 
 - **v0.2.0 Security Hardening** - 2026-01-18
   - 5 phases (9-13), 24 plans, 19 requirements
   - See: .planning/milestones/v0.2.0-ROADMAP.md
 
 - **v0.1.0 Full Conversation** - 2026-01-18
-  - 8 phases, 23 plans, 51 requirements
+  - 8 phases (1-8), 23 plans, 51 requirements
   - See: .planning/milestones/v0.1.0-ROADMAP.md
 
 ## Performance Metrics
 
 **Cumulative:**
-- Total plans completed: 69 (23 + 24 + 3 + 3 + 2 + 4 + 5 + 3 + 3)
-- Total requirements delivered: 101 (51 + 19 + 8 + 6 + 3 + 7 + 5 + 6)
+- Total plans completed: 70
+- Total requirements delivered: 108 (51 + 19 + 38)
 - Total phases completed: 20
-
-**v0.3.0 Complete:**
-- Phases: 7/7 (14-20)
-- Plans: 23/23
-- Requirements: 38/38
 
 ## Accumulated Context
 
-### Decisions (Phase 20)
+### Decisions
 
-| Decision | Rationale | Plan |
-|----------|-----------|------|
-| No includeSubDomains/preload on HSTS | Requires additional setup, DNS verification, and testing | 20-01 |
-| Ghost variant for logout button | Matches sidebar link styling for visual consistency | 20-01 |
-| 625-line comprehensive USER-SETUP.md | Covers all deployment scenarios without external docs | 20-02 |
-| Table of contents with anchor links | Improves navigation for long documentation | 20-02 |
-| Cron example for automated backups | Production deployments need scheduled backups | 20-02 |
-| notFound() for non-admins | Keeps admin page existence private rather than redirecting | 20-03 |
-| Client-side CSV export | Works with filtered results, no additional API needed | 20-03 |
-| Export button visible only to owners | Matches API authorization (owner-only) | 20-03 |
-
-### Decisions (Phase 19)
-
-| Decision | Rationale | Plan |
-|----------|-----------|------|
-| viewportFit: cover for safe-area CSS | Required for env(safe-area-inset-*) functions to work on notched devices | 19-01 |
-| interactiveWidget: resizes-content | Improves keyboard handling on Chrome/Firefox, harmless on Safari | 19-01 |
-| overscroll-behavior-y: contain globally | Disables browser pull-to-refresh to avoid conflicts with app behavior | 19-01 |
-| useIsMobile returns false on SSR | CSS responsive classes handle initial render, hook is for JS logic only | 19-01 |
-| dvh instead of vh for containers | Accounts for browser chrome and virtual keyboards on mobile | 19-01 |
-| md:hidden/hidden md:block for responsive nav | Sidebar desktop-only, tabs mobile-only at 768px breakpoint | 19-02 |
-| pb-16 for tab bar clearance | Main content reserves space for fixed bottom tab bar height | 19-02 |
-| Mentions tab routes to /threads | Reuses existing threads page for @mention notifications | 19-02 |
-| 44px touch targets on tabs | min-h-11 min-w-11 ensures accessible mobile tap areas | 19-02 |
-| 80px pull threshold | Industry standard for pull-to-refresh trigger | 19-03 |
-| 2.5 resistance factor | Makes pull feel native, not 1:1 which is too sensitive | 19-03 |
-| router.refresh() for pull-to-refresh | Next.js soft refresh re-fetches server data | 19-03 |
-| safe-area max() function | pb-[max(1rem,env(safe-area-inset-bottom))] ensures minimum padding | 19-03 |
-
-### Decisions (Phase 18)
-
-| Decision | Rationale | Plan |
-|----------|-----------|------|
-| VAPID keys in environment variables | Keys generated once and stored, not at runtime | 18-01 |
-| Graceful degradation when VAPID unconfigured | Push features disabled but app continues to work | 18-01 |
-| Endpoint as unique key for subscriptions | Browser endpoint URL uniquely identifies a subscription | 18-01 |
-| Notification tag for deduplication | Same tag replaces existing notification instead of stacking | 18-01 |
-| Tab reuse on notification click | Check for existing tabs before opening new window | 18-01 |
-| VAPID public key endpoint is public | No auth required since key is public | 18-02 |
-| Endpoint reassignment on user switch | Replace old subscription if same endpoint | 18-02 |
-| Idempotent subscribe/unsubscribe | Return success even if already subscribed/removed | 18-02 |
-| Fire-and-forget push delivery | Non-blocking push sending to not slow down socket emits | 18-03 |
-| 24-hour TTL for push messages | Balance between delivery window and staleness | 18-03 |
-| Tag-based push deduplication | channel:{id} for mentions, dm:{id} for DMs | 18-03 |
-| Auto-cleanup expired subscriptions | 410/404 responses trigger subscription deletion | 18-03 |
-| Double-permission pattern | In-app prompt before browser permission for better UX | 18-04 |
-| iOS standalone detection | iOS requires PWA installation for push support | 18-04 |
-| Unified push subscription hook | Single hook provides all state and controls | 18-04 |
-| Push prompt engagement gating | Same threshold as install prompt (3 pages OR 30s) | 18-05 |
-| Push prompt localStorage persistence | Dismissal persists to avoid annoying users | 18-05 |
-| Separate notification section component | Keeps settings page server-side | 18-05 |
-
-### Decisions (Phase 17)
-
-| Decision | Rationale | Plan |
-|----------|-----------|------|
-| Dexie version 2 schema for sendQueue | Adds sendQueue table while preserving existing messages | 17-01 |
-| Compound index [targetId+status] | Enables efficient pending message queries by channel/conversation | 17-01 |
-| AWS-style exponential backoff | baseDelay*2^attempt + jitter prevents thundering herd | 17-01 |
-| Default 5 max retries, 30s max delay | Balance between persistence and giving up on permanently failed | 17-01 |
-| Graceful error handling for queue ops | Log but don't throw - IndexedDB may fail in private browsing | 17-01 |
-| 10 second socket send timeout | Balance between giving up too early and hanging too long | 17-02 |
-| Random jitter 0-500ms on socket connect | Prevents thundering herd when server restarts | 17-02 |
-| Rate limit errors use server's retryAfter | Respects server's guidance over exponential backoff | 17-02 |
-| Cache barrel imports for queue processor | Consistent with existing import patterns | 17-03 |
-| _isPending flag on optimistic messages | Enables potential UI styling differentiation | 17-03 |
-| Filter pending by serverId match | Prevents duplicate display when server confirms | 17-03 |
-| MessageStatus below message content | Subtle text styling for minimal visual impact | 17-04 |
-| 70% opacity for pending messages | Visual differentiation without being obtrusive | 17-04 |
-| Separate SyncProvider component | Separation of concerns from PWAProvider | 17-04 |
-
-### Decisions (Phase 16)
-
-| Decision | Rationale | Plan |
-|----------|-----------|------|
-| Use Dexie.js for IndexedDB wrapper | Provides React hooks and TypeScript support | 16-01 |
-| Compound indexes [channelId+sequence] | Enables efficient ordered message queries | 16-01 |
-| 7-day TTL with cachedAt field | Matches Safari ITP policy, enables cleanup queries | 16-01 |
-| Graceful error handling for cache ops | IndexedDB fails in private browsing, app should continue | 16-01 |
-| useLiveQuery for reactive cache queries | Auto re-renders when IndexedDB changes, including from other tabs | 16-02 |
-| Fire-and-forget cache writes | Don't block UI rendering on cache operations | 16-02 |
-| Normalize cached messages for display | Reconstruct author object from flattened fields | 16-02 |
-| PWAProvider for cache initialization | Already handles PWA lifecycle, cache is a PWA concern | 16-02 |
-
-### Decisions (Phase 15)
-
-| Decision | Rationale | Plan |
-|----------|-----------|------|
-| Use Serwist for Next.js SW integration | Maintained Workbox fork, works with App Router | 15-01 |
-| Add turbopack: {} for Next.js 16 | Acknowledges webpack plugin while allowing Turbopack | 15-01 |
-| Disable Serwist in development | Avoids stale cache issues during dev | 15-01 |
-| Use --webpack flag for production builds | Turbopack doesn't support Serwist, webpack required for SW generation | 15-02 |
-| skipWaiting: false for user-controlled updates | User decides when to apply SW updates | 15-02 |
-| useSyncExternalStore for browser APIs | Avoids setState in effects lint errors, proper SSR handling | 15-03 |
-| Engagement threshold: 3 pages OR 30 seconds | Per CONTEXT.md, shows install prompt after meaningful engagement | 15-03 |
-
-### Decisions (Phase 14)
-
-| Decision | Rationale | Plan |
-|----------|-----------|------|
-| SECFIX-02: Middleware fails closed | Redirect to /login on validation error | 14-01 |
-| SECFIX-04: getChannel returns null for non-org-members | Prevents revealing channel existence | 14-01 |
-| SECFIX-08: Audit logger uses async fs/promises | Non-blocking writes | 14-01 |
-| Rate limit: 10 messages/60s | Balance UX with spam prevention | 14-02 |
-| Message length: 10,000 chars | Per CONTEXT.md decision | 14-02 |
-| Sequence retry: 3 attempts | Handle race conditions gracefully | 14-02 |
-| Error codes for client | RATE_LIMITED, MESSAGE_TOO_LONG | 14-02 |
-| @mention org-scoped | innerJoin members table | 14-03 |
-| Character counter always visible | Per CONTEXT.md decision | 14-03 |
-| Socket error code/retryAfter | Typed rate limit handling | 14-03 |
+(Cleared for new milestone - see PROJECT.md Key Decisions for persistent decisions)
 
 ### Pending Todos
 
-All v0.3.0 requirements completed:
-- [x] USER-SETUP.md (UIPOL-05) — 20-02
-- [x] Sidebar nav links (UIPOL-01) — pre-existing
-- [x] HSTS max-age (UIPOL-06) — 20-01
-- [x] Logout button (UIPOL-02) — 20-01
-- [x] Audit log viewer (UIPOL-03) — 20-03
-- [x] Data export UI (UIPOL-04) — 20-03
+None - v0.3.0 complete.
 
 ### Blockers/Concerns
 
@@ -175,5 +55,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-19
-Stopped at: v0.3.0 milestone complete, ready for audit
+Stopped at: v0.3.0 milestone archived, ready for next milestone
 Resume file: None
