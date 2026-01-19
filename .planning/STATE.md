@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-18)
 ## Current Position
 
 Phase: 16 of 20 (Message Caching)
-Plan: 0 of TBD in current phase
-Status: Ready to discuss/plan
-Last activity: 2026-01-18 - Phase 15 verified and complete
+Plan: 1 of TBD in current phase
+Status: In progress
+Last activity: 2026-01-19 - Completed 16-01-PLAN.md (Cache Infrastructure)
 
 Progress: [############............] 75% (15/20 phases)
 
@@ -29,7 +29,7 @@ Progress: [############............] 75% (15/20 phases)
 ## Performance Metrics
 
 **Cumulative:**
-- Total plans completed: 53 (23 + 24 + 3 + 3)
+- Total plans completed: 54 (23 + 24 + 3 + 3 + 1)
 - Total requirements delivered: 84 (51 + 19 + 8 + 6)
 - Total phases completed: 15
 
@@ -38,6 +38,15 @@ Progress: [############............] 75% (15/20 phases)
 - Requirements: 38
 
 ## Accumulated Context
+
+### Decisions (Phase 16)
+
+| Decision | Rationale | Plan |
+|----------|-----------|------|
+| Use Dexie.js for IndexedDB wrapper | Provides React hooks and TypeScript support | 16-01 |
+| Compound indexes [channelId+sequence] | Enables efficient ordered message queries | 16-01 |
+| 7-day TTL with cachedAt field | Matches Safari ITP policy, enables cleanup queries | 16-01 |
+| Graceful error handling for cache ops | IndexedDB fails in private browsing, app should continue | 16-01 |
 
 ### Decisions (Phase 15)
 
@@ -82,6 +91,6 @@ None active.
 
 ## Session Continuity
 
-Last session: 2026-01-18
-Stopped at: Phase 15 verified complete, ready for Phase 16
+Last session: 2026-01-19
+Stopped at: Completed 16-01-PLAN.md (Cache Infrastructure)
 Resume file: None
