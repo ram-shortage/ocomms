@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-18)
 ## Current Position
 
 Phase: 19 of 20 (Mobile Layout)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: In progress
-Last activity: 2026-01-19 - Completed 19-01-PLAN.md (Viewport Foundations)
+Last activity: 2026-01-19 - Completed 19-02-PLAN.md (Bottom Tab Navigation)
 
 Progress: [##################......] 90% (18/20 phases)
 
@@ -48,6 +48,10 @@ Progress: [##################......] 90% (18/20 phases)
 | overscroll-behavior-y: contain globally | Disables browser pull-to-refresh to avoid conflicts with app behavior | 19-01 |
 | useIsMobile returns false on SSR | CSS responsive classes handle initial render, hook is for JS logic only | 19-01 |
 | dvh instead of vh for containers | Accounts for browser chrome and virtual keyboards on mobile | 19-01 |
+| md:hidden/hidden md:block for responsive nav | Sidebar desktop-only, tabs mobile-only at 768px breakpoint | 19-02 |
+| pb-16 for tab bar clearance | Main content reserves space for fixed bottom tab bar height | 19-02 |
+| Mentions tab routes to /threads | Reuses existing threads page for @mention notifications | 19-02 |
+| 44px touch targets on tabs | min-h-11 min-w-11 ensures accessible mobile tap areas | 19-02 |
 
 ### Decisions (Phase 18)
 
@@ -148,5 +152,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-19
-Stopped at: Completed 19-01-PLAN.md, ready for 19-02
+Stopped at: Completed 19-02-PLAN.md, ready for 19-03
 Resume file: None
