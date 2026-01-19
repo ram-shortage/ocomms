@@ -1,6 +1,4 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import * as fs from "fs/promises";
-import * as fsSync from "fs";
 import * as path from "path";
 import {
   auditLog,
@@ -10,16 +8,41 @@ import {
   AuditEventType,
 } from "../audit-logger";
 
-// Mock fs modules
+// Mock fs modules with vi.hoisted and proper ESM structure
+const {
+  mockAppendFile,
+  mockMkdir,
+  mockExistsSync,
+  mockReaddirSync,
+  mockUnlinkSync,
+} = vi.hoisted(() => ({
+  mockAppendFile: vi.fn(),
+  mockMkdir: vi.fn(),
+  mockExistsSync: vi.fn(),
+  mockReaddirSync: vi.fn(),
+  mockUnlinkSync: vi.fn(),
+}));
+
 vi.mock("fs/promises", () => ({
-  appendFile: vi.fn(),
-  mkdir: vi.fn(),
+  __esModule: true,
+  default: {
+    appendFile: mockAppendFile,
+    mkdir: mockMkdir,
+  },
+  appendFile: mockAppendFile,
+  mkdir: mockMkdir,
 }));
 
 vi.mock("fs", () => ({
-  existsSync: vi.fn(),
-  readdirSync: vi.fn(),
-  unlinkSync: vi.fn(),
+  __esModule: true,
+  default: {
+    existsSync: mockExistsSync,
+    readdirSync: mockReaddirSync,
+    unlinkSync: mockUnlinkSync,
+  },
+  existsSync: mockExistsSync,
+  readdirSync: mockReaddirSync,
+  unlinkSync: mockUnlinkSync,
 }));
 
 // Store original cwd and mock it
@@ -31,7 +54,7 @@ describe("Audit Logging", () => {
     // Mock process.cwd to return a predictable path
     process.cwd = () => "/app";
     // Default: logs directory exists
-    vi.mocked(fsSync.existsSync).mockReturnValue(true);
+    mockExistsSync.mockReturnValue(true);
   });
 
   afterEach(() => {
@@ -40,15 +63,15 @@ describe("Audit Logging", () => {
 
   describe("auditLog", () => {
     it("writes event with required fields", async () => {
-      vi.mocked(fs.appendFile).mockResolvedValueOnce(undefined);
+      mockAppendFile.mockResolvedValueOnce(undefined);
 
       await auditLog({
         eventType: AuditEventType.AUTH_LOGIN_SUCCESS,
         userId: "user-123",
       });
 
-      expect(fs.appendFile).toHaveBeenCalled();
-      const [filePath, content] = vi.mocked(fs.appendFile).mock.calls[0];
+      expect(mockAppendFile).toHaveBeenCalled();
+      const [filePath, content] = mockAppendFile.mock.calls[0];
 
       // Verify file path is in logs directory
       expect(filePath).toMatch(/\/app\/logs\/\d{4}-\d{2}-\d{2}\.jsonl$/);
@@ -63,7 +86,7 @@ describe("Audit Logging", () => {
     });
 
     it("includes optional fields when provided", async () => {
-      vi.mocked(fs.appendFile).mockResolvedValueOnce(undefined);
+      mockAppendFile.mockResolvedValueOnce(undefined);
 
       await auditLog({
         eventType: AuditEventType.AUTH_LOGIN_SUCCESS,
@@ -74,7 +97,7 @@ describe("Audit Logging", () => {
         details: { method: "password" },
       });
 
-      const [, content] = vi.mocked(fs.appendFile).mock.calls[0];
+      const [, content] = mockAppendFile.mock.calls[0];
       const event = JSON.parse((content as string).trim());
 
       expect(event.ip).toBe("192.168.1.100");
@@ -84,20 +107,20 @@ describe("Audit Logging", () => {
     });
 
     it("creates logs directory if it does not exist", async () => {
-      vi.mocked(fsSync.existsSync).mockReturnValue(false);
-      vi.mocked(fs.mkdir).mockResolvedValueOnce(undefined);
-      vi.mocked(fs.appendFile).mockResolvedValueOnce(undefined);
+      mockExistsSync.mockReturnValue(false);
+      mockMkdir.mockResolvedValueOnce(undefined);
+      mockAppendFile.mockResolvedValueOnce(undefined);
 
       await auditLog({
         eventType: AuditEventType.AUTH_LOGOUT,
         userId: "user-123",
       });
 
-      expect(fs.mkdir).toHaveBeenCalledWith("/app/logs", { recursive: true });
+      expect(mockMkdir).toHaveBeenCalledWith("/app/logs", { recursive: true });
     });
 
     it("is non-blocking (returns quickly)", async () => {
-      vi.mocked(fs.appendFile).mockResolvedValueOnce(undefined);
+      mockAppendFile.mockResolvedValueOnce(undefined);
 
       const startTime = Date.now();
       await auditLog({
@@ -112,7 +135,7 @@ describe("Audit Logging", () => {
 
     it("does not throw on write failure (fire-and-forget)", async () => {
       const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-      vi.mocked(fs.appendFile).mockRejectedValueOnce(new Error("Disk full"));
+      mockAppendFile.mockRejectedValueOnce(new Error("Disk full"));
 
       // Should not throw
       await expect(
@@ -131,14 +154,14 @@ describe("Audit Logging", () => {
     });
 
     it("logs AUTH_LOGIN_FAILURE events without userId", async () => {
-      vi.mocked(fs.appendFile).mockResolvedValueOnce(undefined);
+      mockAppendFile.mockResolvedValueOnce(undefined);
 
       await auditLog({
         eventType: AuditEventType.AUTH_LOGIN_FAILURE,
         details: { email: "unknown@example.com" },
       });
 
-      const [, content] = vi.mocked(fs.appendFile).mock.calls[0];
+      const [, content] = mockAppendFile.mock.calls[0];
       const event = JSON.parse((content as string).trim());
 
       expect(event.eventType).toBe("AUTH_LOGIN_FAILURE");
@@ -147,7 +170,7 @@ describe("Audit Logging", () => {
     });
 
     it("logs ADMIN_UNLOCK_USER with targetId", async () => {
-      vi.mocked(fs.appendFile).mockResolvedValueOnce(undefined);
+      mockAppendFile.mockResolvedValueOnce(undefined);
 
       await auditLog({
         eventType: AuditEventType.ADMIN_UNLOCK_USER,
@@ -155,7 +178,7 @@ describe("Audit Logging", () => {
         targetId: "locked-user-456",
       });
 
-      const [, content] = vi.mocked(fs.appendFile).mock.calls[0];
+      const [, content] = mockAppendFile.mock.calls[0];
       const event = JSON.parse((content as string).trim());
 
       expect(event.eventType).toBe("ADMIN_UNLOCK_USER");
@@ -164,14 +187,14 @@ describe("Audit Logging", () => {
     });
 
     it("uses correct filename format (YYYY-MM-DD.jsonl)", async () => {
-      vi.mocked(fs.appendFile).mockResolvedValueOnce(undefined);
+      mockAppendFile.mockResolvedValueOnce(undefined);
 
       await auditLog({
         eventType: AuditEventType.AUTH_LOGIN_SUCCESS,
         userId: "user-123",
       });
 
-      const [filePath] = vi.mocked(fs.appendFile).mock.calls[0];
+      const [filePath] = mockAppendFile.mock.calls[0];
       const filename = path.basename(filePath as string);
 
       // Should match YYYY-MM-DD.jsonl format
@@ -191,7 +214,7 @@ describe("Audit Logging", () => {
       // File from today (within retention)
       const todayFilename = `${new Date().toISOString().split("T")[0]}.jsonl`;
 
-      vi.mocked(fsSync.readdirSync).mockReturnValue([
+      mockReaddirSync.mockReturnValue([
         oldFilename,
         todayFilename,
       ] as unknown as ReturnType<typeof fsSync.readdirSync>);
@@ -199,20 +222,20 @@ describe("Audit Logging", () => {
       const deletedCount = cleanupOldLogs(90);
 
       expect(deletedCount).toBe(1);
-      expect(fsSync.unlinkSync).toHaveBeenCalledWith(`/app/logs/${oldFilename}`);
-      expect(fsSync.unlinkSync).not.toHaveBeenCalledWith(`/app/logs/${todayFilename}`);
+      expect(mockUnlinkSync).toHaveBeenCalledWith(`/app/logs/${oldFilename}`);
+      expect(mockUnlinkSync).not.toHaveBeenCalledWith(`/app/logs/${todayFilename}`);
 
       consoleSpy.mockRestore();
     });
 
     it("returns 0 when no logs directory exists", () => {
       const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => {});
-      vi.mocked(fsSync.existsSync).mockReturnValue(false);
+      mockExistsSync.mockReturnValue(false);
 
       const deletedCount = cleanupOldLogs();
 
       expect(deletedCount).toBe(0);
-      expect(fsSync.unlinkSync).not.toHaveBeenCalled();
+      expect(mockUnlinkSync).not.toHaveBeenCalled();
 
       consoleSpy.mockRestore();
     });
@@ -221,7 +244,7 @@ describe("Audit Logging", () => {
       const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
       const consoleLogSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
-      vi.mocked(fsSync.readdirSync).mockReturnValue([
+      mockReaddirSync.mockReturnValue([
         "invalid-name.jsonl",
         "not-a-date.jsonl",
         "2026-01-15.jsonl", // valid
@@ -245,7 +268,7 @@ describe("Audit Logging", () => {
       oldDate.setDate(oldDate.getDate() - 91);
       const oldFilename = `${oldDate.toISOString().split("T")[0]}.jsonl`;
 
-      vi.mocked(fsSync.readdirSync).mockReturnValue([
+      mockReaddirSync.mockReturnValue([
         oldFilename,
       ] as unknown as ReturnType<typeof fsSync.readdirSync>);
 
@@ -264,14 +287,14 @@ describe("Audit Logging", () => {
       recentDate.setDate(recentDate.getDate() - 30);
       const recentFilename = `${recentDate.toISOString().split("T")[0]}.jsonl`;
 
-      vi.mocked(fsSync.readdirSync).mockReturnValue([
+      mockReaddirSync.mockReturnValue([
         recentFilename,
       ] as unknown as ReturnType<typeof fsSync.readdirSync>);
 
       const deletedCount = cleanupOldLogs(90);
 
       expect(deletedCount).toBe(0);
-      expect(fsSync.unlinkSync).not.toHaveBeenCalled();
+      expect(mockUnlinkSync).not.toHaveBeenCalled();
 
       consoleSpy.mockRestore();
     });
@@ -284,10 +307,10 @@ describe("Audit Logging", () => {
       oldDate.setDate(oldDate.getDate() - 100);
       const oldFilename = `${oldDate.toISOString().split("T")[0]}.jsonl`;
 
-      vi.mocked(fsSync.readdirSync).mockReturnValue([
+      mockReaddirSync.mockReturnValue([
         oldFilename,
       ] as unknown as ReturnType<typeof fsSync.readdirSync>);
-      vi.mocked(fsSync.unlinkSync).mockImplementation(() => {
+      mockUnlinkSync.mockImplementation(() => {
         throw new Error("Permission denied");
       });
 
@@ -308,14 +331,14 @@ describe("Audit Logging", () => {
       const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
       // Reset unlinkSync mock (may have been set to throw in previous test)
-      vi.mocked(fsSync.unlinkSync).mockReset();
+      mockUnlinkSync.mockReset();
 
       // File from 10 days ago
       const date10DaysAgo = new Date();
       date10DaysAgo.setDate(date10DaysAgo.getDate() - 10);
       const filename10Days = `${date10DaysAgo.toISOString().split("T")[0]}.jsonl`;
 
-      vi.mocked(fsSync.readdirSync).mockReturnValue([
+      mockReaddirSync.mockReturnValue([
         filename10Days,
       ] as unknown as ReturnType<typeof fsSync.readdirSync>);
 
