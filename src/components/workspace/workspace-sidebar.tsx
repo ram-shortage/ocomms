@@ -9,6 +9,7 @@ import { DMListClient } from "@/components/dm/dm-list-client";
 import { CreateChannelDialog } from "@/components/channel/create-channel-dialog";
 import { StartDMDialog } from "@/components/dm/start-dm-dialog";
 import { NotificationBell } from "@/components/notification/notification-bell";
+import { LogoutButton } from "@/components/auth/logout-button";
 import { cn } from "@/lib/utils";
 
 interface WorkspaceSidebarProps {
@@ -152,6 +153,10 @@ export function WorkspaceSidebar({
         >
           Settings
         </Link>
+        <LogoutButton
+          variant="ghost"
+          className="w-full justify-start px-3 py-1.5 h-auto font-normal hover:bg-accent"
+        />
       </div>
     </aside>
   );

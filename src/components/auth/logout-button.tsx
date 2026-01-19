@@ -1,9 +1,21 @@
 "use client";
 
 import { signOut } from "@/lib/auth-client";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { type VariantProps } from "class-variance-authority";
 
-export function LogoutButton() {
+interface LogoutButtonProps {
+  className?: string;
+  variant?: VariantProps<typeof buttonVariants>["variant"];
+  children?: React.ReactNode;
+}
+
+export function LogoutButton({
+  className,
+  variant = "destructive",
+  children = "Sign Out",
+}: LogoutButtonProps) {
   const handleLogout = async () => {
     await signOut();
     window.location.href = "/login";
@@ -12,10 +24,10 @@ export function LogoutButton() {
   return (
     <Button
       onClick={handleLogout}
-      variant="destructive"
-      className="mt-4"
+      variant={variant}
+      className={cn(className)}
     >
-      Sign Out
+      {children}
     </Button>
   );
 }
