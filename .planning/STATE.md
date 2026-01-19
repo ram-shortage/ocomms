@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-18)
 ## Current Position
 
 Phase: 18 of 20 (Push Notifications)
-Plan: 2 of 4 in current phase
+Plan: 3 of 4 in current phase
 Status: In progress
-Last activity: 2026-01-19 - Completed 18-02-PLAN.md (Subscription API)
+Last activity: 2026-01-19 - Completed 18-03-PLAN.md (Push Notification Delivery)
 
 Progress: [#################.......] 85% (17/20 phases)
 
@@ -51,6 +51,10 @@ Progress: [#################.......] 85% (17/20 phases)
 | VAPID public key endpoint is public | No auth required since key is public | 18-02 |
 | Endpoint reassignment on user switch | Replace old subscription if same endpoint | 18-02 |
 | Idempotent subscribe/unsubscribe | Return success even if already subscribed/removed | 18-02 |
+| Fire-and-forget push delivery | Non-blocking push sending to not slow down socket emits | 18-03 |
+| 24-hour TTL for push messages | Balance between delivery window and staleness | 18-03 |
+| Tag-based push deduplication | channel:{id} for mentions, dm:{id} for DMs | 18-03 |
+| Auto-cleanup expired subscriptions | 410/404 responses trigger subscription deletion | 18-03 |
 
 ### Decisions (Phase 17)
 
@@ -128,5 +132,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-19
-Stopped at: Completed 18-02-PLAN.md (Subscription API)
+Stopped at: Completed 18-03-PLAN.md (Push Notification Delivery)
 Resume file: None
