@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { redirect, notFound } from "next/navigation";
 import { PresenceWrapper } from "@/components/presence/presence-wrapper";
 import { WorkspaceSidebar } from "@/components/workspace/workspace-sidebar";
+import { MobileTabBar } from "@/components/layout";
 import { getUserChannels } from "@/lib/actions/channel";
 import { getUserConversations } from "@/lib/actions/conversation";
 
@@ -77,20 +78,28 @@ export default async function WorkspaceSlugLayout({
 
   return (
     <PresenceWrapper workspaceId={workspace.id} memberUserIds={memberUserIds}>
-      <div className="flex h-dvh">
-        <WorkspaceSidebar
-          workspace={{
-            id: workspace.id,
-            name: workspace.name,
-            slug: workspaceSlug,
-          }}
-          currentUserId={session.user.id}
-          channels={sidebarChannels}
-          conversations={sidebarConversations}
-        />
-        <main className="flex-1 overflow-hidden">
+      <div className="flex h-dvh flex-col md:flex-row">
+        {/* Sidebar - desktop only */}
+        <div className="hidden md:block">
+          <WorkspaceSidebar
+            workspace={{
+              id: workspace.id,
+              name: workspace.name,
+              slug: workspaceSlug,
+            }}
+            currentUserId={session.user.id}
+            channels={sidebarChannels}
+            conversations={sidebarConversations}
+          />
+        </div>
+
+        {/* Main content - with bottom padding on mobile for tab bar */}
+        <main className="flex-1 overflow-hidden pb-16 md:pb-0">
           {children}
         </main>
+
+        {/* Bottom tabs - mobile only */}
+        <MobileTabBar workspaceSlug={workspaceSlug} />
       </div>
     </PresenceWrapper>
   );
