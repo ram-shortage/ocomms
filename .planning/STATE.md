@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-18)
 
 **Core value:** Data sovereignty - complete control over communication data
-**Current focus:** Phase 17 - Offline Send Queue
+**Current focus:** Phase 18 - Push Notifications
 
 ## Current Position
 
-Phase: 17 of 20 (Offline Send Queue)
-Plan: 4 of 4 in current phase
-Status: Phase complete
-Last activity: 2026-01-19 - Completed 17-04-PLAN.md (UI Integration)
+Phase: 18 of 20 (Push Notifications)
+Plan: 1 of 4 in current phase
+Status: In progress
+Last activity: 2026-01-19 - Completed 18-01-PLAN.md (Push Infrastructure)
 
-Progress: [################........] 85% (17/20 phases)
+Progress: [#################.......] 85% (17/20 phases)
 
 ## Shipped Milestones
 
@@ -29,15 +29,25 @@ Progress: [################........] 85% (17/20 phases)
 ## Performance Metrics
 
 **Cumulative:**
-- Total plans completed: 58 (23 + 24 + 3 + 3 + 2 + 1 + 1 + 1)
+- Total plans completed: 59 (23 + 24 + 3 + 3 + 2 + 1 + 1 + 1 + 1)
 - Total requirements delivered: 84 (51 + 19 + 8 + 6)
-- Total phases completed: 16
+- Total phases completed: 17
 
 **v0.3.0 Target:**
 - Phases: 7 (14-20)
 - Requirements: 38
 
 ## Accumulated Context
+
+### Decisions (Phase 18)
+
+| Decision | Rationale | Plan |
+|----------|-----------|------|
+| VAPID keys in environment variables | Keys generated once and stored, not at runtime | 18-01 |
+| Graceful degradation when VAPID unconfigured | Push features disabled but app continues to work | 18-01 |
+| Endpoint as unique key for subscriptions | Browser endpoint URL uniquely identifies a subscription | 18-01 |
+| Notification tag for deduplication | Same tag replaces existing notification instead of stacking | 18-01 |
+| Tab reuse on notification click | Check for existing tabs before opening new window | 18-01 |
 
 ### Decisions (Phase 17)
 
@@ -115,5 +125,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-19
-Stopped at: Completed 17-04-PLAN.md (UI Integration) - Phase 17 complete
+Stopped at: Completed 18-01-PLAN.md (Push Infrastructure)
 Resume file: None
