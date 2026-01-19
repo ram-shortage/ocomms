@@ -10,12 +10,12 @@ See: .planning/PROJECT.md (updated 2026-01-19)
 ## Current Position
 
 Phase: 20+ (Test Coverage)
-Plan: 20-04 complete (Backend Security Tests)
+Plan: 20-11 complete (Offline & PWA Tests)
 Status: In progress - executing test plans
-Last activity: 2026-01-19 - Completed 20-04-PLAN.md (118 tests)
+Last activity: 2026-01-19 - Completed 20-11-PLAN.md (76 tests)
 
 Progress: [########################] 100% (20/20 phases through v0.3.0)
-Test Plans: [#####---] 5/8 test plans complete
+Test Plans: [######--] 6/8 test plans complete
 
 ## Shipped Milestones
 
@@ -35,10 +35,10 @@ Test Plans: [#####---] 5/8 test plans complete
 ## Performance Metrics
 
 **Cumulative:**
-- Total plans completed: 75 (70 + 5 test plans)
+- Total plans completed: 76 (70 + 6 test plans)
 - Total requirements delivered: 108 (51 + 19 + 38)
 - Total phases completed: 20
-- Test coverage plans completed: 5/8
+- Test coverage plans completed: 6/8
 
 ## Accumulated Context
 
@@ -53,10 +53,11 @@ Test Plans: [#####---] 5/8 test plans complete
 | Extract functions for unit testing | Progressive delay/lockout functions copied to tests for direct testing | 20-06 |
 | Simulated handlers for socket tests | Isolates unit testing from full socket.io infrastructure | 20-05 |
 | Separate mock functions per DB table | Better test isolation, clearer mock setup | 20-07 |
+| Unit tests with fake-indexeddb for IndexedDB | Fast reliable mocking without browser overhead; Playwright e2e documented for future | 20-11 |
 
 ### Pending Todos
 
-- Execute remaining test plans: 20-09, 20-10, 20-11
+- Execute remaining test plans: 20-09, 20-10
 
 ### Blockers/Concerns
 
@@ -64,6 +65,6 @@ None active.
 
 ## Session Continuity
 
-Last session: 2026-01-19 23:11
-Stopped at: Completed 20-04-PLAN.md
+Last session: 2026-01-19 23:17
+Stopped at: Completed 20-11-PLAN.md
 Resume file: None
