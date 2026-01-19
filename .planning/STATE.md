@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-18)
 ## Current Position
 
 Phase: 19 of 20 (Mobile Layout)
-Plan: 0 of 3 in current phase
-Status: Ready to plan
-Last activity: 2026-01-19 - Completed Phase 18 (Push Notifications)
+Plan: 1 of 3 in current phase
+Status: In progress
+Last activity: 2026-01-19 - Completed 19-01-PLAN.md (Viewport Foundations)
 
 Progress: [##################......] 90% (18/20 phases)
 
@@ -38,6 +38,16 @@ Progress: [##################......] 90% (18/20 phases)
 - Requirements: 38
 
 ## Accumulated Context
+
+### Decisions (Phase 19)
+
+| Decision | Rationale | Plan |
+|----------|-----------|------|
+| viewportFit: cover for safe-area CSS | Required for env(safe-area-inset-*) functions to work on notched devices | 19-01 |
+| interactiveWidget: resizes-content | Improves keyboard handling on Chrome/Firefox, harmless on Safari | 19-01 |
+| overscroll-behavior-y: contain globally | Disables browser pull-to-refresh to avoid conflicts with app behavior | 19-01 |
+| useIsMobile returns false on SSR | CSS responsive classes handle initial render, hook is for JS logic only | 19-01 |
+| dvh instead of vh for containers | Accounts for browser chrome and virtual keyboards on mobile | 19-01 |
 
 ### Decisions (Phase 18)
 
@@ -138,5 +148,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-19
-Stopped at: Phase 18 complete, ready for Phase 19
+Stopped at: Completed 19-01-PLAN.md, ready for 19-02
 Resume file: None
