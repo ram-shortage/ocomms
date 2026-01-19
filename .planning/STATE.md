@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-18)
 ## Current Position
 
 Phase: 16 of 20 (Message Caching)
-Plan: 1 of TBD in current phase
-Status: In progress
-Last activity: 2026-01-19 - Completed 16-01-PLAN.md (Cache Infrastructure)
+Plan: 2 of 2 in current phase (COMPLETE)
+Status: Phase complete
+Last activity: 2026-01-19 - Completed 16-02-PLAN.md (Cache Integration)
 
-Progress: [############............] 75% (15/20 phases)
+Progress: [################........] 80% (16/20 phases)
 
 ## Shipped Milestones
 
@@ -29,9 +29,9 @@ Progress: [############............] 75% (15/20 phases)
 ## Performance Metrics
 
 **Cumulative:**
-- Total plans completed: 54 (23 + 24 + 3 + 3 + 1)
+- Total plans completed: 56 (23 + 24 + 3 + 3 + 2 + 1)
 - Total requirements delivered: 84 (51 + 19 + 8 + 6)
-- Total phases completed: 15
+- Total phases completed: 16
 
 **v0.3.0 Target:**
 - Phases: 7 (14-20)
@@ -47,6 +47,10 @@ Progress: [############............] 75% (15/20 phases)
 | Compound indexes [channelId+sequence] | Enables efficient ordered message queries | 16-01 |
 | 7-day TTL with cachedAt field | Matches Safari ITP policy, enables cleanup queries | 16-01 |
 | Graceful error handling for cache ops | IndexedDB fails in private browsing, app should continue | 16-01 |
+| useLiveQuery for reactive cache queries | Auto re-renders when IndexedDB changes, including from other tabs | 16-02 |
+| Fire-and-forget cache writes | Don't block UI rendering on cache operations | 16-02 |
+| Normalize cached messages for display | Reconstruct author object from flattened fields | 16-02 |
+| PWAProvider for cache initialization | Already handles PWA lifecycle, cache is a PWA concern | 16-02 |
 
 ### Decisions (Phase 15)
 
@@ -92,5 +96,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-19
-Stopped at: Completed 16-01-PLAN.md (Cache Infrastructure)
+Stopped at: Completed 16-02-PLAN.md (Cache Integration) - Phase 16 complete
 Resume file: None
