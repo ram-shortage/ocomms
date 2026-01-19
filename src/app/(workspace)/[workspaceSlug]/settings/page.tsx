@@ -2,6 +2,9 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { db } from "@/db";
+import { eq, and } from "drizzle-orm";
+import { organizations, members } from "@/db/schema";
 import { NotificationsSection } from "./notifications-section";
 
 export default async function WorkspaceSettingsPage({
@@ -17,6 +20,22 @@ export default async function WorkspaceSettingsPage({
 
   if (!session) {
     redirect("/login");
+  }
+
+  // Get organization and membership for admin check
+  const organization = await db.query.organizations.findFirst({
+    where: eq(organizations.slug, workspaceSlug),
+  });
+
+  let isAdmin = false;
+  if (organization) {
+    const membership = await db.query.members.findFirst({
+      where: and(
+        eq(members.userId, session.user.id),
+        eq(members.organizationId, organization.id)
+      ),
+    });
+    isAdmin = membership?.role === "owner" || membership?.role === "admin";
   }
 
   return (
@@ -38,6 +57,24 @@ export default async function WorkspaceSettingsPage({
           </Link>
         </nav>
       </section>
+
+      {/* Admin section - only for admins/owners */}
+      {isAdmin && (
+        <section className="space-y-4">
+          <h2 className="text-xl font-semibold">Administration</h2>
+          <nav className="space-y-2">
+            <Link
+              href={`/${workspaceSlug}/settings/admin`}
+              className="block p-4 bg-white border rounded hover:bg-gray-50"
+            >
+              <h3 className="font-medium">Audit Logs & Export</h3>
+              <p className="text-sm text-gray-500">
+                View security logs and export organization data
+              </p>
+            </Link>
+          </nav>
+        </section>
+      )}
 
       {/* Notifications section */}
       <NotificationsSection />
