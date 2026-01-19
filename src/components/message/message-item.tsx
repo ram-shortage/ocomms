@@ -4,9 +4,11 @@ import { formatDistanceToNow } from "date-fns";
 import { Trash2, MessageSquare, Pin, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Message, ReactionGroup } from "@/lib/socket-events";
+import type { SendStatus } from "@/lib/cache";
 import { ReactionPicker } from "./reaction-picker";
 import { ReactionDisplay } from "./reaction-display";
 import { MessageContent } from "./message-content";
+import { MessageStatus } from "./message-status";
 
 interface MessageItemProps {
   message: Message;
@@ -21,6 +23,9 @@ interface MessageItemProps {
   onUnpin?: (messageId: string) => void;
   isChannelMessage?: boolean;
   onMarkUnread?: (messageId: string) => void;
+  sendStatus?: SendStatus;
+  retryCount?: number;
+  onRetry?: () => void;
 }
 
 export function MessageItem({
@@ -36,14 +41,18 @@ export function MessageItem({
   onUnpin,
   isChannelMessage = false,
   onMarkUnread,
+  sendStatus,
+  retryCount,
+  onRetry,
 }: MessageItemProps) {
   const isOwn = message.authorId === currentUserId;
   const isDeleted = message.deletedAt !== null && message.deletedAt !== undefined;
   const isThreaded = message.parentId !== null && message.parentId !== undefined;
   const hasReplies = (message.replyCount ?? 0) > 0;
+  const isPending = sendStatus === "pending" || sendStatus === "sending";
 
   return (
-    <div className="group flex items-start gap-3 py-2 px-4 hover:bg-gray-50 rounded-lg">
+    <div className={`group flex items-start gap-3 py-2 px-4 hover:bg-gray-50 rounded-lg ${isPending ? "opacity-70" : ""}`}>
       {/* Avatar placeholder */}
       <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 text-sm font-medium shrink-0">
         {message.author?.name?.[0]?.toUpperCase() || message.author?.email?.[0]?.toUpperCase() || "?"}
@@ -68,6 +77,11 @@ export function MessageItem({
               reactions={reactions}
               currentUserId={currentUserId}
               onToggle={(emoji) => onToggleReaction(message.id, emoji)}
+            />
+            <MessageStatus
+              status={sendStatus}
+              retryCount={retryCount}
+              onRetry={onRetry}
             />
           </>
         )}

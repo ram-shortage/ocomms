@@ -12,6 +12,8 @@ import {
   useCachedChannelMessages,
   useCachedConversationMessages,
   useSendQueue,
+  processQueue,
+  type SendStatus,
 } from "@/lib/cache";
 import { useOnlineStatus } from "@/lib/pwa/use-online-status";
 
@@ -243,6 +245,11 @@ export function MessageList({
     setSelectedThread(null);
   }, []);
 
+  // Handle retry for failed messages - triggers queue processing
+  const handleRetry = useCallback(() => {
+    processQueue(socket).catch(console.error);
+  }, [socket]);
+
   // When offline, fall back to cached messages
   const serverMessages = isOnline
     ? messages // Real-time state (existing behavior)
@@ -278,6 +285,7 @@ export function MessageList({
     // Mark as pending for UI styling
     _isPending: true,
     _status: msg.status,
+    _retryCount: msg.retryCount,
   }));
 
   // Merge server messages with pending messages
@@ -318,6 +326,9 @@ export function MessageList({
             onUnpin={onUnpin}
             isChannelMessage={targetType === "channel"}
             onMarkUnread={onMarkUnread}
+            sendStatus={"_status" in message ? (message as { _status: SendStatus })._status : undefined}
+            retryCount={"_retryCount" in message ? (message as { _retryCount: number })._retryCount : undefined}
+            onRetry={"_isPending" in message ? handleRetry : undefined}
           />
         ))}
         <div ref={bottomRef} />
