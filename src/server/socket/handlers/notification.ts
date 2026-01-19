@@ -7,6 +7,7 @@ import type { ClientToServerEvents, ServerToClientEvents, SocketData, Message, N
 import type { ParsedMention } from "@/lib/mentions";
 import type { PresenceManager } from "./presence";
 import type { NotificationMode } from "@/db/schema/channel-notification-settings";
+import { sendPushToUser, type PushPayload } from "@/lib/push";
 
 type SocketIOServer = Server<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
 type SocketWithData = Socket<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
@@ -215,7 +216,7 @@ export async function createNotifications(params: {
     .from(users)
     .where(eq(users.id, senderId));
 
-  // Emit notification:new to each user's room
+  // Emit notification:new to each user's room and send push
   for (const notification of insertedNotifications) {
     const notificationPayload: Notification = {
       id: notification.id,
@@ -233,6 +234,32 @@ export async function createNotifications(params: {
     };
 
     io.to(getRoomName.user(notification.userId)).emit("notification:new", notificationPayload);
+
+    // Send push notification for mentions
+    // Build push payload
+    const pushPayload: PushPayload = {
+      title: actor?.name
+        ? `${actor.name} mentioned you`
+        : "New mention",
+      body: notification.content,
+      data: {
+        url: notification.channelId && channelSlug
+          ? `/workspace/${workspaceId}/channels/${channelSlug}`
+          : notification.conversationId
+            ? `/workspace/${workspaceId}/dm/${notification.conversationId}`
+            : "/",
+        tag: notification.channelId
+          ? `channel:${notification.channelId}`
+          : `dm:${notification.conversationId}`,
+        type: notification.type as "mention" | "channel" | "here",
+        messageId: notification.messageId ?? undefined,
+      },
+    };
+
+    // Send push (fire and forget - don't block socket emit)
+    sendPushToUser(notification.userId, pushPayload).catch((err) => {
+      console.error("[Notification] Error sending push:", err);
+    });
   }
 
   console.log(`[Notification] Created ${insertedNotifications.length} notifications for message ${message.id}`);
