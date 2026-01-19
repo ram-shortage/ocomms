@@ -91,7 +91,12 @@ Plans:
   3. When network returns, queued messages send automatically
   4. Failed messages retry with backoff; user can see retry attempts
   5. Optimistic UI shows message instantly before server confirmation
-**Plans**: TBD
+**Plans**: 4 plans
+Plans:
+- [ ] 17-01-PLAN.md — Queue infrastructure (Dexie sendQueue table, queue operations, backoff utility)
+- [ ] 17-02-PLAN.md — Queue processing and sync (socket integration, reconnect listeners)
+- [ ] 17-03-PLAN.md — Optimistic UI hooks (useSendMessage, useSendQueue, MessageInput update)
+- [ ] 17-04-PLAN.md — Status indicators and polish (MessageStatus, retry UI, thread integration)
 
 ### Phase 18: Push Notifications
 **Goal**: Users receive push notifications for DMs and mentions
@@ -138,11 +143,11 @@ Plans:
 | 14. Security Fixes | v0.3.0 | 3/3 | Complete | 2026-01-18 |
 | 15. PWA Foundation | v0.3.0 | 3/3 | Complete | 2026-01-18 |
 | 16. Message Caching | v0.3.0 | 0/2 | Planned | - |
-| 17. Offline Send Queue | v0.3.0 | 0/TBD | Not started | - |
+| 17. Offline Send Queue | v0.3.0 | 0/4 | Planned | - |
 | 18. Push Notifications | v0.3.0 | 0/TBD | Not started | - |
 | 19. Mobile Layout | v0.3.0 | 0/TBD | Not started | - |
 | 20. UI Polish | v0.3.0 | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-01-18*
-*Last updated: 2026-01-19 after Phase 16 planning*
+*Last updated: 2026-01-19 after Phase 17 planning*
