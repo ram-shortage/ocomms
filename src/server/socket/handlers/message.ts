@@ -1,6 +1,6 @@
 import type { Server, Socket } from "socket.io";
 import { db } from "@/db";
-import { messages, channelMembers, conversationParticipants, channels } from "@/db/schema";
+import { messages, channelMembers, conversationParticipants, channels, conversations } from "@/db/schema";
 import { eq, and, isNull, sql } from "drizzle-orm";
 import { RateLimiterMemory } from "rate-limiter-flexible";
 import { getRoomName } from "../rooms";
@@ -9,6 +9,7 @@ import { users } from "@/db/schema";
 import { parseMentions } from "@/lib/mentions";
 import { createNotifications } from "./notification";
 import { getPresenceManager, getUnreadManager } from "../index";
+import { sendPushToUser, type PushPayload } from "@/lib/push";
 
 const MAX_MESSAGE_LENGTH = 10_000;
 
@@ -189,6 +190,49 @@ async function handleSendMessage(
       } else {
         unreadManager.notifyConversationUnreadIncrement(targetId, userId, newMessage.sequence).catch((err) => {
           console.error("[Message] Error notifying conversation unread increment:", err);
+        });
+      }
+    }
+
+    // Send push notification for DMs
+    if (targetType === "dm") {
+      // Get all conversation participants except sender
+      const participants = await db
+        .select({ userId: conversationParticipants.userId })
+        .from(conversationParticipants)
+        .where(eq(conversationParticipants.conversationId, targetId));
+
+      // Get conversation's workspace for URL building
+      const [convData] = await db
+        .select({ organizationId: conversations.organizationId })
+        .from(conversations)
+        .where(eq(conversations.id, targetId))
+        .limit(1);
+
+      const workspaceId = convData?.organizationId;
+
+      for (const participant of participants) {
+        // Don't notify sender of their own message
+        if (participant.userId === userId) continue;
+
+        const pushPayload: PushPayload = {
+          title: author?.name
+            ? `Message from ${author.name}`
+            : "New direct message",
+          body: newMessage.content.slice(0, 100),
+          data: {
+            url: workspaceId
+              ? `/workspace/${workspaceId}/dm/${targetId}`
+              : `/`,
+            tag: `dm:${targetId}`,
+            type: "dm",
+            messageId: newMessage.id,
+          },
+        };
+
+        // Fire and forget - don't block message handling
+        sendPushToUser(participant.userId, pushPayload).catch((err) => {
+          console.error("[Message] Error sending DM push:", err);
         });
       }
     }
