@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-18)
 ## Current Position
 
 Phase: 17 of 20 (Offline Send Queue)
-Plan: 2 of 3 in current phase
-Status: In progress
-Last activity: 2026-01-19 - Completed 17-02-PLAN.md (Queue Processing)
+Plan: 3 of 3 in current phase
+Status: Phase complete
+Last activity: 2026-01-19 - Completed 17-03-PLAN.md (Optimistic UI Hooks)
 
-Progress: [################........] 80% (16/20 phases)
+Progress: [################........] 85% (17/20 phases)
 
 ## Shipped Milestones
 
@@ -51,6 +51,9 @@ Progress: [################........] 80% (16/20 phases)
 | 10 second socket send timeout | Balance between giving up too early and hanging too long | 17-02 |
 | Random jitter 0-500ms on socket connect | Prevents thundering herd when server restarts | 17-02 |
 | Rate limit errors use server's retryAfter | Respects server's guidance over exponential backoff | 17-02 |
+| Cache barrel imports for queue processor | Consistent with existing import patterns | 17-03 |
+| _isPending flag on optimistic messages | Enables potential UI styling differentiation | 17-03 |
+| Filter pending by serverId match | Prevents duplicate display when server confirms | 17-03 |
 
 ### Decisions (Phase 16)
 
@@ -109,5 +112,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-19
-Stopped at: Completed 17-02-PLAN.md (Queue Processing)
+Stopped at: Completed 17-03-PLAN.md (Optimistic UI Hooks) - Phase 17 complete
 Resume file: None
