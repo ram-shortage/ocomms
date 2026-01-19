@@ -18,3 +18,9 @@ export {
 
 // Initialization
 export { initializeCache } from "./init";
+
+// React hooks for cached messages
+export {
+  useCachedChannelMessages,
+  useCachedConversationMessages,
+} from "./use-cached-messages";
