@@ -138,13 +138,17 @@ Plans:
 **Depends on**: Phase 19
 **Requirements**: UIPOL-01, UIPOL-02, UIPOL-03, UIPOL-04, UIPOL-05, UIPOL-06
 **Success Criteria** (what must be TRUE):
-  1. Sidebar shows navigation links to /threads and /search pages
+  1. Sidebar shows navigation links to /threads and /search pages (ALREADY COMPLETE)
   2. Logout button visible and functional in layout
   3. Admin can view audit logs with filtering and export
   4. Admin can export organization data as JSON/CSV
   5. USER-SETUP.md provides complete setup instructions
   6. HSTS max-age set to 31536000 (1 year) for production
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 20-01-PLAN.md — HSTS security and logout button (config update, sidebar integration)
+- [ ] 20-02-PLAN.md — USER-SETUP.md documentation (deployment, config, maintenance)
+- [ ] 20-03-PLAN.md — Admin UI (audit log viewer, data export, settings navigation)
 
 ## Progress
 
@@ -156,8 +160,8 @@ Plans:
 | 17. Offline Send Queue | v0.3.0 | 4/4 | Complete | 2026-01-19 |
 | 18. Push Notifications | v0.3.0 | 5/5 | Complete | 2026-01-19 |
 | 19. Mobile Layout | v0.3.0 | 0/3 | Planned | - |
-| 20. UI Polish | v0.3.0 | 0/TBD | Not started | - |
+| 20. UI Polish | v0.3.0 | 0/3 | Planned | - |
 
 ---
 *Roadmap created: 2026-01-18*
-*Last updated: 2026-01-19 after Phase 18 complete*
+*Last updated: 2026-01-19 after Phase 20 planning*
