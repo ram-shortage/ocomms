@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-18)
 ## Current Position
 
 Phase: 20 of 20 (UI Polish)
-Plan: 0 of 3 in current phase
-Status: Ready to plan
-Last activity: 2026-01-19 - Completed Phase 19 (Mobile Layout)
+Plan: 1 of 3 in current phase
+Status: In progress
+Last activity: 2026-01-19 - Completed 20-01-PLAN.md (HSTS and Logout)
 
 Progress: [####################....] 95% (19/20 phases)
 
@@ -38,6 +38,13 @@ Progress: [####################....] 95% (19/20 phases)
 - Requirements: 38
 
 ## Accumulated Context
+
+### Decisions (Phase 20)
+
+| Decision | Rationale | Plan |
+|----------|-----------|------|
+| No includeSubDomains/preload on HSTS | Requires additional setup, DNS verification, and testing | 20-01 |
+| Ghost variant for logout button | Matches sidebar link styling for visual consistency | 20-01 |
 
 ### Decisions (Phase 19)
 
@@ -156,5 +163,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-19
-Stopped at: Phase 19 complete, ready for Phase 20
+Stopped at: Completed 20-01-PLAN.md (HSTS and Logout)
 Resume file: None
