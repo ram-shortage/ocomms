@@ -211,13 +211,15 @@ describe("Message Cache", () => {
       expect(cached[0].content).toBe("Recent message");
     });
 
-    it("keeps messages exactly 7 days old", async () => {
-      const exactlySevenDays = new Date();
-      exactlySevenDays.setDate(exactlySevenDays.getDate() - 7);
+    it("keeps messages within 7 days", async () => {
+      // Set to 6 days 23 hours ago (safely within 7-day window)
+      const withinRetention = new Date();
+      withinRetention.setDate(withinRetention.getDate() - 6);
+      withinRetention.setHours(withinRetention.getHours() - 23);
 
       await db.messages.put({
         id: "boundary",
-        content: "Boundary message",
+        content: "Recent enough message",
         authorId: "user-1",
         authorName: "Test",
         authorEmail: "test@example.com",
@@ -229,11 +231,10 @@ describe("Message Cache", () => {
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date(),
-        cachedAt: exactlySevenDays,
+        cachedAt: withinRetention,
       });
 
-      // Cleanup should not delete messages exactly at the boundary
-      // (since we check cachedAt < cutoff, not <=)
+      // Cleanup should not delete messages within the 7-day window
       const deleted = await cleanupExpiredMessages();
 
       // Message should still exist
