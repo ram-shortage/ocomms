@@ -76,7 +76,10 @@ Plans:
   1. Messages populate IndexedDB when user views a channel
   2. User can scroll through cached messages with no network connection
   3. Messages older than 7 days are automatically cleaned up
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 16-01-PLAN.md — IndexedDB foundation (Dexie schema, cache operations, initialization)
+- [ ] 16-02-PLAN.md — Cache integration (React hooks, MessageList wiring, offline fallback)
 
 ### Phase 17: Offline Send Queue
 **Goal**: Users can compose and send messages while offline
@@ -134,7 +137,7 @@ Plans:
 |-------|-----------|----------------|--------|-----------|
 | 14. Security Fixes | v0.3.0 | 3/3 | Complete | 2026-01-18 |
 | 15. PWA Foundation | v0.3.0 | 3/3 | Complete | 2026-01-18 |
-| 16. Message Caching | v0.3.0 | 0/TBD | Not started | - |
+| 16. Message Caching | v0.3.0 | 0/2 | Planned | - |
 | 17. Offline Send Queue | v0.3.0 | 0/TBD | Not started | - |
 | 18. Push Notifications | v0.3.0 | 0/TBD | Not started | - |
 | 19. Mobile Layout | v0.3.0 | 0/TBD | Not started | - |
@@ -142,4 +145,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-01-18*
-*Last updated: 2026-01-18 after Phase 15 completion*
+*Last updated: 2026-01-19 after Phase 16 planning*
