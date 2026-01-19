@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-18)
 ## Current Position
 
 Phase: 19 of 20 (Mobile Layout)
-Plan: 2 of 3 in current phase
-Status: In progress
-Last activity: 2026-01-19 - Completed 19-02-PLAN.md (Bottom Tab Navigation)
+Plan: 3 of 3 in current phase
+Status: Phase complete
+Last activity: 2026-01-19 - Completed 19-03-PLAN.md (Touch Interactions)
 
-Progress: [##################......] 90% (18/20 phases)
+Progress: [###################.....] 95% (19/20 phases)
 
 ## Shipped Milestones
 
@@ -52,6 +52,10 @@ Progress: [##################......] 90% (18/20 phases)
 | pb-16 for tab bar clearance | Main content reserves space for fixed bottom tab bar height | 19-02 |
 | Mentions tab routes to /threads | Reuses existing threads page for @mention notifications | 19-02 |
 | 44px touch targets on tabs | min-h-11 min-w-11 ensures accessible mobile tap areas | 19-02 |
+| 80px pull threshold | Industry standard for pull-to-refresh trigger | 19-03 |
+| 2.5 resistance factor | Makes pull feel native, not 1:1 which is too sensitive | 19-03 |
+| router.refresh() for pull-to-refresh | Next.js soft refresh re-fetches server data | 19-03 |
+| safe-area max() function | pb-[max(1rem,env(safe-area-inset-bottom))] ensures minimum padding | 19-03 |
 
 ### Decisions (Phase 18)
 
@@ -152,5 +156,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-19
-Stopped at: Completed 19-02-PLAN.md, ready for 19-03
+Stopped at: Completed 19-03-PLAN.md, Phase 19 complete
 Resume file: None
