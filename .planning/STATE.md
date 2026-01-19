@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-18)
 ## Current Position
 
 Phase: 20 of 20 (UI Polish)
-Plan: 2 of 3 in current phase
-Status: In progress
-Last activity: 2026-01-19 - Completed 20-02-PLAN.md (User Setup Documentation)
+Plan: 3 of 3 in current phase
+Status: Phase complete
+Last activity: 2026-01-19 - Completed 20-03-PLAN.md (Admin UI)
 
-Progress: [####################....] 95% (19/20 phases)
+Progress: [########################] 100% (20/20 phases)
 
 ## Shipped Milestones
 
@@ -48,6 +48,9 @@ Progress: [####################....] 95% (19/20 phases)
 | 625-line comprehensive USER-SETUP.md | Covers all deployment scenarios without external docs | 20-02 |
 | Table of contents with anchor links | Improves navigation for long documentation | 20-02 |
 | Cron example for automated backups | Production deployments need scheduled backups | 20-02 |
+| notFound() for non-admins | Keeps admin page existence private rather than redirecting | 20-03 |
+| Client-side CSV export | Works with filtered results, no additional API needed | 20-03 |
+| Export button visible only to owners | Matches API authorization (owner-only) | 20-03 |
 
 ### Decisions (Phase 19)
 
@@ -156,8 +159,8 @@ Items carried from previous milestones (now addressed in v0.3.0):
 - Add sidebar navigation links for /threads and /search (UIPOL-01)
 - ~~Increase HSTS max-age to 31536000 (UIPOL-06)~~ DONE in 20-01
 - ~~Add logout button to UI (UIPOL-02)~~ DONE in 20-01
-- Create audit log viewer UI (UIPOL-03)
-- Create data export UI (UIPOL-04)
+- ~~Create audit log viewer UI (UIPOL-03)~~ DONE in 20-03
+- ~~Create data export UI (UIPOL-04)~~ DONE in 20-03
 
 ### Blockers/Concerns
 
@@ -166,5 +169,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-19
-Stopped at: Completed 20-02-PLAN.md (User Setup Documentation)
+Stopped at: Completed 20-03-PLAN.md (Admin UI)
 Resume file: None
