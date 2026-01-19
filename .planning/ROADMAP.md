@@ -29,7 +29,7 @@ See: .planning/milestones/v0.2.0-ROADMAP.md
 - [x] **Phase 14: Security Fixes** - Harden existing code before adding features
 - [x] **Phase 15: PWA Foundation** - Installable PWA with app shell caching
 - [x] **Phase 16: Message Caching** - IndexedDB schema and offline reading
-- [ ] **Phase 17: Offline Send Queue** - Compose offline with auto-sync
+- [x] **Phase 17: Offline Send Queue** - Compose offline with auto-sync
 - [ ] **Phase 18: Push Notifications** - Web Push for DMs and mentions
 - [ ] **Phase 19: Mobile Layout** - Bottom tabs and responsive design
 - [ ] **Phase 20: UI Polish** - Admin UIs, sidebar nav, documentation
@@ -93,10 +93,10 @@ Plans:
   5. Optimistic UI shows message instantly before server confirmation
 **Plans**: 4 plans
 Plans:
-- [ ] 17-01-PLAN.md — Queue infrastructure (Dexie sendQueue table, queue operations, backoff utility)
-- [ ] 17-02-PLAN.md — Queue processing and sync (socket integration, reconnect listeners)
-- [ ] 17-03-PLAN.md — Optimistic UI hooks (useSendMessage, useSendQueue, MessageInput update)
-- [ ] 17-04-PLAN.md — Status indicators and polish (MessageStatus, retry UI, thread integration)
+- [x] 17-01-PLAN.md — Queue infrastructure (Dexie sendQueue table, queue operations, backoff utility)
+- [x] 17-02-PLAN.md — Queue processing and sync (socket integration, reconnect listeners)
+- [x] 17-03-PLAN.md — Optimistic UI hooks (useSendMessage, useSendQueue, MessageInput update)
+- [x] 17-04-PLAN.md — Status indicators and polish (MessageStatus, retry UI, thread integration)
 
 ### Phase 18: Push Notifications
 **Goal**: Users receive push notifications for DMs and mentions
@@ -149,11 +149,11 @@ Plans:
 | 14. Security Fixes | v0.3.0 | 3/3 | Complete | 2026-01-18 |
 | 15. PWA Foundation | v0.3.0 | 3/3 | Complete | 2026-01-18 |
 | 16. Message Caching | v0.3.0 | 2/2 | Complete | 2026-01-19 |
-| 17. Offline Send Queue | v0.3.0 | 0/4 | Planned | - |
+| 17. Offline Send Queue | v0.3.0 | 4/4 | Complete | 2026-01-19 |
 | 18. Push Notifications | v0.3.0 | 0/5 | Planned | - |
 | 19. Mobile Layout | v0.3.0 | 0/TBD | Not started | - |
 | 20. UI Polish | v0.3.0 | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-01-18*
-*Last updated: 2026-01-19 after Phase 18 planning*
+*Last updated: 2026-01-19 after Phase 17 complete*

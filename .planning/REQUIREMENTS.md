@@ -20,11 +20,11 @@ Requirements for Mobile & Polish milestone. Each maps to roadmap phases.
 
 - [x] **OFFL-01**: Messages cached in IndexedDB with 7-day retention
 - [x] **OFFL-02**: User can read cached messages when offline
-- [ ] **OFFL-03**: User can compose messages offline (queued locally)
-- [ ] **OFFL-04**: Pending messages show status indicator (pending/sent/failed)
-- [ ] **OFFL-05**: Queued messages sync automatically on reconnect
-- [ ] **OFFL-06**: Messages display instantly with optimistic UI updates
-- [ ] **OFFL-07**: Failed sends retry with exponential backoff + jitter
+- [x] **OFFL-03**: User can compose messages offline (queued locally)
+- [x] **OFFL-04**: Pending messages show status indicator (pending/sent/failed)
+- [x] **OFFL-05**: Queued messages sync automatically on reconnect
+- [x] **OFFL-06**: Messages display instantly with optimistic UI updates
+- [x] **OFFL-07**: Failed sends retry with exponential backoff + jitter
 
 ### Push Notifications
 
