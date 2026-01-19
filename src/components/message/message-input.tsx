@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect, FormEvent, KeyboardEvent, ChangeEvent } from "react";
 import { useSocket } from "@/lib/socket-client";
+import { useSendMessage } from "@/hooks/use-send-message";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Send } from "lucide-react";
@@ -26,6 +27,9 @@ export function MessageInput({ targetId, targetType, members = [] }: MessageInpu
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const socket = useSocket();
 
+  // Offline send queue hook
+  const { sendMessage: queueAndSend, isOnline } = useSendMessage({ targetId, targetType });
+
   // SECFIX-06: Listen for rate limit errors
   useEffect(() => {
     const handleError = (data: { message: string; code?: string; retryAfter?: number }) => {
@@ -48,21 +52,21 @@ export function MessageInput({ targetId, targetType, members = [] }: MessageInpu
   const isOverLimit = content.length > MAX_MESSAGE_LENGTH;
   const isSendDisabled = !content.trim() || isSending || isOverLimit || rateLimitMessage !== null;
 
-  const sendMessage = useCallback(() => {
+  const sendMessage = useCallback(async () => {
     if (!content.trim() || isSending) return;
 
     setIsSending(true);
-    socket.emit(
-      "message:send",
-      { targetId, targetType, content: content.trim() },
-      (response) => {
-        setIsSending(false);
-        if (response.success) {
-          setContent("");
-        }
-      }
-    );
-  }, [content, isSending, socket, targetId, targetType]);
+    try {
+      // Queue message to IndexedDB and trigger processing
+      await queueAndSend(content.trim());
+      // Clear input immediately (optimistic UI)
+      setContent("");
+    } catch (err) {
+      console.error("[MessageInput] Failed to queue message:", err);
+    } finally {
+      setIsSending(false);
+    }
+  }, [content, isSending, queueAndSend]);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -199,6 +203,13 @@ export function MessageInput({ targetId, targetType, members = [] }: MessageInpu
           </span>
         )}
       </div>
+
+      {/* Offline indicator */}
+      {!isOnline && (
+        <div className="text-xs text-gray-500 mt-1 px-1">
+          (offline - will send when connected)
+        </div>
+      )}
 
       {/* SECFIX-06: Rate limit message - inline below input per CONTEXT.md */}
       {rateLimitMessage && (
