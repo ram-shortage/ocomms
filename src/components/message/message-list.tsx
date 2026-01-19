@@ -5,6 +5,16 @@ import { useSocket } from "@/lib/socket-client";
 import { MessageItem } from "./message-item";
 import { ThreadPanel } from "../thread/thread-panel";
 import type { Message, ReactionGroup } from "@/lib/socket-events";
+import {
+  cacheMessage,
+  cacheMessages,
+  updateMessageDeletion,
+} from "@/lib/cache";
+import {
+  useCachedChannelMessages,
+  useCachedConversationMessages,
+} from "@/lib/cache";
+import { useOnlineStatus } from "@/lib/pwa/use-online-status";
 
 interface MessageListProps {
   initialMessages: Message[];
@@ -38,6 +48,22 @@ export function MessageList({
   const [isThreadPanelOpen, setIsThreadPanelOpen] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const socket = useSocket();
+
+  // Offline support: online status and cached messages
+  const { isOnline } = useOnlineStatus();
+  const cachedChannelMessages = useCachedChannelMessages(
+    targetType === "channel" ? targetId : null
+  );
+  const cachedConversationMessages = useCachedConversationMessages(
+    targetType === "dm" ? targetId : null
+  );
+
+  // Cache initial messages on mount (fire-and-forget, don't block rendering)
+  useEffect(() => {
+    if (initialMessages.length > 0) {
+      cacheMessages(initialMessages);
+    }
+  }, [initialMessages]);
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -73,6 +99,8 @@ export function MessageList({
 
       if (belongsToTarget) {
         setMessages((prev) => [...prev, message]);
+        // Cache the new message (fire and forget)
+        cacheMessage(message);
         // Initialize empty reactions for new message
         setReactionsMap((prev) => ({
           ...prev,
@@ -89,6 +117,8 @@ export function MessageList({
             : msg
         )
       );
+      // Update cache with deletion (fire and forget)
+      updateMessageDeletion(data.messageId, data.deletedAt);
     }
 
     function handleReactionUpdate(data: {
@@ -211,7 +241,24 @@ export function MessageList({
     setSelectedThread(null);
   }, []);
 
-  if (messages.length === 0) {
+  // When offline, fall back to cached messages
+  const displayMessages = isOnline
+    ? messages // Real-time state (existing behavior)
+    : targetType === "channel"
+      ? cachedChannelMessages
+      : cachedConversationMessages;
+
+  // For offline display, reconstruct author object from cached data
+  // CachedMessage has flattened authorName/authorEmail, but MessageItem expects author object
+  const normalizedMessages = displayMessages.map((msg) => ({
+    ...msg,
+    author:
+      "authorName" in msg
+        ? { id: msg.authorId, name: msg.authorName, email: msg.authorEmail }
+        : msg.author,
+  }));
+
+  if (normalizedMessages.length === 0) {
     return (
       <div className="flex-1 flex items-center justify-center text-gray-500">
         <p>No messages yet. Be the first to say something!</p>
@@ -222,7 +269,7 @@ export function MessageList({
   return (
     <>
       <div className="flex-1 overflow-y-auto py-4">
-        {messages.map((message) => (
+        {normalizedMessages.map((message) => (
           <MessageItem
             key={message.id}
             message={message}
