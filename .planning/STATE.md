@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-18)
 ## Current Position
 
 Phase: 18 of 20 (Push Notifications)
-Plan: 4 of 4 in current phase
+Plan: 5 of 5 in current phase
 Status: Phase complete
-Last activity: 2026-01-19 - Completed 18-04-PLAN.md (Push Notification UI)
+Last activity: 2026-01-19 - Completed 18-05-PLAN.md (Push Integration)
 
 Progress: [##################......] 90% (18/20 phases)
 
@@ -58,6 +58,9 @@ Progress: [##################......] 90% (18/20 phases)
 | Double-permission pattern | In-app prompt before browser permission for better UX | 18-04 |
 | iOS standalone detection | iOS requires PWA installation for push support | 18-04 |
 | Unified push subscription hook | Single hook provides all state and controls | 18-04 |
+| Push prompt engagement gating | Same threshold as install prompt (3 pages OR 30s) | 18-05 |
+| Push prompt localStorage persistence | Dismissal persists to avoid annoying users | 18-05 |
+| Separate notification section component | Keeps settings page server-side | 18-05 |
 
 ### Decisions (Phase 17)
 
@@ -135,5 +138,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-19
-Stopped at: Completed 18-04-PLAN.md (Push Notification UI)
+Stopped at: Completed 18-05-PLAN.md (Push Integration)
 Resume file: None
