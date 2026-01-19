@@ -127,7 +127,11 @@ Plans:
   3. All interactive elements meet 44px minimum touch target
   4. Pull-to-refresh reloads current view
   5. Virtual keyboard doesn't break input positioning
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 19-01-PLAN.md — Viewport and CSS foundation (viewportFit, overscroll-behavior, dvh, useIsMobile hook)
+- [ ] 19-02-PLAN.md — Bottom tab bar and responsive layout (MobileTabBar, sidebar/tabs switching)
+- [ ] 19-03-PLAN.md — Touch targets and input fixes (pull-to-refresh, message-input safe-area)
 
 ### Phase 20: UI Polish
 **Goal**: Complete remaining UI gaps and documentation
@@ -151,9 +155,9 @@ Plans:
 | 16. Message Caching | v0.3.0 | 2/2 | Complete | 2026-01-19 |
 | 17. Offline Send Queue | v0.3.0 | 4/4 | Complete | 2026-01-19 |
 | 18. Push Notifications | v0.3.0 | 0/5 | Planned | - |
-| 19. Mobile Layout | v0.3.0 | 0/TBD | Not started | - |
+| 19. Mobile Layout | v0.3.0 | 0/3 | Planned | - |
 | 20. UI Polish | v0.3.0 | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-01-18*
-*Last updated: 2026-01-19 after Phase 17 complete*
+*Last updated: 2026-01-19 after Phase 19 planning*
