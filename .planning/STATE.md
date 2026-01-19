@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-18)
 ## Current Position
 
 Phase: 18 of 20 (Push Notifications)
-Plan: 3 of 4 in current phase
-Status: In progress
-Last activity: 2026-01-19 - Completed 18-03-PLAN.md (Push Notification Delivery)
+Plan: 4 of 4 in current phase
+Status: Phase complete
+Last activity: 2026-01-19 - Completed 18-04-PLAN.md (Push Notification UI)
 
-Progress: [#################.......] 85% (17/20 phases)
+Progress: [##################......] 90% (18/20 phases)
 
 ## Shipped Milestones
 
@@ -55,6 +55,9 @@ Progress: [#################.......] 85% (17/20 phases)
 | 24-hour TTL for push messages | Balance between delivery window and staleness | 18-03 |
 | Tag-based push deduplication | channel:{id} for mentions, dm:{id} for DMs | 18-03 |
 | Auto-cleanup expired subscriptions | 410/404 responses trigger subscription deletion | 18-03 |
+| Double-permission pattern | In-app prompt before browser permission for better UX | 18-04 |
+| iOS standalone detection | iOS requires PWA installation for push support | 18-04 |
+| Unified push subscription hook | Single hook provides all state and controls | 18-04 |
 
 ### Decisions (Phase 17)
 
@@ -132,5 +135,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-19
-Stopped at: Completed 18-03-PLAN.md (Push Notification Delivery)
+Stopped at: Completed 18-04-PLAN.md (Push Notification UI)
 Resume file: None
