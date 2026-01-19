@@ -39,6 +39,9 @@ export {
   useCachedConversationMessages,
 } from "./use-cached-messages";
 
+// React hook for send queue display
+export { useSendQueue } from "./use-send-queue";
+
 // Queue processor
 export { processQueue, registerBackgroundSync } from "./queue-processor";
 

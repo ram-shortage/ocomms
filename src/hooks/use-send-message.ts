@@ -3,7 +3,12 @@
 import { useCallback } from "react";
 import { useSocket } from "@/lib/socket-client";
 import { useOnlineStatus } from "@/lib/pwa/use-online-status";
-import { queueMessage, type QueuedMessage } from "@/lib/cache";
+import {
+  queueMessage,
+  processQueue,
+  registerBackgroundSync,
+  type QueuedMessage,
+} from "@/lib/cache";
 
 /**
  * Options for useSendMessage hook.
@@ -20,22 +25,6 @@ export interface UseSendMessageOptions {
 export interface UseSendMessageReturn {
   sendMessage: (content: string) => Promise<{ clientId: string }>;
   isOnline: boolean;
-}
-
-/**
- * Stub: Process the send queue immediately (implemented in 17-02).
- * This is a no-op stub that will be replaced when queue-processor.ts exists.
- */
-async function processQueueStub(): Promise<void> {
-  console.log("[SendMessage] Queue processing will be available after 17-02");
-}
-
-/**
- * Stub: Register for background sync (implemented in 17-02).
- * This is a no-op stub that will be replaced when queue-processor.ts exists.
- */
-async function registerBackgroundSyncStub(): Promise<void> {
-  console.log("[SendMessage] Background sync will be available after 17-02");
 }
 
 /**
@@ -79,12 +68,10 @@ export function useSendMessage({
 
       if (isOnline) {
         // Process queue immediately when online
-        // TODO: Replace stub with actual processQueue from @/lib/cache when 17-02 is complete
-        processQueueStub().catch(console.error);
+        processQueue(socket).catch(console.error);
       } else {
         // Register for background sync when offline
-        // TODO: Replace stub with actual registerBackgroundSync from @/lib/cache when 17-02 is complete
-        registerBackgroundSyncStub().catch(console.error);
+        registerBackgroundSync().catch(console.error);
       }
 
       return { clientId };
