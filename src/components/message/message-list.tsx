@@ -9,10 +9,9 @@ import {
   cacheMessage,
   cacheMessages,
   updateMessageDeletion,
-} from "@/lib/cache";
-import {
   useCachedChannelMessages,
   useCachedConversationMessages,
+  useSendQueue,
 } from "@/lib/cache";
 import { useOnlineStatus } from "@/lib/pwa/use-online-status";
 
@@ -58,6 +57,9 @@ export function MessageList({
     targetType === "dm" ? targetId : null
   );
 
+  // Pending messages from send queue (optimistic UI)
+  const pendingMessages = useSendQueue(targetId);
+
   // Cache initial messages on mount (fire-and-forget, don't block rendering)
   useEffect(() => {
     if (initialMessages.length > 0) {
@@ -65,10 +67,10 @@ export function MessageList({
     }
   }, [initialMessages]);
 
-  // Scroll to bottom when messages change
+  // Scroll to bottom when messages or pending messages change
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, pendingMessages]);
 
   // Fetch reactions for all messages on mount and when messages change
   useEffect(() => {
@@ -242,7 +244,7 @@ export function MessageList({
   }, []);
 
   // When offline, fall back to cached messages
-  const displayMessages = isOnline
+  const serverMessages = isOnline
     ? messages // Real-time state (existing behavior)
     : targetType === "channel"
       ? cachedChannelMessages
@@ -250,13 +252,45 @@ export function MessageList({
 
   // For offline display, reconstruct author object from cached data
   // CachedMessage has flattened authorName/authorEmail, but MessageItem expects author object
-  const normalizedMessages = displayMessages.map((msg) => ({
+  const normalizedServerMessages = serverMessages.map((msg) => ({
     ...msg,
     author:
       "authorName" in msg
         ? { id: msg.authorId, name: msg.authorName, email: msg.authorEmail }
         : msg.author,
   }));
+
+  // Convert pending messages to display format (optimistic UI)
+  // These are messages queued locally but not yet confirmed by server
+  const normalizedPendingMessages = pendingMessages.map((msg) => ({
+    id: msg.clientId, // Use clientId as temporary ID
+    content: msg.content,
+    authorId: currentUserId,
+    author: { id: currentUserId, name: currentUsername ?? null, email: "" },
+    channelId: msg.targetType === "channel" ? msg.targetId : null,
+    conversationId: msg.targetType === "dm" ? msg.targetId : null,
+    parentId: msg.parentId,
+    replyCount: 0,
+    sequence: 0,
+    deletedAt: null,
+    createdAt: msg.createdAt,
+    updatedAt: msg.createdAt,
+    // Mark as pending for UI styling
+    _isPending: true,
+    _status: msg.status,
+  }));
+
+  // Merge server messages with pending messages
+  // Filter out pending messages that have been confirmed (matching serverId)
+  const confirmedServerIds = new Set(normalizedServerMessages.map((m) => m.id));
+  const filteredPending = normalizedPendingMessages.filter(
+    (m) => !pendingMessages.some((p) => p.serverId && confirmedServerIds.has(p.serverId))
+  );
+
+  // Combine and sort by createdAt
+  const normalizedMessages = [...normalizedServerMessages, ...filteredPending].sort(
+    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+  );
 
   if (normalizedMessages.length === 0) {
     return (
