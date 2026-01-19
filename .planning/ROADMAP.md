@@ -109,7 +109,13 @@ Plans:
   4. User receives push when mentioned in a channel
   5. Clicking notification opens the specific conversation
   6. User can configure per-channel notification preferences (all/mentions/none)
-**Plans**: TBD
+**Plans**: 5 plans
+Plans:
+- [ ] 18-01-PLAN.md — Push infrastructure (VAPID config, push subscription schema, SW push handlers)
+- [ ] 18-02-PLAN.md — Subscription API (VAPID public key endpoint, subscribe/unsubscribe routes)
+- [ ] 18-03-PLAN.md — Push delivery (sendPushToUser utility, mention and DM push triggers)
+- [ ] 18-04-PLAN.md — Push UI (usePushSubscription hook, permission prompt, settings panel)
+- [ ] 18-05-PLAN.md — Integration and verification (PWAProvider integration, settings page, e2e testing)
 
 ### Phase 19: Mobile Layout
 **Goal**: App provides native-like mobile experience
@@ -144,10 +150,10 @@ Plans:
 | 15. PWA Foundation | v0.3.0 | 3/3 | Complete | 2026-01-18 |
 | 16. Message Caching | v0.3.0 | 2/2 | Complete | 2026-01-19 |
 | 17. Offline Send Queue | v0.3.0 | 0/4 | Planned | - |
-| 18. Push Notifications | v0.3.0 | 0/TBD | Not started | - |
+| 18. Push Notifications | v0.3.0 | 0/5 | Planned | - |
 | 19. Mobile Layout | v0.3.0 | 0/TBD | Not started | - |
 | 20. UI Polish | v0.3.0 | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-01-18*
-*Last updated: 2026-01-19 after Phase 16 complete*
+*Last updated: 2026-01-19 after Phase 18 planning*
