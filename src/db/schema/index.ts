@@ -10,3 +10,4 @@ export * from "./notification";
 export * from "./channel-notification-settings";
 export * from "./channel-read-state";
 export * from "./lockout";
+export * from "./push-subscription";
