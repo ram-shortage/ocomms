@@ -84,6 +84,9 @@ beforeAll(() => {
         dispatchEvent: vi.fn(),
       })),
     });
+
+    // Mock scrollIntoView for components that use it
+    Element.prototype.scrollIntoView = vi.fn();
   }
 
   // Mock ResizeObserver
