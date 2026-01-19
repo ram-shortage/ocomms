@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-18)
 ## Current Position
 
 Phase: 17 of 20 (Offline Send Queue)
-Plan: 3 of 3 in current phase
+Plan: 4 of 4 in current phase
 Status: Phase complete
-Last activity: 2026-01-19 - Completed 17-03-PLAN.md (Optimistic UI Hooks)
+Last activity: 2026-01-19 - Completed 17-04-PLAN.md (UI Integration)
 
 Progress: [################........] 85% (17/20 phases)
 
@@ -29,7 +29,7 @@ Progress: [################........] 85% (17/20 phases)
 ## Performance Metrics
 
 **Cumulative:**
-- Total plans completed: 57 (23 + 24 + 3 + 3 + 2 + 1 + 1)
+- Total plans completed: 58 (23 + 24 + 3 + 3 + 2 + 1 + 1 + 1)
 - Total requirements delivered: 84 (51 + 19 + 8 + 6)
 - Total phases completed: 16
 
@@ -54,6 +54,9 @@ Progress: [################........] 85% (17/20 phases)
 | Cache barrel imports for queue processor | Consistent with existing import patterns | 17-03 |
 | _isPending flag on optimistic messages | Enables potential UI styling differentiation | 17-03 |
 | Filter pending by serverId match | Prevents duplicate display when server confirms | 17-03 |
+| MessageStatus below message content | Subtle text styling for minimal visual impact | 17-04 |
+| 70% opacity for pending messages | Visual differentiation without being obtrusive | 17-04 |
+| Separate SyncProvider component | Separation of concerns from PWAProvider | 17-04 |
 
 ### Decisions (Phase 16)
 
@@ -112,5 +115,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-19
-Stopped at: Completed 17-03-PLAN.md (Optimistic UI Hooks) - Phase 17 complete
+Stopped at: Completed 17-04-PLAN.md (UI Integration) - Phase 17 complete
 Resume file: None
