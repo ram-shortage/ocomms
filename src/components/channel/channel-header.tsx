@@ -20,6 +20,7 @@ import { InviteToChannelDialog } from "./invite-to-channel-dialog";
 import { PinnedMessagesDialog } from "./pinned-messages-dialog";
 import { NotificationBell } from "@/components/notification/notification-bell";
 import { NotificationSettingsDialog } from "./notification-settings-dialog";
+import { ChannelNotesSheet } from "./channel-notes-sheet";
 import type { NotificationMode } from "@/db/schema/channel-notification-settings";
 
 interface ChannelMember {
@@ -169,6 +170,12 @@ export function ChannelHeader({
             channelName={channel.name}
             currentMode={currentNotificationMode}
             onModeChange={setCurrentNotificationMode}
+          />
+
+          {/* Channel notes */}
+          <ChannelNotesSheet
+            channelId={channel.id}
+            channelName={channel.name}
           />
 
           {/* Global notifications */}
