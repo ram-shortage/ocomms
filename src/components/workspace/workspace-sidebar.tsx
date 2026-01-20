@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Plus, Search, MessageSquare, Bell } from "lucide-react";
+import { Plus, Search, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ChannelListClient } from "@/components/channel/channel-list-client";
 import { DMListClient } from "@/components/dm/dm-list-client";
@@ -10,6 +10,7 @@ import { CreateChannelDialog } from "@/components/channel/create-channel-dialog"
 import { StartDMDialog } from "@/components/dm/start-dm-dialog";
 import { NotificationBell } from "@/components/notification/notification-bell";
 import { LogoutButton } from "@/components/auth/logout-button";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
 
 interface WorkspaceSidebarProps {
@@ -153,6 +154,10 @@ export function WorkspaceSidebar({
         >
           Settings
         </Link>
+        <div className="flex items-center justify-between px-3 py-1.5">
+          <span className="text-muted-foreground">Theme</span>
+          <ThemeToggle />
+        </div>
         <LogoutButton
           variant="ghost"
           className="w-full justify-start px-3 py-1.5 h-auto font-normal hover:bg-accent"
