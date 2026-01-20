@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-20)
 
 **Core value:** Data sovereignty - complete control over communication data
-**Current focus:** v0.5.0 Feature Completeness - Phase 24 (Quick Wins)
+**Current focus:** v0.5.0 Feature Completeness - Phase 25 (Job Queue Foundation)
 
 ## Current Position
 
-Phase: 24 of 29 (Quick Wins) — COMPLETE
-Plan: 4 of 4 complete
-Status: Ready for `/gsd:plan-phase 25`
-Last activity: 2026-01-20 - Phase 24 complete (with documented gaps)
+Phase: 25 of 29 (Job Queue Foundation)
+Plan: 2 of 7 complete
+Status: In progress
+Last activity: 2026-01-20 - Completed 25-02-PLAN.md (Database schemas)
 
-Progress: [██████████] 4/4 plans in phase 24
+Progress: [███░░░░░░░] 2/7 plans in phase 25
 
 ## Shipped Milestones
 
@@ -70,6 +70,11 @@ Phase 24-03 decisions:
 - Conditional category view (flat list when no categories exist)
 - Empty categories auto-hide from sidebar
 
+Phase 25-02 decisions:
+- withTimezone for all timestamp columns (scheduledFor, remindAt, etc.) for UTC handling
+- Nullable channelId/conversationId on scheduled_messages allows either target type
+- Separate reminderPatternEnum for daily/weekly recurring support (RMND-07)
+
 ### Pending Todos
 
 1 todo pending — see `.planning/todos/pending/`
@@ -82,5 +87,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-20
-Stopped at: Phase 24 complete
-Resume file: None - ready for `/gsd:plan-phase 25`
+Stopped at: Completed 25-02-PLAN.md
+Resume file: None - continue with 25-03-PLAN.md
