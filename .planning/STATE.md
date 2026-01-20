@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 
 ## Current Position
 
-Phase: 21 of 23 (Dark Mode/Theming)
-Plan: 1 of 2 complete
-Status: In progress
-Last activity: 2026-01-20 - Completed 21-01-PLAN.md (theme infrastructure)
+Phase: 21 of 23 (Dark Mode/Theming) - COMPLETE
+Plan: 2 of 2 complete
+Status: Phase complete
+Last activity: 2026-01-20 - Completed 21-02-PLAN.md (hardcoded color audit)
 
-Progress: [########----------------] 33% (1/3 plans in v0.4.0)
+Progress: [################--------] 67% (2/3 phases in v0.4.0)
 
 ## Shipped Milestones
 
@@ -38,6 +38,11 @@ Progress: [########----------------] 33% (1/3 plans in v0.4.0)
 - Total requirements delivered: 108 (51 + 19 + 38)
 - Total phases completed: 20
 
+**v0.4.0 progress:**
+- Phase 21: 2 plans complete (theme infrastructure + color audit)
+- Phase 22: 0 plans complete (file uploads - not started)
+- Phase 23: 0 plans complete (shared notes - not started)
+
 ## Accumulated Context
 
 ### Decisions
@@ -49,9 +54,17 @@ Recent decisions for v0.4.0:
 - react-markdown for notes (XSS-safe, no dangerouslySetInnerHTML)
 - Last-write-wins with conflict detection for notes (not CRDT/OT)
 
+### Theming Patterns Established (Phase 21)
+- bg-card for content containers
+- bg-muted for hover states and subtle backgrounds
+- text-foreground for primary text
+- text-muted-foreground for secondary text
+- text-primary for links and interactive elements
+- ring-card for presence indicators
+
 ### Pending Todos
 
-None - starting fresh milestone.
+None - phase 21 complete.
 
 ### Blockers/Concerns
 
@@ -60,5 +73,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-20
-Stopped at: Completed 21-01-PLAN.md (theme infrastructure)
-Resume file: .planning/phases/21-dark-mode-theming/21-02-PLAN.md
+Stopped at: Completed 21-02-PLAN.md (hardcoded color audit)
+Resume file: .planning/phases/22-file-uploads/22-01-PLAN.md
