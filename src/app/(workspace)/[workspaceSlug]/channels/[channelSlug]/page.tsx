@@ -5,9 +5,9 @@ import { getChannel } from "@/lib/actions/channel";
 import { ChannelHeader } from "@/components/channel/channel-header";
 import { ChannelContent } from "@/components/channel/channel-content";
 import { db } from "@/db";
-import { messages, users, pinnedMessages, channelNotificationSettings } from "@/db/schema";
-import { eq, and, isNull, asc } from "drizzle-orm";
-import type { Message } from "@/lib/socket-events";
+import { messages, users, pinnedMessages, channelNotificationSettings, fileAttachments } from "@/db/schema";
+import { eq, and, isNull, asc, inArray } from "drizzle-orm";
+import type { Message, Attachment } from "@/lib/socket-events";
 import type { NotificationMode } from "@/db/schema/channel-notification-settings";
 
 export default async function ChannelPage({
@@ -72,6 +72,40 @@ export default async function ChannelPage({
     .orderBy(asc(messages.sequence))
     .limit(50);
 
+  // FILE-04/FILE-05: Fetch attachments for these messages
+  const messageIds = channelMessages.map((m) => m.id);
+  const attachmentsData = messageIds.length > 0
+    ? await db
+        .select({
+          id: fileAttachments.id,
+          messageId: fileAttachments.messageId,
+          originalName: fileAttachments.originalName,
+          path: fileAttachments.path,
+          mimeType: fileAttachments.mimeType,
+          sizeBytes: fileAttachments.sizeBytes,
+          isImage: fileAttachments.isImage,
+        })
+        .from(fileAttachments)
+        .where(inArray(fileAttachments.messageId, messageIds))
+    : [];
+
+  // Group attachments by messageId
+  const attachmentsByMessageId = new Map<string, Attachment[]>();
+  for (const a of attachmentsData) {
+    if (a.messageId) {
+      const existing = attachmentsByMessageId.get(a.messageId) || [];
+      existing.push({
+        id: a.id,
+        originalName: a.originalName,
+        path: a.path,
+        mimeType: a.mimeType,
+        sizeBytes: a.sizeBytes,
+        isImage: a.isImage,
+      });
+      attachmentsByMessageId.set(a.messageId, existing);
+    }
+  }
+
   // Transform to Message type for client
   const initialMessages: Message[] = channelMessages.map((m) => ({
     id: m.id,
@@ -90,6 +124,7 @@ export default async function ChannelPage({
       name: m.authorName,
       email: m.authorEmail || "",
     },
+    attachments: attachmentsByMessageId.get(m.id),
   }));
 
   // Fetch pinned message IDs for this channel

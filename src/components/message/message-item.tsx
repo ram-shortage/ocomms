@@ -9,6 +9,7 @@ import { ReactionPicker } from "./reaction-picker";
 import { ReactionDisplay } from "./reaction-display";
 import { MessageContent } from "./message-content";
 import { MessageStatus } from "./message-status";
+import { FileAttachment } from "./file-attachment";
 
 interface MessageItemProps {
   message: Message;
@@ -73,6 +74,14 @@ export function MessageItem({
         ) : (
           <>
             <MessageContent content={message.content} currentUsername={currentUsername} />
+            {/* FILE-04/FILE-05: Render file attachments */}
+            {message.attachments && message.attachments.length > 0 && (
+              <div className="flex flex-col gap-2 mt-2">
+                {message.attachments.map((attachment) => (
+                  <FileAttachment key={attachment.id} attachment={attachment} />
+                ))}
+              </div>
+            )}
             <ReactionDisplay
               reactions={reactions}
               currentUserId={currentUserId}
