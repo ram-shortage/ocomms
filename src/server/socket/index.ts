@@ -10,6 +10,7 @@ import { handleThreadEvents } from "./handlers/thread";
 import { handleNotificationEvents } from "./handlers/notification";
 import { setupUnreadHandlers, handleUnreadEvents, type UnreadManager } from "./handlers/unread";
 import { registerNoteHandlers } from "./handlers/notes";
+import { handleTypingEvents } from "./handlers/typing";
 import { isChannelMember, isConversationParticipant, isOrganizationMember } from "./authz";
 import { auditLog, AuditEventType } from "@/lib/audit-logger";
 
@@ -94,6 +95,9 @@ export function setupSocketHandlers(io: SocketIOServer, redis?: Redis | null) {
 
     // Setup note event handlers
     registerNoteHandlers(io, socket);
+
+    // Setup typing indicator event handlers
+    handleTypingEvents(socket, io);
 
     // Join user to their authorized rooms
     try {
