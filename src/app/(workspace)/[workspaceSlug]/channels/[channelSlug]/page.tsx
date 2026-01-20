@@ -189,6 +189,7 @@ export default async function ChannelPage({
           name: m.user.name,
           email: m.user.email,
         }))}
+        isArchived={channel.isArchived}
       />
     </div>
   );

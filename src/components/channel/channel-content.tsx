@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
+import { Archive } from "lucide-react";
 import { MessageList, MessageInput, type MentionMember } from "@/components/message";
 import type { Message } from "@/lib/socket-events";
 import { useMarkAsRead, useMarkMessageUnread } from "@/lib/hooks/use-unread";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface ChannelContentProps {
   channelId: string;
@@ -12,6 +14,7 @@ interface ChannelContentProps {
   currentUserId: string;
   currentUsername?: string;
   members: MentionMember[];
+  isArchived?: boolean;
 }
 
 export function ChannelContent({
@@ -21,6 +24,7 @@ export function ChannelContent({
   currentUserId,
   currentUsername,
   members,
+  isArchived = false,
 }: ChannelContentProps) {
   const [pinnedMessageIds, setPinnedMessageIds] = useState<Set<string>>(
     () => new Set(initialPinnedMessageIds)
@@ -86,21 +90,35 @@ export function ChannelContent({
 
   return (
     <>
-      {/* Message list - grows to fill available space */}
-      <MessageList
-        initialMessages={initialMessages}
-        targetId={channelId}
-        targetType="channel"
-        currentUserId={currentUserId}
-        currentUsername={currentUsername}
-        pinnedMessageIds={pinnedMessageIds}
-        onPin={handlePin}
-        onUnpin={handleUnpin}
-        onMarkUnread={markMessageUnread}
-      />
+      {/* Archived channel banner */}
+      {isArchived && (
+        <Alert className="mx-4 mt-4 border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950">
+          <Archive className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+          <AlertDescription className="text-amber-800 dark:text-amber-200">
+            This channel is archived. Messages are read-only.
+          </AlertDescription>
+        </Alert>
+      )}
 
-      {/* Message input - fixed at bottom */}
-      <MessageInput targetId={channelId} targetType="channel" members={members} />
+      {/* Message list - grows to fill available space */}
+      <div className={isArchived ? "opacity-75" : ""}>
+        <MessageList
+          initialMessages={initialMessages}
+          targetId={channelId}
+          targetType="channel"
+          currentUserId={currentUserId}
+          currentUsername={currentUsername}
+          pinnedMessageIds={pinnedMessageIds}
+          onPin={handlePin}
+          onUnpin={handleUnpin}
+          onMarkUnread={markMessageUnread}
+        />
+      </div>
+
+      {/* Message input - hidden for archived channels */}
+      {!isArchived && (
+        <MessageInput targetId={channelId} targetType="channel" members={members} />
+      )}
     </>
   );
 }

@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 ## Current Position
 
 Phase: 24 of 29 (Quick Wins)
-Plan: 1 of 4 complete
+Plan: 3 of 4 complete
 Status: In progress
-Last activity: 2026-01-20 - Completed 24-01-PLAN.md (Typing Indicators)
+Last activity: 2026-01-20 - Completed 24-03-PLAN.md (Channel Categories)
 
-Progress: [██░░░░░░░░] 1/4 plans in phase 24
+Progress: [███████░░░] 3/4 plans in phase 24
 
 ## Shipped Milestones
 
@@ -58,6 +58,12 @@ Phase 24-01 decisions:
 - Client-side throttle for network efficiency
 - Reset throttle timer on send for better UX
 
+Phase 24-03 decisions:
+- Admin-only category management (create, reorder, assign channels)
+- Per-user collapse states stored in separate table
+- Conditional category view (flat list when no categories exist)
+- Empty categories auto-hide from sidebar
+
 ### Pending Todos
 
 None - ready for phase planning.
@@ -69,5 +75,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-20
-Stopped at: Completed 24-01-PLAN.md
-Resume file: None - ready for 24-02-PLAN.md execution
+Stopped at: Completed 24-03-PLAN.md
+Resume file: None - ready for 24-04-PLAN.md execution

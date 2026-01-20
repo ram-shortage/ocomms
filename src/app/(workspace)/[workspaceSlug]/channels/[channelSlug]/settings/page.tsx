@@ -71,8 +71,10 @@ export default async function ChannelSettingsPage({
           channel={{
             id: channel.id,
             name: channel.name,
+            slug: channel.slug,
             description: channel.description,
             isPrivate: channel.isPrivate,
+            isArchived: channel.isArchived,
           }}
           members={channel.members.map((m) => ({
             id: m.userId,
@@ -81,6 +83,7 @@ export default async function ChannelSettingsPage({
             image: m.user.image,
             role: m.role,
           }))}
+          workspaceSlug={workspaceSlug}
         />
 
         {/* Delete channel placeholder */}
