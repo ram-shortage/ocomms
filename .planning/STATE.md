@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 
 ## Current Position
 
-Phase: 21 of 23 (Dark Mode/Theming) - COMPLETE
-Plan: 2 of 2 complete
-Status: Phase complete
-Last activity: 2026-01-20 - Completed 21-02-PLAN.md (hardcoded color audit)
+Phase: 22 of 23 (File Uploads)
+Plan: 1 of ? in progress
+Status: In progress
+Last activity: 2026-01-20 - Completed 22-01-PLAN.md (file upload backend)
 
-Progress: [################--------] 67% (2/3 phases in v0.4.0)
+Progress: [##################------] 75% (2.3/3 phases in v0.4.0)
 
 ## Shipped Milestones
 
@@ -40,7 +40,7 @@ Progress: [################--------] 67% (2/3 phases in v0.4.0)
 
 **v0.4.0 progress:**
 - Phase 21: 2 plans complete (theme infrastructure + color audit)
-- Phase 22: 0 plans complete (file uploads - not started)
+- Phase 22: 1 plan complete (file upload backend)
 - Phase 23: 0 plans complete (shared notes - not started)
 
 ## Accumulated Context
@@ -62,9 +62,14 @@ Recent decisions for v0.4.0:
 - text-primary for links and interactive elements
 - ring-card for presence indicators
 
+### File Upload Patterns Established (Phase 22)
+- validateFileSignature() for magic bytes validation (shared library)
+- Attachment metadata in database, file on disk with UUID name
+- messageId nullable for upload-before-send flow
+
 ### Pending Todos
 
-None - phase 21 complete.
+None - plan 22-01 complete.
 
 ### Blockers/Concerns
 
@@ -73,5 +78,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-20
-Stopped at: Completed 21-02-PLAN.md (hardcoded color audit)
-Resume file: .planning/phases/22-file-uploads/22-01-PLAN.md
+Stopped at: Completed 22-01-PLAN.md (file upload backend)
+Resume file: .planning/phases/22-file-uploads/22-02-PLAN.md
