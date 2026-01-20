@@ -7,21 +7,12 @@ if (existsSync(".env.local")) {
 }
 config(); // loads .env, won't override existing values
 
-import { Worker } from "bullmq";
-import { getQueueConnection } from "@/server/queue/connection";
+import { createScheduledMessageWorker } from "./scheduled-message.worker";
 import { createReminderWorker } from "./reminder.worker";
 import { closeEmitter } from "@/server/queue/emitter";
 
-// Placeholder worker for scheduled messages - implemented in Plan 03
-const scheduledMessageWorker = new Worker(
-  "scheduled-messages",
-  async (job) => {
-    console.log("[Worker] Processing scheduled message:", job.data);
-    // TODO: Implement in Plan 03
-    return { processed: true };
-  },
-  { connection: getQueueConnection(), concurrency: 5 }
-);
+// Real scheduled message worker - Plan 03
+const scheduledMessageWorker = createScheduledMessageWorker();
 
 // Real reminder worker - Plan 04
 const reminderWorker = createReminderWorker();
