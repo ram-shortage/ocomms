@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Plus, Search, MessageSquare } from "lucide-react";
+import { Plus, Search, MessageSquare, StickyNote } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ChannelListClient } from "@/components/channel/channel-list-client";
 import { DMListClient } from "@/components/dm/dm-list-client";
@@ -79,6 +79,16 @@ export function WorkspaceSidebar({
           >
             <Search className="h-4 w-4" />
             Search
+          </Link>
+          <Link
+            href={`/${workspace.slug}/notes`}
+            className={cn(
+              "flex items-center gap-2 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors",
+              pathname === `/${workspace.slug}/notes` && "bg-accent"
+            )}
+          >
+            <StickyNote className="h-4 w-4" />
+            My Notes
           </Link>
         </div>
 
