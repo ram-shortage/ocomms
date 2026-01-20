@@ -1,203 +1,198 @@
-# Project Research Summary: v0.4.0
+# Project Research Summary
 
-**Project:** OComms - Self-Hosted Real-Time Team Chat Platform
-**Domain:** Team collaboration (Slack-like) - File Uploads, Theming, Notes
+**Project:** OComms v0.5.0 Feature Completeness
+**Domain:** Self-hosted team communication platform (Slack alternative)
 **Researched:** 2026-01-20
 **Confidence:** HIGH
 
 ## Executive Summary
 
-OComms v0.4.0 adds three feature areas: file uploads (any type, 25MB max, local disk), dark mode theming (light/dark/system toggle), and markdown notes (one per channel, one personal per user). Research confirms well-established patterns exist for all three features, and critically, OComms already has proven implementations that can be extended rather than built from scratch.
+OComms v0.5.0 aims to deliver 12 feature areas that bring the platform to feature parity with mainstream team communication tools. The research reveals that most features (10 of 12) require zero or minimal new dependencies, leveraging the existing Socket.IO + Redis + PostgreSQL/Drizzle stack. Three targeted library additions are needed: **BullMQ** for scheduled jobs (scheduled messages, reminders), **unfurl** for link preview metadata extraction, and **sharp** for custom emoji image processing. The existing architecture patterns are well-suited for extension.
 
-The recommended approach leverages existing codebase patterns: extend the avatar upload route for general file attachments (native FormData + magic bytes validation), use the de facto standard `next-themes` library for theming (existing CSS variables already support dark mode), and implement notes with simple `react-markdown` rendering paired with textarea editing (avoiding WYSIWYG complexity). The key architectural insight is that "any member can edit" channel notes does NOT require real-time collaborative editing (CRDT/OT) - last-write-wins with optimistic locking and conflict detection is sufficient and explicitly in scope.
+The recommended approach groups features by shared infrastructure requirements rather than individual feature complexity. Features requiring the BullMQ job queue (scheduled messages, reminders, status expiration, link preview fetching) should be built together after establishing that foundation. Similarly, features that are pure database extensions with no new patterns (bookmarks, channel archiving, channel categories) can be implemented quickly in parallel. Typing indicators are low-hanging fruit since the Socket.IO events are already defined in the codebase. User groups and guest accounts require careful authorization work and should come later in the milestone.
 
-The primary risks are file upload security (memory exhaustion from large files, content-type bypass attacks, path traversal) and markdown XSS injection. Mitigation is straightforward: stream large files to disk instead of buffering in memory, validate magic bytes not MIME types, generate UUID filenames server-side, and use react-markdown which is XSS-safe by default. Dark mode has negligible risk when using `next-themes`.
+Key risks center on security (SSRF in link previews, XSS in custom emoji SVG uploads, guest account data isolation) and performance (typing indicator broadcast storms at scale). All critical pitfalls have documented mitigations: URL validation for SSRF, PNG conversion for custom emoji, centralized authorization checks for guests, and client-side throttling for typing indicators. The analytics feature requires privacy-conscious design to avoid GDPR issues. The scheduled job reliability pitfall (messages not sending on server restart) is solved by using BullMQ with Redis persistence rather than in-memory schedulers.
 
 ## Key Findings
 
 ### Recommended Stack
 
-v0.4.0 requires minimal new dependencies because OComms already has the foundational patterns in place. The avatar upload implementation demonstrates secure file handling with magic bytes validation and UUID filenames. The CSS variables in `globals.css` already define a full dark mode palette using OKLCH colors.
+The existing OComms stack handles most v0.5.0 features without additions. See [STACK-v0.5.0.md](./STACK-v0.5.0.md) for full details.
 
-**Core technologies:**
-- **Native FormData API**: File handling - Already working in avatar upload; no external library needed for 25MB files
-- **next-themes (v0.4.6)**: Theme provider - De facto standard for Next.js; handles hydration, system preference, no FOUC
-- **react-markdown (v10.1.0)**: Markdown rendering - React-native (no dangerouslySetInnerHTML), XSS-safe by default, React 19 compatible
-- **remark-gfm (v4.x)**: GitHub Flavored Markdown - Tables, strikethrough, task lists for notes
-- **rehype-highlight (v7.x)**: Syntax highlighting - Code block highlighting for technical notes
+**New dependencies (3 total):**
+- **bullmq** (^5.66.5): Redis-based job queue for scheduled messages, reminders, and background tasks — already using Redis, no new infrastructure
+- **unfurl** (^6.4.0): Metadata extraction for link previews — lightweight, handles Open Graph/Twitter Cards without headless browser
+- **sharp** (^0.34.5): Image processing for custom emoji — converts uploads to consistent PNG, strips SVG scripts
 
-**New bundle impact:** ~40KB gzipped total (or ~15KB without syntax highlighting)
+**Existing stack leverage:**
+- Socket.IO + Redis: Typing indicators, status broadcasts, real-time updates (8 features use existing patterns)
+- PostgreSQL + Drizzle: All schema additions, soft deletes for archiving, analytics aggregates
+- better-auth: Guest accounts via existing anonymous plugin
+- frimousse: Emoji picker for status messages (custom emoji integration TBD due to missing upstream support)
 
 ### Expected Features
 
-**Must have (table stakes):**
-- Drag-and-drop file upload with visual drop zone overlay
-- Upload progress indicator with cancel option
-- Image inline previews in messages
-- 25MB file limit with server-side enforcement
-- Magic byte validation (not just extensions)
-- Multi-file upload support
-- Three-way theme toggle (Light / Dark / System)
-- System preference detection via `prefers-color-scheme`
-- No flash of wrong theme (FOUC prevention)
-- One markdown note per channel (shared, any member edits)
-- One personal note per user per workspace (private scratchpad)
-- Auto-save with debounce
-- Basic formatting toolbar for non-markdown users
+Based on Slack, Discord, and Teams patterns. See [FEATURES.md](./FEATURES.md) for detailed analysis.
 
-**Should have (competitive):**
-- Video/audio inline playback (HTML5 native)
-- Paste from clipboard (screenshots)
-- Theme toggle animation
-- Undo/redo in note editor
-- @mention support in notes (reuse existing system)
+**Table stakes (must have):**
+- User status messages with emoji, text, and expiration
+- Typing indicators showing who is composing
+- Bookmarks / saved messages for personal collection
+- Channel archiving with read-only preservation
+- Basic link previews (Open Graph + Twitter Cards)
+- Custom emoji upload and usage in messages/reactions
 
-**Defer (v2+):**
-- PDF inline preview (requires PDF.js, +500KB bundle)
-- Image lightbox/gallery
-- File search integration
-- Note version history
-- Real-time collaborative editing (CRDT/OT) - explicitly out of scope
-- Cloud storage integrations - violates self-hosted value prop
+**Competitive (should have):**
+- Channel categories for sidebar organization
+- User groups for @team mentions
+- Scheduled messages with one-time scheduling
+- Reminders about specific messages
+- Guest accounts with channel-restricted access
+- Workspace analytics (aggregate metrics only)
+
+**Defer to v2+:**
+- Calendar sync for auto-status
+- Recurring scheduled messages (workflow builder territory)
+- Per-category channel permissions (Discord's model, adds complexity)
+- Individual user activity tracking in analytics (privacy concerns)
+- Natural language reminder parsing
 
 ### Architecture Approach
 
-All three features integrate cleanly with OComms' existing architecture. File uploads extend the avatar pattern with a new `/api/upload/file` route and `files`/`messageAttachments` tables. Theming wraps the app in a `ThemeProvider` component that manages the `.dark` CSS class. Notes add `channelNotes` and `personalNotes` tables with simple CRUD endpoints. None of these features require WebSocket changes beyond optionally emitting `note:updated` events when a channel note is saved.
+OComms follows consistent patterns: Socket.IO handlers for real-time, API routes for CRUD, Drizzle schema extensions for data, Redis for ephemeral state. See [ARCHITECTURE-v0.5.0.md](./ARCHITECTURE-v0.5.0.md) for component boundaries.
 
-**Major components:**
-1. **File Upload API** (`/api/upload/file`) - Extends avatar pattern: validate magic bytes, generate UUID, write to `public/uploads/files/{yyyy-mm}/`, insert to DB, return metadata
-2. **ThemeProvider** (wraps app) - Uses `next-themes` with `attribute="class"`, `defaultTheme="system"`, `enableSystem`, `disableTransitionOnChange`
-3. **NoteEditor component** - Simple textarea for editing + react-markdown for preview; no WYSIWYG complexity
-4. **Conflict detection** - Optimistic locking via version number; reject stale updates with 409 response
+**Major components by feature type:**
+
+1. **Real-time extensions** (typing, status) — New Socket.IO handlers in `handlers/`, ephemeral Redis state, broadcast to rooms
+2. **Personal collections** (bookmarks, reminders) — New tables with user foreign key, API routes only, no real-time needed
+3. **Background jobs** (scheduled messages, link previews) — BullMQ workers, status tracking in database, async processing
+4. **Authorization extensions** (guest accounts, user groups) — Centralized middleware in `authz.ts`, role-based checks
+5. **UI organization** (categories, archiving) — Schema extensions with position/status columns, sidebar filtering
+
+**Data flow pattern:**
+- Real-time features: Client emits -> Socket handler -> Redis/DB -> Broadcast to room
+- CRUD features: Client calls -> API route -> Drizzle query -> Response
+- Background jobs: API creates job -> BullMQ queues -> Worker processes -> Socket broadcasts result
 
 ### Critical Pitfalls
 
-1. **Memory exhaustion from large files** - Current avatar upload uses `await file.arrayBuffer()` (OK for 2MB). For 25MB general uploads, this pattern would consume ~250MB RAM for 10 concurrent uploads. **Mitigation:** Stream to disk using `stream.pipeline()`, never buffer entire file in memory.
+Top 5 from [PITFALLS-v0.5.0.md](./PITFALLS-v0.5.0.md) requiring attention:
 
-2. **Content-type/magic bytes bypass** - Attackers upload malicious files (PHP shells, SVG with XSS, polyglot files) that bypass validation. **Mitigation:** Validate magic bytes (already implemented), never trust client MIME type, re-encode images through sharp, serve with `X-Content-Type-Options: nosniff`.
+1. **Link preview SSRF** — Validate URLs before fetch, block internal IPs, cloud metadata endpoints (169.254.169.254), and non-http protocols. Set strict timeouts (5s) and redirect limits (3).
 
-3. **Flash of wrong theme (FOUC)** - Page briefly shows wrong theme before JavaScript hydrates. **Mitigation:** Use `next-themes` which injects a blocking script in `<head>` to apply theme class before body renders. Add `suppressHydrationWarning` to `<html>` element.
+2. **Custom emoji SVG XSS** — Convert all uploads to PNG using sharp. Never serve SVG files directly. If SVG must be supported, sanitize with DOMPurify and serve with `Content-Security-Policy: script-src 'none'`.
 
-4. **Markdown XSS via sanitizer bypass** - DOMPurify has had CVEs (< 3.2.6). **Mitigation:** Use react-markdown which renders to React components (no `dangerouslySetInnerHTML`), inherently XSS-safe. Do NOT enable raw HTML in markdown.
+3. **Guest account data isolation** — Centralize authorization in middleware, verify channel access for guests against allowlist, use PostgreSQL RLS as defense-in-depth. Write integration tests for cross-tenant scenarios.
 
-5. **Notes editing conflicts (lost updates)** - Two users edit simultaneously, one's changes silently overwritten. **Mitigation:** Optimistic locking with version column; reject updates where `expectedVersion !== currentVersion`; return 409 Conflict and let client fetch latest.
+4. **Typing indicator broadcast storms** — Throttle client-side (max 1 event per 3 seconds), rate-limit server-side (Redis key with TTL), auto-expire typing status after 5 seconds. For large channels (100+), aggregate "N people typing".
+
+5. **Scheduled message reliability** — Use BullMQ (not node-cron) for persistence across restarts. Store scheduled messages in database with status tracking. Implement retry logic (3 attempts) and monitoring for stuck jobs.
 
 ## Implications for Roadmap
 
-Based on research, suggested phase structure:
+Based on research, suggested 5-phase structure for the 12 features plus stabilization:
 
-### Phase 1: Dark Mode/Theming
-**Rationale:** Lowest dependency of all three features; no database changes, no backend API changes, purely additive. Quick win that immediately improves UX. Must be done first because file upload UI and notes UI need to render correctly in both themes.
-**Delivers:** Three-way theme toggle (Light/Dark/System), FOUC-free page loads, preference persistence
-**Addresses:** Table stakes theming features
-**Avoids:** FOUC (Pitfall 6) by using next-themes; third-party conflicts (Pitfall 7) mitigated because shadcn/ui already has excellent dark mode support
+### Phase 1: Quick Wins
+**Rationale:** Three features with minimal complexity and no new infrastructure. Establishes momentum and visible progress.
+**Delivers:** Channel lifecycle management, typing awareness, personal organization
+**Features:** Typing indicators, channel archiving, channel categories
+**Avoids:** N/A — these are low-risk implementations
+**Stack:** Existing Socket.IO events (typing already defined), simple schema additions
+**Duration estimate:** 1-2 weeks
 
-**Tasks:**
-1. Install next-themes
-2. Create ThemeProvider component
-3. Update root layout with suppressHydrationWarning
-4. Add ThemeToggle to settings
-5. Test all existing components in both modes
+### Phase 2: Job Queue Foundation + Scheduled Features
+**Rationale:** Scheduled messages and reminders share BullMQ infrastructure. Build foundation once, implement both features.
+**Delivers:** Async message scheduling, personal reminders, job queue infrastructure for later features
+**Features:** Scheduled messages, reminders
+**Avoids:** Scheduled message reliability failures (CRIT-4) by using BullMQ from start
+**Stack:** bullmq (new), extends existing messages/notifications
+**Duration estimate:** 2 weeks
 
-**Estimated effort:** 1 day
+### Phase 3: User Collections + Presence
+**Rationale:** Bookmarks and status messages are independent CRUD features. Group for efficiency.
+**Delivers:** Personal saved messages, rich user presence with status
+**Features:** Bookmarks/saved messages, user status messages
+**Avoids:** Bookmarks N+1 queries (use eager loading), status race conditions (use version numbers)
+**Stack:** New tables, extends profiles, existing frimousse emoji picker
+**Duration estimate:** 1-2 weeks
 
-### Phase 2: File Uploads
-**Rationale:** More complex than theming but simpler than notes. Database schema change, new API route extending proven pattern, UI changes to MessageComposer. Must come before notes if we want note attachments later.
-**Delivers:** Full file attachment support in messages - drag-drop, progress, inline previews, 25MB limit
-**Uses:** Native FormData API, existing magic bytes validation pattern, nanoid for filenames
-**Implements:** Files and messageAttachments schema, `/api/upload/file` route, FilePreview components
-**Avoids:** Memory exhaustion (Pitfall 2) by streaming to disk; path traversal (Pitfall 3) by UUID filenames; content-type bypass (Pitfall 1) by magic bytes validation
+### Phase 4: Rich Content
+**Rationale:** Link previews and custom emoji both involve external content processing with security concerns. Group for focused security review.
+**Delivers:** Link unfurling in messages, workspace custom emoji
+**Features:** Link previews/unfurling, custom emoji
+**Avoids:** SSRF (CRIT-1) with URL validation, SVG XSS (CRIT-2) with PNG conversion
+**Stack:** unfurl (new), sharp (new), async preview fetching via BullMQ
+**Duration estimate:** 2 weeks
 
-**Tasks:**
-1. Create files and messageAttachments schema migration
-2. Create /api/upload/file route (stream to disk)
-3. Extend magic bytes validation for PDF, ZIP, common document types
-4. Add drag-drop zone to MessageComposer
-5. Add file picker button
-6. Update message:send Socket handler to accept fileIds
-7. Create FilePreview and ImagePreview components
-8. Add upload progress indicator
-9. Update Docker volume for uploads persistence
+### Phase 5: Authorization + Analytics
+**Rationale:** User groups and guest accounts both require authorization system changes. Analytics requires privacy review. Group complex authz work together.
+**Delivers:** Team mentions, external collaborator access, workspace health metrics
+**Features:** User groups (@team mentions), guest accounts, workspace analytics
+**Avoids:** Guest isolation failures (CRIT-3) with centralized authz, notification floods (IMP-4) with rate limits, privacy violations (IMP-8) with aggregate-only metrics
+**Stack:** Extends better-auth, new authz middleware, aggregate queries
+**Duration estimate:** 3 weeks
 
-**Estimated effort:** 3-4 days
-
-### Phase 3: Channel & Personal Notes
-**Rationale:** Most complex feature with new UX patterns. Depends on understanding channel UI (from existing work) and theming (for notes UI). Database schema, new API routes, new components.
-**Delivers:** Markdown notes per channel and personal scratchpad
-**Uses:** react-markdown + remark-gfm + rehype-highlight for rendering; textarea for editing
-**Implements:** channelNotes and personalNotes schema, CRUD endpoints, NoteEditor component
-**Avoids:** XSS (Pitfall 4) by using react-markdown (no raw HTML); lost updates (Pitfall 10) by optimistic locking
-
-**Tasks:**
-1. Create channelNotes and personalNotes schema migration
-2. Create /api/channels/{id}/notes endpoint (GET, PUT)
-3. Create /api/user/notes endpoint for personal notes
-4. Install react-markdown + remark-gfm + rehype-highlight
-5. Create NoteEditor component (textarea + preview toggle)
-6. Create NoteViewer component for rendering
-7. Add notes tab to channel view
-8. Add personal notes access point (user menu or sidebar)
-9. Implement optimistic locking with version column
-10. Optionally emit note:updated Socket event
-
-**Estimated effort:** 4-5 days
+### Phase 6: Stabilization
+**Rationale:** Final phase for test coverage, bug fixing, and polish before release.
+**Delivers:** Production-ready v0.5.0
+**Features:** Test creation, bug fixes, performance optimization
+**Duration estimate:** 1-2 weeks
 
 ### Phase Ordering Rationale
 
-- **Theming first:** Affects all UI. Building file upload UI and notes UI without theming means testing twice later. Zero backend changes makes it the safest starting point.
-- **File uploads second:** Extends proven avatar pattern. If notes need attachments later, file infrastructure must exist. More isolated than notes (only affects MessageComposer).
-- **Notes last:** Most new surface area (new UI patterns, new API endpoints, new components). Benefits from theming being done (notes UI renders correctly) and potentially file uploads (future note attachments).
-
-This order also matches complexity: theming is ~1 day, files ~3-4 days, notes ~4-5 days. Delivering value incrementally.
+- **Infrastructure dependencies:** BullMQ foundation (Phase 2) enables link preview async fetching (Phase 4)
+- **Risk management:** Quick wins first (Phase 1) to build confidence before complex authz (Phase 5)
+- **Security grouping:** Content processing features (Phase 4) together for focused security review
+- **Authorization complexity:** Guest accounts and user groups both touch permissions system, minimize context switching
+- **Parallel opportunities:** Phases 1, 3 features are independent — could be parallelized with other work
 
 ### Research Flags
 
-Phases likely needing deeper research during planning:
-- **Phase 2 (File Uploads):** Stream-to-disk implementation in Next.js App Router needs validation. Test with actual 25MB files. Verify Docker volume persistence works correctly.
-- **Phase 3 (Notes):** Conflict UI design needs UX decision - how to present "note was edited by X" to user.
+**Phases likely needing deeper research during planning:**
+- **Phase 4 (Rich Content):** Custom emoji requires investigation of frimousse PR #25 status or alternative approaches
+- **Phase 5 (Guest Accounts):** Better-auth anonymous plugin configuration needs validation
+- **Phase 5 (Analytics):** May need GDPR/privacy compliance review depending on deployment context
 
-Phases with standard patterns (skip research-phase):
-- **Phase 1 (Dark Mode):** Completely standard implementation. next-themes + existing CSS variables = done. Dozens of tutorials match this exact setup.
+**Phases with standard patterns (skip research-phase):**
+- **Phase 1 (Quick Wins):** All three features have well-documented Slack patterns, typing events already defined
+- **Phase 2 (Scheduled Features):** BullMQ documentation comprehensive, scheduled job pattern established
+- **Phase 3 (Collections):** Standard CRUD patterns, no novel approaches needed
 
 ## Confidence Assessment
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | HIGH | All recommended packages verified for React 19/Next.js 15 compatibility. Extends existing patterns. |
-| Features | HIGH | Table stakes verified against Slack, Discord, Teams documentation. Anti-features clearly excluded. |
-| Architecture | HIGH | Matches existing OComms patterns. v0.4.0 section builds on proven codebase. |
-| Pitfalls | HIGH | Cross-verified with OWASP, CVE databases, and multiple security resources. |
+| Stack | HIGH | Verified against existing codebase, libraries have active maintenance and TypeScript support |
+| Features | HIGH | Slack/Discord/Teams official docs provide clear feature specifications |
+| Architecture | HIGH | Based on existing OComms patterns in codebase analysis |
+| Pitfalls | HIGH | Security pitfalls (SSRF, XSS) well-documented with CVEs and case studies |
 
 **Overall confidence:** HIGH
 
 ### Gaps to Address
 
-- **File streaming implementation:** Current avatar code uses `arrayBuffer()`. Need to validate stream-to-disk approach in Next.js App Router works as expected. Test before finalizing implementation.
-- **Conflict UI for notes:** Research shows conflict should be detected but doesn't prescribe exact UI. Decision needed: modal vs inline warning vs auto-merge preview.
-- **Virus scanning (optional):** ClamAV integration documented but marked optional. Decision needed on whether to include in v0.4.0 or defer.
-- **Storage quota tracking:** Schema design should include but enforcement deferred. Document disk requirements for self-hosters.
+- **frimousse custom emoji support:** PR #25 pending merge. Mitigation: Plan for separate custom emoji tab in picker UI, or fork if needed
+- **better-auth anonymous plugin:** Documentation exists but OComms-specific configuration needs validation. Mitigation: Spike during Phase 5 planning
+- **Workspace analytics privacy:** GDPR requirements vary by deployment context. Mitigation: Build aggregate-only by default, document privacy implications
 
 ## Sources
 
 ### Primary (HIGH confidence)
-- [OWASP File Upload Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html) - File security patterns
-- [next-themes GitHub](https://github.com/pacocoursey/next-themes) - Theme implementation
-- [react-markdown GitHub](https://github.com/remarkjs/react-markdown) - Markdown rendering approach
-- [Slack: Add Files to Slack](https://slack.com/help/articles/201330736-Add-files-to-Slack) - Feature expectations
-- [Slack Canvas Features](https://slack.com/features/canvas) - Notes feature model
-- [MDN: prefers-color-scheme](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme) - System theme detection
-- [shadcn/ui Dark Mode](https://ui.shadcn.com/docs/dark-mode/next) - Theming pattern
-- OComms codebase: `/src/app/api/upload/avatar/route.ts`, `/src/app/globals.css` - Existing patterns
+- [Slack Help Center](https://slack.com/help) — Feature specifications for all 12 areas
+- [Slack Developer Docs](https://docs.slack.dev) — API patterns, typing events, unfurling
+- [BullMQ Documentation](https://docs.bullmq.io) — Job queue patterns
+- [sharp Documentation](https://sharp.pixelplumbing.com/) — Image processing
+- OComms codebase analysis — Existing patterns in `src/db/schema/`, `src/server/socket/handlers/`
 
 ### Secondary (MEDIUM confidence)
-- [CVE-2025-47935: Multer DoS](https://www.miggo.io/vulnerability-database/cve/CVE-2025-47935) - Memory exhaustion pitfall
-- [Josh Comeau: Perfect Dark Mode](https://www.joshwcomeau.com/react/dark-mode/) - FOUC prevention
-- [DOMPurify CVE-2025-26791](https://security.snyk.io/vuln/SNYK-JS-DOMPURIFY-8722251) - XSS risk awareness
-- [HackerOne Secure Markdown](https://www.hackerone.com/blog/secure-markdown-rendering-react-balancing-flexibility-and-safety) - Markdown security
-- [TinyMCE OT vs CRDT](https://www.tiny.cloud/blog/real-time-collaboration-ot-vs-crdt/) - Notes collaboration context
+- [Discord Support](https://support.discord.com) — Channel categories pattern
+- [PortSwigger SSRF Guide](https://portswigger.net/web-security/ssrf) — Link preview security
+- [Socket.IO Performance Tuning](https://socket.io/docs/v4/performance-tuning/) — Typing indicator scaling
+- [unfurl GitHub](https://github.com/jacktuck/unfurl) — Link preview library
 
-### Tertiary (LOW confidence)
-- Community blog posts on file streaming in Next.js App Router - Implementation details need validation
+### Tertiary (MEDIUM confidence)
+- [Securitum SVG XSS Research](https://research.securitum.com/do-you-allow-to-load-svg-files-you-have-xss/) — Custom emoji security
+- [GDPR Employee Monitoring Guide](https://gdprlocal.com/gdpr-employee-monitoring/) — Analytics privacy considerations
 
 ---
 *Research completed: 2026-01-20*

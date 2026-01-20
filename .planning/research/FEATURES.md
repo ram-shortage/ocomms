@@ -1,585 +1,609 @@
-# Features Research: PWA & Mobile
+# Feature Landscape: v0.5.0 Feature Completeness
 
-**Domain:** Progressive Web App for self-hosted team chat
-**Milestone:** v0.3.0 PWA/Mobile
-**Researched:** 2026-01-18
-**Confidence:** HIGH (verified against MDN documentation, web.dev guides, Slack/Discord mobile implementations)
+**Domain:** Self-hosted team communication platform (Slack/Discord/Teams alternative)
+**Researched:** 2026-01-20
+**Overall Confidence:** HIGH (verified against official Slack, Discord, Teams documentation and implementation patterns)
 
 ---
 
 ## Executive Summary
 
-PWA technology has matured significantly since iOS 16.4 added push notification support. A well-built PWA can now deliver a near-native experience on both Android and iOS, with the key differentiator being offline capability and install-to-home-screen flow. For a chat application, the critical features are offline message reading, reliable message queue for offline sends, and push notifications for mentions/DMs.
+This research covers 12 feature areas planned for OComms v0.5.0. Each feature is analyzed against how Slack, Discord, Microsoft Teams, Mattermost, and similar platforms implement them. Features are categorized as table stakes (must-have for user acceptance), differentiators (competitive advantage), or anti-features (things to deliberately NOT build).
 
-The planned OComms v0.3.0 feature set (offline cache, background sync, push notifications, bottom tab navigation) aligns well with PWA chat app expectations. The main risks are iOS limitations (storage caps, unreliable background sync) and the complexity of offline-first architecture.
-
----
-
-## Table Stakes
-
-Features users expect from a PWA chat application. Missing these = app feels broken or incomplete.
-
-### Core PWA Functionality
-
-| Feature | Why Expected | Complexity | Notes |
-|---------|--------------|------------|-------|
-| **Install to home screen** | Defines PWA vs "just a website". Users expect dedicated app icon. | Low | Requires web app manifest, service worker. Custom install prompt recommended. |
-| **Custom offline page** | Generic browser error is unacceptable. Users expect graceful degradation. | Low | Service worker intercepts failed requests, shows branded offline state. |
-| **Fast initial load** | Installed apps must be "always fast". Sub-2-second paint expected. | Medium | Cache shell strategy, lazy load content. App shell architecture. |
-| **Works without network** | Core PWA promise. At minimum, show cached content when offline. | High | Service worker + IndexedDB for messages. 7-day cache reasonable. |
-| **Push notifications** | Chat apps need to alert users of new messages. Table stakes for chat. | High | Web Push API + VAPID keys. iOS requires home screen install first. |
-
-### Offline Chat Specifics
-
-| Feature | Why Expected | Complexity | Notes |
-|---------|--------------|------------|-------|
-| **Read cached messages offline** | Users expect to review recent conversations without network | Medium | IndexedDB for messages, 7-day retention reasonable |
-| **Compose messages offline** | Can't break the "write and send" flow just because network dropped | Medium | Queue locally, sync when online |
-| **Offline message indicators** | Users need to know message hasn't sent yet | Low | Show pending icon, update to sent on sync |
-| **Automatic sync on reconnect** | Queued messages should send automatically | High | Background Sync API or reconnection handler |
-
-### Mobile UI Basics
-
-| Feature | Why Expected | Complexity | Notes |
-|---------|--------------|------------|-------|
-| **Bottom tab navigation** | Standard mobile pattern since Slack 2020 redesign. Thumb-reachable. | Medium | 3-5 tabs: Home, DMs, Mentions, Search, Profile |
-| **Responsive layout** | Must work on phone screens. Desktop layout != mobile layout. | Medium | Dedicated mobile views, not just shrunk desktop |
-| **Touch-optimized targets** | 44px minimum tap targets per Apple HIG | Low | Button sizing, spacing, hit areas |
-| **Pull-to-refresh** | Expected pattern for content reload | Low | Standard gesture, visual feedback |
-| **Keyboard handling** | Virtual keyboard must not break layout, input focus | Medium | Viewport handling, scroll-into-view for inputs |
+**Key findings:**
+- Most features have well-established patterns from Slack that users expect
+- Link unfurling and typing indicators have significant technical complexity
+- Guest accounts and user groups are premium Slack features worth implementing for enterprise use cases
+- Workspace analytics should focus on actionable metrics, not surveillance
 
 ---
 
-## Differentiators
+## Feature 1: User Status Messages
 
-Features that create a native-like experience. Not expected from basic PWA, but valued.
+**Slack Reference:** Users can set emoji + text status (up to 100 characters) with optional expiration time.
 
-### Native-Feel Interactions
+### Table Stakes
 
-| Feature | Value Proposition | Complexity | Notes |
-|---------|-------------------|------------|-------|
-| **Swipe gestures on messages** | Native apps have swipe-to-reply, swipe-to-archive. Feels premium. | Medium | Swipe right to reply (Telegram), swipe left for actions. Needs careful implementation. |
-| **Haptic feedback** | Vibration on actions confirms input. Native app feel. | Low | `navigator.vibrate()` on supported devices |
-| **Smooth animations** | 60fps transitions between views. No jank. | Medium | CSS transforms, avoid layout thrashing |
-| **Swipe between sections** | Swipe left/right to navigate tabs (Discord pattern) | Medium | Gesture navigation between main sections |
-| **Long-press context menus** | Mobile-native action pattern | Medium | Replace right-click with long-press on mobile |
+| Feature | Why Expected | Complexity | Notes |
+|---------|--------------|------------|-------|
+| Custom emoji + text status | Slack established this pattern universally | Low | Store in members table |
+| Status visible next to name | Users expect to see status on profiles and mentions | Low | Display emoji in member lists, message headers |
+| Status expiration | "In a meeting until 3pm" is the core use case | Medium | Need scheduled job or lazy evaluation |
+| Preset status options | Reduces friction for common statuses | Low | "In a meeting", "Out sick", "On vacation", "Focusing" |
+| Manual status clear | User control over their status | Low | Button to clear immediately |
 
-### Advanced Offline
-
-| Feature | Value Proposition | Complexity | Notes |
-|---------|-------------------|------------|-------|
-| **Optimistic UI updates** | Message appears instantly, syncs in background | Medium | Local-first architecture, conflict resolution |
-| **Offline search** | Search through cached messages without network | High | Local IndexedDB search, limited scope |
-| **Retry with backoff** | Failed sends retry intelligently, don't hammer server | Medium | Exponential backoff + jitter |
-| **Sync conflict resolution** | Handle edits/deletes while offline gracefully | High | Last-write-wins or CRDT approach |
-
-### Smart Notifications
+### Differentiators
 
 | Feature | Value Proposition | Complexity | Notes |
 |---------|-------------------|------------|-------|
-| **Notification preferences** | Per-channel: all, mentions only, none | Medium | Respects existing notification settings |
-| **Notification grouping** | Collapse multiple messages into one notification | Medium | Show "3 new messages in #general" |
-| **Quiet hours** | Respect DND settings for push delivery | Medium | Server-side check before sending push |
-| **Click-to-open context** | Clicking notification opens specific conversation | Medium | Pass conversation ID in notification payload |
+| Pause notifications with status | "Do not disturb until status clears" | Medium | Integrate with notification preferences |
+| Admin-customizable presets | Org-specific statuses ("WFH", "Field visit") | Low | Workspace-level configuration |
+| Status sync with calendar | Auto-set "In a meeting" from calendar | High | Requires external integration - defer |
 
-### Install Experience
-
-| Feature | Value Proposition | Complexity | Notes |
-|---------|-------------------|------------|-------|
-| **Custom install prompt** | More context than browser default, higher conversion | Low | Intercept `beforeinstallprompt`, show custom UI |
-| **Install at right moment** | After sign-in or first message, not immediately | Low | Trigger based on engagement signals |
-| **Update notification** | Tell users when new version available | Medium | Service worker update detection, prompt reload |
-| **Dismissible install banner** | Respect "not now", remember preference | Low | Store dismissal in localStorage |
-
----
-
-## Anti-Features
-
-Features to explicitly NOT build. Either platform limitations, complexity traps, or wrong for self-hosted.
-
-### Don't Build
+### Anti-Features
 
 | Anti-Feature | Why Avoid | What to Do Instead |
 |--------------|-----------|-------------------|
-| **Full offline mode (all data)** | iOS limits PWA storage to ~50MB, auto-clears after 7 days of inactivity | Cache 7 days of messages, clear old data proactively |
-| **Background sync on iOS** | Background Sync API not supported on iOS Safari | Use reconnection handler on app foreground instead |
-| **Native share target** | Complex, limited support, not critical for chat | Standard copy/paste, link sharing |
-| **Badge API on iOS** | Not supported | Show unread in app title, notification count |
-| **Periodic background sync** | Limited browser support, unreliable | Use push notifications to trigger data refresh |
-| **Complex offline editing** | Conflict resolution is hard, edge cases abound | Allow offline compose, disable edit/delete offline |
-| **Offline file upload** | Files too large to cache, complex resume logic | Show "upload when online" placeholder |
-| **SMS/Email notification fallback** | Scope creep, different infrastructure | Web push only for v0.3.0 |
+| Activity-based auto-status (like Discord) | Gaming focus doesn't fit team communication | Keep simple emoji + text pattern |
+| Rich presence (sharing app/music) | Privacy concerns, not relevant for work context | Status is user-controlled only |
+| Mandatory status updates | Surveillance feeling, hurts adoption | Status is optional |
 
-### iOS-Specific Limitations to Accept
+**Recommendation:** Implement Slack-style status with emoji, text, and expiration. The pattern is well-understood and expected.
 
-| Limitation | Impact | Mitigation |
-|------------|--------|------------|
-| **No install prompt** | Lower install rates than Android | Prominent "Add to Home Screen" instructions |
-| **50MB storage cap** | Can't cache everything | Aggressive cache management, 7-day limit |
-| **Storage cleared after 7 days** | Users may lose offline data | Clear warning, re-fetch on app open |
-| **Push requires home screen install** | Can't push to Safari-only users | Guide users to install first |
-| **Service worker reliability issues** | Listeners may not fire after restart | Graceful fallback, don't depend on background execution |
-
-### Complexity Traps
-
-| Trap | Why Tempting | Why Dangerous |
-|------|--------------|---------------|
-| **"Sync everything offline"** | Completeness | Storage limits, sync complexity, stale data |
-| **"Full IndexedDB replica"** | Performance | Migration hell, storage bloat, consistency bugs |
-| **"Retry forever"** | Reliability | Battery drain, quota exhaustion, server load |
-| **"Custom gesture system"** | Native feel | Conflicts with platform gestures, accessibility issues |
-| **"Background location"** | Presence accuracy | Privacy nightmare, battery drain, scope creep |
+**Sources:**
+- [Slack: Set your status and availability](https://slack.com/help/articles/201864558-Set-your-Slack-status-and-availability)
+- [Discord: Custom Status](https://support.discord.com/hc/en-us/articles/360035407531-Custom-Status)
 
 ---
 
-## Mobile UI Patterns
+## Feature 2: Bookmarks / Saved Messages
 
-### Navigation Structure
+**Slack Reference:** Users can bookmark any message or file to a private "Saved" list (recently renamed to "Later").
 
-Based on Slack and Discord mobile implementations:
+### Table Stakes
 
-**Bottom Tab Bar (3-5 tabs):**
-```
-+-------+-------+-------+-------+-------+
-|  Home |  DMs  | @You  |Search |  You  |
-+-------+-------+-------+-------+-------+
-```
+| Feature | Why Expected | Complexity | Notes |
+|---------|--------------|------------|-------|
+| Save any message to personal list | Core functionality users expect | Low | Junction table: user_id, message_id |
+| Save files | Files need saving too | Low | Same pattern as messages |
+| View all saved items in one place | Must be easily accessible | Low | Sidebar item or modal |
+| Remove saved item | User control | Low | Delete from junction table |
+| Jump to original context | Click saved item to see it in channel | Low | Navigate to message location |
 
-| Tab | Purpose | Badge |
-|-----|---------|-------|
-| **Home** | Channel list with unreads bubbled to top | Total unread count |
-| **DMs** | Direct message conversations | DM unread count |
-| **@You / Mentions** | Mentions and reactions | Mention count |
-| **Search** | Full-text search | None |
-| **You / Profile** | Settings, status, logout | None (or notification if action needed) |
+### Differentiators
 
-**Why this pattern:**
-- Slack adopted bottom tabs in 2020 after years of hamburger menu, increased engagement
-- Discord moved to bottom tabs for same reasons: discoverability, thumb reach
-- 5 tabs is maximum recommended; 3-4 is ideal
+| Feature | Value Proposition | Complexity | Notes |
+|---------|-------------------|------------|-------|
+| Organize saved items (folders/tags) | Power users want organization | Medium | Adds complexity, defer to later |
+| Reminder on saved item | "Remind me about this in 2 hours" | Medium | Overlaps with Reminders feature |
+| Share saved items collection | Team knowledge curation | High | Different product direction |
 
-### Channel/Conversation View
+### Anti-Features
 
-**Layout:**
-```
-+----------------------------------+
-| <- Back    #channel-name    ...  |  (Header with back, title, overflow menu)
-+----------------------------------+
-|                                  |
-|  Message bubbles                 |  (Scrollable message list)
-|  with timestamps                 |
-|                                  |
-+----------------------------------+
-| [+] Type a message...     [Send] |  (Composer, always visible)
-+----------------------------------+
-```
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|-------------------|
+| Public saved items | Private by design, not a curation tool | Keep saved items private only |
+| Auto-save based on keywords | Noise, not useful | User-initiated only |
+| Saved items limit | Artificial friction | Allow unlimited saves |
 
-**Key patterns:**
-- Back button to return to channel list (swipe-from-edge also works)
-- Channel name in header, tap for channel info
-- Overflow menu (...) for channel settings, mute, leave
-- Composer pinned to bottom, grows with multiline input
-- Send button replaces attach when text entered
+**Recommendation:** Simple save/unsave with a sidebar view. The feature is straightforward - don't overcomplicate it.
 
-### Swipe Gestures
-
-Recommended gestures based on industry standards:
-
-| Gesture | Action | Precedent |
-|---------|--------|-----------|
-| **Swipe right on message** | Reply to message | Telegram, WhatsApp, Discord |
-| **Swipe left on conversation** | Archive/Mute/Delete options | Gmail, Slack |
-| **Swipe from left edge** | Navigate back | iOS system gesture |
-| **Pull down** | Refresh / Load older messages | Universal |
-| **Long press on message** | Context menu (copy, edit, delete, react) | Universal |
-
-**Caution:** Swipe-to-reply conflicts with edge-swipe navigation. Require swipe to start on message bubble, not from edge.
-
-### Thread View (Mobile)
-
-**Pattern:** Slide-in panel from right, or full-screen takeover
-
-```
-+----------------------------------+
-| <- Thread    #channel-name       |
-+----------------------------------+
-| Original message                 |
-| -------------------------------- |
-| Reply 1                          |
-| Reply 2                          |
-| ...                              |
-+----------------------------------+
-| [+] Reply in thread...    [Send] |
-+----------------------------------+
-```
-
-**Options:**
-1. **Slide-in panel** - Maintains context, can be dismissed
-2. **Full screen** - Simpler, used by Slack mobile
-
-Recommend: Full screen for v0.3.0 (simpler), slide-in for later enhancement.
+**Sources:**
+- [Slack: Save messages and files for later](https://slack.com/help/articles/360042650274-Save-messages-and-files-for-later)
 
 ---
 
-## Offline Patterns
+## Feature 3: Scheduled Messages
 
-### What SHOULD Work Offline
+**Slack Reference:** "Send later" with date/time picker. Messages visible in Drafts & Sent view until delivered.
 
-| Feature | Implementation | Rationale |
-|---------|----------------|-----------|
-| **Read cached messages** | IndexedDB message store, 7-day retention | Core offline value prop |
-| **Compose and queue messages** | Local queue with pending status | Don't break the write flow |
-| **View channel list** | Cache channel metadata | Navigation must work |
-| **View user profiles** | Cache basic user info | Needed for message display |
-| **See own unread state** | Cache read positions | Catch-up experience |
-| **Access recently viewed content** | LRU cache strategy | Predictable behavior |
+### Table Stakes
 
-### What Should NOT Work Offline
+| Feature | Why Expected | Complexity | Notes |
+|---------|--------------|------------|-------|
+| Schedule message for specific date/time | Core feature users expect | Medium | Separate scheduled_messages table |
+| View/edit scheduled messages | User control before send | Low | List view with edit capability |
+| Cancel scheduled message | User control | Low | Delete from table |
+| Send to channels and DMs | Works everywhere messages work | Low | Same as regular messages |
+| Timezone-aware scheduling | Global teams need this | Medium | Store in UTC, display in user TZ |
 
-| Feature | Why Not | What to Show |
-|---------|---------|--------------|
-| **Send messages immediately** | Requires network | Show "queued" indicator |
-| **Search across all messages** | Data too large | Show "search available when online" |
-| **Load new messages** | Requires network | Show "offline, showing cached" |
-| **Upload files** | Too large to queue | Show "will upload when online" |
-| **Edit/delete messages** | Conflict potential | Disable action, show "requires connection" |
-| **Change settings** | Needs server sync | Disable or queue |
-| **Real-time typing indicators** | Obviously needs network | Don't show |
+### Differentiators
 
-### Message Queue Strategy
+| Feature | Value Proposition | Complexity | Notes |
+|---------|-------------------|------------|-------|
+| Suggested send times | "Tomorrow 9am" quick picks | Low | UI convenience |
+| Recurring scheduled messages | Weekly standup reminders | High | Requires workflow-like system - Slack uses Workflow Builder for this |
 
-**Local-first architecture:**
+### Anti-Features
 
-```
-User sends message
-       |
-       v
-+----------------+
-| Save to        |
-| IndexedDB with |
-| status=pending |
-+----------------+
-       |
-       v
-+----------------+
-| Display in UI  |
-| with pending   |
-| indicator      |
-+----------------+
-       |
-       v
-+----------------+
-| Attempt send   |
-| via network    |
-+----------------+
-       |
-  +----+----+
-  |         |
-  v         v
-Success   Failure
-  |         |
-  v         v
-Update    Retry with
-status=   exponential
-sent      backoff
-```
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|-------------------|
+| Scheduled thread replies | Slack doesn't support this, odd UX | Only support channel/DM scheduling |
+| Complex recurrence rules | Workflow builder territory | Keep to one-time scheduling |
+| Schedule on behalf of others | Permission nightmare | Only schedule own messages |
 
-**Queue requirements:**
-- Unique client-generated ID (ULID or UUID) for deduplication
-- Timestamp of creation for ordering
-- Retry count for backoff calculation
-- Status: pending, sending, sent, failed
+**Recommendation:** Implement one-time scheduling with simple UI. Recurring messages are a workflow feature, not a messaging feature.
 
-**Retry strategy:**
-- Initial delay: 1 second
-- Backoff multiplier: 2x
-- Max delay: 5 minutes
-- Max retries: 10 (then mark failed, let user retry manually)
-- Add jitter: +/- 20% to prevent thundering herd
+**Technical Note:** Need a scheduled job runner to process scheduled messages. Options: Node cron job, database-level scheduling with pg_cron, or simple polling interval.
 
-### Cache Management
-
-**What to cache:**
-| Data Type | Cache Strategy | TTL | Max Size |
-|-----------|---------------|-----|----------|
-| App shell (HTML/CSS/JS) | Cache-first | Until new version | ~2MB |
-| Messages | Network-first, cache fallback | 7 days | ~20MB |
-| User profiles | Stale-while-revalidate | 1 day | ~1MB |
-| Channel metadata | Stale-while-revalidate | 1 day | ~500KB |
-| Images/avatars | Cache-first | 7 days | ~10MB |
-
-**Storage budget:** ~35MB target, well under iOS 50MB limit
-
-**Cache invalidation triggers:**
-- New service worker deployed (clear old cache)
-- User logs out (clear all user data)
-- 7 days since last use (iOS will clear anyway)
-- Manual cache clear in settings
+**Sources:**
+- [Slack: Send and read messages](https://slack.com/help/articles/201457107-Send-and-read-messages)
+- [Slack Developer Docs: Sending and scheduling messages](https://docs.slack.dev/messaging/sending-and-scheduling-messages/)
 
 ---
 
-## Push Notification Patterns
+## Feature 4: Reminders
 
-### Notification Types
+**Slack Reference:** `/remind` slash command creates Slackbot DM reminders. Can remind self, others, or channels.
 
-| Type | When to Send | Priority | Group? |
-|------|--------------|----------|--------|
-| **Direct message** | New DM from any user | High | By conversation |
-| **@mention** | User mentioned by name | High | By channel |
-| **@channel/@here** | Channel-wide mention | Medium | By channel |
-| **Thread reply** | Reply in followed thread | Medium | By thread |
-| **Reaction** | Someone reacted to user's message | Low | Not sent (or very batched) |
+### Table Stakes
 
-### User Preferences
+| Feature | Why Expected | Complexity | Notes |
+|---------|--------------|------------|-------|
+| Remind self about a message | "Remind me about this in 2 hours" | Medium | Link reminder to specific message |
+| Remind at specific time | Core functionality | Medium | Scheduled notification delivery |
+| View all pending reminders | User management | Low | List view |
+| Mark reminder complete | User control | Low | Status update |
+| Snooze reminder | Common need when reminder fires | Low | Reschedule to new time |
 
-**Settings to expose:**
+### Differentiators
 
-| Setting | Options | Default |
-|---------|---------|---------|
-| **All notifications** | On / Off | On |
-| **DM notifications** | All / None | All |
-| **Channel notifications** | All / Mentions / None | Mentions |
-| **Thread notifications** | All replies / Mentions only / None | Mentions only |
-| **Quiet hours** | Time range (e.g., 10pm-7am) | Off |
-| **Weekend notifications** | On / Off | On |
+| Feature | Value Proposition | Complexity | Notes |
+|---------|-------------------|------------|-------|
+| Remind about any message | Right-click "Remind me" | Low | Best UX for message-based reminders |
+| Recurring reminders | "Every Monday at 9am" | Medium | Adds complexity but high value |
+| `/remind` slash command | Power user efficiency | Medium | Requires slash command infrastructure |
 
-**Per-channel overrides:**
-- Allow users to mute specific channels
-- Allow users to set specific channels to "all messages"
+### Anti-Features
 
-### Notification Content
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|-------------------|
+| Remind other users | Notification spam, permission issues | Only remind self |
+| Channel reminders (visible to all) | Use scheduled messages instead | Reminders are private |
+| Natural language parsing | High complexity, error-prone | Use explicit date/time picker |
 
-**Best practices:**
-- Show sender name and avatar
-- Show channel/DM context
-- Show message preview (truncated)
-- Don't show sensitive content (respect settings)
+**Recommendation:** Start with message-based reminders ("Remind me about this"). Slash command and arbitrary reminders can come later.
 
-**Example notification:**
-```
-[Avatar] John in #engineering
-Hey @brett, can you review the PR?
-```
+**Key Difference from Scheduled Messages:**
+- Scheduled messages: Send a message to others at a specific time
+- Reminders: Notify yourself about something at a specific time (private)
 
-### iOS-Specific Considerations
-
-| Requirement | Reason | Implementation |
-|-------------|--------|----------------|
-| Must be installed to home screen | iOS restriction | Guide users to install before enabling push |
-| User must grant permission | iOS restriction | Request after value demonstrated |
-| Can be auto-cleared | iOS storage limits | Re-subscribe on app open |
-| Click may not work reliably | Known Safari bug | Graceful fallback, test thoroughly |
-
-### Permission Request Flow
-
-**Don't:** Request permission on first visit
-
-**Do:** Request after engagement signals
-1. User signs in successfully
-2. User sends first message or joins first channel
-3. Show custom prompt explaining value: "Get notified when someone messages you?"
-4. If accepted, request browser permission
-5. If denied, don't ask again (or ask much later)
-
-**Custom prompt pattern:**
-```
-+----------------------------------+
-|  Stay in the loop                |
-|                                  |
-|  Get notified when you're        |
-|  mentioned or receive DMs.       |
-|                                  |
-|  [Enable]         [Not now]      |
-+----------------------------------+
-```
+**Sources:**
+- [Slack: Set a reminder](https://slack.com/help/articles/208423427-Set-a-reminder)
+- [Slack: How to use reminders](https://slack.com/resources/using-slack/how-to-use-reminders-in-slack)
 
 ---
 
-## Install/Update Experience
+## Feature 5: User Groups (@team mentions)
 
-### Install Prompt Strategy
+**Slack Reference:** Create named groups (e.g., @designers) that notify all members when mentioned. Premium feature.
 
-**When to show:**
-- After user signs in (strong signal of intent)
-- After user sends first message (engagement)
-- Never on first visit (no context)
-- Never immediately after page load (annoying)
+### Table Stakes
 
-**Custom prompt benefits:**
-- More context than browser default
-- Can explain value proposition
-- Can be dismissed and remembered
-- Higher conversion rates
+| Feature | Why Expected | Complexity | Notes |
+|---------|--------------|------------|-------|
+| Create named user group | Core functionality | Medium | New table with members relationship |
+| @mention group to notify all members | The whole point | Medium | Expand group to individual notifications |
+| View group members | Transparency | Low | Click @group to see members |
+| Add/remove members | Management | Low | Admin UI |
+| Group handle uniqueness | Avoid confusion | Low | Unique constraint |
 
-**Implementation:**
-```javascript
-// Capture browser prompt event
-let deferredPrompt;
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  // Show custom install UI when ready
-});
+### Differentiators
 
-// Later, when user is engaged
-function showInstallPrompt() {
-  // Show custom UI
-  // On accept, call deferredPrompt.prompt()
-}
-```
+| Feature | Value Proposition | Complexity | Notes |
+|---------|-------------------|------------|-------|
+| Default channels for group | Auto-add new members to channels | Medium | Nice for onboarding |
+| Nested groups | @engineering includes @frontend and @backend | High | Complexity explosion - avoid |
+| Self-service group joining | Reduces admin burden | Low | Permission setting per group |
 
-### Update Experience
+### Anti-Features
 
-**Service worker update flow:**
-1. Browser checks for new SW on navigation (or every 24h)
-2. If new SW found, it installs in background
-3. New SW waits until old SW releases (all tabs closed)
-4. OR: Show "Update available" prompt, user clicks, `skipWaiting()` called
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|-------------------|
+| @group mention creates DM | Confusing, unexpected | Mention notifies in current channel |
+| Guests in user groups | Slack explicitly doesn't allow this | Groups are internal only |
+| Unlimited group creation | Can become spam | Admin-controlled or rate-limited |
+| Nested/hierarchical groups | Complexity trap | Flat groups only |
 
-**Update prompt pattern:**
-```
-+----------------------------------+
-|  Update available                |
-|                                  |
-|  A new version of OComms is      |
-|  ready. Reload to update?        |
-|                                  |
-|  [Update now]      [Later]       |
-+----------------------------------+
-```
+**Recommendation:** Flat user groups with admin control over creation. Keep it simple - groups expand to member notifications.
 
-**Best practices:**
-- Don't force update (user may have unsent messages)
-- Show update prompt as dismissible banner
-- Update automatically on next app start
-- If critical security update, more prominent prompt
+**Implementation Note:** When @group is mentioned in a channel, only notify group members who are also channel members. Slackbot warns about members not in channel.
 
-### iOS "Add to Home Screen" Guidance
+**Sources:**
+- [Slack: Create a user group](https://slack.com/help/articles/212906697-Create-a-user-group)
+- [Atlassian: Why Slack user groups are awesome](https://www.atlassian.com/blog/halp/why-slack-user-groups-are-awesome-and-how-to-utilize-them)
 
-Since iOS doesn't have install prompts, show guidance:
+---
 
-**Detection:** Check if running in standalone mode
-```javascript
-const isStandalone = window.matchMedia('(display-mode: standalone)').matches
-  || window.navigator.standalone;
-```
+## Feature 6: Channel Categories / Folders
 
-**If not installed, show banner:**
-```
-+----------------------------------+
-|  Install OComms                  |
-|                                  |
-|  Tap [Share icon] then           |
-|  "Add to Home Screen" for        |
-|  the best experience.            |
-|                                  |
-|  [Got it]          [Show me how] |
-+----------------------------------+
-```
+**Discord Reference:** Channels organized under collapsible categories with shared permissions.
+**Teams Reference:** New "Sections" feature (2025) for organizing chats and channels.
+
+### Table Stakes
+
+| Feature | Why Expected | Complexity | Notes |
+|---------|--------------|------------|-------|
+| Group channels under named category | Core organization need | Medium | Add category_id to channels |
+| Collapse/expand categories | UI essential | Low | Client-side state |
+| Drag channels between categories | Reordering | Medium | Update category_id and sort_order |
+| Uncategorized channels section | Backward compatibility | Low | Null category_id |
+
+### Differentiators
+
+| Feature | Value Proposition | Complexity | Notes |
+|---------|-------------------|------------|-------|
+| Category-level permissions | Discord's killer feature | High | Adds permission complexity |
+| Personal category organization | User customizes their own view | High | Per-user state, sync issues |
+| Default categories for new workspaces | Onboarding help | Low | Template system |
+
+### Anti-Features
+
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|-------------------|
+| Nested categories | Categories within categories | Single level only (Discord pattern) |
+| Required category assignment | Some channels don't need categorization | Allow uncategorized |
+| Admin-only category management | Teams need flexibility | Allow members to create (with limits) |
+
+**Recommendation:** Implement Discord-style categories: single level, collapsible, with drag-drop reordering. Skip per-category permissions initially (adds significant complexity).
+
+**Sources:**
+- [Discord: Channel Categories 101](https://support.discord.com/hc/en-us/articles/115001580171-Channel-Categories-101)
+- [Microsoft: Organize Teams with Sections](https://www.withum.com/resources/organize-microsoft-teams-chats-and-channels-with-sections/)
+
+---
+
+## Feature 7: Link Previews / Unfurling
+
+**Slack Reference:** Automatic rich previews for URLs using Open Graph and Twitter Card metadata.
+
+### Table Stakes
+
+| Feature | Why Expected | Complexity | Notes |
+|---------|--------------|------------|-------|
+| Fetch Open Graph metadata | Standard protocol | Medium | Server-side URL fetching |
+| Display title, description, image | Core preview | Medium | Parse og:title, og:description, og:image |
+| One preview per link (first 5 links max) | Slack behavior | Low | Limit renders |
+| Clickable preview to open URL | Expected behavior | Low | Wrap in anchor |
+| Preview caching | Performance | Medium | Cache metadata for repeated URLs |
+
+### Differentiators
+
+| Feature | Value Proposition | Complexity | Notes |
+|---------|-------------------|------------|-------|
+| Twitter Card fallback | Better coverage | Low | Check twitter: tags if og: missing |
+| User can dismiss preview | UI preference | Low | Remove preview client-side |
+| App-specific unfurling (YouTube, Twitter, etc.) | Richer previews | High | Per-domain handlers |
+
+### Anti-Features
+
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|-------------------|
+| Auto-play video previews | Bandwidth, annoying | Static thumbnails only |
+| Full article embedding | Copyright issues, complexity | Link + preview only |
+| Unfurl internal links to messages | Complex message-within-message | Link only, no recursive unfurl |
+
+**Recommendation:** Implement Open Graph + Twitter Card fetching with caching. Skip domain-specific handlers initially.
+
+**Technical Considerations:**
+- Fetch only first 32KB of HTML (Slack's approach) to avoid large pages
+- Use Range header for partial fetch
+- Rate limit outbound requests
+- Cache aggressively (URLs don't change often)
+- Run fetching async, don't block message send
+- Respect robots.txt and noindex
+
+**Sources:**
+- [Slack: Share links and set preview preferences](https://slack.com/help/articles/204399343-Share-links-and-set-preview-preferences)
+- [Slack Developer Docs: Unfurling links](https://docs.slack.dev/messaging/unfurling-links-in-messages/)
+- [OpenGraph.io: Ultimate Guide to Link Unfurling](https://www.opengraph.io/unfurl-url)
+
+---
+
+## Feature 8: Typing Indicators
+
+**Slack Reference:** Shows "[Name] is typing..." at bottom of channel when user is composing.
+
+### Table Stakes
+
+| Feature | Why Expected | Complexity | Notes |
+|---------|--------------|------------|-------|
+| Show when someone is typing | Core feature | Medium | WebSocket event broadcast |
+| Show who is typing | Multiple simultaneous typers | Medium | Track list of typing users |
+| Auto-hide after timeout | User stopped typing | Low | 5-second timeout (Slack standard) |
+| Hide when message sent | Immediate feedback | Low | Clear on message receipt |
+
+### Differentiators
+
+| Feature | Value Proposition | Complexity | Notes |
+|---------|-------------------|------------|-------|
+| Typing in threads | Thread-specific indicator | Medium | Scope to parent message |
+| User preference to disable | Privacy choice | Low | Client-side setting |
+
+### Anti-Features
+
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|-------------------|
+| Read receipts | Privacy nightmare, user backlash | Typing indicators only |
+| "Last seen" timestamps | Surveillance feeling | Stick to presence (active/away) |
+| Typing indicator for bots | Confusing, unnecessary | User messages only |
+
+**Recommendation:** Implement with throttling (send event max once per 1-3 seconds) and 5-second auto-hide.
+
+**Technical Considerations:**
+- Throttle typing events: don't send on every keystroke
+- Use WebSocket broadcast scoped to channel/DM
+- With Redis pub-sub, broadcast to all server instances
+- Don't persist typing state - ephemeral only
+- Scale concern: busy channels with many typers need UI handling
+
+**Sources:**
+- [Slack Developer Docs: user_typing event](https://docs.slack.dev/reference/events/user_typing/)
+- [Medium: Building Scalable Real-Time Typing Indicator System](https://medium.com/@ramesh200212/building-a-scalable-real-time-typing-indicator-system-a-deep-dive-into-distributed-architecture-5f14b331c4ab)
+
+---
+
+## Feature 9: Custom Emoji
+
+**Slack/Mattermost Reference:** Upload custom images as emoji usable in messages and reactions.
+
+### Table Stakes
+
+| Feature | Why Expected | Complexity | Notes |
+|---------|--------------|------------|-------|
+| Upload custom emoji image | Core functionality | Medium | File storage + metadata |
+| Use in messages and reactions | Anywhere emoji work | Medium | Integrate with emoji picker |
+| Unique emoji names | :custom-emoji: syntax | Low | Unique constraint |
+| View all custom emoji | Discovery | Low | Tab in emoji picker |
+| Delete own emoji | User control | Low | Permission check |
+
+### Differentiators
+
+| Feature | Value Proposition | Complexity | Notes |
+|---------|-------------------|------------|-------|
+| Animated GIF emoji | Fun, expressive | Low | Already support GIF format |
+| Emoji aliases | Multiple names for same emoji | Low | Additional name mapping |
+| Bulk upload | Migration from Slack | Medium | Import tool |
+| Emoji usage stats | See popular emoji | Low | Count usage |
+
+### Anti-Features
+
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|-------------------|
+| Emoji size larger than standard | Breaks message layout | Standardize to 128x128 or similar |
+| Custom emoji in usernames | Display issues, abuse potential | Only in messages/reactions |
+| Per-channel emoji | Fragmentation | Workspace-wide only |
+
+**Recommendation:** Upload flow with image validation (square, max 128KB, 128x128 recommended). Admin permission control for who can upload.
+
+**Technical Requirements:**
+- Image formats: JPG, PNG, GIF (including animated)
+- Max size: 128KB (Slack standard)
+- Recommended dimensions: 128x128 pixels
+- Store original + generate resized versions
+- Emoji names: alphanumeric + underscores, 2-32 chars
+
+**Sources:**
+- [Slack: Add custom emoji and aliases](https://slack.com/help/articles/206870177-Add-custom-emoji-and-aliases-to-your-workspace)
+- [Mattermost: Custom Emojis](https://docs.mattermost.com/end-user-guide/collaborate/react-with-emojis-gifs.html)
+
+---
+
+## Feature 10: Channel Archiving
+
+**Slack Reference:** Archive puts channel in read-only state, preserving history but removing from active view.
+
+### Table Stakes
+
+| Feature | Why Expected | Complexity | Notes |
+|---------|--------------|------------|-------|
+| Archive channel (read-only) | Core feature | Low | Boolean flag on channel |
+| Preserved in search | History remains accessible | Low | Don't exclude from search |
+| Removed from sidebar | Declutter active view | Low | Filter in channel list |
+| Browse archived channels | Find old channels | Low | Separate list/section |
+| Unarchive channel | Reversible action | Low | Clear flag |
+
+### Differentiators
+
+| Feature | Value Proposition | Complexity | Notes |
+|---------|-------------------|------------|-------|
+| Auto-archive inactive channels | Reduce clutter automatically | Medium | Scheduled job, configurable threshold |
+| Archive with reason | Documentation | Low | Optional text field |
+| Preserve member list on unarchive (private) | Slack behavior | Low | Don't clear memberships |
+
+### Anti-Features
+
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|-------------------|
+| Delete channel | Irreversible data loss | Always archive instead |
+| Archive #general | Core channel must stay active | Prevent archiving default channel |
+| Hide archived content from search | Breaks knowledge discovery | Keep searchable |
+
+**Recommendation:** Simple archive flag with read-only enforcement. Prevent message sending but allow viewing and searching.
+
+**Permission Consideration:** Slack allows any member to archive by default. Consider restricting to channel creators or admins.
+
+**Sources:**
+- [Slack: Archive or delete a channel](https://slack.com/help/articles/213185307-Archive-or-delete-a-channel)
+
+---
+
+## Feature 11: Guest Accounts
+
+**Slack Reference:** Single-Channel Guests (free, one channel) and Multi-Channel Guests (paid, multiple channels).
+
+### Table Stakes
+
+| Feature | Why Expected | Complexity | Notes |
+|---------|--------------|------------|-------|
+| Invite external user as guest | Core functionality | Medium | New role type in members |
+| Restrict to specific channels | Guest limitation | Medium | Channel-level membership only |
+| Visual indicator (guest badge) | Transparency | Low | UI marker on guest profiles |
+| Guest can message, react, upload | Basic participation | Low | Same as members in allowed channels |
+| Remove guest access | Offboarding | Low | Deactivate or remove |
+
+### Differentiators
+
+| Feature | Value Proposition | Complexity | Notes |
+|---------|-------------------|------------|-------|
+| Time-limited guest access | Auto-expire after project ends | Medium | Scheduled deactivation |
+| Guest invitation by members | Reduce admin burden | Low | Permission setting |
+| Single-channel vs multi-channel types | Slack's model | Medium | Different permission sets |
+
+### Anti-Features
+
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|-------------------|
+| Guests in user groups | Slack explicitly prevents this | Groups are internal only |
+| Guest access to member directory | Privacy concern | Only see channel members |
+| Guest-to-guest DMs (cross-channel) | Unintended communication paths | DMs only with channel co-members |
+| Unlimited guest invites | Potential abuse | Rate limit or admin approval |
+
+**Recommendation:** Start with simple guest role: can access specified channels, no directory access, clear visual distinction. Skip single vs multi-channel complexity initially.
+
+**Self-Hosted Value:** For data sovereignty, guests are managed entirely within your infrastructure - no external service like Slack Connect.
+
+**Sources:**
+- [Slack: Understand guest roles](https://slack.com/help/articles/202518103-Understand-guest-roles-in-Slack)
+- [Slack: Managing guest access at scale](https://slack.com/blog/collaboration/managing-slack-at-scale-how-to-streamline-guest-access)
+
+---
+
+## Feature 12: Workspace Analytics
+
+**Slack Reference:** Admin dashboard showing activity metrics by member, channel, and feature usage.
+
+### Table Stakes
+
+| Feature | Why Expected | Complexity | Notes |
+|---------|--------------|------------|-------|
+| Message volume over time | Basic activity metric | Low | Aggregate from messages table |
+| Active users (DAU/WAU/MAU) | Standard engagement metric | Low | Count distinct users |
+| Channel activity ranking | See busy vs quiet channels | Low | Messages per channel |
+| Date range filtering | View different time periods | Low | Query parameters |
+| Export to CSV | Reporting needs | Low | Format existing data |
+
+### Differentiators
+
+| Feature | Value Proposition | Complexity | Notes |
+|---------|-------------------|------------|-------|
+| Feature adoption metrics | See what's being used | Medium | Track feature-specific events |
+| Peak usage times | Capacity planning | Low | Hourly aggregation |
+| Growth trends | Trajectory visibility | Low | Compare periods |
+| File storage usage | Resource planning | Low | Sum file sizes |
+
+### Anti-Features
+
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|-------------------|
+| Per-user message counts (visible to all) | Surveillance, anxiety-inducing | Admin-only or aggregate only |
+| Detailed time tracking | Not a productivity surveillance tool | Stick to engagement metrics |
+| Real-time individual monitoring | Privacy violation | Aggregate, delayed data only |
+| Ranking/leaderboards | Gamification backfire | Neutral presentation |
+
+**Recommendation:** Focus on aggregate workspace health metrics. Admin-only access by default. Avoid individual user surveillance.
+
+**Privacy-Conscious Approach:**
+- Show channel-level stats, not individual user activity
+- Allow admins to disable member-level analytics entirely
+- Make analytics opt-in for self-hosted deployments
+- Focus on "is the platform being used?" not "who's slacking?"
+
+**Sources:**
+- [Slack: View your analytics dashboard](https://slack.com/help/articles/218407447-View-your-Slack-analytics-dashboard)
+- [Slack: Understand analytics data](https://slack.com/help/articles/360057638533-Understand-the-data-in-your-Slack-analytics-dashboard)
 
 ---
 
 ## Feature Dependencies
 
 ```
-Service Worker (prerequisite for PWA)
-  |
-  +-- App Shell Caching (requires SW)
-  |     |
-  |     +-- Offline Page (requires App Shell)
-  |
-  +-- Message Caching (requires SW + IndexedDB)
-  |     |
-  |     +-- Offline Message Reading (requires Message Cache)
-  |     |
-  |     +-- Message Queue (requires Message Cache)
-  |           |
-  |           +-- Background Sync (requires Queue)
-  |
-  +-- Push Notifications (requires SW)
-        |
-        +-- Notification Preferences (requires Push)
-        |
-        +-- Click-to-Open (requires Push + Routing)
+Independent features (can implement in any order):
+- User Status Messages
+- Bookmarks / Saved Messages
+- Channel Categories
+- Channel Archiving
+- Custom Emoji
 
-Web App Manifest (parallel to SW)
-  |
-  +-- Install Prompt (requires Manifest + SW)
-  |
-  +-- Home Screen Icon (requires Manifest)
-  |
-  +-- Standalone Display (requires Manifest)
+Depends on scheduled job infrastructure:
+- Scheduled Messages (delivery worker)
+- Reminders (notification worker)
+- Guest Accounts (expiration worker, if time-limited access)
 
-Mobile UI (parallel to PWA)
-  |
-  +-- Bottom Tab Navigation (requires Routing)
-  |
-  +-- Responsive Layout (requires CSS)
-  |
-  +-- Touch Gestures (requires event handling)
+Depends on WebSocket/Socket.IO:
+- Typing Indicators (already have real-time infrastructure)
+
+Requires external HTTP requests:
+- Link Previews / Unfurling (fetch external URLs)
+
+Depends on user groups:
+- User Groups must exist before @group mentions work
+
+Analytics depends on data:
+- Workspace Analytics (needs data to analyze, can implement anytime)
 ```
 
 ---
 
 ## MVP Recommendation
 
-For v0.3.0 "PWA/Mobile" milestone:
+For v0.5.0, prioritize in this order based on user value and complexity:
 
-### Must Ship (MVP Core)
+### High Priority (Core UX improvements)
 
-1. **Service worker with app shell caching** - Basic PWA functionality
-2. **Custom offline page** - Graceful offline experience
-3. **Message caching (7 days)** - Core offline value
-4. **Message queue with retry** - Don't break send flow
-5. **Web Push notifications** - DMs and mentions
-6. **Bottom tab navigation** - Mobile-first navigation
-7. **Web app manifest** - Installable PWA
-8. **Custom install prompt** - Higher conversion
+1. **User Status Messages** - Low complexity, high visibility, universal expectation
+2. **Typing Indicators** - Low-medium complexity, makes platform feel "alive"
+3. **Channel Categories** - Medium complexity, essential for larger workspaces
+4. **Bookmarks / Saved Messages** - Low complexity, personal productivity
 
-### Should Ship (MVP Complete)
+### Medium Priority (Power features)
 
-9. **Notification preferences** - Per-channel controls
-10. **Update notification** - Service worker updates
-11. **Swipe-to-reply gesture** - Native feel
-12. **Offline indicators** - Clear status communication
-13. **iOS install guidance** - Platform-specific help
-14. **Quiet hours** - Respect DND settings
+5. **Channel Archiving** - Low complexity, workspace hygiene
+6. **Custom Emoji** - Medium complexity, culture/fun, high engagement
+7. **User Groups** - Medium complexity, scales mentions for teams
+8. **Link Previews** - Medium complexity, message richness
 
-### Could Defer (Nice-to-Have)
+### Lower Priority (Can defer)
 
-15. **Swipe between tabs** - Can use taps only
-16. **Notification grouping** - Basic notifications work
-17. **Offline search** - Complex, limited value
-18. **Background Fetch** - Limited support
+9. **Scheduled Messages** - Medium complexity, lower daily usage
+10. **Reminders** - Medium complexity, overlaps with scheduled messages
+11. **Guest Accounts** - Medium complexity, enterprise feature
+12. **Workspace Analytics** - Low complexity but low urgency
 
 ---
 
-## Sources
+## Complexity Estimates
 
-### Primary Sources (HIGH confidence)
-- [MDN: PWA Best Practices](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Guides/Best_practices)
-- [MDN: Offline and Background Operation](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Guides/Offline_and_background_operation)
-- [web.dev: Installation Prompt](https://web.dev/learn/pwa/installation-prompt)
-- [web.dev: Customize Install](https://web.dev/articles/customize-install)
-- [web.dev: Promote Install Patterns](https://web.dev/articles/promote-install)
+| Feature | Backend | Frontend | Total | Notes |
+|---------|---------|----------|-------|-------|
+| User Status Messages | Low | Low | Low | DB column + API + UI |
+| Bookmarks / Saved Messages | Low | Low | Low | Junction table + UI |
+| Scheduled Messages | Medium | Low | Medium | Scheduler infrastructure |
+| Reminders | Medium | Medium | Medium | Similar to scheduled + UI |
+| User Groups | Medium | Medium | Medium | New entity + mention integration |
+| Channel Categories | Low | Medium | Medium | Mostly frontend drag-drop |
+| Link Previews | High | Medium | High | External fetching, caching |
+| Typing Indicators | Low | Low | Low | WebSocket events |
+| Custom Emoji | Medium | Medium | Medium | File handling + picker integration |
+| Channel Archiving | Low | Low | Low | Flag + filter |
+| Guest Accounts | Medium | Medium | Medium | New role + access control |
+| Workspace Analytics | Medium | Medium | Medium | Aggregation queries + dashboard |
 
-### Mobile UI Patterns (HIGH confidence)
-- [Slack Design: Re-designing Slack Mobile](https://slack.design/articles/re-designing-slack-on-mobile/)
-- [Discord: Android Navigation Redesign](https://discord.com/blog/how-discord-made-android-in-app-navigation-easier)
-- [Bottom Tab Bar Best Practices](https://uxdworld.com/bottom-tab-bar-navigation-design-best-practices/)
-- [Chat UI Design Patterns](https://bricxlabs.com/blogs/message-screen-ui-deisgn)
+---
 
-### Offline Patterns (MEDIUM-HIGH confidence)
-- [Offline-First Sync Patterns](https://developersvoice.com/blog/mobile/offline-first-sync-patterns/)
-- [GetStream: Offline Chat](https://getstream.io/glossary/offline-chat/)
-- [NN/g: Swipe Gestures](https://www.nngroup.com/articles/contextual-swipe/)
+## Sources Summary
 
-### Push Notifications (MEDIUM-HIGH confidence)
-- [MDN: Push API Best Practices](https://developer.mozilla.org/en-US/docs/Web/API/Push_API/Best_Practices)
-- [PushAlert: Web Push Best Practices](https://pushalert.co/blog/web-push-notifications-best-practices/)
-- [Push Notification Consent Guide](https://www.anstrex.com/blog/the-ultimate-guide-to-push-notification-consent-in-2025)
+### Primary Sources (HIGH Confidence)
+- [Slack Help Center](https://slack.com/help) - Official feature documentation
+- [Slack Developer Docs](https://docs.slack.dev) - API and implementation details
+- [Discord Support](https://support.discord.com) - Discord feature documentation
+- [Microsoft Learn - Teams](https://learn.microsoft.com/en-us/microsoftteams/) - Teams documentation
+- [Mattermost Docs](https://docs.mattermost.com) - Self-hosted alternative reference
 
-### iOS Limitations (MEDIUM-HIGH confidence)
-- [Brainhub: PWA on iOS 2025](https://brainhub.eu/library/pwa-on-ios)
-- [Vinova: Safari PWA Limitations](https://vinova.sg/navigating-safari-ios-pwa-limitations/)
-- [iOS Push Requirements](https://pushpad.xyz/blog/ios-special-requirements-for-web-push-notifications)
+### Implementation References (MEDIUM Confidence)
+- [OpenGraph.io Guide](https://www.opengraph.io/unfurl-url) - Link unfurling best practices
+- [Medium: Typing Indicator Architecture](https://medium.com/@ramesh200212/building-a-scalable-real-time-typing-indicator-system-a-deep-dive-into-distributed-architecture-5f14b331c4ab) - Scaling considerations
+
+---
+
+*Researched: 2026-01-20 for OComms v0.5.0 Feature Completeness milestone*
