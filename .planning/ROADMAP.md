@@ -75,7 +75,14 @@ Plans:
   3. User can set custom status with emoji and text, visible next to their name throughout the app
   4. User can set status expiration (auto-clear) and use preset status options
   5. User can enable DND mode that pauses notifications while status is active
-**Plans**: TBD
+**Plans**: 6 plans
+Plans:
+- [ ] 26-01-PLAN.md - Database schema (bookmarks, user_statuses tables, status expiration queue)
+- [ ] 26-02-PLAN.md - Server actions (bookmark CRUD, status CRUD, status expiration worker)
+- [ ] 26-03-PLAN.md - DND integration (push and Socket.IO notification blocking)
+- [ ] 26-04-PLAN.md - Bookmarks UI (bookmark button, saved items page, sidebar link)
+- [ ] 26-05-PLAN.md - Status UI (status editor, status display, sidebar integration)
+- [ ] 26-06-PLAN.md - File bookmarks and verification checkpoint
 
 ### Phase 27: Rich Content
 
@@ -125,7 +132,7 @@ Phases execute in numeric order: 24 -> 24.1 (if inserted) -> 25 -> 26 -> 27 -> 2
 |-------|----------------|--------|-----------|
 | 24. Quick Wins | 4/4 | Complete (gaps) | 2026-01-20 |
 | 25. Job Queue Foundation | 0/5 | Planned | - |
-| 26. Collections & Presence | 0/TBD | Not started | - |
+| 26. Collections & Presence | 0/6 | Planned | - |
 | 27. Rich Content | 0/TBD | Not started | - |
 | 28. Authorization & Analytics | 0/TBD | Not started | - |
 | 29. Stabilization | 0/TBD | Not started | - |
