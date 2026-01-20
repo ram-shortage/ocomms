@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 ## Current Position
 
 Phase: 22 of 23 (File Uploads)
-Plan: 1 of ? in progress
+Plan: 2 of ? in progress
 Status: In progress
-Last activity: 2026-01-20 - Completed 22-01-PLAN.md (file upload backend)
+Last activity: 2026-01-20 - Completed 22-02-PLAN.md (file upload UI)
 
-Progress: [##################------] 75% (2.3/3 phases in v0.4.0)
+Progress: [##################------] 77% (2.5/3 phases in v0.4.0)
 
 ## Shipped Milestones
 
@@ -40,7 +40,7 @@ Progress: [##################------] 75% (2.3/3 phases in v0.4.0)
 
 **v0.4.0 progress:**
 - Phase 21: 2 plans complete (theme infrastructure + color audit)
-- Phase 22: 1 plan complete (file upload backend)
+- Phase 22: 2 plans complete (file upload backend + UI)
 - Phase 23: 0 plans complete (shared notes - not started)
 
 ## Accumulated Context
@@ -53,6 +53,7 @@ Recent decisions for v0.4.0:
 - Extend avatar upload pattern for file uploads (proven approach)
 - react-markdown for notes (XSS-safe, no dangerouslySetInnerHTML)
 - Last-write-wins with conflict detection for notes (not CRDT/OT)
+- XHR over fetch for upload progress support (fetch lacks upload progress events)
 
 ### Theming Patterns Established (Phase 21)
 - bg-card for content containers
@@ -66,10 +67,13 @@ Recent decisions for v0.4.0:
 - validateFileSignature() for magic bytes validation (shared library)
 - Attachment metadata in database, file on disk with UUID name
 - messageId nullable for upload-before-send flow
+- uploadFile() with progress callback and abort signal
+- Staged attachments pattern for upload-before-send UI
+- QueuedMessage extended with attachmentIds for offline-first
 
 ### Pending Todos
 
-None - plan 22-01 complete.
+None - plan 22-02 complete.
 
 ### Blockers/Concerns
 
@@ -78,5 +82,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-20
-Stopped at: Completed 22-01-PLAN.md (file upload backend)
-Resume file: .planning/phases/22-file-uploads/22-02-PLAN.md
+Stopped at: Completed 22-02-PLAN.md (file upload UI)
+Resume file: .planning/phases/22-file-uploads/22-03-PLAN.md
