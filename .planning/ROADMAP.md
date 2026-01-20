@@ -9,13 +9,13 @@ v0.4.0 delivers three feature areas: dark mode theming for improved accessibilit
 - v0.1.0 MVP - Phases 1-8 (shipped 2026-01-18)
 - v0.2.0 Security Hardening - Phases 9-13 (shipped 2026-01-18)
 - v0.3.0 Mobile & Polish - Phases 14-20 (shipped 2026-01-19)
-- **v0.4.0 Files, Theming & Notes** - Phases 21-23 (in progress)
+- **v0.4.0 Files, Theming & Notes** - Phases 21-23 (complete)
 
 ## Phases
 
 - [x] **Phase 21: Dark Mode/Theming** - Light/dark theme toggle with system preference and FOUC prevention
 - [x] **Phase 22: File Uploads** - Drag-drop file attachments up to 25MB with inline image previews
-- [ ] **Phase 23: Notes** - Markdown notes per channel and personal scratchpads with conflict detection
+- [x] **Phase 23: Notes** - Markdown notes per channel and personal scratchpads with conflict detection
 
 ## Phase Details
 
@@ -65,10 +65,10 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 23-01-PLAN.md - Database schema for notes tables, socket event types
-- [ ] 23-02-PLAN.md - API routes and note editor component with markdown preview
-- [ ] 23-03-PLAN.md - Channel notes integration (header button, sheet, socket handlers)
-- [ ] 23-04-PLAN.md - Personal notes (sidebar link, notes page)
+- [x] 23-01-PLAN.md - Database schema for notes tables, socket event types
+- [x] 23-02-PLAN.md - API routes and note editor component with markdown preview
+- [x] 23-03-PLAN.md - Channel notes integration (header button, sheet, socket handlers)
+- [x] 23-04-PLAN.md - Personal notes (sidebar link, notes page)
 
 ## Progress
 
@@ -78,7 +78,7 @@ Plans:
 |-------|-----------|----------------|--------|-----------|
 | 21. Dark Mode/Theming | v0.4.0 | 2/2 | Complete | 2026-01-20 |
 | 22. File Uploads | v0.4.0 | 3/3 | Complete | 2026-01-20 |
-| 23. Notes | v0.4.0 | 0/4 | Planned | - |
+| 23. Notes | v0.4.0 | 4/4 | Complete | 2026-01-20 |
 
 ---
 *Roadmap created: 2026-01-20*

@@ -30,13 +30,13 @@ Requirements for Files, Theming & Notes release. Each maps to roadmap phases.
 
 ### Notes
 
-- [ ] **NOTE-01**: Each channel has one shared markdown document
-- [ ] **NOTE-02**: Each user has a personal notes scratchpad (per workspace)
-- [ ] **NOTE-03**: User can edit notes using markdown syntax
-- [ ] **NOTE-04**: User can preview rendered markdown while editing
-- [ ] **NOTE-05**: Any member of a channel can edit that channel's notes
-- [ ] **NOTE-06**: Concurrent edits trigger conflict detection with warning
-- [ ] **NOTE-07**: User can access channel notes from channel header button
+- [x] **NOTE-01**: Each channel has one shared markdown document
+- [x] **NOTE-02**: Each user has a personal notes scratchpad (per workspace)
+- [x] **NOTE-03**: User can edit notes using markdown syntax
+- [x] **NOTE-04**: User can preview rendered markdown while editing
+- [x] **NOTE-05**: Any member of a channel can edit that channel's notes
+- [x] **NOTE-06**: Concurrent edits trigger conflict detection with warning
+- [x] **NOTE-07**: User can access channel notes from channel header button
 
 ## v0.5.0 Requirements (Deferred)
 
@@ -95,13 +95,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | FILE-08 | Phase 22 | Complete |
 | FILE-09 | Phase 22 | Complete |
 | FILE-10 | Phase 22 | Complete |
-| NOTE-01 | Phase 23 | Pending |
-| NOTE-02 | Phase 23 | Pending |
-| NOTE-03 | Phase 23 | Pending |
-| NOTE-04 | Phase 23 | Pending |
-| NOTE-05 | Phase 23 | Pending |
-| NOTE-06 | Phase 23 | Pending |
-| NOTE-07 | Phase 23 | Pending |
+| NOTE-01 | Phase 23 | Complete |
+| NOTE-02 | Phase 23 | Complete |
+| NOTE-03 | Phase 23 | Complete |
+| NOTE-04 | Phase 23 | Complete |
+| NOTE-05 | Phase 23 | Complete |
+| NOTE-06 | Phase 23 | Complete |
+| NOTE-07 | Phase 23 | Complete |
 
 **Coverage:**
 - v0.4.0 requirements: 22 total
