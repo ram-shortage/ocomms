@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import { PWAProvider } from "@/components/pwa";
-import { SyncProvider } from "@/components/providers";
+import { SyncProvider, ThemeProvider } from "@/components/providers";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -45,15 +45,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <SyncProvider>
-          {children}
-        </SyncProvider>
-        <PWAProvider />
-        <Toaster />
+        <ThemeProvider>
+          <SyncProvider>
+            {children}
+          </SyncProvider>
+          <PWAProvider />
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );
