@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 ## Current Position
 
 Phase: 23 of 23 (Shared Notes)
-Plan: 1 of 4 complete
+Plan: 2 of 4 complete
 Status: In progress
-Last activity: 2026-01-20 - Completed 23-01-PLAN.md (notes database schema)
+Last activity: 2026-01-20 - Completed 23-02-PLAN.md (notes API and components)
 
-Progress: [#####################---] 88% (2.75/3 phases in v0.4.0)
+Progress: [######################--] 92% (2.9/3 phases in v0.4.0)
 
 ## Shipped Milestones
 
@@ -41,7 +41,7 @@ Progress: [#####################---] 88% (2.75/3 phases in v0.4.0)
 **v0.4.0 progress:**
 - Phase 21: 2 plans complete (theme infrastructure + color audit)
 - Phase 22: 3 plans complete (file upload backend + UI + display)
-- Phase 23: 1 of 4 plans complete (notes schema done)
+- Phase 23: 2 of 4 plans complete (notes schema + API/components)
 
 ## Accumulated Context
 
@@ -56,6 +56,8 @@ Recent decisions for v0.4.0:
 - XHR over fetch for upload progress support (fetch lacks upload progress events)
 - next/image unoptimized for uploaded files (not in Next.js image domains)
 - Validate attachment ownership before linking to messages
+- 2 second debounce for note auto-save (balance responsiveness and API load)
+- Version 0 indicates new note (INSERT), version >= 1 indicates UPDATE
 
 ### Theming Patterns Established (Phase 21)
 - bg-card for content containers
@@ -80,10 +82,14 @@ Recent decisions for v0.4.0:
 - Version column for optimistic locking conflict detection
 - One note per channel via unique index on channelId
 - One personal note per user per org via composite unique index
+- Optimistic locking: WHERE version = baseVersion, return 409 on mismatch
+- Edit/preview toggle: mode state switches between Textarea and NoteViewer
+- Debounced auto-save: useCallback + debounce utility, triggered on change
+- Conflict resolution: store serverContent/serverVersion, let user choose
 
 ### Pending Todos
 
-None - Phase 23-01 complete.
+None - Phase 23-02 complete.
 
 ### Blockers/Concerns
 
@@ -91,6 +97,6 @@ None active.
 
 ## Session Continuity
 
-Last session: 2026-01-20 19:01Z
-Stopped at: Completed 23-01-PLAN.md (notes database schema)
-Resume file: .planning/phases/23-notes/23-02-PLAN.md
+Last session: 2026-01-20 19:10Z
+Stopped at: Completed 23-02-PLAN.md (notes API and components)
+Resume file: .planning/phases/23-notes/23-03-PLAN.md
