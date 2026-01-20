@@ -58,6 +58,12 @@ Phase 24-01 decisions:
 - Client-side throttle for network efficiency
 - Reset throttle timer on send for better UX
 
+Phase 24-02 decisions:
+- Default channel (#general) cannot be archived
+- Archived channels remain searchable by default
+- Archive/unarchive requires admin role or creator status
+- Archived section hidden when no archived channels exist
+
 Phase 24-03 decisions:
 - Admin-only category management (create, reorder, assign channels)
 - Per-user collapse states stored in separate table
@@ -75,5 +81,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-20
-Stopped at: Completed 24-03-PLAN.md
+Stopped at: Completed 24-02-PLAN.md (Channel Archiving)
 Resume file: None - ready for 24-04-PLAN.md execution
