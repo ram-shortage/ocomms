@@ -113,9 +113,24 @@ Requirements shipped and working in production:
 
 ### Active
 
-**v0.5.0 - Planning**
+**v0.5.0 - Feature Completeness**
 
-Requirements to be defined via `/gsd:new-milestone`
+**Goal:** Complete the platform feature set with user experience enhancements, collaboration features, and workspace management capabilities.
+
+**Target features:**
+- User status messages (custom status with emoji)
+- Bookmarks / Saved messages
+- Scheduled messages
+- Reminders
+- User groups (@team mentions)
+- Channel categories / folders
+- Link previews / Unfurling
+- Typing indicators
+- Custom emoji
+- Channel archiving
+- Guest accounts
+- Workspace analytics
+- Test creation & bug fixing (stabilization)
 
 ### Out of Scope
 
@@ -131,6 +146,8 @@ Requirements to be defined via `/gsd:new-milestone`
 | Mobile native apps | PWA provides mobile access; native apps not needed |
 | Full offline mode | iOS 50MB storage limit, 7-day ITP eviction |
 | Background sync iOS | Not supported by Safari |
+| SSO / SAML | Enterprise auth complexity, deferred to future milestone |
+| Integrations / Webhooks / Bots | API design complexity, deferred to future milestone |
 
 ---
 
@@ -188,4 +205,4 @@ Requirements to be defined via `/gsd:new-milestone`
 ---
 
 ---
-*Last updated: 2026-01-20 after v0.4.0 milestone*
+*Last updated: 2026-01-20 after v0.5.0 milestone start*
