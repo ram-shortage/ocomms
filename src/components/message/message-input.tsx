@@ -11,6 +11,8 @@ import { formatMentionForInsert } from "@/lib/mentions";
 import { FileUploadZone } from "./file-upload-zone";
 import { UploadProgress } from "./upload-progress";
 import { uploadFile, type UploadResult } from "@/lib/upload-file";
+import { useTyping } from "@/lib/hooks/use-typing";
+import { TypingIndicator } from "./typing-indicator";
 
 const MAX_MESSAGE_LENGTH = 10_000;
 
@@ -45,6 +47,9 @@ export function MessageInput({ targetId, targetType, members = [] }: MessageInpu
 
   // Offline send queue hook
   const { sendMessage: queueAndSend, isOnline } = useSendMessage({ targetId, targetType });
+
+  // Typing indicator hook
+  const { emitTyping, stopTyping } = useTyping(targetId, targetType);
 
   // Clear upload error after 5 seconds
   useEffect(() => {
@@ -182,6 +187,8 @@ export function MessageInput({ targetId, targetType, members = [] }: MessageInpu
       // Clear input and attachments immediately (optimistic UI)
       setContent("");
       setStagedAttachments([]);
+      // TYPE-04: Stop typing immediately on send
+      stopTyping();
     } catch (err) {
       console.error("[MessageInput] Failed to queue message:", err);
     } finally {
@@ -230,6 +237,11 @@ export function MessageInput({ targetId, targetType, members = [] }: MessageInpu
     const newValue = e.target.value;
     const cursorPos = e.target.selectionStart;
     setContent(newValue);
+
+    // Emit typing indicator (throttled in hook)
+    if (newValue.trim()) {
+      emitTyping();
+    }
 
     // Check for @ trigger
     // Look backwards from cursor to find @ not preceded by alphanumeric
@@ -398,6 +410,9 @@ export function MessageInput({ targetId, targetType, members = [] }: MessageInpu
           {rateLimitMessage}
         </div>
       )}
+
+      {/* Typing indicator */}
+      <TypingIndicator targetId={targetId} />
     </form>
   );
 }
