@@ -170,8 +170,8 @@ function CategorySection({
     return channels.reduce((sum, ch) => sum + (channelUnreads[ch.id] ?? 0), 0);
   }, [channels, channelUnreads]);
 
-  // Per CONTEXT.md: Empty categories auto-hide from sidebar
-  if (channels.length === 0) {
+  // Empty categories: show for admins (so they can drag channels in), hide for others
+  if (channels.length === 0 && !isAdmin) {
     return null;
   }
 
