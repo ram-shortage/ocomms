@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 ## Current Position
 
 Phase: 22 of 23 (File Uploads)
-Plan: 2 of ? in progress
-Status: In progress
-Last activity: 2026-01-20 - Completed 22-02-PLAN.md (file upload UI)
+Plan: 3 of 3 complete
+Status: Phase 22 complete
+Last activity: 2026-01-20 - Completed 22-03-PLAN.md (message attachment display)
 
-Progress: [##################------] 77% (2.5/3 phases in v0.4.0)
+Progress: [####################----] 83% (2.67/3 phases in v0.4.0)
 
 ## Shipped Milestones
 
@@ -40,7 +40,7 @@ Progress: [##################------] 77% (2.5/3 phases in v0.4.0)
 
 **v0.4.0 progress:**
 - Phase 21: 2 plans complete (theme infrastructure + color audit)
-- Phase 22: 2 plans complete (file upload backend + UI)
+- Phase 22: 3 plans complete (file upload backend + UI + display)
 - Phase 23: 0 plans complete (shared notes - not started)
 
 ## Accumulated Context
@@ -54,6 +54,8 @@ Recent decisions for v0.4.0:
 - react-markdown for notes (XSS-safe, no dangerouslySetInnerHTML)
 - Last-write-wins with conflict detection for notes (not CRDT/OT)
 - XHR over fetch for upload progress support (fetch lacks upload progress events)
+- next/image unoptimized for uploaded files (not in Next.js image domains)
+- Validate attachment ownership before linking to messages
 
 ### Theming Patterns Established (Phase 21)
 - bg-card for content containers
@@ -70,10 +72,13 @@ Recent decisions for v0.4.0:
 - uploadFile() with progress callback and abort signal
 - Staged attachments pattern for upload-before-send UI
 - QueuedMessage extended with attachmentIds for offline-first
+- FileAttachment component for image preview vs download card
+- formatBytes() for human-readable file sizes
+- attachmentsByMessageId Map for efficient grouping in page loads
 
 ### Pending Todos
 
-None - plan 22-02 complete.
+None - Phase 22 complete.
 
 ### Blockers/Concerns
 
@@ -81,6 +86,6 @@ None active.
 
 ## Session Continuity
 
-Last session: 2026-01-20
-Stopped at: Completed 22-02-PLAN.md (file upload UI)
-Resume file: .planning/phases/22-file-uploads/22-03-PLAN.md
+Last session: 2026-01-20 18:53Z
+Stopped at: Completed 22-03-PLAN.md (message attachment display)
+Resume file: .planning/phases/23-shared-notes/ (next phase)
