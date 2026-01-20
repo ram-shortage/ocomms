@@ -5,6 +5,8 @@ import { usePathname } from "next/navigation";
 import { Plus, Search, MessageSquare, StickyNote } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ChannelListClient } from "@/components/channel/channel-list-client";
+import { CategorySidebar } from "@/components/channel/category-sidebar";
+import { ArchivedChannelsSection } from "@/components/channel/archived-channels-section";
 import { DMListClient } from "@/components/dm/dm-list-client";
 import { CreateChannelDialog } from "@/components/channel/create-channel-dialog";
 import { StartDMDialog } from "@/components/dm/start-dm-dialog";
@@ -12,6 +14,13 @@ import { NotificationBell } from "@/components/notification/notification-bell";
 import { LogoutButton } from "@/components/auth/logout-button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
+
+interface Category {
+  id: string;
+  name: string;
+  sortOrder: number;
+  channelCount: number;
+}
 
 interface WorkspaceSidebarProps {
   workspace: {
@@ -25,6 +34,8 @@ interface WorkspaceSidebarProps {
     name: string;
     slug: string;
     isPrivate: boolean;
+    categoryId?: string | null;
+    sortOrder?: number;
   }>;
   conversations: Array<{
     id: string;
@@ -36,6 +47,9 @@ interface WorkspaceSidebarProps {
     };
     lastMessageAt: Date | null;
   }>;
+  categories?: Category[];
+  collapseStates?: Record<string, boolean>;
+  isAdmin?: boolean;
 }
 
 export function WorkspaceSidebar({
@@ -43,8 +57,14 @@ export function WorkspaceSidebar({
   currentUserId,
   channels,
   conversations,
+  categories,
+  collapseStates,
+  isAdmin = false,
 }: WorkspaceSidebarProps) {
   const pathname = usePathname();
+
+  // Determine if we should use category view (when categories exist)
+  const useCategoryView = categories && categories.length > 0;
 
   return (
     <aside className="w-64 border-r bg-muted/30 flex flex-col shrink-0">
@@ -93,25 +113,61 @@ export function WorkspaceSidebar({
         </div>
 
         {/* Channels section */}
-        <div className="px-3 py-2 mt-2 flex items-center justify-between">
-          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-            Channels
-          </span>
-          <CreateChannelDialog
-            organizationId={workspace.id}
-            workspaceSlug={workspace.slug}
-            trigger={
-              <Button variant="ghost" size="icon" className="h-5 w-5">
-                <Plus className="h-4 w-4" />
-                <span className="sr-only">Create channel</span>
-              </Button>
-            }
-          />
-        </div>
-        <ChannelListClient
-          channels={channels}
-          workspaceSlug={workspace.slug}
-        />
+        {useCategoryView ? (
+          <>
+            <div className="px-3 py-2 mt-2 flex items-center justify-between">
+              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                Channels
+              </span>
+              <CreateChannelDialog
+                organizationId={workspace.id}
+                workspaceSlug={workspace.slug}
+                trigger={
+                  <Button variant="ghost" size="icon" className="h-5 w-5">
+                    <Plus className="h-4 w-4" />
+                    <span className="sr-only">Create channel</span>
+                  </Button>
+                }
+              />
+            </div>
+            <div className="px-2">
+              <CategorySidebar
+                categories={categories}
+                channels={channels.map((ch) => ({
+                  ...ch,
+                  categoryId: ch.categoryId ?? null,
+                  sortOrder: ch.sortOrder ?? 0,
+                }))}
+                collapseStates={collapseStates ?? {}}
+                workspaceSlug={workspace.slug}
+                organizationId={workspace.id}
+                isAdmin={isAdmin}
+              />
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="px-3 py-2 mt-2 flex items-center justify-between">
+              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                Channels
+              </span>
+              <CreateChannelDialog
+                organizationId={workspace.id}
+                workspaceSlug={workspace.slug}
+                trigger={
+                  <Button variant="ghost" size="icon" className="h-5 w-5">
+                    <Plus className="h-4 w-4" />
+                    <span className="sr-only">Create channel</span>
+                  </Button>
+                }
+              />
+            </div>
+            <ChannelListClient
+              channels={channels}
+              workspaceSlug={workspace.slug}
+            />
+          </>
+        )}
         <div className="px-3 py-2">
           <Link
             href={`/${workspace.slug}/channels`}
@@ -140,6 +196,12 @@ export function WorkspaceSidebar({
         </div>
         <DMListClient
           conversations={conversations}
+          workspaceSlug={workspace.slug}
+        />
+
+        {/* Archived channels section - at bottom of scrollable area */}
+        <ArchivedChannelsSection
+          organizationId={workspace.id}
           workspaceSlug={workspace.slug}
         />
       </div>

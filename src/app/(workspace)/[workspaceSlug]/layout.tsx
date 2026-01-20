@@ -6,6 +6,7 @@ import { WorkspaceSidebar } from "@/components/workspace/workspace-sidebar";
 import { MobileTabBar } from "@/components/layout";
 import { getUserChannels } from "@/lib/actions/channel";
 import { getUserConversations } from "@/lib/actions/conversation";
+import { getCategories, getCollapseStates } from "@/lib/actions/channel-category";
 
 export default async function WorkspaceSlugLayout({
   children,
@@ -43,10 +44,18 @@ export default async function WorkspaceSlugLayout({
 
   const memberUserIds = membersResponse?.members?.map((m) => m.userId) || [];
 
-  // Fetch channels and conversations for sidebar
-  const [channels, conversations] = await Promise.all([
+  // Determine if current user is admin/owner
+  const currentMember = membersResponse?.members?.find(
+    (m) => m.userId === session.user.id
+  );
+  const isAdmin = currentMember?.role === "owner" || currentMember?.role === "admin";
+
+  // Fetch channels, conversations, categories, and collapse states for sidebar
+  const [channels, conversations, categories, collapseStates] = await Promise.all([
     getUserChannels(workspace.id),
     getUserConversations(workspace.id),
+    getCategories(workspace.id),
+    getCollapseStates(workspace.id),
   ]);
 
   // Transform channels for sidebar
@@ -55,6 +64,8 @@ export default async function WorkspaceSlugLayout({
     name: ch.name,
     slug: ch.slug,
     isPrivate: ch.isPrivate,
+    categoryId: ch.categoryId ?? null,
+    sortOrder: ch.sortOrder ?? 0,
   }));
 
   // Transform conversations for sidebar (1:1 DMs only for simplicity)
@@ -90,6 +101,9 @@ export default async function WorkspaceSlugLayout({
             currentUserId={session.user.id}
             channels={sidebarChannels}
             conversations={sidebarConversations}
+            categories={categories}
+            collapseStates={collapseStates}
+            isAdmin={isAdmin}
           />
         </div>
 
