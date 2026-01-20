@@ -62,10 +62,13 @@ Plans:
   3. User can edit notes with markdown syntax and preview rendered output
   4. Any channel member can edit that channel's notes
   5. Concurrent edits trigger conflict detection with user warning
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 23-01: TBD
+- [ ] 23-01-PLAN.md - Database schema for notes tables, socket event types
+- [ ] 23-02-PLAN.md - API routes and note editor component with markdown preview
+- [ ] 23-03-PLAN.md - Channel notes integration (header button, sheet, socket handlers)
+- [ ] 23-04-PLAN.md - Personal notes (sidebar link, notes page)
 
 ## Progress
 
@@ -75,7 +78,7 @@ Plans:
 |-------|-----------|----------------|--------|-----------|
 | 21. Dark Mode/Theming | v0.4.0 | 2/2 | Complete | 2026-01-20 |
 | 22. File Uploads | v0.4.0 | 0/3 | Planned | - |
-| 23. Notes | v0.4.0 | 0/TBD | Not started | - |
+| 23. Notes | v0.4.0 | 0/4 | Planned | - |
 
 ---
 *Roadmap created: 2026-01-20*
