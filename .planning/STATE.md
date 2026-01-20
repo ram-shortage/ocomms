@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 ## Current Position
 
 Phase: 25 of 29 (Job Queue Foundation)
-Plan: 2 of 5 complete
+Plan: 4 of 5 complete
 Status: In progress
-Last activity: 2026-01-20 - Completed 25-01-PLAN.md and 25-02-PLAN.md (BullMQ infra + DB schemas)
+Last activity: 2026-01-20 - Completed 25-04-PLAN.md (Reminders feature)
 
-Progress: [████░░░░░░] 2/5 plans in phase 25
+Progress: [████████░░] 4/5 plans in phase 25
 
 ## Shipped Milestones
 
@@ -80,6 +80,12 @@ Phase 25-02 decisions:
 - Nullable channelId/conversationId on scheduled_messages allows either target type
 - Separate reminderPatternEnum for daily/weekly recurring support (RMND-07)
 
+Phase 25-04 decisions:
+- Redis emitter for worker-to-client Socket.IO events (avoids full server dependency)
+- Sheet panel for reminder details (consistent with thread panel pattern)
+- Preset times for reminders (Tomorrow 9am, Monday 9am) match scheduled messages
+- Fixed snooze intervals as quick taps (20min, 1hr, 3hr, tomorrow)
+
 ### Pending Todos
 
 1 todo pending - see `.planning/todos/pending/`
@@ -92,5 +98,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-20
-Stopped at: Completed 25-01-PLAN.md and 25-02-PLAN.md
-Resume file: None - continue with 25-03-PLAN.md
+Stopped at: Completed 25-04-PLAN.md (Reminders feature)
+Resume file: None - continue with 25-05-PLAN.md if exists
