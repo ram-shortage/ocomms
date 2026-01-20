@@ -103,7 +103,15 @@ Requirements shipped and working in production:
 
 ### Active
 
-(None - planning next milestone)
+**v0.4.0 - Files, Theming & Notes**
+
+- [ ] File uploads: any file type up to 25MB, attach to messages
+- [ ] Image previews: inline display for image attachments
+- [ ] File storage: local disk storage with secure access
+- [ ] Dark mode: light/dark theme toggle with system preference detection
+- [ ] Theme persistence: remember user's theme choice
+- [ ] Channel notes: one markdown document per channel, any member can edit
+- [ ] Personal notes: private markdown scratchpad per user
 
 ### Out of Scope
 
@@ -113,7 +121,7 @@ Requirements shipped and working in production:
 | Video/audio calls | Massive infrastructure complexity (WebRTC, TURN servers) |
 | Workflow Builder | Enterprise scope creep |
 | Shared channels | Multi-tenant complexity |
-| Canvas/Docs | Different product |
+| Rich collaborative docs | Real-time co-editing complexity (Notion/Google Docs level) |
 | Nested threading | Complexity trap, no major platform does this |
 | Read receipts | Privacy concerns, complexity at scale |
 | Mobile native apps | PWA provides mobile access; native apps not needed |
@@ -171,4 +179,4 @@ Requirements shipped and working in production:
 ---
 
 ---
-*Last updated: 2026-01-19 after v0.3.0 milestone*
+*Last updated: 2026-01-20 after starting v0.4.0 milestone*
