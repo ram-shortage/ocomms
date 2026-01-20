@@ -18,7 +18,7 @@ v0.5.0 delivers the complete platform feature set: user presence enhancements (s
 - Integer phases (24, 25, 26...): Planned milestone work
 - Decimal phases (24.1, 24.2): Urgent insertions (marked with INSERTED)
 
-- [ ] **Phase 24: Quick Wins** - Typing indicators, channel archiving, channel categories
+- [x] **Phase 24: Quick Wins** - Typing indicators, channel archiving, channel categories (completed with gaps)
 - [ ] **Phase 25: Job Queue Foundation** - BullMQ infrastructure, scheduled messages, reminders
 - [ ] **Phase 26: Collections & Presence** - Bookmarks/saved messages, user status messages
 - [ ] **Phase 27: Rich Content** - Link previews/unfurling, custom emoji
@@ -117,7 +117,7 @@ Phases execute in numeric order: 24 -> 24.1 (if inserted) -> 25 -> 26 -> 27 -> 2
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 24. Quick Wins | 0/4 | Planned | - |
+| 24. Quick Wins | 4/4 | Complete (gaps) | 2026-01-20 |
 | 25. Job Queue Foundation | 0/TBD | Not started | - |
 | 26. Collections & Presence | 0/TBD | Not started | - |
 | 27. Rich Content | 0/TBD | Not started | - |
