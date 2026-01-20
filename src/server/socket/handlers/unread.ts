@@ -2,7 +2,7 @@ import type { Server, Socket } from "socket.io";
 import type { Redis } from "ioredis";
 import { db } from "@/db";
 import { channelReadState, messages, channelMembers, conversationParticipants } from "@/db/schema";
-import { eq, and, isNull, sql } from "drizzle-orm";
+import { eq, and, isNull, isNotNull, sql } from "drizzle-orm";
 import { getRoomName } from "../rooms";
 import type { ClientToServerEvents, ServerToClientEvents, SocketData } from "@/lib/socket-events";
 import { isChannelMember, isConversationParticipant, getMessageContext } from "../authz";
@@ -171,6 +171,7 @@ export function setupUnreadHandlers(io: SocketIOServer, redis: Redis | null): Un
         })
         .onConflictDoUpdate({
           target: [channelReadState.userId, channelReadState.channelId],
+          targetWhere: isNotNull(channelReadState.channelId),
           set: {
             lastReadSequence: maxSeqResult?.maxSeq ?? 0,
             markedUnreadAtSequence: null,
@@ -217,6 +218,7 @@ export function setupUnreadHandlers(io: SocketIOServer, redis: Redis | null): Un
         })
         .onConflictDoUpdate({
           target: [channelReadState.userId, channelReadState.conversationId],
+          targetWhere: isNotNull(channelReadState.conversationId),
           set: {
             lastReadSequence: maxSeqResult?.maxSeq ?? 0,
             markedUnreadAtSequence: null,
@@ -266,6 +268,7 @@ export function setupUnreadHandlers(io: SocketIOServer, redis: Redis | null): Un
           })
           .onConflictDoUpdate({
             target: [channelReadState.userId, channelReadState.channelId],
+            targetWhere: isNotNull(channelReadState.channelId),
             set: {
               markedUnreadAtSequence: sequence,
               updatedAt: new Date(),
@@ -299,6 +302,7 @@ export function setupUnreadHandlers(io: SocketIOServer, redis: Redis | null): Un
           })
           .onConflictDoUpdate({
             target: [channelReadState.userId, channelReadState.conversationId],
+            targetWhere: isNotNull(channelReadState.conversationId),
             set: {
               markedUnreadAtSequence: sequence,
               updatedAt: new Date(),

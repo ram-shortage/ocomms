@@ -5,11 +5,12 @@ import * as schema from "./schema";
 
 export { sql };
 
-const connectionString = process.env.DATABASE_URL;
-
 // Create database connection only when DATABASE_URL is available
 // During Next.js build phase, DATABASE_URL may not be set
 function createDb() {
+  // Read DATABASE_URL at runtime, not module load time
+  // This ensures dotenv has loaded before we access the variable
+  const connectionString = process.env.DATABASE_URL;
   if (!connectionString) {
     throw new Error("DATABASE_URL environment variable is required");
   }

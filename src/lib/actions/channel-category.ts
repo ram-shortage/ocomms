@@ -135,12 +135,10 @@ export async function getCategories(organizationId: string) {
     throw new Error("Not authorized to view categories");
   }
 
-  console.log("[getCategories] Fetching for org:", organizationId);
   const categories = await db.query.channelCategories.findMany({
     where: eq(channelCategories.organizationId, organizationId),
     orderBy: (cat, { asc }) => [asc(cat.sortOrder)],
   });
-  console.log("[getCategories] Found:", categories.length);
 
   // Get channel counts per category
   const channelCounts = await db
