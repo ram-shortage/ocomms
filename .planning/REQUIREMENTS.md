@@ -22,11 +22,11 @@ Requirements for Files, Theming & Notes release. Each maps to roadmap phases.
 
 ### Dark Mode
 
-- [ ] **THEME-01**: User can toggle between light and dark mode via UI control
-- [ ] **THEME-02**: Theme defaults to system preference (prefers-color-scheme)
-- [ ] **THEME-03**: User's theme choice persists across sessions
-- [ ] **THEME-04**: No flash of wrong theme on initial page load (FOUC prevention)
-- [ ] **THEME-05**: All UI components render correctly in both light and dark themes
+- [x] **THEME-01**: User can toggle between light and dark mode via UI control
+- [x] **THEME-02**: Theme defaults to system preference (prefers-color-scheme)
+- [x] **THEME-03**: User's theme choice persists across sessions
+- [x] **THEME-04**: No flash of wrong theme on initial page load (FOUC prevention)
+- [x] **THEME-05**: All UI components render correctly in both light and dark themes
 
 ### Notes
 
@@ -80,11 +80,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| THEME-01 | Phase 21 | Pending |
-| THEME-02 | Phase 21 | Pending |
-| THEME-03 | Phase 21 | Pending |
-| THEME-04 | Phase 21 | Pending |
-| THEME-05 | Phase 21 | Pending |
+| THEME-01 | Phase 21 | Complete |
+| THEME-02 | Phase 21 | Complete |
+| THEME-03 | Phase 21 | Complete |
+| THEME-04 | Phase 21 | Complete |
+| THEME-05 | Phase 21 | Complete |
 | FILE-01 | Phase 22 | Pending |
 | FILE-02 | Phase 22 | Pending |
 | FILE-03 | Phase 22 | Pending |

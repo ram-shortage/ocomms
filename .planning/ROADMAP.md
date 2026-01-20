@@ -13,7 +13,7 @@ v0.4.0 delivers three feature areas: dark mode theming for improved accessibilit
 
 ## Phases
 
-- [ ] **Phase 21: Dark Mode/Theming** - Light/dark theme toggle with system preference and FOUC prevention
+- [x] **Phase 21: Dark Mode/Theming** - Light/dark theme toggle with system preference and FOUC prevention
 - [ ] **Phase 22: File Uploads** - Drag-drop file attachments up to 25MB with inline image previews
 - [ ] **Phase 23: Notes** - Markdown notes per channel and personal scratchpads with conflict detection
 
@@ -32,8 +32,8 @@ v0.4.0 delivers three feature areas: dark mode theming for improved accessibilit
 **Plans**: 2 plans
 
 Plans:
-- [ ] 21-01-PLAN.md - Install next-themes, create ThemeProvider, add toggle to sidebar
-- [ ] 21-02-PLAN.md - Audit and fix hardcoded colors, verify all UI in both themes
+- [x] 21-01-PLAN.md - Install next-themes, create ThemeProvider, add toggle to sidebar
+- [x] 21-02-PLAN.md - Audit and fix hardcoded colors, verify all UI in both themes
 
 ### Phase 22: File Uploads
 **Goal**: Users can attach files to messages in channels and DMs with visual previews for images
@@ -73,7 +73,7 @@ Plans:
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 21. Dark Mode/Theming | v0.4.0 | 0/2 | Planned | - |
+| 21. Dark Mode/Theming | v0.4.0 | 2/2 | Complete | 2026-01-20 |
 | 22. File Uploads | v0.4.0 | 0/3 | Planned | - |
 | 23. Notes | v0.4.0 | 0/TBD | Not started | - |
 
