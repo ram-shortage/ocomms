@@ -80,6 +80,11 @@ Phase 25-02 decisions:
 - Nullable channelId/conversationId on scheduled_messages allows either target type
 - Separate reminderPatternEnum for daily/weekly recurring support (RMND-07)
 
+Phase 25-03 decisions:
+- Use shared emitter from @/server/queue/emitter instead of creating separate Redis connection in worker
+- Schedule feedback shown inline in message input (no toast system needed)
+- Quick-pick presets: Tomorrow 9am and Monday 9am (deliberately minimal per CONTEXT.md)
+
 Phase 25-04 decisions:
 - Redis emitter for worker-to-client Socket.IO events (avoids full server dependency)
 - Sheet panel for reminder details (consistent with thread panel pattern)
