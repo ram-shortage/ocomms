@@ -5,7 +5,7 @@ import { useSocket } from "@/lib/socket-client";
 import { useSendMessage } from "@/hooks/use-send-message";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Send, X, ImageIcon, FileIcon } from "lucide-react";
+import { X, ImageIcon, FileIcon } from "lucide-react";
 import { MentionAutocomplete, type MentionMember } from "./mention-autocomplete";
 import { formatMentionForInsert } from "@/lib/mentions";
 import { FileUploadZone } from "./file-upload-zone";
@@ -13,6 +13,9 @@ import { UploadProgress } from "./upload-progress";
 import { uploadFile, type UploadResult } from "@/lib/upload-file";
 import { useTyping } from "@/lib/hooks/use-typing";
 import { TypingIndicator } from "./typing-indicator";
+import { ScheduleSendDropdown } from "@/components/schedule/schedule-send-dropdown";
+import { createScheduledMessage } from "@/lib/actions/scheduled-message";
+import { format, isToday, isTomorrow } from "date-fns";
 
 const MAX_MESSAGE_LENGTH = 10_000;
 
@@ -44,6 +47,9 @@ export function MessageInput({ targetId, targetType, members = [] }: MessageInpu
   const [pendingUploads, setPendingUploads] = useState<Map<string, PendingUpload>>(new Map());
   const [stagedAttachments, setStagedAttachments] = useState<UploadResult[]>([]);
   const [uploadError, setUploadError] = useState<string | null>(null);
+
+  // Schedule feedback state
+  const [scheduleMessage, setScheduleMessage] = useState<string | null>(null);
 
   // Offline send queue hook
   const { sendMessage: queueAndSend, isOnline } = useSendMessage({ targetId, targetType });
@@ -194,7 +200,44 @@ export function MessageInput({ targetId, targetType, members = [] }: MessageInpu
     } finally {
       setIsSending(false);
     }
-  }, [content, hasContent, isSending, queueAndSend, stagedAttachments]);
+  }, [content, hasContent, isSending, queueAndSend, stagedAttachments, stopTyping]);
+
+  // Handle schedule send
+  const handleSchedule = useCallback(async (scheduledFor: Date) => {
+    if (!content.trim() || isSending) return;
+
+    setIsSending(true);
+    try {
+      // Create scheduled message
+      await createScheduledMessage({
+        content: content.trim(),
+        scheduledFor,
+        channelId: targetType === "channel" ? targetId : undefined,
+        conversationId: targetType === "dm" ? targetId : undefined,
+      });
+
+      // Clear input
+      setContent("");
+      stopTyping();
+
+      // Show success feedback
+      const timeLabel = isToday(scheduledFor)
+        ? `today at ${format(scheduledFor, "h:mm a")}`
+        : isTomorrow(scheduledFor)
+          ? `tomorrow at ${format(scheduledFor, "h:mm a")}`
+          : format(scheduledFor, "MMM d 'at' h:mm a");
+      setScheduleMessage(`Message scheduled for ${timeLabel}`);
+
+      // Clear feedback after 4 seconds
+      setTimeout(() => setScheduleMessage(null), 4000);
+    } catch (err) {
+      console.error("[MessageInput] Failed to schedule message:", err);
+      setScheduleMessage(err instanceof Error ? err.message : "Failed to schedule message");
+      setTimeout(() => setScheduleMessage(null), 4000);
+    } finally {
+      setIsSending(false);
+    }
+  }, [content, isSending, targetId, targetType, stopTyping]);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -368,14 +411,11 @@ export function MessageInput({ targetId, targetType, members = [] }: MessageInpu
           className="min-h-[44px] max-h-[200px] resize-none"
           rows={1}
         />
-        <Button
-          type="submit"
+        <ScheduleSendDropdown
+          onSendNow={sendMessage}
+          onSchedule={handleSchedule}
           disabled={isSendDisabled}
-          className="h-11 w-11 p-0 shrink-0"
-        >
-          <Send className="h-5 w-5" />
-          <span className="sr-only">Send message</span>
-        </Button>
+        />
       </div>
 
       {/* SECFIX-05: Character counter - always visible per CONTEXT.md */}
@@ -408,6 +448,13 @@ export function MessageInput({ targetId, targetType, members = [] }: MessageInpu
       {rateLimitMessage && (
         <div className="text-sm text-amber-600 mt-2 px-1">
           {rateLimitMessage}
+        </div>
+      )}
+
+      {/* Schedule feedback message */}
+      {scheduleMessage && (
+        <div className="text-sm text-emerald-600 mt-2 px-1">
+          {scheduleMessage}
         </div>
       )}
 

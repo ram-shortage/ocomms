@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Plus, Search, MessageSquare, StickyNote, FolderPlus, Bell } from "lucide-react";
+import { Plus, Search, MessageSquare, StickyNote, FolderPlus, Bell, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ChannelListClient } from "@/components/channel/channel-list-client";
 import { CategorySidebar } from "@/components/channel/category-sidebar";
@@ -110,6 +110,17 @@ export function WorkspaceSidebar({
           >
             <StickyNote className="h-4 w-4" />
             My Notes
+          </Link>
+          {/* SCHD-02: Scheduled messages link in sidebar */}
+          <Link
+            href={`/${workspace.slug}/scheduled`}
+            className={cn(
+              "flex items-center gap-2 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors",
+              pathname === `/${workspace.slug}/scheduled` && "bg-accent"
+            )}
+          >
+            <Clock className="h-4 w-4" />
+            Scheduled
           </Link>
           {/* RMND-03: Reminders link in sidebar */}
           <Link
