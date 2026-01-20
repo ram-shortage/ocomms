@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 ## Current Position
 
 Phase: 24 of 29 (Quick Wins)
-Plan: Not started
-Status: Ready for `/gsd:plan-phase 24`
-Last activity: 2026-01-20 - Roadmap created for v0.5.0
+Plan: 1 of 4 complete
+Status: In progress
+Last activity: 2026-01-20 - Completed 24-01-PLAN.md (Typing Indicators)
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [██░░░░░░░░] 1/4 plans in phase 24
 
 ## Shipped Milestones
 
@@ -53,6 +53,11 @@ v0.5.0 research decisions documented in .planning/research/SUMMARY.md:
 - unfurl library for link previews (lightweight, no headless browser)
 - sharp for custom emoji (SVG-to-PNG conversion for XSS protection)
 
+Phase 24-01 decisions:
+- Track per-socket typing state for disconnect cleanup
+- Client-side throttle for network efficiency
+- Reset throttle timer on send for better UX
+
 ### Pending Todos
 
 None - ready for phase planning.
@@ -64,5 +69,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-20
-Stopped at: v0.5.0 roadmap created
-Resume file: None - ready for `/gsd:plan-phase 24`
+Stopped at: Completed 24-01-PLAN.md
+Resume file: None - ready for 24-02-PLAN.md execution
