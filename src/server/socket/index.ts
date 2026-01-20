@@ -9,6 +9,7 @@ import { handleReactionEvents } from "./handlers/reaction";
 import { handleThreadEvents } from "./handlers/thread";
 import { handleNotificationEvents } from "./handlers/notification";
 import { setupUnreadHandlers, handleUnreadEvents, type UnreadManager } from "./handlers/unread";
+import { registerNoteHandlers } from "./handlers/notes";
 import { isChannelMember, isConversationParticipant, isOrganizationMember } from "./authz";
 import { auditLog, AuditEventType } from "@/lib/audit-logger";
 
@@ -90,6 +91,9 @@ export function setupSocketHandlers(io: SocketIOServer, redis?: Redis | null) {
     if (unreadManager) {
       handleUnreadEvents(socket, io, unreadManager);
     }
+
+    // Setup note event handlers
+    registerNoteHandlers(io, socket);
 
     // Join user to their authorized rooms
     try {
