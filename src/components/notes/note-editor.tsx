@@ -7,6 +7,8 @@ import { Edit, Eye, Loader2 } from "lucide-react";
 import { NoteViewer } from "./note-viewer";
 import { ConflictDialog } from "./conflict-dialog";
 import { debounce } from "@/lib/utils/debounce";
+import { getSocket } from "@/lib/socket-client";
+import { useSession } from "@/lib/auth-client";
 
 interface ConflictData {
   serverContent: string;
@@ -36,6 +38,7 @@ export function NoteEditor({
   workspaceId,
   readOnly = false,
 }: NoteEditorProps) {
+  const { data: session } = useSession();
   const [mode, setMode] = useState<"edit" | "preview">("preview");
   const [content, setContent] = useState("");
   const [baseVersion, setBaseVersion] = useState(0);
@@ -119,6 +122,15 @@ export function NoteEditor({
         // Success - update base version
         setBaseVersion(data.newVersion);
         setHasChanges(false);
+
+        // Broadcast update to other users via socket
+        const socket = getSocket();
+        socket.emit("note:broadcast", {
+          channelId: noteType === "channel" ? channelId : undefined,
+          workspaceId: noteType === "personal" ? workspaceId : undefined,
+          version: data.newVersion,
+          userName: session?.user?.name || "Someone",
+        });
       } catch (err) {
         console.error("Failed to save note:", err);
         setError("Failed to save note");
@@ -126,7 +138,7 @@ export function NoteEditor({
         setSaving(false);
       }
     },
-    [noteType, channelId, workspaceId]
+    [noteType, channelId, workspaceId, session?.user?.name]
   );
 
   // Debounced auto-save (2 second delay)

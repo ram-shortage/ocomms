@@ -113,6 +113,12 @@ export interface ClientToServerEvents {
   "message:delete": (data: { messageId: string }) => void;
   "note:subscribe": (data: { channelId?: string; workspaceId?: string }) => void;
   "note:unsubscribe": (data: { channelId?: string; workspaceId?: string }) => void;
+  "note:broadcast": (data: {
+    channelId?: string;
+    workspaceId?: string;
+    version: number;
+    userName: string;
+  }) => void;
   "typing:start": (data: { targetId: string; targetType: "channel" | "dm" }) => void;
   "typing:stop": (data: { targetId: string; targetType: "channel" | "dm" }) => void;
   "presence:setAway": () => void;

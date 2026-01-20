@@ -58,4 +58,33 @@ export function registerNoteHandlers(io: SocketIOServer, socket: TypedSocket): v
       console.log(`[Notes] User ${userId} unsubscribed from personal note room: ${room}`);
     }
   });
+
+  // Handle note:broadcast - client requests server to broadcast update to room
+  socket.on("note:broadcast", (data) => {
+    const { channelId, workspaceId, version, userName } = data;
+
+    if (channelId) {
+      const room = getNoteChannelRoom(channelId);
+      // Broadcast to room except sender
+      socket.to(room).emit("note:updated", {
+        channelId,
+        version,
+        updatedBy: userId,
+        updatedByName: userName,
+      });
+      console.log(`[Notes] User ${userId} broadcast update to channel note room: ${room}`);
+    }
+
+    if (workspaceId) {
+      // Personal notes - broadcast to user's own room (other devices)
+      const room = getNotePersonalRoom(userId, workspaceId);
+      socket.to(room).emit("note:updated", {
+        workspaceId,
+        version,
+        updatedBy: userId,
+        updatedByName: userName,
+      });
+      console.log(`[Notes] User ${userId} broadcast update to personal note room: ${room}`);
+    }
+  });
 }
