@@ -12,9 +12,9 @@ OComms is a self-hosted team communication platform - a Slack-like experience th
 
 ## Current State
 
-**Version:** v0.3.0 (Mobile & Polish) - Shipped 2026-01-19
+**Version:** v0.4.0 (Files, Theming & Notes) - Shipped 2026-01-20
 
-Delivered PWA with offline messaging, push notifications, mobile-first navigation, and admin tools.
+Delivered dark mode theming, file uploads with image previews, and markdown notes for channels and personal scratchpads.
 
 **Tech Stack:**
 - Next.js 15 with App Router
@@ -49,6 +49,11 @@ Delivered PWA with offline messaging, push notifications, mobile-first navigatio
 - **v0.3.0:** Push notifications for DMs and @mentions
 - **v0.3.0:** Mobile bottom tab navigation with responsive layout
 - **v0.3.0:** Admin UI (audit logs, data export)
+- **v0.4.0:** Dark mode/light theme toggle with FOUC prevention
+- **v0.4.0:** File uploads up to 25MB with drag-drop, clipboard paste, progress indicator
+- **v0.4.0:** Image inline previews and download cards for attachments
+- **v0.4.0:** Channel notes (shared markdown document per channel)
+- **v0.4.0:** Personal notes scratchpad per user per workspace
 
 ## Target Users
 
@@ -101,17 +106,16 @@ Requirements shipped and working in production:
   - UIPOL-01 to UIPOL-06: Navigation, logout, audit viewer, data export, docs, HSTS
   - SECFIX-01 to SECFIX-08: Mention scoping, fail-closed, atomic sequence, rate limiting
 
+- **v0.4.0 - Files, Theming & Notes** (22 requirements)
+  - THEME-01 to THEME-05: Light/dark toggle, system preference, persistence, FOUC prevention
+  - FILE-01 to FILE-10: Drag-drop, click-browse, progress, image preview, download links, 25MB limit, magic bytes, channels, DMs, clipboard paste
+  - NOTE-01 to NOTE-07: Channel notes, personal notes, markdown editing, preview, member editing, conflict detection, header access
+
 ### Active
 
-**v0.4.0 - Files, Theming & Notes**
+**v0.5.0 - Planning**
 
-- [ ] File uploads: any file type up to 25MB, attach to messages
-- [ ] Image previews: inline display for image attachments
-- [ ] File storage: local disk storage with secure access
-- [ ] Dark mode: light/dark theme toggle with system preference detection
-- [ ] Theme persistence: remember user's theme choice
-- [ ] Channel notes: one markdown document per channel, any member can edit
-- [ ] Personal notes: private markdown scratchpad per user
+Requirements to be defined via `/gsd:new-milestone`
 
 ### Out of Scope
 
@@ -151,6 +155,11 @@ Requirements shipped and working in production:
 | VAPID keys in environment | Generated once, stored securely | Good |
 | Double-permission pattern for push | In-app prompt before browser permission | Good |
 | dvh units for mobile layout | Accounts for browser chrome and virtual keyboards | Good |
+| next-themes for theming | De facto standard, FOUC prevention built-in | Good |
+| XHR for file uploads | Fetch API lacks upload progress events | Good |
+| react-markdown for notes | XSS-safe, no dangerouslySetInnerHTML | Good |
+| Last-write-wins for notes | CRDT/OT too complex; conflict detection sufficient | Good |
+| 2s debounce for note save | Balance responsiveness and API load | Good |
 
 ---
 
@@ -179,4 +188,4 @@ Requirements shipped and working in production:
 ---
 
 ---
-*Last updated: 2026-01-20 after starting v0.4.0 milestone*
+*Last updated: 2026-01-20 after v0.4.0 milestone*

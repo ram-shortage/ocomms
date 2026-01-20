@@ -1,5 +1,35 @@
 # Project Milestones: OComms
 
+## v0.4.0 Files, Theming & Notes (Shipped: 2026-01-20)
+
+**Delivered:** Dark mode theming, file uploads with image previews, and markdown notes for channels and personal scratchpads.
+
+**Phases completed:** 21-23 (9 plans total)
+
+**Key accomplishments:**
+
+- Dark Mode: Light/dark theme toggle with system preference detection and FOUC prevention
+- Theme Audit: All 36+ UI components updated to use CSS variable-based theming
+- File Uploads: Drag-drop, click-to-browse, clipboard paste with 25MB limit and magic bytes validation
+- Image Previews: Inline image attachments with thumbnail display (max 400x300)
+- Download Cards: Non-image files display as download links with filename and size
+- Channel Notes: One shared markdown document per channel with real-time sync
+- Personal Notes: Private workspace-scoped scratchpad accessible from sidebar
+- Conflict Detection: Optimistic locking prevents silent overwrites on concurrent edits
+
+**Stats:**
+
+- 98 files created/modified
+- +10,763 / -286 lines of code
+- 3 phases, 9 plans, 22 requirements
+- Same-day build
+
+**Git range:** `feat(21-01)` → `docs(23)`
+
+**What's next:** `/gsd:new-milestone` for v0.5.0 planning
+
+---
+
 ## v0.3.0 Mobile & Polish (Shipped: 2026-01-19)
 
 **Delivered:** PWA with offline messaging, push notifications, mobile-first navigation, and admin tools for a complete mobile experience.

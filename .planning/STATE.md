@@ -5,18 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-20)
 
 **Core value:** Data sovereignty - complete control over communication data
-**Current focus:** v0.4.0 Files, Theming & Notes
+**Current focus:** Planning next milestone (v0.5.0)
 
 ## Current Position
 
-Phase: 23 of 23 (Shared Notes)
-Plan: 4 of 4 complete
-Status: Phase complete
-Last activity: 2026-01-20 - Completed 23-03-PLAN.md (channel notes UI integration)
+Phase: Not started
+Plan: Not started
+Status: Ready for `/gsd:new-milestone`
+Last activity: 2026-01-20 - v0.4.0 milestone complete
 
-Progress: [########################] 100% (3/3 phases in v0.4.0)
+Progress: Ready to plan v0.5.0
 
 ## Shipped Milestones
+
+- **v0.4.0 Files, Theming & Notes** - 2026-01-20
+  - 3 phases (21-23), 9 plans, 22 requirements
+  - Dark mode, file uploads, channel/personal notes
+  - See: .planning/milestones/v0.4.0-ROADMAP.md
 
 - **v0.3.0 Mobile & Polish** - 2026-01-19
   - 7 phases (14-20), 23 plans, 38 requirements
@@ -33,67 +38,28 @@ Progress: [########################] 100% (3/3 phases in v0.4.0)
 
 ## Performance Metrics
 
-**Cumulative (through v0.3.0):**
-- Total plans completed: 78 (70 + 8 test plans)
-- Total requirements delivered: 108 (51 + 19 + 38)
-- Total phases completed: 20
-
-**v0.4.0 progress:**
-- Phase 21: 2 plans complete (theme infrastructure + color audit)
-- Phase 22: 3 plans complete (file upload backend + UI + display)
-- Phase 23: 4 of 4 plans complete (notes schema + API/components + channel UI + personal notes)
+**Cumulative (through v0.4.0):**
+- Total plans completed: 87 (78 + 9)
+- Total requirements delivered: 130 (51 + 19 + 38 + 22)
+- Total phases completed: 23
 
 ## Accumulated Context
 
 ### Decisions
 
 Decisions are logged in PROJECT.md Key Decisions table.
-Recent decisions for v0.4.0:
-- next-themes for theming (de facto standard, FOUC prevention)
-- Extend avatar upload pattern for file uploads (proven approach)
-- react-markdown for notes (XSS-safe, no dangerouslySetInnerHTML)
-- Last-write-wins with conflict detection for notes (not CRDT/OT)
-- XHR over fetch for upload progress support (fetch lacks upload progress events)
-- next/image unoptimized for uploaded files (not in Next.js image domains)
-- Validate attachment ownership before linking to messages
-- 2 second debounce for note auto-save (balance responsiveness and API load)
-- Version 0 indicates new note (INSERT), version >= 1 indicates UPDATE
+v0.4.0 decisions now archived in PROJECT.md.
 
-### Theming Patterns Established (Phase 21)
-- bg-card for content containers
-- bg-muted for hover states and subtle backgrounds
-- text-foreground for primary text
-- text-muted-foreground for secondary text
-- text-primary for links and interactive elements
-- ring-card for presence indicators
+### Patterns Established
 
-### File Upload Patterns Established (Phase 22)
-- validateFileSignature() for magic bytes validation (shared library)
-- Attachment metadata in database, file on disk with UUID name
-- messageId nullable for upload-before-send flow
-- uploadFile() with progress callback and abort signal
-- Staged attachments pattern for upload-before-send UI
-- QueuedMessage extended with attachmentIds for offline-first
-- FileAttachment component for image preview vs download card
-- formatBytes() for human-readable file sizes
-- attachmentsByMessageId Map for efficient grouping in page loads
-
-### Notes Patterns Established (Phase 23)
-- Version column for optimistic locking conflict detection
-- One note per channel via unique index on channelId
-- One personal note per user per org via composite unique index
-- Optimistic locking: WHERE version = baseVersion, return 409 on mismatch
-- Edit/preview toggle: mode state switches between Textarea and NoteViewer
-- Debounced auto-save: useCallback + debounce utility, triggered on change
-- Conflict resolution: store serverContent/serverVersion, let user choose
-- Personal notes page: header with title/subtitle, full-height NoteEditor in bg-card container
-- Sidebar quick links: icon + label with hover:bg-accent and active bg-accent states
-- Client-initiated broadcast pattern for real-time sync (API routes cannot access socket server)
-- Note socket rooms: note:channel:{channelId} and note:personal:{userId}:{workspaceId}
+Patterns from v0.4.0 documented in milestones/v0.4.0-ROADMAP.md:
+- Theming patterns (bg-card, bg-muted, text-foreground, etc.)
+- File upload patterns (validateFileSignature, staged attachments, etc.)
+- Notes patterns (version column, debounced save, conflict detection, etc.)
 
 ### Pending Todos
 
-None - Phase 23 complete.
+None - ready for next milestone.
 
 ### Blockers/Concerns
 
@@ -101,6 +67,6 @@ None active.
 
 ## Session Continuity
 
-Last session: 2026-01-20 19:30Z
-Stopped at: Phase 23 complete, verification passed
-Resume file: None - v0.4.0 milestone complete, ready for audit
+Last session: 2026-01-20 20:00Z
+Stopped at: v0.4.0 milestone complete
+Resume file: None - ready for `/gsd:new-milestone`
