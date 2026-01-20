@@ -29,10 +29,11 @@ v0.4.0 delivers three feature areas: dark mode theming for improved accessibilit
   3. User's theme choice persists across browser sessions
   4. Page loads without flash of wrong theme (no FOUC)
   5. All existing UI components render correctly in both themes
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 21-01: TBD
+- [ ] 21-01-PLAN.md - Install next-themes, create ThemeProvider, add toggle to sidebar
+- [ ] 21-02-PLAN.md - Audit and fix hardcoded colors, verify all UI in both themes
 
 ### Phase 22: File Uploads
 **Goal**: Users can attach files to messages in channels and DMs with visual previews for images
@@ -70,7 +71,7 @@ Plans:
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 21. Dark Mode/Theming | v0.4.0 | 0/TBD | Not started | - |
+| 21. Dark Mode/Theming | v0.4.0 | 0/2 | Planned | - |
 | 22. File Uploads | v0.4.0 | 0/TBD | Not started | - |
 | 23. Notes | v0.4.0 | 0/TBD | Not started | - |
 
