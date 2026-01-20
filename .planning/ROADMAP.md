@@ -6,11 +6,11 @@ v0.5.0 delivers the complete platform feature set: user presence enhancements (s
 
 ## Milestones
 
-- ✅ **v0.1.0 Full Conversation** - Phases 1-8 (shipped 2026-01-18)
-- ✅ **v0.2.0 Security Hardening** - Phases 9-13 (shipped 2026-01-18)
-- ✅ **v0.3.0 Mobile & Polish** - Phases 14-20 (shipped 2026-01-19)
-- ✅ **v0.4.0 Files, Theming & Notes** - Phases 21-23 (shipped 2026-01-20)
-- 🚧 **v0.5.0 Feature Completeness** - Phases 24-29 (in progress)
+- **v0.1.0 Full Conversation** - Phases 1-8 (shipped 2026-01-18)
+- **v0.2.0 Security Hardening** - Phases 9-13 (shipped 2026-01-18)
+- **v0.3.0 Mobile & Polish** - Phases 14-20 (shipped 2026-01-19)
+- **v0.4.0 Files, Theming & Notes** - Phases 21-23 (shipped 2026-01-20)
+- **v0.5.0 Feature Completeness** - Phases 24-29 (in progress)
 
 ## Phases
 
@@ -38,7 +38,12 @@ v0.5.0 delivers the complete platform feature set: user presence enhancements (s
   3. User can browse and search archived channels and unarchive them
   4. Admin can create channel categories and assign channels to them
   5. User can collapse/expand categories and drag channels between them in sidebar
-**Plans**: TBD
+**Plans**: 4 plans
+Plans:
+- [ ] 24-01-PLAN.md - Typing indicators (backend + frontend)
+- [ ] 24-02-PLAN.md - Channel archiving (schema + actions + UI)
+- [ ] 24-03-PLAN.md - Channel categories (schema + dnd-kit + sidebar)
+- [ ] 24-04-PLAN.md - Verification checkpoint
 
 ### Phase 25: Job Queue Foundation
 
@@ -108,11 +113,11 @@ v0.5.0 delivers the complete platform feature set: user presence enhancements (s
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 24 → 24.1 (if inserted) → 25 → 26 → 27 → 28 → 29
+Phases execute in numeric order: 24 -> 24.1 (if inserted) -> 25 -> 26 -> 27 -> 28 -> 29
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 24. Quick Wins | 0/TBD | Not started | - |
+| 24. Quick Wins | 0/4 | Planned | - |
 | 25. Job Queue Foundation | 0/TBD | Not started | - |
 | 26. Collections & Presence | 0/TBD | Not started | - |
 | 27. Rich Content | 0/TBD | Not started | - |
