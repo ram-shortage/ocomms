@@ -1,7 +1,7 @@
 # Architecture Patterns
 
 **Domain:** Self-hosted real-time team chat platform (Slack-like)
-**Researched:** 2026-01-17
+**Researched:** 2026-01-17 (Core), 2026-01-20 (v0.4.0 Features)
 **Confidence:** HIGH (verified against Slack engineering blog, established patterns)
 
 ---
@@ -559,6 +559,649 @@ volumes:
 
 ---
 
+## v0.4.0 Feature Architecture
+
+**Researched:** 2026-01-20
+**Features:** File uploads, theming, notes
+
+This section details how the v0.4.0 features integrate with the existing OComms architecture.
+
+**Confidence:** HIGH for theming and file uploads (well-established patterns, verified against existing codebase), MEDIUM for notes (straightforward implementation, but real-time editing decisions depend on requirements).
+
+---
+
+### Feature 1: File Uploads
+
+#### Current State
+
+OComms already has a file upload pattern for avatars:
+- `src/app/api/upload/avatar/route.ts` handles uploads
+- Files stored in `public/uploads/avatars/`
+- Magic byte validation for image types (JPEG, PNG, GIF, WebP)
+- 2MB size limit
+- UUID-based filenames prevent collisions
+
+#### Storage Strategy
+
+**Recommendation:** Local filesystem with Docker volume mount.
+
+| Approach | Pros | Cons | Verdict |
+|----------|------|------|---------|
+| Local filesystem | Simple, no external deps, existing pattern | Single-node only, manual backup | **Use for v0.4.0** |
+| S3/Cloud storage | Scalable, CDN-ready | External dependency, breaks self-hosted value prop | Future option |
+
+**Rationale:** OComms prioritizes self-hosted simplicity. Local storage matches the existing avatar pattern and Docker deployment model. Cloud storage can be added later for organizations needing scale.
+
+#### File Organization
+
+```
+public/
+  uploads/
+    avatars/           # Existing
+    files/             # New: General file attachments
+      {yyyy-mm}/       # Monthly partitioning for cleanup
+        {uuid}.{ext}
+```
+
+Monthly partitioning allows:
+- Easy backup/archive by month
+- Simpler cleanup for old files
+- Manageable directory sizes
+
+#### Database Schema
+
+**Confidence:** HIGH (follows existing Drizzle patterns)
+
+```typescript
+// src/db/schema/file.ts
+export const files = pgTable("files", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  originalName: varchar("original_name", { length: 255 }).notNull(),
+  storagePath: varchar("storage_path", { length: 500 }).notNull(),
+  mimeType: varchar("mime_type", { length: 100 }).notNull(),
+  sizeBytes: integer("size_bytes").notNull(),
+  uploadedBy: text("uploaded_by")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  organizationId: text("organization_id")
+    .notNull()
+    .references(() => organizations.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+}, (table) => [
+  index("files_org_idx").on(table.organizationId),
+  index("files_uploader_idx").on(table.uploadedBy),
+]);
+
+// Junction table for message attachments
+export const messageAttachments = pgTable("message_attachments", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  messageId: uuid("message_id")
+    .notNull()
+    .references(() => messages.id, { onDelete: "cascade" }),
+  fileId: uuid("file_id")
+    .notNull()
+    .references(() => files.id, { onDelete: "cascade" }),
+  displayOrder: integer("display_order").notNull().default(0),
+}, (table) => [
+  index("msg_attachments_msg_idx").on(table.messageId),
+  uniqueIndex("msg_attachments_unique_idx").on(table.messageId, table.fileId),
+]);
+```
+
+**Why separate tables:**
+- Files can be reused (same file attached to multiple messages)
+- Easier to implement file management UI later
+- Cleaner deletion semantics
+
+#### URL Generation Strategy
+
+**Recommendation:** Direct static serving with workspace-scoped access.
+
+```
+/uploads/files/{yyyy-mm}/{uuid}.{ext}
+```
+
+**Security approach:**
+1. Middleware already skips `/uploads` path (existing pattern)
+2. Files are scoped to organization via database
+3. UUIDs provide obscurity (not security)
+4. For sensitive files: Add API route with auth check (future)
+
+**Why not presigned URLs:**
+- Adds complexity for self-hosted
+- Local filesystem doesn't need presigned URLs
+- Current avatar pattern works well
+
+#### Serving Strategy
+
+**Confidence:** HIGH (matches existing middleware pattern)
+
+| Approach | When to Use |
+|----------|-------------|
+| Static serving via Next.js | Default for all uploaded files |
+| API route with streaming | If file-level access control needed |
+
+For v0.4.0, static serving is sufficient. The existing middleware pattern at `src/middleware.ts` already bypasses auth for `/uploads`:
+
+```typescript
+const skipPaths = ["/_next", "/favicon.ico", "/uploads"];
+```
+
+#### Component Boundaries
+
+```
+[Client]                          [Server]
+
+FileUploadButton ----POST----> /api/upload/file
+     |                              |
+     v                              v
+MessageComposer               route.ts
+     |                              |
+     v                              v
+(displays preview)            - Validate auth
+                              - Check file type/size
+                              - Generate UUID filename
+                              - Write to filesystem
+                              - Insert into files table
+                              - Return file metadata
+                                    |
+                                    v
+message:send (with fileIds) -> Socket handler
+     |                              |
+     v                              v
+(optimistic UI)               - Create message
+                              - Create messageAttachments
+                              - Broadcast with files
+```
+
+#### File Type Handling
+
+**Recommendation:** Extend existing magic byte validation.
+
+| File Type | Magic Bytes | Extension |
+|-----------|-------------|-----------|
+| JPEG | FF D8 FF | .jpg |
+| PNG | 89 50 4E 47 | .png |
+| GIF | 47 49 46 38 | .gif |
+| WebP | RIFF...WEBP | .webp |
+| PDF | 25 50 44 46 | .pdf |
+| ZIP | 50 4B 03 04 | .zip |
+| DOCX | 50 4B 03 04 (+ content check) | .docx |
+
+For v0.4.0, support common types. Don't rely on MIME type from client - use magic bytes like avatar upload does.
+
+#### Image Preview Rendering
+
+For inline image previews in messages:
+
+```typescript
+// In MessageContent component
+{message.attachments?.map(file => (
+  file.mimeType.startsWith('image/') ? (
+    <ImagePreview key={file.id} file={file} />
+  ) : (
+    <FileAttachment key={file.id} file={file} />
+  )
+))}
+```
+
+**No image processing needed for v0.4.0.** Use native browser rendering with `<img>` and CSS constraints for sizing.
+
+---
+
+### Feature 2: Theming
+
+#### Current State
+
+OComms already has:
+- CSS variables defined in `globals.css` with `:root` and `.dark` variants
+- Full dark mode color palette using OKLCH
+- Tailwind CSS v4 with `@custom-variant dark`
+- No theme toggle UI or persistence
+
+#### Recommended Architecture
+
+**Library:** `next-themes`
+
+**Confidence:** HIGH (industry standard, verified compatibility with Next.js App Router)
+
+**Rationale:**
+- 2 lines to implement basic dark mode
+- Handles hydration correctly (no flash)
+- System preference detection built-in
+- Persists to localStorage automatically
+- 2.7KB minified - minimal bundle impact
+
+#### CSS Variable Structure
+
+**Already in place.** The existing `globals.css` uses the shadcn/ui pattern:
+
+```css
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  /* ... full palette */
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  /* ... full palette */
+}
+```
+
+No changes needed to CSS variables.
+
+#### Context Provider Setup
+
+```typescript
+// src/components/providers/theme-provider.tsx
+"use client";
+
+import { ThemeProvider as NextThemesProvider } from "next-themes";
+
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  return (
+    <NextThemesProvider
+      attribute="class"      // Tailwind uses .dark class
+      defaultTheme="system"  // Respect OS preference
+      enableSystem={true}
+      disableTransitionOnChange // Prevent flash
+    >
+      {children}
+    </NextThemesProvider>
+  );
+}
+```
+
+#### Root Layout Integration
+
+```typescript
+// src/app/layout.tsx (modification)
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body>
+        <ThemeProvider>
+          <SyncProvider>
+            {children}
+          </SyncProvider>
+        </ThemeProvider>
+        <PWAProvider />
+        <Toaster />
+      </body>
+    </html>
+  );
+}
+```
+
+**Key:** `suppressHydrationWarning` on `<html>` prevents React warnings from next-themes modifying the element.
+
+#### Persistence Mechanism
+
+**Recommendation:** Let next-themes handle it (localStorage by default).
+
+| Storage | Pros | Cons | Verdict |
+|---------|------|------|---------|
+| localStorage | Built into next-themes, no server round-trip | Device-specific | **Use this** |
+| Database | Syncs across devices | Requires API call, slower | Overkill for theme |
+
+**Why not database:**
+- Theme is aesthetic preference, not critical data
+- localStorage survives 7-day ITP (theme pref retained)
+- Zero latency on page load
+
+#### Theme Toggle Component
+
+```typescript
+// src/components/theme-toggle.tsx
+"use client";
+
+import { useTheme } from "next-themes";
+import { Moon, Sun, Monitor } from "lucide-react";
+
+export function ThemeToggle() {
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) return <div className="w-8 h-8" />; // Placeholder
+
+  return (
+    <button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+      {theme === 'dark' ? <Sun /> : <Moon />}
+    </button>
+  );
+}
+```
+
+**Important:** Must check `mounted` to avoid hydration mismatch.
+
+#### Component Boundaries
+
+```
+[Layout]
+    |
+    v
+ThemeProvider (wraps app)
+    |
+    v
+[Any Component]
+    |
+    v
+useTheme() hook
+    |
+    v
+- theme: "light" | "dark" | "system"
+- setTheme(theme)
+- systemTheme: actual OS preference
+```
+
+---
+
+### Feature 3: Notes
+
+#### Requirements Analysis
+
+From PROJECT.md:
+- **Channel notes:** One markdown document per channel, any member can edit
+- **Personal notes:** Private markdown scratchpad per user
+
+**Key insight:** "One document per channel" means NOT collaborative real-time editing. This is simple document storage with basic version/conflict handling.
+
+#### Database Schema
+
+**Confidence:** HIGH (simple document storage)
+
+```typescript
+// src/db/schema/note.ts
+
+// Channel notes - one per channel
+export const channelNotes = pgTable("channel_notes", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  channelId: uuid("channel_id")
+    .notNull()
+    .references(() => channels.id, { onDelete: "cascade" })
+    .unique(), // One note per channel
+  content: text("content").notNull().default(""),
+  lastEditedBy: text("last_edited_by")
+    .references(() => users.id, { onDelete: "set null" }),
+  version: integer("version").notNull().default(1),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+}, (table) => [
+  uniqueIndex("channel_notes_channel_idx").on(table.channelId),
+]);
+
+// Personal notes - one per user per workspace
+export const personalNotes = pgTable("personal_notes", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  organizationId: text("organization_id")
+    .notNull()
+    .references(() => organizations.id, { onDelete: "cascade" }),
+  content: text("content").notNull().default(""),
+  version: integer("version").notNull().default(1),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+}, (table) => [
+  uniqueIndex("personal_notes_user_org_idx").on(table.userId, table.organizationId),
+]);
+```
+
+**Design decisions:**
+- `version` column enables optimistic concurrency (save fails if version changed)
+- No real-time sync needed (see below)
+- Personal notes scoped to workspace (could have different notes per workspace)
+
+#### Real-time Sync Decision
+
+**Recommendation:** NO real-time sync for v0.4.0.
+
+| Approach | Complexity | Use Case |
+|----------|------------|----------|
+| No sync | Low | One editor at a time, simple save |
+| Socket notifications | Medium | Notify when someone else saved |
+| OT/CRDT | Very High | True collaborative editing |
+
+**Rationale:**
+- "Any member can edit" != "Multiple members edit simultaneously"
+- Slack's canvas feature is NOT real-time collaborative
+- Google Docs-style editing is explicitly out of scope
+- Simple last-write-wins with version check is sufficient
+
+#### Conflict Handling Strategy
+
+```typescript
+// On save:
+const saved = await db
+  .update(channelNotes)
+  .set({
+    content,
+    version: sql`version + 1`,
+    lastEditedBy: userId,
+    updatedAt: new Date()
+  })
+  .where(
+    and(
+      eq(channelNotes.id, noteId),
+      eq(channelNotes.version, expectedVersion) // Optimistic lock
+    )
+  )
+  .returning();
+
+if (saved.length === 0) {
+  // Version mismatch - someone else edited
+  // Return 409 Conflict, client fetches latest
+}
+```
+
+#### Optional: Edit Notifications via Socket
+
+If users want to know when channel note was updated:
+
+```typescript
+// After successful save
+io.to(getRoomName.channel(channelId)).emit("note:updated", {
+  channelId,
+  editedBy: userId,
+  updatedAt: new Date(),
+});
+```
+
+This notifies users to refresh, but doesn't sync content in real-time.
+
+#### Markdown Rendering
+
+**Library:** `react-markdown`
+
+**Confidence:** HIGH (stable, secure, widely used)
+
+| Library | Bundle Size | Security | JSX Support | Verdict |
+|---------|-------------|----------|-------------|---------|
+| react-markdown | ~23KB | Safe by default | No | **Use this** |
+| MDX | ~50KB+ | User code runs | Yes | Overkill |
+| marked + dangerouslySetInnerHTML | ~8KB | XSS risk | No | Avoid |
+
+**Why react-markdown:**
+- No `dangerouslySetInnerHTML` - safe by default
+- Plugin system for GFM (tables, strikethrough, checklists)
+- Components can be overridden for custom styling
+
+#### Markdown Editor
+
+**Recommendation:** Simple textarea with preview toggle.
+
+```typescript
+// Simple approach for v0.4.0
+<div>
+  {isEditing ? (
+    <textarea
+      value={content}
+      onChange={(e) => setContent(e.target.value)}
+      className="font-mono"
+    />
+  ) : (
+    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+      {content}
+    </ReactMarkdown>
+  )}
+  <button onClick={() => setIsEditing(!isEditing)}>
+    {isEditing ? "Preview" : "Edit"}
+  </button>
+</div>
+```
+
+**Not recommended for v0.4.0:**
+- WYSIWYG editors (Tiptap, Slate) - complexity for simple notes
+- Split-pane editors - nice UX but not MVP
+
+#### Component Boundaries
+
+```
+[ChannelView]
+    |
+    +-- [ChannelNotes]
+            |
+            +-- NoteEditor (textarea + preview)
+            |
+            +-- ReactMarkdown (render)
+            |
+            +-- Save button -> /api/channels/{id}/notes
+                                    |
+                                    v
+                              - Validate membership
+                              - Optimistic lock check
+                              - Update content + version
+                              - Return new version
+```
+
+---
+
+### v0.4.0 Data Flow Summary
+
+#### File Upload Flow
+
+```
+1. User selects file in MessageComposer
+2. Client: POST /api/upload/file with FormData
+3. Server: Validate auth, size, magic bytes
+4. Server: Write to filesystem, insert to DB
+5. Server: Return { fileId, url, metadata }
+6. Client: Store fileId, show preview
+7. User sends message
+8. Client: message:send with fileIds array
+9. Server: Create message, create messageAttachments
+10. Server: Broadcast message with nested files
+11. All clients: Render message with attachments
+```
+
+#### Theme Toggle Flow
+
+```
+1. User clicks theme toggle
+2. next-themes: setTheme("dark")
+3. next-themes: Write to localStorage
+4. next-themes: Add .dark class to <html>
+5. CSS: All var() references update
+6. Page: Instant visual update (no reload)
+```
+
+#### Note Save Flow
+
+```
+1. User edits note content
+2. User clicks Save (or debounced auto-save)
+3. Client: PUT /api/channels/{id}/notes
+           Body: { content, expectedVersion }
+4. Server: Validate membership
+5. Server: UPDATE with version check
+6. Server: Return { success, newVersion } or 409
+7. If 409: Client fetches latest, shows conflict UI
+8. Optional: Server emits note:updated to room
+```
+
+---
+
+### v0.4.0 Build Order Recommendation
+
+Based on dependencies between components:
+
+#### Phase 1: Theming (Lowest dependency)
+
+**Why first:**
+- No database changes
+- No backend API changes
+- Purely additive (new provider + component)
+- Quick win, immediately visible
+
+**Tasks:**
+1. Install next-themes
+2. Create ThemeProvider component
+3. Update root layout
+4. Add ThemeToggle to settings/header
+5. Test: Light/dark/system modes persist
+
+#### Phase 2: File Uploads
+
+**Why second:**
+- Database schema change (files, messageAttachments)
+- New API route extending existing pattern
+- UI changes to MessageComposer
+- Socket handler modifications
+
+**Tasks:**
+1. Create files and messageAttachments schema
+2. Run migration
+3. Create /api/upload/file route (extend avatar pattern)
+4. Add file picker to MessageComposer
+5. Update message:send to accept fileIds
+6. Update Socket handler to include attachments
+7. Add FilePreview and ImagePreview components
+8. Update Dockerfile for uploads volume
+
+#### Phase 3: Notes
+
+**Why last:**
+- Database schema change (channelNotes, personalNotes)
+- New API routes
+- New UI components
+- Depends on understanding of channel UI patterns
+
+**Tasks:**
+1. Create channelNotes and personalNotes schema
+2. Run migration
+3. Create /api/channels/{id}/notes endpoint
+4. Create /api/user/notes endpoint
+5. Install react-markdown + remark-gfm
+6. Create NoteEditor component
+7. Create NoteViewer component
+8. Add notes tab/panel to channel view
+9. Add personal notes to user menu/settings
+
+---
+
+### Docker Considerations for v0.4.0
+
+Current Dockerfile doesn't persist uploads. Needs volume mount.
+
+```yaml
+# docker-compose.yml addition
+app:
+  volumes:
+    - uploads_data:/app/public/uploads  # New: persist uploads
+
+volumes:
+  uploads_data:  # New volume
+```
+
+**Important:** Also update Dockerfile to create uploads directory with correct permissions for nextjs user.
+
+---
+
 ## Sources
 
 ### HIGH Confidence (Official Engineering Blogs)
@@ -573,3 +1216,21 @@ volumes:
 ### LOW Confidence (Community Patterns)
 - [OpenChat Architecture: Scaling with Go, Redis, WebSockets](https://monzim.com/blogs/scaling-realtime-chatapp-with-go-redis-and-websocket)
 - [System Design: Slack Architecture](https://systemdesign.one/slack-architecture/)
+
+### v0.4.0 Feature Sources
+
+#### Official Documentation (HIGH confidence)
+- [Next.js Public Folder](https://nextjs.org/docs/pages/api-reference/file-conventions/public-folder)
+- [next-themes GitHub](https://github.com/pacocoursey/next-themes)
+- [react-markdown GitHub](https://github.com/remarkjs/react-markdown)
+- [Drizzle ORM Schema](https://orm.drizzle.team/docs/sql-schema-declaration)
+
+#### Community Resources (MEDIUM confidence)
+- [shadcn/ui Dark Mode](https://ui.shadcn.com/docs/dark-mode/next)
+- [Next.js File Uploads](https://www.pronextjs.dev/next-js-file-uploads-server-side-solutions)
+
+#### Project Codebase (HIGH confidence)
+- `/Users/brett/Documents/code/ocomms/src/app/api/upload/avatar/route.ts` - Existing upload pattern
+- `/Users/brett/Documents/code/ocomms/src/app/globals.css` - Existing CSS variables
+- `/Users/brett/Documents/code/ocomms/src/middleware.ts` - Existing auth bypass pattern
+- `/Users/brett/Documents/code/ocomms/src/db/schema/message.ts` - Existing schema patterns

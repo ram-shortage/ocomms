@@ -1,535 +1,587 @@
 # Domain Pitfalls
 
 **Project:** OComms - Self-Hosted Team Chat Platform
-**Researched:** 2026-01-17
-**Confidence:** MEDIUM-HIGH (cross-verified with multiple sources)
+**Milestone:** v0.4.0 - File Uploads, Theming, and Notes
+**Researched:** 2026-01-20
+**Confidence:** MEDIUM-HIGH (cross-verified with multiple authoritative sources)
 
 ---
 
 ## Critical Pitfalls
 
-Mistakes that cause rewrites, data loss, or fundamental architecture problems.
+Mistakes that cause security breaches, data loss, or require significant rewrites.
 
 ---
 
-### Pitfall 1: WebSocket State Management Without Pub/Sub
+### Pitfall 1: File Upload Content-Type/Magic Bytes Bypass
 
-**What goes wrong:** Building WebSocket handling where each server instance manages its own connections without inter-server communication. When User A on Server 1 sends a message to User B on Server 2, the message never arrives.
+**What goes wrong:** Attackers upload malicious files (PHP shells, SVG with JavaScript, polyglot files) that bypass validation by spoofing MIME types or embedding valid magic bytes with malicious payloads.
 
-**Why it happens:** Developers start with a single-server architecture that works perfectly in development. The WebSocket server handles connections and routing together. When scaling to multiple instances behind a load balancer, the architecture silently breaks.
+**Why it happens:** Relying solely on client-provided Content-Type header or only checking magic bytes without validating entire file structure. Attackers create "polyglot" files that are simultaneously valid images AND executable code.
 
 **Consequences:**
-- Messages delivered to some users but not others
-- Presence shows users as offline when they're online on a different server
-- Typing indicators never reach recipients
-- Complete rewrite of real-time layer required
+- Remote code execution if files are served with wrong Content-Type
+- Stored XSS via SVG files containing JavaScript
+- Server compromise via uploaded web shells
+- Complete security posture destruction
 
 **Warning signs:**
-- No Redis/message broker in architecture diagrams
-- WebSocket server stores connection state in memory
-- Load balancer configured for sticky sessions as a "fix"
-- Works in dev, breaks in production with multiple instances
+- Validation only checks Content-Type header from client
+- Magic bytes checked but rest of file not validated
+- SVG files allowed without sanitization
+- Uploaded files served from same origin as application
 
 **Prevention:**
-1. Design for pub/sub from day one - every WebSocket server subscribes to relevant channels
-2. Externalize connection state to Redis or similar
-3. Test with 2+ server instances from the start, even in development
-4. Never use sticky sessions as a scaling strategy
+1. **Never trust client-provided MIME type** - OComms already does this correctly in avatar upload
+2. **Validate magic bytes AND file structure** - Use format-specific parsers (sharp for images)
+3. **Re-encode uploaded images** - Process through image library to strip embedded code
+4. **Serve from separate domain/CDN** - Isolate uploaded content from application origin
+5. **Set X-Content-Type-Options: nosniff** - Prevent MIME sniffing attacks
+6. **Allowlist file types** - Only accept specific extensions, reject everything else
 
-**Phase to address:** Phase 1 (Foundation) - Must be in the core architecture
+**Phase to address:** Phase 1 (File Upload Infrastructure) - Core security decision
 
-**Sources:**
-- [Ably WebSocket Architecture Best Practices](https://ably.com/topic/websocket-architecture-best-practices)
-- [Scaling WebSockets Over Distributed Systems](https://medium.com/@taycode/websockets-scaling-over-a-distributed-system-ea567d8372e5)
+**Confidence:** HIGH - [OWASP File Upload Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html), [PortSwigger File Upload Vulnerabilities](https://portswigger.net/web-security/file-upload)
 
 ---
 
-### Pitfall 2: Message Ordering Chaos at Scale
+### Pitfall 2: Memory Exhaustion from Large File Uploads
 
-**What goes wrong:** Messages appear out of order in conversations, especially in active channels. User sees "Thanks!" before the question it responds to.
+**What goes wrong:** Server crashes or becomes unresponsive when users upload large files because entire file is buffered in memory before processing.
 
-**Why it happens:** Relying on client timestamps or processing order instead of server-assigned sequence numbers. Multiple parallel processes handle messages at different speeds. Clock drift between devices compounds the problem.
+**Why it happens:** Using libraries like Multer with default memory storage. Each concurrent upload consumes server RAM until complete. With 10 users uploading 100MB files simultaneously = 1GB RAM consumed.
 
 **Consequences:**
-- Conversations become unintelligible
-- Reply threading breaks
-- Users lose trust in the platform
-- Extremely difficult to fix retroactively without data migration
+- Server out-of-memory crashes
+- Denial of service (intentional or accidental)
+- Container restarts in Docker/K8s environments
+- All users affected by single bad upload
 
 **Warning signs:**
-- Using client-side timestamps as the ordering mechanism
-- No server sequence number per conversation/thread
-- Async message processing without ordering guarantees
-- "It usually works" attitude in testing
+- Using `multer.memoryStorage()` or similar
+- `arrayBuffer()` called on entire file before validation (current avatar code does this)
+- No streaming to disk or object storage
+- Testing only with small files
 
 **Prevention:**
-1. Assign server sequence numbers per conversation when message is stored
-2. Server order is the tie-breaker, not client timestamps
-3. Client timestamps are for display only (show "sent at X")
-4. Use database transactions to ensure atomic sequence assignment
+1. **Stream directly to disk/storage** - Never buffer entire file in memory
+2. **Set strict size limits early** - Reject oversized files before reading
+3. **Use chunked uploads for large files** - tus protocol or similar
+4. **Implement per-user rate limiting** - Limit concurrent uploads per user
+5. **Use `stream.pipeline()`** - Properly handles errors and prevents memory leaks
+6. **Monitor memory usage** - Alert on unusual memory consumption
 
-**Phase to address:** Phase 1 (Messages) - Core data model decision
+**Current OComms state:** Avatar upload reads entire file with `await file.arrayBuffer()` - this works for 2MB limit but pattern should not extend to general file uploads.
 
-**Sources:**
-- [Designing Chat Architecture for Reliable Message Ordering](https://ably.com/blog/chat-architecture-reliable-message-ordering)
-- [System Design Handbook: Design a Chat System](https://www.systemdesignhandbook.com/guides/design-a-chat-system/)
+**Phase to address:** Phase 1 (File Upload Infrastructure) - Architecture decision
+
+**Confidence:** HIGH - [CVE-2025-47935: Multer DoS](https://www.miggo.io/vulnerability-database/cve/CVE-2025-47935), [Multer Memory Trap](https://medium.com/@codewithmunyao/the-multer-memory-trap-why-your-file-upload-strategy-is-killing-your-server-89f9e8797e58)
 
 ---
 
-### Pitfall 3: Thread Model Complexity Explosion
+### Pitfall 3: Path Traversal in File Storage
 
-**What goes wrong:** Thread implementation becomes unmaintainable. Queries for "show this thread" become N+1 nightmares. Moving a message to a thread corrupts ordering. Deep nesting creates UI chaos.
+**What goes wrong:** Attacker-controlled filenames allow writing files outside intended directory, potentially overwriting application code or system files.
 
-**Why it happens:** Treating threads as a simple "parent_id" relationship without considering query patterns, ordering, and depth limits. Copying Slack's model without understanding the underlying complexity.
+**Why it happens:** Using user-provided filename directly in path construction. Characters like `../` or Windows device names (`CON`, `AUX`) bypass sanitization.
 
 **Consequences:**
-- Performance degrades with thread depth
-- Recursive queries kill database
-- Thread updates cause cascade of recomputations
-- Mobile clients struggle with deep threads
+- Arbitrary file write = Remote code execution
+- Application code overwritten
+- Configuration files modified
+- System compromise
 
 **Warning signs:**
-- Recursive CTEs in production queries
-- No depth limit on thread nesting
-- Thread membership computed on every fetch
-- "We'll optimize later" for thread queries
+- User-provided filename used in path
+- Only checking for `../` without URL decoding first
+- No filename sanitization
+- Windows device names not blocked
 
 **Prevention:**
-1. Use materialized path (`path` column) for thread hierarchy - O(1) queries
-2. Limit thread depth (Slack uses 1 level: message -> replies, no nested replies)
-3. Store thread metadata (reply_count, last_reply_at) denormalized on parent
-4. Order by path gives render order in single query
+1. **Generate random filenames server-side** - OComms correctly uses UUID for avatars
+2. **Never use user-provided filename in path** - Store original name in database if needed
+3. **URL decode before validation** - Attackers use `%2e%2e%2f` for `../`
+4. **Validate final path is within intended directory** - Use `path.resolve()` and compare
+5. **Block Windows reserved names** - CON, PRN, AUX, NUL, COM1-9, LPT1-9
 
-**Phase to address:** Phase 1 (Messages + Threads) - Data model decision
+**Current OComms state:** Avatar upload generates UUID filenames - this pattern must continue for all file types.
 
-**Sources:**
-- [GitHub Discussion: Modeling Threaded Comments](https://github.com/orgs/community/discussions/167352)
-- [Stream Chat: Threads & Replies](https://getstream.io/chat/docs/react/threads/)
+**Phase to address:** Phase 1 (File Upload Infrastructure) - Already handled, maintain pattern
+
+**Confidence:** HIGH - [CVE-2025-23084](https://security.snyk.io/vuln/SNYK-UPSTREAM-NODE-8651420), [Node.js Path Traversal Guide](https://www.stackhawk.com/blog/node-js-path-traversal-guide-examples-and-prevention/)
 
 ---
 
-### Pitfall 4: Unread Counts That Lie
+### Pitfall 4: Markdown/Notes XSS via Sanitizer Bypass
 
-**What goes wrong:** Unread badge shows "5" but user sees no unread messages. Or shows nothing when there are new messages. Multi-device users see different unread states.
+**What goes wrong:** Malicious markdown/HTML bypasses DOMPurify sanitization through mutation XSS (mXSS), namespace confusion, or version-specific bugs, leading to stored XSS.
 
-**Why it happens:** Unread state stored per-device instead of per-user. Read receipts not synced across devices. Race conditions between "mark as read" and "new message arrives." Eventual consistency treated as "good enough."
+**Why it happens:** HTML sanitization is fundamentally difficult. Browser DOM parsing differs from sanitizer parsing, allowing crafted input to appear safe during sanitization but become dangerous after browser renders it.
 
 **Consequences:**
-- Users don't trust the notification system
-- Important messages missed
-- Users develop workarounds (always open every channel)
-- Phantom notifications drive users crazy
+- Stored XSS affecting all users who view the note
+- Session hijacking
+- Credential theft
+- Malware distribution through trusted platform
 
 **Warning signs:**
-- Unread count computed client-side
-- No "read horizon" concept (timestamp of last read message)
-- Read receipts not persisted server-side
-- "Mark all as read" doesn't sync across devices
+- Using outdated DOMPurify version (< 3.2.6 has known bypasses)
+- Sanitizing server-side with jsdom < 20.0.0
+- Not sanitizing at render time (only at storage time)
+- Allowing HTML in markdown without sanitization
+- Using happy-dom for server-side sanitization
 
 **Prevention:**
-1. Store read horizon (last_read_message_id or last_read_at) per user per channel, server-side
-2. Unread count = messages after read horizon
-3. Every device syncs read horizon on connect
-4. Mark-as-read is an atomic server operation, not client state
-5. Handle race: if marking read while new message arrives, keep the newer unread
+1. **Keep DOMPurify updated** - Currently 3.3.1, check for updates regularly
+2. **Sanitize at render time** - Not just at storage, in case of future bypasses
+3. **Use strict DOMPurify config** - Disable `ALLOW_DATA_ATTR`, limit allowed tags
+4. **Avoid server-side HTML parsing** - Use jsdom >= 20.0.0 if needed, never happy-dom
+5. **Consider markdown-only** - Don't allow raw HTML in markdown at all
+6. **CSP as defense-in-depth** - Even if XSS gets through, CSP limits damage
 
-**Phase to address:** Phase 2 (Unreads/Mentions) - After basic messaging works
+**Phase to address:** Phase 3 (Notes Feature) - Critical security decision
 
-**Sources:**
-- [Twilio: Read Horizon and Read Status](https://www.twilio.com/docs/conversations/read-horizon)
-- [Stream Chat: Unread Counts](https://getstream.io/chat/docs/react/unread/)
+**Confidence:** HIGH - [DOMPurify CVE-2025-26791](https://security.snyk.io/vuln/SNYK-JS-DOMPURIFY-8722251), [HackerOne Secure Markdown Guide](https://www.hackerone.com/blog/secure-markdown-rendering-react-balancing-flexibility-and-safety)
 
 ---
 
-### Pitfall 5: Self-Hosted Deployment Data Loss
+### Pitfall 5: ImageMagick/Sharp Processing Vulnerabilities
 
-**What goes wrong:** Users deploy with Docker, restart container, lose all messages and configuration. Or upgrade version and corrupt database.
+**What goes wrong:** Maliciously crafted images trigger memory corruption, integer overflow, or code execution in image processing libraries.
 
-**Why it happens:** Not enforcing volume mounts for persistent data. SQLite as default database. No migration safety checks. Documentation assumes technical users who "know" to mount volumes.
+**Why it happens:** Image processing is extremely complex. Format-specific parsers have edge cases that can be exploited. ImageMagick has had 16 CVEs in 2025 alone.
 
 **Consequences:**
-- Complete data loss on container restart
-- Users blame the product, not their deployment
-- Support burden from preventable issues
-- Reputation damage in self-hosted community
+- Remote code execution via uploaded image
+- Server crash (DoS)
+- Memory corruption
+- Information disclosure
 
 **Warning signs:**
-- Docker Compose without named volumes
-- SQLite as only/default database option
-- No pre-flight checks in startup script
-- Upgrade docs say "just pull new image"
+- Using outdated image processing library
+- Processing untrusted images without resource limits
+- Allowing exotic image formats (MVG, MNG, SVG)
+- No timeout on image processing operations
 
 **Prevention:**
-1. Fail startup if persistent storage not configured (check for marker file)
-2. Use PostgreSQL, not SQLite, for production (SQLite for dev only)
-3. Docker Compose templates with explicit named volumes
-4. Startup script checks: volume mounted, migrations safe, backup reminder
-5. Version-specific migration guides, not "just upgrade"
+1. **Keep libraries updated** - ImageMagick 7.1.2-2+, sharp latest
+2. **Limit allowed formats** - Only JPEG, PNG, WebP, GIF for user uploads
+3. **Set resource limits** - Memory, processing time, image dimensions
+4. **Process in sandboxed environment** - Container with limited privileges
+5. **Consider dedicated image processing service** - Isolate from main application
+6. **Disable dangerous coders** - MVG, SVG, MSL in ImageMagick policy.xml
 
-**Phase to address:** Phase 1 (Deployment) - Before any public release
+**Phase to address:** Phase 1 (File Upload Infrastructure) - Choose library carefully
 
-**Sources:**
-- [Self-Hosting Beginner Mistakes](https://www.xda-developers.com/self-hosting-beginner-mistakes/)
-- [Sliplane: Docker Deployment Mistakes](https://sliplane.io/blog/5-costly-mistakes-when-deploying-docker-containers)
+**Confidence:** HIGH - [ImageMagick CVE-2025-57803](https://gbhackers.com/critical-imagemagick-vulnerability/), [ImageMagick 2025 Vulnerabilities](https://stack.watch/product/imagemagick/imagemagick/)
 
 ---
 
 ## Moderate Pitfalls
 
-Mistakes that cause significant delays, technical debt, or poor user experience.
+Mistakes that cause significant UX issues, technical debt, or security weaknesses.
 
 ---
 
-### Pitfall 6: Presence System That Doesn't Scale
+### Pitfall 6: Flash of Wrong Theme (FOUC)
 
-**What goes wrong:** Presence updates (online/away/offline) flood the system. With 500 users, thousands of presence events per second. Server overwhelmed, clients laggy.
+**What goes wrong:** Page briefly displays in light mode before switching to dark mode (or vice versa), causing jarring visual flash on every page load.
 
-**Why it happens:** Broadcasting every presence change to every user. No batching, throttling, or smart subscription. Treating presence like messages (must be instant and guaranteed).
+**Why it happens:** Theme preference stored in localStorage/cookie, but JavaScript must execute to read it and apply. Server-rendered HTML doesn't know user's preference, so defaults to one theme.
 
 **Consequences:**
-- System becomes sluggish under load
-- Presence appears "laggy" or "bouncy"
-- Battery drain on mobile clients
-- Server costs explode
+- Jarring user experience on every navigation
+- Users perceive app as "buggy" or "unpolished"
+- Accessibility issue for users sensitive to bright flashes
+- Professional appearance undermined
 
 **Warning signs:**
-- Presence sent to all workspace members on every change
-- No distinction between "user went offline" and "user lost connection briefly"
-- No throttling on presence events
-- Testing only with <10 users
+- Theme preference read in `useEffect` or similar client-side hook
+- No theme applied to initial HTML from server
+- `className` applied after hydration
+- Testing only in dev mode where caching masks the issue
 
 **Prevention:**
-1. Presence is eventually consistent, not instant - batch updates
-2. Only send presence to users who have the presencer's channel/DM open
-3. Debounce connection drops (wait 30s before "offline")
-4. Client polls presence periodically, server pushes only for open conversations
-5. Tiered approach: instant for DMs, batched for channels
+1. **Inline blocking script in `<head>`** - Apply theme class before body renders
+2. **Use cookies for SSR** - Server can read cookie and render correct theme
+3. **CSS variables for colors** - Class change updates all colors instantly
+4. **`next-themes` library** - Handles these edge cases correctly
+5. **Test with hard refresh** - Ctrl+Shift+R to see real user experience
 
-**Phase to address:** Phase 2 (Presence/Status) - Design carefully before implementing
+**Phase to address:** Phase 2 (Dark Mode/Theming) - Architecture decision early
 
-**Sources:**
-- [AWS Chime SDK: Presence and Typing Indicators](https://aws.amazon.com/blogs/business-productivity/build-presence-and-typing-indicators-with-amazon-chime-sdk-messaging/)
-- [Ably Chat: Typing Indicators](https://ably.com/docs/chat/rooms/typing)
+**Confidence:** HIGH - [Josh Comeau: Perfect Dark Mode](https://www.joshwcomeau.com/react/dark-mode/), [Fixing Dark Mode Flickering](https://notanumber.in/blog/fixing-react-dark-mode-flickering)
 
 ---
 
-### Pitfall 7: Search That Doesn't Search
+### Pitfall 7: Third-Party Components Don't Respect Theme
 
-**What goes wrong:** Search is slow (seconds to return results). Recent messages not findable. Typos return nothing. Users stop using search.
+**What goes wrong:** App is in dark mode, but embedded components (date pickers, modals, dropdowns from libraries) stay in light mode, creating visual inconsistency.
 
-**Why it happens:** Using LIKE queries on PostgreSQL without full-text search. Elasticsearch added later but sync is eventually consistent with multi-second lag. No typo tolerance or relevance ranking.
+**Why it happens:** Third-party components use their own theming system or hardcoded colors. They don't automatically inherit your CSS variables or respond to your theme class.
 
 **Consequences:**
-- Core feature unusable
-- Users scroll manually instead of searching
-- Migration to proper search is painful
-- Competitor advantage
+- Inconsistent visual appearance
+- Some UI elements painfully bright in dark mode
+- User confusion about whether dark mode is "working"
+- Workarounds lead to fragile CSS overrides
 
 **Warning signs:**
-- `WHERE content LIKE '%search%'` in codebase
-- No search infrastructure in architecture
-- "We'll add Elasticsearch later"
-- Search tested with 100 messages, not 1 million
+- Using UI library without checking theming support
+- Components with hardcoded colors (#ffffff, #000000)
+- No theme prop or CSS variable support in library
+- Testing dark mode only on custom components
 
 **Prevention:**
-1. Use PostgreSQL full-text search for MVP (tsvector/tsquery) - good enough to start
-2. For scale: pg_search extension provides Elasticsearch-quality search inside Postgres
-3. If using Elasticsearch: index synchronously or near-synchronously (not batch)
-4. Include message ID, channel, sender in index for filtering
-5. Consider ParadeDB/pg_search for transactional consistency
+1. **Audit dependencies for theme support** - Radix/shadcn (used by OComms) supports theming well
+2. **Use CSS variables consistently** - Libraries should consume your variables
+3. **Wrap non-themeable components** - Container with background override
+4. **Choose themeable alternatives** - Replace libraries that don't support theming
+5. **Test entire app in both modes** - Every screen, every component
 
-**Phase to address:** Phase 3 (Search) - But plan data model in Phase 1
+**Current OComms state:** Using shadcn/ui which has excellent dark mode support via CSS variables.
 
-**Sources:**
-- [ParadeDB: pg_search](https://www.paradedb.com/blog/introducing_search)
-- [Neon: PostgreSQL Full-Text Search vs Elasticsearch](https://neon.com/blog/postgres-full-text-search-vs-elasticsearch)
-- [Stream Chat + Elasticsearch Integration](https://getstream.io/blog/chat-elasticsearch/)
+**Phase to address:** Phase 2 (Dark Mode/Theming) - Audit before implementation
+
+**Confidence:** MEDIUM - [Zendesk Dark Mode Docs](https://developer.zendesk.com/documentation/apps/app-developer-guide/dark-mode/), [CSS Tricks Dark Mode](https://css-tricks.com/easy-dark-mode-and-multiple-color-themes-in-react/)
 
 ---
 
-### Pitfall 8: Multi-Device Notification Chaos
+### Pitfall 8: S3/Presigned URL Security Misconfiguration
 
-**What goes wrong:** User reads message on desktop, phone buzzes 10 seconds later. Or user is on phone, desktop shows notification. Users get duplicates or miss messages entirely.
+**What goes wrong:** Presigned URLs for file downloads/uploads are shared, cached, or have overly long expiration, allowing unauthorized access.
 
-**Why it happens:** No coordination between devices. Each device tracks its own notification state. Push notifications fire independently of WebSocket connections.
+**Why it happens:** Convenience over security - long expiration times "just work." Not understanding that presigned URLs are bearer tokens that grant access to anyone who has them.
 
 **Consequences:**
-- Users disable notifications (then miss messages)
-- Notification fatigue
-- Unprofessional experience compared to Slack
-- Support tickets about "broken" notifications
+- Confidential files accessible via shared URLs
+- Files remain accessible long after user's access revoked
+- URLs cached in browser history, proxy logs, referrer headers
+- Compliance violations (GDPR, HIPAA)
 
 **Warning signs:**
-- Push notifications sent regardless of active WebSocket connection
-- No "suppress if active on other device" logic
-- Notification read state per-device, not per-user
-- "Smart notifications" treated as nice-to-have
+- Presigned URLs with multi-day expiration
+- URLs embedded in HTML (cached, logged)
+- No per-request URL generation
+- Upload URLs without content verification
 
 **Prevention:**
-1. Track active devices per user (which have WebSocket connection)
-2. Delay push notification if user active on any device (10-30 second grace period)
-3. If user reads on Device A, cancel pending push to Device B
-4. Clear notification badges across devices when message read
-5. Let users configure: "notify mobile only if inactive for X minutes"
+1. **Short expiration times** - 5-15 minutes for downloads, <1 hour for uploads
+2. **Generate on demand** - Never embed in static HTML, fetch from API
+3. **Use CloudFront signed URLs for caching** - Separate from direct S3 access
+4. **Verify upload content** - Use Content-MD5 header requirement
+5. **Log URL generation** - Audit trail of who accessed what
+6. **Consider streaming through app** - For highly sensitive files
 
-**Phase to address:** Phase 3 (Notifications) - Requires presence/activity tracking from Phase 2
+**Phase to address:** Phase 1 (File Upload Infrastructure) - If using S3/R2
 
-**Sources:**
-- [ClickUp Feedback: Smart Notifications](https://feedback.clickup.com/chat-feedback/p/dont-send-mobile-notifications-if-active-on-web-desktop-app)
-- [Rocket.Chat Push Notifications](https://docs.rocket.chat/docs/push)
+**Confidence:** HIGH - [AWS Presigned URL Security](https://aws.amazon.com/blogs/compute/securing-amazon-s3-presigned-urls-for-serverless-applications/), [Presigned URL Pitfalls](https://insecurity.blog/2021/03/06/securing-amazon-s3-presigned-urls/)
 
 ---
 
-### Pitfall 9: Authentication Without Escape Hatches
+### Pitfall 9: CSP Conflicts with File Uploads/Previews
 
-**What goes wrong:** SSO configured, IDP goes down, all users locked out. Or password reset email never arrives, user can't access workspace.
+**What goes wrong:** Content Security Policy blocks legitimate file previews, blob URLs for downloads, or inline styles needed for image display.
 
-**Why it happens:** Single authentication path with no fallback. SSO misconfiguration locks out admins. Email provider issues block password resets.
+**Why it happens:** Strict CSP (which OComms should have) blocks blob:, data:, and inline styles by default. File upload features often need these for previews and downloads.
 
 **Consequences:**
-- Complete workspace lockout
-- Emergency support escalations
-- Data hostage situations
-- Trust destruction
+- File previews broken
+- Downloads fail silently
+- PDF viewers don't work
+- Console errors but no user-visible feedback
 
 **Warning signs:**
-- No admin bypass mechanism
-- SSO as the only authentication option
-- No local admin account for emergencies
-- Password reset depends on single email provider
+- CSP errors in console during file operations
+- "blob: (blocked:csp)" errors
+- File preview shows broken image
+- PDF.js or similar viewers fail
 
 **Prevention:**
-1. Always maintain emergency local admin account
-2. SSO failure should allow fallback to local auth (configurable)
-3. Multiple password reset mechanisms (email, admin reset, backup codes)
-4. Test SSO failure scenarios before production
-5. Document "locked out" recovery procedure prominently
+1. **Plan CSP directives for file features** - Add `blob:` to img-src, object-src as needed
+2. **Use nonces for inline styles** - If image dimensions set inline
+3. **Serve files from allowed origin** - Configure connect-src appropriately
+4. **Test file features with strict CSP** - Don't disable CSP during development
+5. **Document CSP requirements** - For self-hosters who may customize
 
-**Phase to address:** Phase 1 (Auth) - Build escape hatches from start
+**Phase to address:** Phase 1 (File Upload Infrastructure) - CSP planning
 
-**Sources:**
-- [Langfuse: Authentication and SSO](https://langfuse.com/self-hosting/authentication-and-sso)
-- [Rocket.Chat SSO Login Problems](https://forums.rocket.chat/t/ios-and-android-apps-sso-login-problem/6483)
+**Confidence:** HIGH - [MDN CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Security-Policy), [OWASP CSP Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html)
 
 ---
 
-### Pitfall 10: Mobile Push Notification Limits
+### Pitfall 10: Notes Editing Conflicts (Lost Updates)
 
-**What goes wrong:** Self-hosted users don't receive mobile push notifications, or hit free-tier limits quickly.
+**What goes wrong:** Two users edit the same note simultaneously, and one user's changes silently overwrite the other's.
 
-**Why it happens:** Push notifications require gateway services (Firebase, APNs) which need API keys and often have usage limits. Self-hosted deployments can't easily use the vendor's push infrastructure.
+**Why it happens:** Simple "last write wins" approach without conflict detection. No locking, operational transformation, or CRDT for concurrent edits.
 
 **Consequences:**
-- Mobile experience significantly degraded
-- Users miss time-sensitive messages
-- "Works on web, broken on mobile" perception
-- Rocket.Chat's 5000/month limit hit quickly even with few users
+- User work lost without warning
+- Trust erosion - users afraid to edit shared notes
+- Frustration and repeated work
+- Support tickets about "disappearing content"
 
 **Warning signs:**
-- No push notification gateway in self-hosted architecture
-- Relying on third-party free tier without limits awareness
-- Push not tested in self-hosted deployment scenario
-- Mobile app depends on vendor's push gateway
+- No version number or ETag on notes
+- Simple PUT/POST overwrite
+- No "someone else is editing" indicator
+- Testing only with single user
 
 **Prevention:**
-1. Document push notification setup clearly for self-hosted
-2. Provide or integrate with self-hosted push gateway (like ntfy, Gotify)
-3. Allow users to bring their own Firebase/APNs credentials
-4. Clearly communicate limits and costs
-5. Web push as fallback when mobile push unavailable
+1. **Optimistic locking with version numbers** - Reject stale updates
+2. **Show "editing" indicator** - Real-time presence for notes
+3. **Last-editor-wins with conflict detection** - At least warn user
+4. **Consider CRDT for real-time collab** - Yjs, Automerge if needed
+5. **Auto-save with debounce** - Reduce window for conflicts
 
-**Phase to address:** Phase 3 (Mobile/Notifications) - Plan in architecture from start
+**MVP recommendation:** Start with optimistic locking and presence indicators. Full CRDT is complex - defer unless real-time collaboration is required.
 
-**Sources:**
-- [Rocket.Chat Push Issues](https://forums.rocket.chat/t/ios-and-android-apps-sso-login-problem/6483)
-- [Rocket.Chat Push Documentation](https://docs.rocket.chat/docs/push)
+**Phase to address:** Phase 3 (Notes Feature) - Data model decision
+
+**Confidence:** MEDIUM - [TinyMCE OT vs CRDT](https://www.tiny.cloud/blog/real-time-collaboration-ot-vs-crdt/), [Collaborative Editing Guide](https://dev.to/puritanic/building-collaborative-interfaces-operational-transforms-vs-crdts-2obo)
 
 ---
 
 ## Minor Pitfalls
 
-Mistakes that cause annoyance, rework, or suboptimal UX but are fixable.
+Mistakes that cause annoyance, minor security weaknesses, or technical debt.
 
 ---
 
-### Pitfall 11: Typing Indicators That Stick
+### Pitfall 11: Missing Virus/Malware Scanning
 
-**What goes wrong:** "User is typing..." shows forever after user abandoned the message. Or typing indicator bounces on/off rapidly with each keystroke.
+**What goes wrong:** User uploads malware-infected file, downloads it later (or another user downloads it), and their device is compromised.
 
-**Why it happens:** No timeout on typing state. No debouncing on keystroke events. Network issues prevent "stopped typing" from reaching server.
+**Why it happens:** Virus scanning seems like "enterprise overkill" for a chat app. ClamAV integration adds complexity. "Users trust each other" assumption.
 
 **Consequences:**
-- Users wait for messages that never come
-- Annoying UI flicker
-- Cross-platform inconsistencies
-- Minor but noticeable polish issue
+- Malware spread through trusted platform
+- Organizational devices compromised
+- Legal/compliance liability
+- Reputation damage
+
+**Warning signs:**
+- No malware scanning in upload pipeline
+- "We'll add it later" attitude
+- Assumption that file type validation is sufficient
+- No plan for self-hosted ClamAV deployment
 
 **Prevention:**
-1. Typing indicator auto-expires after 3-5 seconds without keystroke
-2. Debounce typing events (send max every 2 seconds)
-3. "Stop typing" sent explicitly on blur/send
-4. Client-side timeout if no refresh from server
-5. Don't persist typing state - ephemeral only
+1. **Integrate ClamAV via clamscan npm package** - Scan before storing
+2. **Run ClamAV as sidecar container** - Easy Docker deployment
+3. **Quarantine suspicious files** - Don't delete, allow admin review
+4. **Update virus definitions** - freshclam on schedule
+5. **Document for self-hosters** - ClamAV setup instructions
 
-**Phase to address:** Phase 2 (Real-time features) - Easy to get right with planning
+**Phase to address:** Phase 1 (File Upload Infrastructure) - Optional but recommended
 
-**Sources:**
-- [PubNub: Typing Indicator](https://www.pubnub.com/docs/chat/chat-sdk/build/features/channels/typing-indicator)
-- [How-To Geek: Typing Indicators](https://www.howtogeek.com/that-typing-indicator-you-see-its-lying-to-you-sometimes/)
+**Confidence:** MEDIUM - [ClamAV + Node.js Guide](https://transloadit.com/devtips/implementing-server-side-malware-scanning-with-clamav-in-node-js/), [NestJS ClamAV Integration](https://devkamal.medium.com/securing-file-uploads-in-nestjs-a-complete-guide-to-implementing-clamav-for-virus-scanning-and-a152a6f021d6)
 
 ---
 
-### Pitfall 12: Emoji Reactions That Duplicate
+### Pitfall 12: File Storage Quota Not Enforced
 
-**What goes wrong:** User clicks reaction, nothing happens, clicks again, two reactions appear. Or reaction shows on one device but not another.
+**What goes wrong:** Single user or workspace consumes all available storage by uploading many/large files, affecting all other users.
 
-**Why it happens:** Optimistic UI without proper deduplication. Race condition between "add reaction" events. Reaction state not properly synced across devices.
+**Why it happens:** No per-workspace or per-user storage limits. Self-hosted deployments have finite disk space. "Unlimited storage" assumption from cloud services.
 
 **Consequences:**
-- Confusing reaction counts
-- Users wonder if their reaction registered
-- Data inconsistency across devices
-- Minor trust erosion
+- Disk full, entire application fails
+- Noisy neighbor problem in multi-tenant
+- Self-hosters surprised by storage requirements
+- No way to manage storage retroactively
+
+**Warning signs:**
+- No storage tracking per workspace/user
+- No upload rejection when quota exceeded
+- Disk usage not monitored
+- Storage requirements not documented
 
 **Prevention:**
-1. Reactions are unique per (message, user, emoji) - database constraint
-2. Toggle semantics: if exists, remove; if not, add
-3. Optimistic UI with rollback on conflict
-4. Return current reaction state after mutation (not just success/fail)
-5. Include reaction sync in message fetch, not separate call
+1. **Track storage usage per workspace** - Sum of all file sizes
+2. **Configurable quota limits** - Admin can set per workspace
+3. **Reject uploads over quota** - Clear error message
+4. **Dashboard showing usage** - Users can see their consumption
+5. **Document storage requirements** - For self-hosted planning
 
-**Phase to address:** Phase 2 (Reactions) - Plan data model carefully
+**Phase to address:** Phase 1 (File Upload Infrastructure) - Schema design
+
+**Confidence:** HIGH - Common sense for self-hosted applications
 
 ---
 
-### Pitfall 13: Pin/Bookmark Limits Not Enforced
+### Pitfall 13: Theme Transition Jank
 
-**What goes wrong:** Users pin hundreds of messages, making pins useless. Or workspace runs out of storage because pinned attachments are never cleaned up.
+**What goes wrong:** Toggling between light/dark mode causes visible color "jumping" as different elements transition at different speeds.
 
-**Why it happens:** No limits on pins per channel. Pinned items not subject to message retention. No UI to manage large pin lists.
+**Why it happens:** CSS transitions applied inconsistently. Some colors transition, others snap. Third-party components don't transition. Too many elements recalculating styles.
 
 **Consequences:**
-- Pins become unusable (too many to browse)
-- Storage costs for pinned attachments
-- Users complain about useless feature
-- Difficult to retrofit limits without data migration
+- Unpolished feel
+- Motion sickness for some users
+- Perceived as buggy
+- Minor but noticeable quality issue
+
+**Warning signs:**
+- Different transition durations on different elements
+- Some colors transition, others don't
+- Repaint/reflow visible during toggle
+- Testing only light-to-dark, not dark-to-light
 
 **Prevention:**
-1. Limit pins per channel (Slack: 100 per channel)
-2. Show "pin limit reached" rather than silently failing
-3. Provide pin management UI (bulk unpin, sort by date)
-4. Consider: pins subject to retention, or pins preserve messages
-5. Document limits clearly
+1. **Consistent transition on color properties** - Or no transition at all
+2. **Avoid transitioning layout properties** - Only colors, backgrounds
+3. **Consider instant switch** - Some apps (Slack) don't transition
+4. **Disable transitions on initial load** - Only on user toggle
+5. **Test both directions** - Light-to-dark AND dark-to-light
 
-**Phase to address:** Phase 2 (Pins) - Define limits in requirements
+**Phase to address:** Phase 2 (Dark Mode/Theming) - Polish phase
+
+**Confidence:** MEDIUM - [CSS Variables Dark Mode](https://www.magicpatterns.com/blog/implementing-dark-mode)
 
 ---
 
-### Pitfall 14: Channel/DM Naming Collisions
+### Pitfall 14: File Preview Not Respecting Permissions
 
-**What goes wrong:** User creates channel "engineering", another workspace also has "engineering", URL routing breaks. Or DM with deleted user has orphaned data.
+**What goes wrong:** File preview URLs are guessable or don't check if requesting user has access, allowing unauthorized file viewing.
 
-**Why it happens:** Channel slugs not scoped to workspace. DM lookup assumes both users exist. URL patterns collide between channels and reserved paths.
+**Why it happens:** Preview endpoint only checks if file exists, not if user has permission. Or preview URL is same as download URL with no auth.
 
 **Consequences:**
-- Routing bugs
-- 404s for valid channels
-- Orphaned data from deleted users
-- URL structure rework later
+- Confidential files leaked via preview
+- IDOR vulnerability
+- Compliance violations
+- Trust violation
+
+**Warning signs:**
+- Preview URL is `/uploads/{fileId}.jpg` with no auth
+- Sequential/guessable file IDs
+- No permission check on preview endpoint
+- Different permission model for preview vs download
 
 **Prevention:**
-1. Channel slugs scoped: `workspace_id + slug` unique constraint
-2. Reserve URL paths: `/settings`, `/admin`, `/search` can't be channel names
-3. DM identified by sorted user pair, handle deleted users gracefully
-4. Validate channel names against reserved list on create/rename
+1. **Same permission check for preview and download** - User must have channel/conversation access
+2. **Non-guessable file IDs** - UUIDs, not sequential integers
+3. **Consider signed preview URLs** - Time-limited, user-specific
+4. **Log preview access** - Audit trail
 
-**Phase to address:** Phase 1 (Channels/DMs) - URL design decision
+**Phase to address:** Phase 1 (File Upload Infrastructure) - Authorization design
+
+**Confidence:** HIGH - Standard security practice
 
 ---
 
-### Pitfall 15: Attachment Storage Assumptions
+### Pitfall 15: Notes Search Not Integrated
 
-**What goes wrong:** Self-hosted users run out of disk space. Or S3 credentials expire and all attachments become 404. Or attachment URLs exposed publicly.
+**What goes wrong:** Users can search messages but not notes, or notes appear in search results without proper context/permissions.
 
-**Why it happens:** Assuming unlimited storage. Single storage backend without abstraction. Signed URLs not implemented. No attachment cleanup policy.
+**Why it happens:** Notes added as separate feature without considering search integration. Different content model than messages.
 
 **Consequences:**
-- Disk space exhaustion crashes deployment
-- Broken attachments destroy message history
-- Security exposure if attachments public
-- Difficult to migrate storage backends
+- Users can't find information in notes
+- Inconsistent search experience
+- Notes become "second-class" content
+- Users avoid using notes
+
+**Warning signs:**
+- Search queries only against messages table
+- Notes not indexed for full-text search
+- No plan for notes in search from start
+- Permission model not considered for search
 
 **Prevention:**
-1. Abstract storage backend (local, S3, GCS compatible)
-2. Signed URLs with expiration for attachments
-3. Quota enforcement per workspace
-4. Document storage requirements clearly
-5. Attachment retention policy aligned with message retention
+1. **Design notes schema with search in mind** - tsvector column
+2. **Same permission model as messages** - Notes belong to channels/DMs
+3. **Unified search results** - Messages and notes together
+4. **Clear result type indicator** - User knows if result is note or message
 
-**Phase to address:** Phase 2 (File uploads) - Storage abstraction from start
+**Phase to address:** Phase 3 (Notes Feature) - Schema design
+
+**Confidence:** MEDIUM - User experience consideration
 
 ---
 
 ## Phase-Specific Warnings
 
 | Phase Topic | Likely Pitfall | Mitigation |
-|------------|----------------|------------|
-| Foundation/Architecture | WebSocket scaling (Pitfall 1) | Pub/sub from day one, test with multiple instances |
-| Messages | Ordering (Pitfall 2), Threads (Pitfall 3) | Server sequence numbers, materialized path |
-| Channels/DMs | Naming collisions (Pitfall 14) | Scoped slugs, reserved words |
-| Real-time | Presence overload (Pitfall 6), Typing stickiness (Pitfall 11) | Batch presence, timeout typing |
-| Unreads/Mentions | Lying badges (Pitfall 4) | Server-side read horizon |
-| Search | Slow/missing results (Pitfall 7) | PostgreSQL FTS or pg_search |
-| Authentication | Lockout scenarios (Pitfall 9) | Emergency admin bypass |
-| Notifications | Multi-device chaos (Pitfall 8), Push limits (Pitfall 10) | Active device tracking, self-hosted push gateway |
-| Deployment | Data loss (Pitfall 5) | Volume mount checks, startup validation |
+|-------------|---------------|------------|
+| File Upload Infrastructure | Memory exhaustion (Pitfall 2) | Stream to disk, never buffer |
+| File Upload Infrastructure | Path traversal (Pitfall 3) | UUID filenames only |
+| File Upload Infrastructure | Content-type bypass (Pitfall 1) | Validate magic bytes + re-encode |
+| File Upload Infrastructure | CSP conflicts (Pitfall 9) | Plan blob:/img-src directives |
+| File Serving | Presigned URL leaks (Pitfall 8) | Short expiration, generate per-request |
+| File Serving | Permission bypass (Pitfall 14) | Same auth for preview and download |
+| Dark Mode | FOUC (Pitfall 6) | Blocking script in head, cookies for SSR |
+| Dark Mode | Third-party conflicts (Pitfall 7) | Audit components before implementing |
+| Dark Mode | Transition jank (Pitfall 13) | Consistent or no transitions |
+| Notes | XSS via markdown (Pitfall 4) | DOMPurify 3.3.1+, sanitize at render |
+| Notes | Editing conflicts (Pitfall 10) | Optimistic locking, presence |
+| Notes | Search integration (Pitfall 15) | Design with full-text search from start |
 
 ---
 
-## Self-Hosted Specific Pitfalls Summary
+## Security-Specific Warnings for OComms
 
-These pitfalls are specific to or amplified by the self-hosted deployment model:
+Given OComms' existing security posture (CSP headers, input validation, rate limiting, audit logging), these pitfalls require special attention:
 
-1. **Data persistence** (Pitfall 5) - Docker users losing data on restart
-2. **Push notification infrastructure** (Pitfall 10) - No access to vendor push gateways
-3. **SSO lockout** (Pitfall 9) - Admin can't recover if IDP misconfigured
-4. **Storage limits** (Pitfall 15) - Self-hosters may have limited disk space
-5. **Hardware requirements** - Under-specced servers cause cascading failures
-6. **Database choice** - SQLite works in demo, fails at scale
-7. **Network configuration** - Firewalls, reverse proxies, WebSocket upgrades
+### Must Maintain
+1. **CSP integrity** - File features must work within CSP, not weaken it
+2. **Audit logging** - File uploads/downloads should be logged
+3. **Rate limiting** - File operations need rate limits (upload spam)
+4. **Input validation** - Filename, size, type validation on all uploads
 
-**Prevention pattern for all:**
-- Fail loudly with helpful errors, not silently
-- Document requirements clearly with examples
-- Provide health checks and diagnostics
-- Make common configurations easy, advanced configurations possible
+### New Security Additions for v0.4.0
+1. **File-specific rate limiting** - Separate from message rate limiting
+2. **Storage audit events** - Who uploaded/downloaded what, when
+3. **Malware scanning consideration** - ClamAV integration
+4. **Content-Type headers** - Always set explicitly on served files
 
 ---
 
 ## Sources Summary
 
-### WebSocket and Real-time
-- [Ably: WebSocket Architecture Best Practices](https://ably.com/topic/websocket-architecture-best-practices)
-- [Ably: Scaling WebSockets](https://ably.com/topic/the-challenge-of-scaling-websockets)
-- [Ably: Message Ordering at Scale](https://ably.com/blog/chat-architecture-reliable-message-ordering)
-- [InfiniteJS: WebSocket Mistakes in Node.js](https://infinitejs.com/posts/avoiding-websocket-mistakes-nodejs-chat/)
+### File Upload Security
+- [OWASP File Upload Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html)
+- [PortSwigger File Upload Vulnerabilities](https://portswigger.net/web-security/file-upload)
+- [Intigriti File Upload Guide](https://www.intigriti.com/researchers/blog/hacking-tools/insecure-file-uploads-a-complete-guide-to-finding-advanced-file-upload-vulnerabilities)
+- [Sourcery Content-Type Bypass](https://www.sourcery.ai/vulnerabilities/file-upload-content-type-bypass)
 
-### Self-Hosted Deployment
-- [XDA: Self-Hosting Beginner Mistakes](https://www.xda-developers.com/self-hosting-beginner-mistakes/)
-- [Sliplane: Docker Deployment Mistakes](https://sliplane.io/blog/5-costly-mistakes-when-deploying-docker-containers)
-- [Mattermost vs Rocket.Chat Comparison](https://www.blackvoid.club/rocket-chat-vs-mattermost/)
+### Memory and DoS
+- [CVE-2025-47935: Multer DoS](https://www.miggo.io/vulnerability-database/cve/CVE-2025-47935)
+- [Multer Memory Trap](https://medium.com/@codewithmunyao/the-multer-memory-trap-why-your-file-upload-strategy-is-killing-your-server-89f9e8797e58)
+- [Handling Large File Uploads](https://www.ionicframeworks.com/2025/08/handle-large-file-uploads-in-nodejs.html)
 
-### Chat Architecture
-- [Ably: Scalable Chat App Architecture](https://ably.com/blog/chat-app-architecture)
-- [RST Software: Chat App Architecture Guide](https://www.rst.software/blog/chat-app-architecture)
-- [System Design Handbook: Chat System](https://www.systemdesignhandbook.com/guides/design-a-chat-system/)
+### Path Traversal
+- [CVE-2025-23084: Node.js Path Traversal](https://security.snyk.io/vuln/SNYK-UPSTREAM-NODE-8651420)
+- [CVE-2025-27210: Windows Device Names](https://zeropath.com/blog/cve-2025-27210-nodejs-path-traversal-windows)
+- [Node.js Path Traversal Guide](https://www.stackhawk.com/blog/node-js-path-traversal-guide-examples-and-prevention/)
 
-### Search
-- [ParadeDB: pg_search](https://www.paradedb.com/blog/introducing_search)
-- [Neon: PostgreSQL vs Elasticsearch](https://neon.com/blog/postgres-full-text-search-vs-elasticsearch)
-- [Stream Chat + Elasticsearch](https://getstream.io/blog/chat-elasticsearch/)
+### XSS and Sanitization
+- [DOMPurify GitHub](https://github.com/cure53/DOMPurify)
+- [CVE-2025-26791: DOMPurify XSS](https://security.snyk.io/vuln/SNYK-JS-DOMPURIFY-8722251)
+- [HackerOne Secure Markdown](https://www.hackerone.com/blog/secure-markdown-rendering-react-balancing-flexibility-and-safety)
+- [mXSS: The Vulnerability Hiding in Your Code](https://www.sonarsource.com/blog/mxss-the-vulnerability-hiding-in-your-code/)
 
-### Notifications and Sync
-- [Twilio: Read Horizon](https://www.twilio.com/docs/conversations/read-horizon)
-- [Stream Chat: Unread Counts](https://getstream.io/chat/docs/react/unread/)
-- [AWS Chime: Presence and Typing](https://aws.amazon.com/blogs/business-productivity/build-presence-and-typing-indicators-with-amazon-chime-sdk-messaging/)
+### Image Processing
+- [ImageMagick CVE-2025-57803](https://gbhackers.com/critical-imagemagick-vulnerability/)
+- [ImageMagick 2025 Vulnerabilities](https://stack.watch/product/imagemagick/imagemagick/)
+- [ImageMagick CVE-2025-55154](https://zeropath.com/blog/imagemagick-cve-2025-55154)
+
+### Dark Mode
+- [Josh Comeau: Perfect Dark Mode](https://www.joshwcomeau.com/react/dark-mode/)
+- [Fixing Dark Mode Flickering](https://notanumber.in/blog/fixing-react-dark-mode-flickering)
+- [FOUC in Next.js App Router](https://dev.to/amritapadhy/understanding-fixing-fouc-in-nextjs-app-router-2025-guide-ojk)
+
+### Presigned URLs and CSP
+- [AWS Presigned URL Security](https://aws.amazon.com/blogs/compute/securing-amazon-s3-presigned-urls-for-serverless-applications/)
+- [Presigned URL Pitfalls](https://insecurity.blog/2021/03/06/securing-amazon-s3-presigned-urls/)
+- [OWASP CSP Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html)
+
+### Collaborative Editing
+- [TinyMCE OT vs CRDT](https://www.tiny.cloud/blog/real-time-collaboration-ot-vs-crdt/)
+- [Building Collaborative Interfaces](https://dev.to/puritanic/building-collaborative-interfaces-operational-transforms-vs-crdts-2obo)
+
+### Antivirus Integration
+- [ClamAV + Node.js](https://transloadit.com/devtips/implementing-server-side-malware-scanning-with-clamav-in-node-js/)
+- [clamscan npm](https://www.npmjs.com/package/clamscan)
