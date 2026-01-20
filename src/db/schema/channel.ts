@@ -1,6 +1,7 @@
-import { pgTable, text, timestamp, boolean, uuid, uniqueIndex } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, uuid, uniqueIndex, integer } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { organizations, users } from "./auth";
+import { channelCategories } from "./channel-category";
 
 export const channels = pgTable("channels", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -12,6 +13,11 @@ export const channels = pgTable("channels", {
   description: text("description"),
   topic: text("topic"),
   isPrivate: boolean("is_private").notNull().default(false),
+  isArchived: boolean("is_archived").notNull().default(false),
+  archivedAt: timestamp("archived_at"),
+  archivedBy: text("archived_by").references(() => users.id, { onDelete: "set null" }),
+  categoryId: uuid("category_id").references(() => channelCategories.id, { onDelete: "set null" }),
+  sortOrder: integer("sort_order").notNull().default(0),
   createdBy: text("created_by")
     .references(() => users.id, { onDelete: "set null" }),
   createdAt: timestamp("created_at").notNull().defaultNow(),
@@ -42,6 +48,10 @@ export const channelsRelations = relations(channels, ({ one, many }) => ({
   creator: one(users, {
     fields: [channels.createdBy],
     references: [users.id],
+  }),
+  category: one(channelCategories, {
+    fields: [channels.categoryId],
+    references: [channelCategories.id],
   }),
   members: many(channelMembers),
 }));
