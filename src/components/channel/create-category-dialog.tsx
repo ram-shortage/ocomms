@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { createCategory } from "@/lib/actions/channel-category";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,6 +25,7 @@ export function CreateCategoryDialog({
   organizationId,
   trigger,
 }: CreateCategoryDialogProps) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [error, setError] = useState("");
@@ -44,6 +46,7 @@ export function CreateCategoryDialog({
       await createCategory(organizationId, name);
       setOpen(false);
       setName("");
+      router.refresh();
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
