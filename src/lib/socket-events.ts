@@ -63,6 +63,13 @@ export interface ServerToClientEvents {
   "message:new": (message: Message) => void;
   "message:deleted": (data: { messageId: string; deletedAt: Date }) => void;
   "message:replyCount": (data: { messageId: string; replyCount: number }) => void;
+  "note:updated": (data: {
+    channelId?: string;
+    workspaceId?: string; // For personal notes (organizationId)
+    version: number;
+    updatedBy: string;
+    updatedByName: string;
+  }) => void;
   "typing:update": (data: {
     userId: string;
     userName: string;
@@ -104,6 +111,8 @@ export interface ClientToServerEvents {
     callback?: (response: { success: boolean; messageId?: string }) => void
   ) => void;
   "message:delete": (data: { messageId: string }) => void;
+  "note:subscribe": (data: { channelId?: string; workspaceId?: string }) => void;
+  "note:unsubscribe": (data: { channelId?: string; workspaceId?: string }) => void;
   "typing:start": (data: { targetId: string; targetType: "channel" | "dm" }) => void;
   "typing:stop": (data: { targetId: string; targetType: "channel" | "dm" }) => void;
   "presence:setAway": () => void;
