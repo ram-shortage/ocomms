@@ -10,6 +10,7 @@ import { ReactionDisplay } from "./reaction-display";
 import { MessageContent } from "./message-content";
 import { MessageStatus } from "./message-status";
 import { FileAttachment } from "./file-attachment";
+import { ReminderMenuItem } from "@/components/reminder/reminder-menu-item";
 
 interface MessageItemProps {
   message: Message;
@@ -100,6 +101,8 @@ export function MessageItem({
       {!isDeleted && (
         <div className="flex items-center gap-1">
           <ReactionPicker onSelectEmoji={(emoji) => onToggleReaction(message.id, emoji)} />
+          {/* RMND-01: Remind me button */}
+          <ReminderMenuItem messageId={message.id} />
           {/* Mark as unread - only for other users' messages */}
           {!isOwn && onMarkUnread && (
             <Button
