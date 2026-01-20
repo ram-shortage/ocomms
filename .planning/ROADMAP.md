@@ -56,7 +56,13 @@ Plans:
   3. User can set a reminder on any message to be notified at a chosen time
   4. User can view pending reminders, snooze them when they fire, and mark them complete
   5. Scheduled messages and reminders survive server restarts (persistent job queue)
-**Plans**: TBD
+**Plans**: 5 plans
+Plans:
+- [ ] 25-01-PLAN.md - BullMQ infrastructure (queues, worker entry point, npm scripts)
+- [ ] 25-02-PLAN.md - Database schema (scheduled_messages, reminders tables)
+- [ ] 25-03-PLAN.md - Scheduled messages feature (UI + actions + worker)
+- [ ] 25-04-PLAN.md - Reminders feature (UI + actions + worker + notifications)
+- [ ] 25-05-PLAN.md - Verification checkpoint
 
 ### Phase 26: Collections & Presence
 
@@ -118,7 +124,7 @@ Phases execute in numeric order: 24 -> 24.1 (if inserted) -> 25 -> 26 -> 27 -> 2
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 24. Quick Wins | 4/4 | Complete (gaps) | 2026-01-20 |
-| 25. Job Queue Foundation | 0/TBD | Not started | - |
+| 25. Job Queue Foundation | 0/5 | Planned | - |
 | 26. Collections & Presence | 0/TBD | Not started | - |
 | 27. Rich Content | 0/TBD | Not started | - |
 | 28. Authorization & Analytics | 0/TBD | Not started | - |
