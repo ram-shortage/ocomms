@@ -59,6 +59,20 @@ export interface Notification {
   createdAt: Date;
 }
 
+/**
+ * Reminder interface for reminder events
+ * RMND-*: Reminder feature types
+ */
+export interface Reminder {
+  id: string;
+  messageId: string;
+  note: string | null;
+  remindAt: Date;
+  status: "pending" | "fired" | "snoozed" | "completed" | "cancelled";
+  recurringPattern: "daily" | "weekly" | null;
+  message?: Message;
+}
+
 export interface ServerToClientEvents {
   "message:new": (message: Message) => void;
   "message:deleted": (data: { messageId: string; deletedAt: Date }) => void;
@@ -96,6 +110,17 @@ export interface ServerToClientEvents {
   "notification:new": (notification: Notification) => void;
   "notification:read": (data: { notificationId: string }) => void;
   "notification:readAll": () => void;
+  /** RMND-*: Reminder fired event */
+  "reminder:fired": (data: {
+    reminder: Reminder;
+    message: Message;
+  }) => void;
+  /** RMND-*: Reminder status updated event */
+  "reminder:updated": (data: {
+    reminderId: string;
+    status: Reminder["status"];
+    snoozedUntil?: Date;
+  }) => void;
   error: (data: { message: string; code?: string; retryAfter?: number }) => void;
 }
 

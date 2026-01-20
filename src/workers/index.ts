@@ -9,8 +9,10 @@ config(); // loads .env, won't override existing values
 
 import { Worker } from "bullmq";
 import { getQueueConnection } from "@/server/queue/connection";
+import { createReminderWorker } from "./reminder.worker";
+import { closeEmitter } from "@/server/queue/emitter";
 
-// Placeholder workers - real processors added in later plans
+// Placeholder worker for scheduled messages - implemented in Plan 03
 const scheduledMessageWorker = new Worker(
   "scheduled-messages",
   async (job) => {
@@ -21,15 +23,8 @@ const scheduledMessageWorker = new Worker(
   { connection: getQueueConnection(), concurrency: 5 }
 );
 
-const reminderWorker = new Worker(
-  "reminders",
-  async (job) => {
-    console.log("[Worker] Processing reminder:", job.data);
-    // TODO: Implement in Plan 04
-    return { processed: true };
-  },
-  { connection: getQueueConnection(), concurrency: 5 }
-);
+// Real reminder worker - Plan 04
+const reminderWorker = createReminderWorker();
 
 console.log("[Worker] BullMQ workers started");
 
@@ -38,6 +33,7 @@ const shutdown = async () => {
   console.log("[Worker] Shutting down...");
   await scheduledMessageWorker.close();
   await reminderWorker.close();
+  await closeEmitter();
   process.exit(0);
 };
 

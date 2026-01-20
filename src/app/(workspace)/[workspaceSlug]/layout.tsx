@@ -4,6 +4,7 @@ import { redirect, notFound } from "next/navigation";
 import { PresenceWrapper } from "@/components/presence/presence-wrapper";
 import { WorkspaceSidebar } from "@/components/workspace/workspace-sidebar";
 import { MobileTabBar } from "@/components/layout";
+import { ReminderListener } from "@/components/reminder/reminder-listener";
 import { getUserChannels } from "@/lib/actions/channel";
 import { getUserConversations } from "@/lib/actions/conversation";
 import { getCategories, getCollapseStates } from "@/lib/actions/channel-category";
@@ -114,6 +115,9 @@ export default async function WorkspaceSlugLayout({
 
         {/* Bottom tabs - mobile only */}
         <MobileTabBar workspaceSlug={workspaceSlug} />
+
+        {/* RMND-*: Reminder toast listener */}
+        <ReminderListener workspaceSlug={workspaceSlug} />
       </div>
     </PresenceWrapper>
   );
