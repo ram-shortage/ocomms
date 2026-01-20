@@ -37,10 +37,17 @@ Organizations increasingly need real-time communication tools, but cloud-hosted 
 - Online/away/offline status indicators
 - Real-time presence updates across all clients
 
+### Mobile & Offline
+- Progressive Web App (PWA) with install prompt
+- Offline message queue with automatic sync
+- Push notifications (Web Push API)
+- Responsive mobile layout
+
 ### Self-Hosted Ready
 - Single-command Docker deployment
 - PostgreSQL backup and restore scripts
 - GDPR-compliant data export
+- Admin dashboard with audit logs
 - No external service dependencies
 
 ## Tech Stack
@@ -138,6 +145,27 @@ curl -X POST https://your-domain/api/admin/export \
   -d '{"organizationId": "your-org-id"}'
 ```
 
+## Testing
+
+OComms maintains comprehensive test coverage across all layers:
+
+```bash
+# Run all tests
+npm run test
+
+# Run with coverage
+npm run test -- --coverage
+```
+
+**Test Suite:** 640+ tests covering:
+- Socket.IO message and thread handlers
+- API route authentication and authorization
+- Server actions and business logic
+- Data integrity and concurrency
+- UI components with React Testing Library
+- Accessibility (WCAG 2.1 compliance)
+- PWA/offline functionality
+
 ## Architecture
 
 ```
@@ -160,8 +188,14 @@ curl -X POST https://your-domain/api/admin/export \
 
 ## Roadmap
 
-OComms v0.1.0 delivers core team communication features. Future versions may include:
+**Current Version: v0.3.0** — Mobile & Polish
 
+Completed milestones:
+- **v0.1.0** — Full conversation features (channels, DMs, threads, search)
+- **v0.2.0** — Security hardening (HSTS, rate limiting, audit logging)
+- **v0.3.0** — Mobile experience (PWA, offline, push notifications)
+
+Future versions may include:
 - [ ] Message editing
 - [ ] Rich text formatting
 - [ ] Custom emoji
