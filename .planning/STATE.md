@@ -72,7 +72,8 @@ Phase 24-03 decisions:
 
 ### Pending Todos
 
-None - ready for phase planning.
+1 todo pending — see `.planning/todos/pending/`
+- **Fix channel category drag-drop and management** (ui) — drag-drop not working, no delete UI
 
 ### Blockers/Concerns
 
