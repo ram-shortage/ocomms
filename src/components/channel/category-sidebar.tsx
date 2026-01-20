@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import Link from "next/link";
 import {
   DndContext,
@@ -13,6 +13,7 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
+  useDroppable,
 } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -145,7 +146,7 @@ function ChannelItemOverlay({ channel }: { channel: Channel }) {
   );
 }
 
-// Category section component
+// Category section component with droppable support
 function CategorySection({
   category,
   channels,
@@ -165,6 +166,12 @@ function CategorySection({
   isAdmin: boolean;
   activeId: string | null;
 }) {
+  // Make the category header a drop target
+  const { setNodeRef, isOver } = useDroppable({
+    id: `category-${category.id}`,
+    data: { type: "category", categoryId: category.id },
+  });
+
   // Calculate total unread for collapsed category badge
   const totalUnread = useMemo(() => {
     return channels.reduce((sum, ch) => sum + (channelUnreads[ch.id] ?? 0), 0);
@@ -178,11 +185,14 @@ function CategorySection({
   const sortedChannels = [...channels].sort((a, b) => a.sortOrder - b.sortOrder);
 
   return (
-    <div className="mb-2">
+    <div className="mb-2" ref={setNodeRef}>
       {/* Category header */}
       <button
         onClick={onToggleCollapse}
-        className="w-full flex items-center gap-1 px-2 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider hover:text-foreground transition-colors"
+        className={cn(
+          "w-full flex items-center gap-1 px-2 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider hover:text-foreground transition-colors rounded",
+          isOver && "bg-accent"
+        )}
       >
         {isCollapsed ? (
           <ChevronRight className="h-3 w-3" />
@@ -215,6 +225,12 @@ function CategorySection({
                 isDragging={activeId === channel.id}
               />
             ))}
+            {/* Empty drop zone when category has no channels */}
+            {channels.length === 0 && isAdmin && (
+              <div className="px-6 py-2 text-xs text-muted-foreground italic">
+                Drag channels here
+              </div>
+            )}
           </div>
         </SortableContext>
       )}
@@ -233,6 +249,11 @@ export function CategorySidebar({
   const [collapseStates, setCollapseStates] = useState(initialCollapseStates);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [localChannels, setLocalChannels] = useState(channels);
+
+  // Sync localChannels when channels prop changes (e.g., after category creation)
+  useEffect(() => {
+    setLocalChannels(channels);
+  }, [channels]);
 
   // Get all channel IDs for unread counts
   const channelIds = useMemo(() => localChannels.map((c) => c.id), [localChannels]);
@@ -311,8 +332,18 @@ export function CategorySidebar({
       const activeChannel = localChannels.find((c) => c.id === active.id);
       if (!activeChannel) return;
 
-      const overChannel = localChannels.find((c) => c.id === over.id);
-      const targetCategoryId = overChannel?.categoryId ?? null;
+      // Determine target category - check if dropped on category header or channel
+      let targetCategoryId: string | null = null;
+
+      // Check if dropped on a category droppable (id format: "category-{id}")
+      const overId = over.id as string;
+      if (overId.startsWith("category-")) {
+        targetCategoryId = overId.replace("category-", "");
+      } else {
+        // Dropped on a channel - use that channel's category
+        const overChannel = localChannels.find((c) => c.id === overId);
+        targetCategoryId = overChannel?.categoryId ?? null;
+      }
 
       // If moving to a different category
       if (activeChannel.categoryId !== targetCategoryId) {
