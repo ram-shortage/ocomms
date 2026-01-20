@@ -175,99 +175,99 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| STAT-01 | TBD | Pending |
-| STAT-02 | TBD | Pending |
-| STAT-03 | TBD | Pending |
-| STAT-04 | TBD | Pending |
-| STAT-05 | TBD | Pending |
-| STAT-06 | TBD | Pending |
-| BOOK-01 | TBD | Pending |
-| BOOK-02 | TBD | Pending |
-| BOOK-03 | TBD | Pending |
-| BOOK-04 | TBD | Pending |
-| BOOK-05 | TBD | Pending |
-| SCHD-01 | TBD | Pending |
-| SCHD-02 | TBD | Pending |
-| SCHD-03 | TBD | Pending |
-| SCHD-04 | TBD | Pending |
-| SCHD-05 | TBD | Pending |
-| SCHD-06 | TBD | Pending |
-| SCHD-07 | TBD | Pending |
-| RMND-01 | TBD | Pending |
-| RMND-02 | TBD | Pending |
-| RMND-03 | TBD | Pending |
-| RMND-04 | TBD | Pending |
-| RMND-05 | TBD | Pending |
-| RMND-06 | TBD | Pending |
-| RMND-07 | TBD | Pending |
-| UGRP-01 | TBD | Pending |
-| UGRP-02 | TBD | Pending |
-| UGRP-03 | TBD | Pending |
-| UGRP-04 | TBD | Pending |
-| UGRP-05 | TBD | Pending |
-| UGRP-06 | TBD | Pending |
-| CCAT-01 | TBD | Pending |
-| CCAT-02 | TBD | Pending |
-| CCAT-03 | TBD | Pending |
-| CCAT-04 | TBD | Pending |
-| CCAT-05 | TBD | Pending |
-| CCAT-06 | TBD | Pending |
-| LINK-01 | TBD | Pending |
-| LINK-02 | TBD | Pending |
-| LINK-03 | TBD | Pending |
-| LINK-04 | TBD | Pending |
-| LINK-05 | TBD | Pending |
-| LINK-06 | TBD | Pending |
-| LINK-07 | TBD | Pending |
-| TYPE-01 | TBD | Pending |
-| TYPE-02 | TBD | Pending |
-| TYPE-03 | TBD | Pending |
-| TYPE-04 | TBD | Pending |
-| TYPE-05 | TBD | Pending |
-| EMOJ-01 | TBD | Pending |
-| EMOJ-02 | TBD | Pending |
-| EMOJ-03 | TBD | Pending |
-| EMOJ-04 | TBD | Pending |
-| EMOJ-05 | TBD | Pending |
-| EMOJ-06 | TBD | Pending |
-| EMOJ-07 | TBD | Pending |
-| EMOJ-08 | TBD | Pending |
-| ARCH-01 | TBD | Pending |
-| ARCH-02 | TBD | Pending |
-| ARCH-03 | TBD | Pending |
-| ARCH-04 | TBD | Pending |
-| ARCH-05 | TBD | Pending |
-| ARCH-06 | TBD | Pending |
-| GUST-01 | TBD | Pending |
-| GUST-02 | TBD | Pending |
-| GUST-03 | TBD | Pending |
-| GUST-04 | TBD | Pending |
-| GUST-05 | TBD | Pending |
-| GUST-06 | TBD | Pending |
-| GUST-07 | TBD | Pending |
-| GUST-08 | TBD | Pending |
-| ANLY-01 | TBD | Pending |
-| ANLY-02 | TBD | Pending |
-| ANLY-03 | TBD | Pending |
-| ANLY-04 | TBD | Pending |
-| ANLY-05 | TBD | Pending |
-| ANLY-06 | TBD | Pending |
-| ANLY-07 | TBD | Pending |
-| ANLY-08 | TBD | Pending |
-| TEST-01 | TBD | Pending |
-| TEST-02 | TBD | Pending |
-| TEST-03 | TBD | Pending |
-| TEST-04 | TBD | Pending |
-| TEST-05 | TBD | Pending |
-| TEST-06 | TBD | Pending |
-| TEST-07 | TBD | Pending |
-| TEST-08 | TBD | Pending |
+| STAT-01 | Phase 26 | Pending |
+| STAT-02 | Phase 26 | Pending |
+| STAT-03 | Phase 26 | Pending |
+| STAT-04 | Phase 26 | Pending |
+| STAT-05 | Phase 26 | Pending |
+| STAT-06 | Phase 26 | Pending |
+| BOOK-01 | Phase 26 | Pending |
+| BOOK-02 | Phase 26 | Pending |
+| BOOK-03 | Phase 26 | Pending |
+| BOOK-04 | Phase 26 | Pending |
+| BOOK-05 | Phase 26 | Pending |
+| SCHD-01 | Phase 25 | Pending |
+| SCHD-02 | Phase 25 | Pending |
+| SCHD-03 | Phase 25 | Pending |
+| SCHD-04 | Phase 25 | Pending |
+| SCHD-05 | Phase 25 | Pending |
+| SCHD-06 | Phase 25 | Pending |
+| SCHD-07 | Phase 25 | Pending |
+| RMND-01 | Phase 25 | Pending |
+| RMND-02 | Phase 25 | Pending |
+| RMND-03 | Phase 25 | Pending |
+| RMND-04 | Phase 25 | Pending |
+| RMND-05 | Phase 25 | Pending |
+| RMND-06 | Phase 25 | Pending |
+| RMND-07 | Phase 25 | Pending |
+| UGRP-01 | Phase 28 | Pending |
+| UGRP-02 | Phase 28 | Pending |
+| UGRP-03 | Phase 28 | Pending |
+| UGRP-04 | Phase 28 | Pending |
+| UGRP-05 | Phase 28 | Pending |
+| UGRP-06 | Phase 28 | Pending |
+| CCAT-01 | Phase 24 | Pending |
+| CCAT-02 | Phase 24 | Pending |
+| CCAT-03 | Phase 24 | Pending |
+| CCAT-04 | Phase 24 | Pending |
+| CCAT-05 | Phase 24 | Pending |
+| CCAT-06 | Phase 24 | Pending |
+| LINK-01 | Phase 27 | Pending |
+| LINK-02 | Phase 27 | Pending |
+| LINK-03 | Phase 27 | Pending |
+| LINK-04 | Phase 27 | Pending |
+| LINK-05 | Phase 27 | Pending |
+| LINK-06 | Phase 27 | Pending |
+| LINK-07 | Phase 27 | Pending |
+| TYPE-01 | Phase 24 | Pending |
+| TYPE-02 | Phase 24 | Pending |
+| TYPE-03 | Phase 24 | Pending |
+| TYPE-04 | Phase 24 | Pending |
+| TYPE-05 | Phase 24 | Pending |
+| EMOJ-01 | Phase 27 | Pending |
+| EMOJ-02 | Phase 27 | Pending |
+| EMOJ-03 | Phase 27 | Pending |
+| EMOJ-04 | Phase 27 | Pending |
+| EMOJ-05 | Phase 27 | Pending |
+| EMOJ-06 | Phase 27 | Pending |
+| EMOJ-07 | Phase 27 | Pending |
+| EMOJ-08 | Phase 27 | Pending |
+| ARCH-01 | Phase 24 | Pending |
+| ARCH-02 | Phase 24 | Pending |
+| ARCH-03 | Phase 24 | Pending |
+| ARCH-04 | Phase 24 | Pending |
+| ARCH-05 | Phase 24 | Pending |
+| ARCH-06 | Phase 24 | Pending |
+| GUST-01 | Phase 28 | Pending |
+| GUST-02 | Phase 28 | Pending |
+| GUST-03 | Phase 28 | Pending |
+| GUST-04 | Phase 28 | Pending |
+| GUST-05 | Phase 28 | Pending |
+| GUST-06 | Phase 28 | Pending |
+| GUST-07 | Phase 28 | Pending |
+| GUST-08 | Phase 28 | Pending |
+| ANLY-01 | Phase 28 | Pending |
+| ANLY-02 | Phase 28 | Pending |
+| ANLY-03 | Phase 28 | Pending |
+| ANLY-04 | Phase 28 | Pending |
+| ANLY-05 | Phase 28 | Pending |
+| ANLY-06 | Phase 28 | Pending |
+| ANLY-07 | Phase 28 | Pending |
+| ANLY-08 | Phase 28 | Pending |
+| TEST-01 | Phase 29 | Pending |
+| TEST-02 | Phase 29 | Pending |
+| TEST-03 | Phase 29 | Pending |
+| TEST-04 | Phase 29 | Pending |
+| TEST-05 | Phase 29 | Pending |
+| TEST-06 | Phase 29 | Pending |
+| TEST-07 | Phase 29 | Pending |
+| TEST-08 | Phase 29 | Pending |
 
 **Coverage:**
-- v1 requirements: 81 total
-- Mapped to phases: 0 (pending roadmap)
-- Unmapped: 81
+- v1 requirements: 87 total
+- Mapped to phases: 87
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-01-20*
-*Last updated: 2026-01-20 after initial definition*
+*Last updated: 2026-01-20 after roadmap creation*
