@@ -45,10 +45,12 @@ Plans:
   3. Image files display as inline previews in messages
   4. Non-image files display as download links with filename and size
   5. Files over 25MB are rejected with clear error message
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 22-01: TBD
+- [ ] 22-01-PLAN.md - Backend infrastructure: database schema, file validation library, upload API route
+- [ ] 22-02-PLAN.md - Upload UI: drag-drop zone, progress indicator, message input integration
+- [ ] 22-03-PLAN.md - Display components: file attachment rendering, socket integration, message display
 
 ### Phase 23: Notes
 **Goal**: Users can create and edit markdown notes per channel and maintain a personal scratchpad
@@ -72,7 +74,7 @@ Plans:
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 21. Dark Mode/Theming | v0.4.0 | 0/2 | Planned | - |
-| 22. File Uploads | v0.4.0 | 0/TBD | Not started | - |
+| 22. File Uploads | v0.4.0 | 0/3 | Planned | - |
 | 23. Notes | v0.4.0 | 0/TBD | Not started | - |
 
 ---
