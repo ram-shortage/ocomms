@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db";
-import { channelCategories, userCategoryCollapseStates, channels, members } from "@/db/schema";
+import { channelCategories, userCategoryCollapseStates, channels, members, organizations } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { eq, and, max, inArray, sql } from "drizzle-orm";
@@ -22,6 +22,16 @@ async function verifyOrgAdmin(userId: string, organizationId: string) {
   if (!membership) return null;
   if (membership.role !== "owner" && membership.role !== "admin") return null;
   return membership;
+}
+
+async function revalidateWorkspace(organizationId: string) {
+  const org = await db.query.organizations.findFirst({
+    where: eq(organizations.id, organizationId),
+    columns: { slug: true },
+  });
+  if (org?.slug) {
+    revalidatePath(`/${org.slug}`, "layout");
+  }
 }
 
 // Create a new category
@@ -50,7 +60,7 @@ export async function createCategory(organizationId: string, name: string) {
     createdBy: session.user.id,
   }).returning();
 
-  revalidatePath(`/`);
+  await revalidateWorkspace(organizationId);
   return category;
 }
 
@@ -80,7 +90,7 @@ export async function updateCategory(
     })
     .where(eq(channelCategories.id, categoryId));
 
-  revalidatePath(`/`);
+  await revalidateWorkspace(category.organizationId);
   return { success: true };
 }
 
@@ -99,6 +109,8 @@ export async function deleteCategory(categoryId: string) {
     throw new Error("Only admins can delete categories");
   }
 
+  const orgId = category.organizationId;
+
   // Transaction: set channels to uncategorized, then delete category
   await db.transaction(async (tx) => {
     await tx.update(channels)
@@ -109,7 +121,7 @@ export async function deleteCategory(categoryId: string) {
       .where(eq(channelCategories.id, categoryId));
   });
 
-  revalidatePath(`/`);
+  await revalidateWorkspace(orgId);
   return { success: true };
 }
 
@@ -186,7 +198,7 @@ export async function assignChannelToCategory(
     .set({ categoryId, updatedAt: new Date() })
     .where(eq(channels.id, channelId));
 
-  revalidatePath(`/`);
+  await revalidateWorkspace(channel.organizationId);
   return { success: true };
 }
 
@@ -217,7 +229,7 @@ export async function reorderCategories(categoryIds: string[]) {
     }
   });
 
-  revalidatePath(`/`);
+  await revalidateWorkspace(firstCategory.organizationId);
   return { success: true };
 }
 
@@ -251,7 +263,7 @@ export async function reorderChannelsInCategory(
     }
   });
 
-  revalidatePath(`/`);
+  await revalidateWorkspace(firstChannel.organizationId);
   return { success: true };
 }
 
