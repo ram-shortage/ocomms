@@ -1,22 +1,21 @@
-import { Redis } from "ioredis";
-
-let queueConnection: Redis | null = null;
+import type { ConnectionOptions } from "bullmq";
 
 /**
- * Get a singleton Redis connection for BullMQ queues.
+ * Get connection options for BullMQ queues and workers.
  * Uses REDIS_URL env var with localhost fallback.
- * maxRetriesPerRequest: null is required for BullMQ workers.
+ * Returns options object rather than Redis instance to avoid
+ * type conflicts between project ioredis and BullMQ's bundled version.
  */
-export function getQueueConnection(): Redis {
-  if (!queueConnection) {
-    const redisUrl = process.env.REDIS_URL || "redis://localhost:6379";
-    queueConnection = new Redis(redisUrl, {
-      maxRetriesPerRequest: null, // Required for BullMQ workers
-    });
+export function getQueueConnection(): ConnectionOptions {
+  const redisUrl = process.env.REDIS_URL || "redis://localhost:6379";
 
-    queueConnection.on("error", (err) => {
-      console.error("[Queue] Redis connection error:", err);
-    });
-  }
-  return queueConnection;
+  // Parse URL to extract host/port/password
+  const url = new URL(redisUrl);
+
+  return {
+    host: url.hostname,
+    port: parseInt(url.port || "6379", 10),
+    password: url.password || undefined,
+    maxRetriesPerRequest: null, // Required for BullMQ workers
+  };
 }
