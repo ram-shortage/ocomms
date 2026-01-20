@@ -14,7 +14,7 @@ v0.4.0 delivers three feature areas: dark mode theming for improved accessibilit
 ## Phases
 
 - [x] **Phase 21: Dark Mode/Theming** - Light/dark theme toggle with system preference and FOUC prevention
-- [ ] **Phase 22: File Uploads** - Drag-drop file attachments up to 25MB with inline image previews
+- [x] **Phase 22: File Uploads** - Drag-drop file attachments up to 25MB with inline image previews
 - [ ] **Phase 23: Notes** - Markdown notes per channel and personal scratchpads with conflict detection
 
 ## Phase Details
@@ -48,9 +48,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 22-01-PLAN.md - Backend infrastructure: database schema, file validation library, upload API route
-- [ ] 22-02-PLAN.md - Upload UI: drag-drop zone, progress indicator, message input integration
-- [ ] 22-03-PLAN.md - Display components: file attachment rendering, socket integration, message display
+- [x] 22-01-PLAN.md - Backend infrastructure: database schema, file validation library, upload API route
+- [x] 22-02-PLAN.md - Upload UI: drag-drop zone, progress indicator, message input integration
+- [x] 22-03-PLAN.md - Display components: file attachment rendering, socket integration, message display
 
 ### Phase 23: Notes
 **Goal**: Users can create and edit markdown notes per channel and maintain a personal scratchpad
@@ -77,7 +77,7 @@ Plans:
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 21. Dark Mode/Theming | v0.4.0 | 2/2 | Complete | 2026-01-20 |
-| 22. File Uploads | v0.4.0 | 0/3 | Planned | - |
+| 22. File Uploads | v0.4.0 | 3/3 | Complete | 2026-01-20 |
 | 23. Notes | v0.4.0 | 0/4 | Planned | - |
 
 ---

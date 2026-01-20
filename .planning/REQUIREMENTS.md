@@ -9,16 +9,16 @@ Requirements for Files, Theming & Notes release. Each maps to roadmap phases.
 
 ### File Uploads
 
-- [ ] **FILE-01**: User can drag-and-drop files onto message input to upload
-- [ ] **FILE-02**: User can click upload button to browse and select files
-- [ ] **FILE-03**: User sees progress indicator during file upload
-- [ ] **FILE-04**: Image files display inline preview in messages (jpg, png, gif, webp)
-- [ ] **FILE-05**: Non-image files display as download link with filename and size
-- [ ] **FILE-06**: Files over 25MB are rejected with clear error message
-- [ ] **FILE-07**: File content is validated via magic bytes (not just extension)
-- [ ] **FILE-08**: User can attach files to messages in channels
-- [ ] **FILE-09**: User can attach files to messages in DMs
-- [ ] **FILE-10**: User can paste image from clipboard to upload
+- [x] **FILE-01**: User can drag-and-drop files onto message input to upload
+- [x] **FILE-02**: User can click upload button to browse and select files
+- [x] **FILE-03**: User sees progress indicator during file upload
+- [x] **FILE-04**: Image files display inline preview in messages (jpg, png, gif, webp)
+- [x] **FILE-05**: Non-image files display as download link with filename and size
+- [x] **FILE-06**: Files over 25MB are rejected with clear error message
+- [x] **FILE-07**: File content is validated via magic bytes (not just extension)
+- [x] **FILE-08**: User can attach files to messages in channels
+- [x] **FILE-09**: User can attach files to messages in DMs
+- [x] **FILE-10**: User can paste image from clipboard to upload
 
 ### Dark Mode
 
@@ -85,16 +85,16 @@ Which phases cover which requirements. Updated during roadmap creation.
 | THEME-03 | Phase 21 | Complete |
 | THEME-04 | Phase 21 | Complete |
 | THEME-05 | Phase 21 | Complete |
-| FILE-01 | Phase 22 | Pending |
-| FILE-02 | Phase 22 | Pending |
-| FILE-03 | Phase 22 | Pending |
-| FILE-04 | Phase 22 | Pending |
-| FILE-05 | Phase 22 | Pending |
-| FILE-06 | Phase 22 | Pending |
-| FILE-07 | Phase 22 | Pending |
-| FILE-08 | Phase 22 | Pending |
-| FILE-09 | Phase 22 | Pending |
-| FILE-10 | Phase 22 | Pending |
+| FILE-01 | Phase 22 | Complete |
+| FILE-02 | Phase 22 | Complete |
+| FILE-03 | Phase 22 | Complete |
+| FILE-04 | Phase 22 | Complete |
+| FILE-05 | Phase 22 | Complete |
+| FILE-06 | Phase 22 | Complete |
+| FILE-07 | Phase 22 | Complete |
+| FILE-08 | Phase 22 | Complete |
+| FILE-09 | Phase 22 | Complete |
+| FILE-10 | Phase 22 | Complete |
 | NOTE-01 | Phase 23 | Pending |
 | NOTE-02 | Phase 23 | Pending |
 | NOTE-03 | Phase 23 | Pending |
