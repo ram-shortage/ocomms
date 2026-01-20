@@ -50,7 +50,7 @@ export function ForgotPasswordForm() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-gray-600 mb-4">
+          <p className="text-sm text-muted-foreground mb-4">
             The link will expire in 1 hour. If you don&apos;t see the email, check your spam folder.
           </p>
           <Link href="/login">
@@ -89,9 +89,9 @@ export function ForgotPasswordForm() {
             {loading ? "Sending..." : "Send Reset Link"}
           </Button>
         </form>
-        <p className="mt-4 text-center text-sm text-gray-600">
+        <p className="mt-4 text-center text-sm text-muted-foreground">
           Remember your password?{" "}
-          <Link href="/login" className="text-blue-600 hover:underline">
+          <Link href="/login" className="text-primary hover:underline">
             Sign in
           </Link>
         </p>

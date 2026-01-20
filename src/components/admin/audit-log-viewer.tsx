@@ -173,7 +173,7 @@ export function AuditLogViewer({ organizationId }: AuditLogViewerProps) {
       {/* Filters */}
       <div className="flex flex-wrap gap-4 items-end">
         <div className="flex flex-col gap-1">
-          <label htmlFor="from-date" className="text-sm text-gray-600">
+          <label htmlFor="from-date" className="text-sm text-muted-foreground">
             From
           </label>
           <input
@@ -186,7 +186,7 @@ export function AuditLogViewer({ organizationId }: AuditLogViewerProps) {
         </div>
 
         <div className="flex flex-col gap-1">
-          <label htmlFor="to-date" className="text-sm text-gray-600">
+          <label htmlFor="to-date" className="text-sm text-muted-foreground">
             To
           </label>
           <input
@@ -199,7 +199,7 @@ export function AuditLogViewer({ organizationId }: AuditLogViewerProps) {
         </div>
 
         <div className="flex flex-col gap-1">
-          <label htmlFor="event-type" className="text-sm text-gray-600">
+          <label htmlFor="event-type" className="text-sm text-muted-foreground">
             Event Type
           </label>
           <select
@@ -235,12 +235,12 @@ export function AuditLogViewer({ organizationId }: AuditLogViewerProps) {
 
       {/* Loading state */}
       {loading && (
-        <div className="p-8 text-center text-gray-500">Loading audit logs...</div>
+        <div className="p-8 text-center text-muted-foreground">Loading audit logs...</div>
       )}
 
       {/* Empty state */}
       {!loading && !error && events.length === 0 && (
-        <div className="p-8 text-center text-gray-500 border rounded">
+        <div className="p-8 text-center text-muted-foreground border rounded">
           No audit events found for the selected filters.
         </div>
       )}
@@ -249,18 +249,18 @@ export function AuditLogViewer({ organizationId }: AuditLogViewerProps) {
       {!loading && events.length > 0 && (
         <div className="border rounded overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50">
+            <thead className="bg-muted">
               <tr>
-                <th className="px-4 py-3 text-left font-medium text-gray-700">
+                <th className="px-4 py-3 text-left font-medium text-foreground">
                   Timestamp
                 </th>
-                <th className="px-4 py-3 text-left font-medium text-gray-700">
+                <th className="px-4 py-3 text-left font-medium text-foreground">
                   Event Type
                 </th>
-                <th className="px-4 py-3 text-left font-medium text-gray-700">
+                <th className="px-4 py-3 text-left font-medium text-foreground">
                   User ID
                 </th>
-                <th className="px-4 py-3 text-left font-medium text-gray-700">
+                <th className="px-4 py-3 text-left font-medium text-foreground">
                   IP Address
                 </th>
               </tr>
@@ -269,17 +269,17 @@ export function AuditLogViewer({ organizationId }: AuditLogViewerProps) {
               {events.map((event, index) => (
                 <tr
                   key={`${event.timestamp}-${index}`}
-                  className="hover:bg-gray-50"
+                  className="hover:bg-muted"
                 >
-                  <td className="px-4 py-3 text-gray-600">
+                  <td className="px-4 py-3 text-muted-foreground">
                     {format(new Date(event.timestamp), "MMM d, yyyy HH:mm:ss")}
                   </td>
                   <td className="px-4 py-3">
-                    <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">
+                    <span className="font-mono text-xs bg-muted px-2 py-1 rounded">
                       {event.eventType}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-gray-600 font-mono text-xs">
+                  <td className="px-4 py-3 text-muted-foreground font-mono text-xs">
                     {event.userId ? (
                       <span title={event.userId}>
                         {event.userId.length > 12
@@ -287,11 +287,11 @@ export function AuditLogViewer({ organizationId }: AuditLogViewerProps) {
                           : event.userId}
                       </span>
                     ) : (
-                      <span className="text-gray-400">-</span>
+                      <span className="text-muted-foreground/60">-</span>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-gray-600 font-mono text-xs">
-                    {event.ip || <span className="text-gray-400">-</span>}
+                  <td className="px-4 py-3 text-muted-foreground font-mono text-xs">
+                    {event.ip || <span className="text-muted-foreground/60">-</span>}
                   </td>
                 </tr>
               ))}
@@ -303,7 +303,7 @@ export function AuditLogViewer({ organizationId }: AuditLogViewerProps) {
       {/* Pagination */}
       {!loading && total > 0 && (
         <div className="flex items-center justify-between">
-          <div className="text-sm text-gray-600">
+          <div className="text-sm text-muted-foreground">
             Showing {offset + 1}-{Math.min(offset + PAGE_SIZE, total)} of {total}{" "}
             events
           </div>
@@ -316,7 +316,7 @@ export function AuditLogViewer({ organizationId }: AuditLogViewerProps) {
             >
               Previous
             </Button>
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-muted-foreground">
               Page {currentPage} of {totalPages}
             </span>
             <Button

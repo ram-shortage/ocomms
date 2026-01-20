@@ -41,15 +41,15 @@ export function DMListItem({
   return (
     <Link
       href={`/${workspaceSlug}/dm/${conversationId}`}
-      className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-gray-100"
+      className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-muted"
     >
       {isGroup ? (
-        <div className="w-6 h-6 rounded bg-gray-200 flex items-center justify-center text-xs font-medium">
+        <div className="w-6 h-6 rounded bg-muted flex items-center justify-center text-xs font-medium">
           {participantCount}
         </div>
       ) : (
         <div className="relative">
-          <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs font-medium">
+          <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs font-medium">
             {displayName[0].toUpperCase()}
           </div>
           {otherUserId && (

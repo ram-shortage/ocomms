@@ -77,7 +77,7 @@ export function SearchResults({
               <CardContent className="p-4">
                 <div className="flex items-start gap-3">
                   {/* Author avatar */}
-                  <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 text-sm font-medium shrink-0">
+                  <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center text-muted-foreground text-sm font-medium shrink-0">
                     {result.author.image ? (
                       <img
                         src={result.author.image}

@@ -34,7 +34,7 @@ export function PresenceIndicator({
   return (
     <span
       className={cn(
-        "inline-block rounded-full ring-2 ring-white",
+        "inline-block rounded-full ring-2 ring-card",
         sizeClasses[size],
         statusClasses[status],
         className

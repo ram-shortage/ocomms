@@ -17,6 +17,6 @@ export function MessageContent({ content, currentUsername }: MessageContentProps
   const nodes = highlightMentions(content, currentUsername);
 
   return (
-    <p className="text-gray-700 whitespace-pre-wrap break-words">{nodes}</p>
+    <p className="text-foreground whitespace-pre-wrap break-words">{nodes}</p>
   );
 }

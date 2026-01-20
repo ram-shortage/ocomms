@@ -87,13 +87,13 @@ export function DMHeader({
   };
 
   return (
-    <div className="border-b bg-white px-4 py-3">
+    <div className="border-b bg-card px-4 py-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           {/* Back button */}
           <Link
             href={`/${workspaceSlug}`}
-            className="text-gray-500 hover:text-gray-700"
+            className="text-muted-foreground hover:text-foreground"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -115,7 +115,7 @@ export function DMHeader({
             {otherParticipants.slice(0, 3).map((p) => (
               <div
                 key={p.id}
-                className="w-8 h-8 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center text-xs font-medium"
+                className="w-8 h-8 rounded-full bg-muted border-2 border-card flex items-center justify-center text-xs font-medium"
                 title={p.user.name || p.user.email}
               >
                 {p.user.image ? (
@@ -130,7 +130,7 @@ export function DMHeader({
               </div>
             ))}
             {otherParticipants.length > 3 && (
-              <div className="w-8 h-8 rounded-full bg-gray-300 border-2 border-white flex items-center justify-center text-xs font-medium">
+              <div className="w-8 h-8 rounded-full bg-accent border-2 border-card flex items-center justify-center text-xs font-medium">
                 +{otherParticipants.length - 3}
               </div>
             )}
@@ -166,7 +166,7 @@ export function DMHeader({
               {conversation.isGroup && (
                 <button
                   onClick={() => setIsEditingName(true)}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-muted-foreground hover:text-foreground"
                   title="Edit name"
                 >
                   <svg
@@ -189,7 +189,7 @@ export function DMHeader({
           )}
 
           {/* Participant count */}
-          <span className="text-sm text-gray-500">
+          <span className="text-sm text-muted-foreground">
             {conversation.participants.length} member{conversation.participants.length !== 1 ? "s" : ""}
           </span>
         </div>

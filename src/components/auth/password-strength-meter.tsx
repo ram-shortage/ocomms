@@ -59,8 +59,8 @@ export function PasswordStrengthMeter({ password }: PasswordStrengthMeterProps) 
   if (loading) {
     return (
       <div className="space-y-1">
-        <Progress value={0} indicatorClassName="bg-gray-300" />
-        <p className="text-xs text-gray-500">Checking strength...</p>
+        <Progress value={0} indicatorClassName="bg-muted" />
+        <p className="text-xs text-muted-foreground">Checking strength...</p>
       </div>
     );
   }
@@ -72,7 +72,7 @@ export function PasswordStrengthMeter({ password }: PasswordStrengthMeterProps) 
     <div className="space-y-1">
       <Progress value={progressValue} indicatorClassName={colors[score]} />
       <div className="flex items-center justify-between">
-        <span className="text-xs text-gray-600">{labels[score]}</span>
+        <span className="text-xs text-muted-foreground">{labels[score]}</span>
       </div>
       {result?.feedback.warning && (
         <p className="text-xs text-amber-600">{result.feedback.warning}</p>

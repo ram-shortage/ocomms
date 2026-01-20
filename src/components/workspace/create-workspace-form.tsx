@@ -73,7 +73,7 @@ export function CreateWorkspaceForm() {
           <div className="space-y-2">
             <Label htmlFor="slug">URL Slug</Label>
             <div className="flex items-center">
-              <span className="text-sm text-gray-500 mr-1">ocomms.app/</span>
+              <span className="text-sm text-muted-foreground mr-1">ocomms.app/</span>
               <Input
                 id="slug"
                 type="text"

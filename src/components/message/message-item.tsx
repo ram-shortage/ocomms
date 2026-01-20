@@ -52,24 +52,24 @@ export function MessageItem({
   const isPending = sendStatus === "pending" || sendStatus === "sending";
 
   return (
-    <div className={`group flex items-start gap-3 py-2 px-4 hover:bg-gray-50 rounded-lg ${isPending ? "opacity-70" : ""}`}>
+    <div className={`group flex items-start gap-3 py-2 px-4 hover:bg-muted rounded-lg ${isPending ? "opacity-70" : ""}`}>
       {/* Avatar placeholder */}
-      <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 text-sm font-medium shrink-0">
+      <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center text-muted-foreground text-sm font-medium shrink-0">
         {message.author?.name?.[0]?.toUpperCase() || message.author?.email?.[0]?.toUpperCase() || "?"}
       </div>
 
       <div className="flex-1 min-w-0">
         <div className="flex items-baseline gap-2">
-          <span className="font-semibold text-gray-900">
+          <span className="font-semibold text-foreground">
             {message.author?.name || message.author?.email || "Unknown"}
           </span>
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-muted-foreground">
             {formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })}
           </span>
         </div>
 
         {isDeleted ? (
-          <p className="text-gray-400 italic text-sm">[Message deleted]</p>
+          <p className="text-muted-foreground italic text-sm">[Message deleted]</p>
         ) : (
           <>
             <MessageContent content={message.content} currentUsername={currentUsername} />
@@ -96,7 +96,7 @@ export function MessageItem({
             <Button
               variant="ghost"
               size="sm"
-              className="opacity-0 group-hover:opacity-100 transition-opacity h-7 w-7 p-0 text-gray-400 hover:text-blue-500"
+              className="opacity-0 group-hover:opacity-100 transition-opacity h-7 w-7 p-0 text-muted-foreground hover:text-primary"
               onClick={() => onMarkUnread(message.id)}
             >
               <EyeOff className="h-4 w-4" />
@@ -111,7 +111,7 @@ export function MessageItem({
               className={`transition-opacity h-7 w-7 p-0 ${
                 isPinned
                   ? "opacity-100 text-amber-500 hover:text-amber-600"
-                  : "opacity-0 group-hover:opacity-100 text-gray-400 hover:text-amber-500"
+                  : "opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-amber-500"
               }`}
               onClick={() =>
                 isPinned
@@ -128,7 +128,7 @@ export function MessageItem({
             <Button
               variant="ghost"
               size="sm"
-              className={`transition-opacity h-7 p-0 px-1.5 text-gray-400 hover:text-blue-500 ${
+              className={`transition-opacity h-7 p-0 px-1.5 text-muted-foreground hover:text-primary ${
                 hasReplies ? "opacity-100" : "opacity-0 group-hover:opacity-100"
               }`}
               onClick={() => onReply(message.id)}
@@ -144,7 +144,7 @@ export function MessageItem({
             <Button
               variant="ghost"
               size="sm"
-              className="opacity-0 group-hover:opacity-100 transition-opacity h-7 w-7 p-0 text-gray-400 hover:text-red-500"
+              className="opacity-0 group-hover:opacity-100 transition-opacity h-7 w-7 p-0 text-muted-foreground hover:text-red-500"
               onClick={() => onDelete(message.id)}
             >
               <Trash2 className="h-4 w-4" />

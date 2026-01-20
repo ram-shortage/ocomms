@@ -135,7 +135,7 @@ export function MentionAutocomplete({
   return (
     <div
       ref={containerRef}
-      className="absolute z-50 w-64 bg-white border rounded-lg shadow-lg overflow-hidden"
+      className="absolute z-50 w-64 bg-popover border rounded-lg shadow-lg overflow-hidden"
       style={{ bottom: position.top, left: position.left }}
     >
       <div className="py-1">
@@ -148,8 +148,8 @@ export function MentionAutocomplete({
             }
             type="button"
             className={cn(
-              "w-full px-3 py-2 flex items-center gap-3 text-left hover:bg-gray-100",
-              index === selectedIndex && "bg-gray-100"
+              "w-full px-3 py-2 flex items-center gap-3 text-left hover:bg-muted",
+              index === selectedIndex && "bg-muted"
             )}
             onClick={() => {
               if (result.type === "special") {
@@ -167,25 +167,25 @@ export function MentionAutocomplete({
                   @
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="font-medium text-gray-900">
+                  <div className="font-medium text-foreground">
                     {result.data.label}
                   </div>
-                  <div className="text-xs text-gray-500 truncate">
+                  <div className="text-xs text-muted-foreground truncate">
                     {result.data.description}
                   </div>
                 </div>
               </>
             ) : (
               <>
-                <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 text-sm font-medium">
+                <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground text-sm font-medium">
                   {result.data.name?.[0]?.toUpperCase() ||
                     result.data.email[0].toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="font-medium text-gray-900 truncate">
+                  <div className="font-medium text-foreground truncate">
                     {result.data.name || result.data.email.split("@")[0]}
                   </div>
-                  <div className="text-xs text-gray-500 truncate">
+                  <div className="text-xs text-muted-foreground truncate">
                     {result.data.email}
                   </div>
                 </div>

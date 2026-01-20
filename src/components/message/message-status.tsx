@@ -22,7 +22,7 @@ export function MessageStatus({ status, retryCount, onRetry }: MessageStatusProp
   return (
     <div className="flex items-center gap-1 text-xs mt-1">
       {status === "pending" && (
-        <span className="text-gray-400">Sending...</span>
+        <span className="text-muted-foreground">Sending...</span>
       )}
 
       {status === "sending" && (
@@ -36,7 +36,7 @@ export function MessageStatus({ status, retryCount, onRetry }: MessageStatusProp
         <span className="text-red-500 flex items-center gap-1">
           Failed
           {retryCount && retryCount > 0 && (
-            <span className="text-gray-400">({retryCount} retries)</span>
+            <span className="text-muted-foreground">({retryCount} retries)</span>
           )}
           {onRetry && (
             <button

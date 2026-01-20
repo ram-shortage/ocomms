@@ -25,15 +25,15 @@ export default async function HomePage() {
 
   // No workspaces - show create workspace prompt
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-muted">
       <div className="text-center">
         <h1 className="text-2xl font-bold mb-4">Welcome to OComms</h1>
-        <p className="text-gray-600 mb-6">
+        <p className="text-muted-foreground mb-6">
           Create a workspace to get started
         </p>
         <Link
           href="/create-workspace"
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          className="px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90"
         >
           Create Workspace
         </Link>

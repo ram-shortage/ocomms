@@ -194,7 +194,7 @@ export function MessageInput({ targetId, targetType, members = [] }: MessageInpu
 
       {/* SECFIX-05: Character counter - always visible per CONTEXT.md */}
       <div className="flex justify-between items-center mt-1 px-1">
-        <span className={`text-xs ${isOverLimit ? 'text-red-500' : 'text-gray-400'}`}>
+        <span className={`text-xs ${isOverLimit ? 'text-red-500' : 'text-muted-foreground'}`}>
           {content.length.toLocaleString()}/{MAX_MESSAGE_LENGTH.toLocaleString()}
         </span>
         {isOverLimit && (
@@ -206,7 +206,7 @@ export function MessageInput({ targetId, targetType, members = [] }: MessageInpu
 
       {/* Offline indicator */}
       {!isOnline && (
-        <div className="text-xs text-gray-500 mt-1 px-1">
+        <div className="text-xs text-muted-foreground mt-1 px-1">
           (offline - will send when connected)
         </div>
       )}

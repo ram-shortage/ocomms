@@ -16,9 +16,9 @@ export function ProfileCard({
   role,
 }: ProfileCardProps) {
   return (
-    <div className="bg-white border rounded-lg p-6">
+    <div className="bg-card border rounded-lg p-6">
       <div className="flex items-start space-x-4">
-        <div className="relative w-20 h-20 rounded-full overflow-hidden bg-gray-200 flex-shrink-0">
+        <div className="relative w-20 h-20 rounded-full overflow-hidden bg-muted flex-shrink-0">
           {avatarPath ? (
             <Image
               src={avatarPath}
@@ -27,7 +27,7 @@ export function ProfileCard({
               className="object-cover"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-gray-400">
+            <div className="w-full h-full flex items-center justify-center text-muted-foreground">
               <svg
                 className="w-10 h-10"
                 fill="currentColor"
@@ -42,13 +42,13 @@ export function ProfileCard({
           <h2 className="text-xl font-semibold truncate">
             {displayName || email}
           </h2>
-          <p className="text-sm text-gray-500">{email}</p>
+          <p className="text-sm text-muted-foreground">{email}</p>
           {role && (
-            <span className="inline-block mt-1 px-2 py-0.5 text-xs bg-gray-100 rounded capitalize">
+            <span className="inline-block mt-1 px-2 py-0.5 text-xs bg-muted rounded capitalize">
               {role}
             </span>
           )}
-          {bio && <p className="mt-3 text-gray-600">{bio}</p>}
+          {bio && <p className="mt-3 text-foreground">{bio}</p>}
         </div>
       </div>
     </div>

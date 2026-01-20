@@ -69,7 +69,7 @@ function AcceptInviteContent() {
 
   if (status === "login-required") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-muted">
         <Card className="max-w-md">
           <CardHeader>
             <CardTitle>Login Required</CardTitle>
@@ -92,7 +92,7 @@ function AcceptInviteContent() {
 
   if (status === "error") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-muted">
         <Card className="max-w-md">
           <CardHeader>
             <CardTitle>Invitation Error</CardTitle>
@@ -109,7 +109,7 @@ function AcceptInviteContent() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-muted">
       <Card className="max-w-md">
         <CardHeader>
           <CardTitle>Welcome!</CardTitle>

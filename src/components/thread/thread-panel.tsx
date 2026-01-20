@@ -23,24 +23,24 @@ function ThreadReplyItem({ message, currentUsername }: { message: Message; curre
   const isDeleted = message.deletedAt !== null && message.deletedAt !== undefined;
 
   return (
-    <div className="flex items-start gap-3 py-2 px-4 hover:bg-gray-50 rounded-lg">
+    <div className="flex items-start gap-3 py-2 px-4 hover:bg-muted rounded-lg">
       {/* Avatar placeholder */}
-      <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 text-xs font-medium shrink-0">
+      <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground text-xs font-medium shrink-0">
         {message.author?.name?.[0]?.toUpperCase() || message.author?.email?.[0]?.toUpperCase() || "?"}
       </div>
 
       <div className="flex-1 min-w-0">
         <div className="flex items-baseline gap-2">
-          <span className="font-semibold text-gray-900 text-sm">
+          <span className="font-semibold text-foreground text-sm">
             {message.author?.name || message.author?.email || "Unknown"}
           </span>
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-muted-foreground">
             {formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })}
           </span>
         </div>
 
         {isDeleted ? (
-          <p className="text-gray-400 italic text-sm">[Message deleted]</p>
+          <p className="text-muted-foreground italic text-sm">[Message deleted]</p>
         ) : (
           <div className="text-sm">
             <MessageContent content={message.content} currentUsername={currentUsername} />
@@ -98,7 +98,7 @@ function ThreadReplyInput({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="border-t bg-white p-3">
+    <form onSubmit={handleSubmit} className="border-t bg-card p-3">
       <div className="flex gap-2 items-end">
         <Textarea
           value={content}
@@ -205,22 +205,22 @@ export function ThreadPanel({ isOpen, onClose, parentMessage, currentUserId, cur
         </SheetHeader>
 
         {/* Parent message */}
-        <div className="border-b bg-gray-50 p-4">
+        <div className="border-b bg-muted p-4">
           <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-medium shrink-0">
+            <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center text-muted-foreground font-medium shrink-0">
               {parentMessage.author?.name?.[0]?.toUpperCase() || parentMessage.author?.email?.[0]?.toUpperCase() || "?"}
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-baseline gap-2">
-                <span className="font-semibold text-gray-900">
+                <span className="font-semibold text-foreground">
                   {parentMessage.author?.name || parentMessage.author?.email || "Unknown"}
                 </span>
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-muted-foreground">
                   {formatDistanceToNow(new Date(parentMessage.createdAt), { addSuffix: true })}
                 </span>
               </div>
               {parentIsDeleted ? (
-                <p className="text-gray-400 italic">[Message deleted]</p>
+                <p className="text-muted-foreground italic">[Message deleted]</p>
               ) : (
                 <MessageContent content={parentMessage.content} currentUsername={currentUsername} />
               )}
@@ -231,16 +231,16 @@ export function ThreadPanel({ isOpen, onClose, parentMessage, currentUserId, cur
         {/* Replies list */}
         <div className="flex-1 overflow-y-auto py-2">
           {loading ? (
-            <div className="flex items-center justify-center py-8 text-gray-500">
+            <div className="flex items-center justify-center py-8 text-muted-foreground">
               Loading replies...
             </div>
           ) : replies.length === 0 ? (
-            <div className="flex items-center justify-center py-8 text-gray-500">
+            <div className="flex items-center justify-center py-8 text-muted-foreground">
               No replies yet
             </div>
           ) : (
             <>
-              <div className="px-4 py-2 text-xs text-gray-500 font-medium">
+              <div className="px-4 py-2 text-xs text-muted-foreground font-medium">
                 {replies.length} {replies.length === 1 ? "reply" : "replies"}
               </div>
               {replies.map((reply) => (

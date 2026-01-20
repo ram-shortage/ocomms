@@ -48,10 +48,10 @@ export default async function WorkspaceSettingsPage({
         <nav className="space-y-2">
           <Link
             href={`/${workspaceSlug}/settings/members`}
-            className="block p-4 bg-white border rounded hover:bg-gray-50"
+            className="block p-4 bg-card border rounded hover:bg-muted"
           >
             <h3 className="font-medium">Members</h3>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted-foreground">
               Invite members and manage roles
             </p>
           </Link>
@@ -65,10 +65,10 @@ export default async function WorkspaceSettingsPage({
           <nav className="space-y-2">
             <Link
               href={`/${workspaceSlug}/settings/admin`}
-              className="block p-4 bg-white border rounded hover:bg-gray-50"
+              className="block p-4 bg-card border rounded hover:bg-muted"
             >
               <h3 className="font-medium">Audit Logs & Export</h3>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted-foreground">
                 View security logs and export organization data
               </p>
             </Link>
@@ -82,7 +82,7 @@ export default async function WorkspaceSettingsPage({
       <div className="pt-4">
         <Link
           href={`/${workspaceSlug}`}
-          className="text-sm text-blue-600 hover:underline"
+          className="text-sm text-primary hover:underline"
         >
           Back to workspace
         </Link>

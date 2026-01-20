@@ -65,29 +65,29 @@ export function ThreadList({ threads, currentUserId, workspaceSlug }: ThreadList
           <button
             key={thread.threadId}
             onClick={() => handleThreadClick(thread)}
-            className="w-full px-6 py-4 text-left hover:bg-gray-50 transition-colors"
+            className="w-full px-6 py-4 text-left hover:bg-muted transition-colors"
           >
             <div className="flex items-start gap-3">
               {/* Avatar placeholder */}
-              <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-medium shrink-0">
+              <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground font-medium shrink-0">
                 {thread.parentAuthorName?.[0]?.toUpperCase() || thread.parentAuthorEmail[0]?.toUpperCase() || "?"}
               </div>
 
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="font-semibold text-gray-900 text-sm">
+                  <span className="font-semibold text-foreground text-sm">
                     {thread.parentAuthorName || thread.parentAuthorEmail}
                   </span>
-                  <span className="text-xs text-gray-500">
+                  <span className="text-xs text-muted-foreground">
                     {formatDistanceToNow(new Date(thread.lastReplyAt), { addSuffix: true })}
                   </span>
                 </div>
 
-                <p className="text-gray-700 text-sm line-clamp-2 mb-2">
+                <p className="text-foreground text-sm line-clamp-2 mb-2">
                   {thread.parentContent}
                 </p>
 
-                <div className="flex items-center gap-1 text-xs text-gray-500">
+                <div className="flex items-center gap-1 text-xs text-muted-foreground">
                   <MessageSquare className="h-3.5 w-3.5" />
                   <span>
                     {thread.replyCount} {thread.replyCount === 1 ? "reply" : "replies"}

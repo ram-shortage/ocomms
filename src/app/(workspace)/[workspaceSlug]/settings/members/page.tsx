@@ -68,14 +68,14 @@ export default async function MembersSettingsPage({
         <h1 className="text-2xl font-bold">Members</h1>
         <Link
           href={`/${workspaceSlug}/settings`}
-          className="text-sm text-blue-600 hover:underline"
+          className="text-sm text-primary hover:underline"
         >
           Back to settings
         </Link>
       </div>
 
       {canInvite && (
-        <div className="mb-8 p-4 bg-white border rounded">
+        <div className="mb-8 p-4 bg-card border rounded">
           <h2 className="text-lg font-medium mb-4">Invite Member</h2>
           <InviteMemberForm organizationId={workspace.id} />
         </div>

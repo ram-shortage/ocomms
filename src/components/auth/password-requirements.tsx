@@ -25,7 +25,7 @@ export function PasswordRequirements({ password }: PasswordRequirementsProps) {
           <li
             key={label}
             className={`text-xs flex items-center gap-1.5 ${
-              met ? "text-green-600" : "text-gray-400"
+              met ? "text-green-600" : "text-muted-foreground"
             }`}
           >
             <span>{met ? "\u2713" : "\u25CB"}</span>

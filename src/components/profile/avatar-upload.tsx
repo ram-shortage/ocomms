@@ -54,7 +54,7 @@ export function AvatarUpload({ currentAvatar, onUploadComplete }: AvatarUploadPr
 
   return (
     <div className="flex flex-col items-center space-y-4">
-      <div className="relative w-24 h-24 rounded-full overflow-hidden bg-gray-200">
+      <div className="relative w-24 h-24 rounded-full overflow-hidden bg-muted">
         {preview ? (
           <Image
             src={preview}
@@ -63,7 +63,7 @@ export function AvatarUpload({ currentAvatar, onUploadComplete }: AvatarUploadPr
             className="object-cover"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-400">
+          <div className="w-full h-full flex items-center justify-center text-muted-foreground">
             <svg
               className="w-12 h-12"
               fill="currentColor"

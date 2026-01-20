@@ -41,12 +41,12 @@ export default async function ProfilePage({
         <h1 className="text-2xl font-bold">Your Profile</h1>
         <Link
           href={`/${workspaceSlug}`}
-          className="text-sm text-blue-600 hover:underline"
+          className="text-sm text-primary hover:underline"
         >
           Back to workspace
         </Link>
       </div>
-      <div className="bg-white border rounded-lg p-6">
+      <div className="bg-card border rounded-lg p-6">
         <ProfileForm
           profile={profile}
           userName={session.user.name}

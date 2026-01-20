@@ -63,7 +63,7 @@ export function LoginForm() {
               <Label htmlFor="password">Password</Label>
               <Link
                 href="/forgot-password"
-                className="text-sm text-gray-600 hover:underline"
+                className="text-sm text-muted-foreground hover:underline"
               >
                 Forgot password?
               </Link>
@@ -81,9 +81,9 @@ export function LoginForm() {
             {loading ? "Signing in..." : "Sign In"}
           </Button>
         </form>
-        <p className="mt-4 text-center text-sm text-gray-600">
+        <p className="mt-4 text-center text-sm text-muted-foreground">
           Don&apos;t have an account?{" "}
-          <Link href="/signup" className="text-blue-600 hover:underline">
+          <Link href="/signup" className="text-primary hover:underline">
             Sign up
           </Link>
         </p>

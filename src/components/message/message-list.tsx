@@ -312,7 +312,7 @@ export function MessageList({
 
   if (normalizedMessages.length === 0) {
     return (
-      <div className="flex-1 flex items-center justify-center text-gray-500">
+      <div className="flex-1 flex items-center justify-center text-muted-foreground">
         <p>No messages yet. Be the first to say something!</p>
       </div>
     );

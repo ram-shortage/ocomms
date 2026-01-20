@@ -118,12 +118,12 @@ export function MemberList({
       {members.map((member) => (
         <div
           key={member.id}
-          className="flex items-center justify-between p-3 bg-white border rounded"
+          className="flex items-center justify-between p-3 bg-card border rounded"
         >
           <div className="flex items-center gap-3">
             {/* Avatar with presence indicator */}
             <div className="relative">
-              <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-sm font-medium text-gray-600">
+              <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center text-sm font-medium text-muted-foreground">
                 {(member.user.name?.[0] || member.user.email[0]).toUpperCase()}
               </div>
               <PresenceIndicator
@@ -140,7 +140,7 @@ export function MemberList({
                 {member.user.name || member.user.email}
                 {member.userId === currentUserId && " (you)"}
               </Link>
-              <p className="text-sm text-gray-500">{member.user.email}</p>
+              <p className="text-sm text-muted-foreground">{member.user.email}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -159,7 +159,7 @@ export function MemberList({
                 </SelectContent>
               </Select>
             ) : (
-              <span className="px-2 py-1 text-sm bg-gray-100 rounded capitalize">
+              <span className="px-2 py-1 text-sm bg-muted rounded capitalize">
                 {member.role}
               </span>
             )}

@@ -60,7 +60,7 @@ export default async function AdminSettingsPage({
       {/* Audit Logs Section */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold">Audit Logs</h2>
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-muted-foreground">
           View security events for your organization. Logs are retained for 90
           days.
         </p>
@@ -71,7 +71,7 @@ export default async function AdminSettingsPage({
       {isOwner && (
         <section className="space-y-4">
           <h2 className="text-xl font-semibold">Data Export</h2>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-muted-foreground">
             Export all organization data including members, channels, messages,
             and settings. This export can be used for backup or data portability
             (GDPR compliance).
@@ -83,7 +83,7 @@ export default async function AdminSettingsPage({
       <div className="pt-4">
         <Link
           href={`/${workspaceSlug}/settings`}
-          className="text-sm text-blue-600 hover:underline"
+          className="text-sm text-primary hover:underline"
         >
           Back to settings
         </Link>

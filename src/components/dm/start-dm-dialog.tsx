@@ -121,12 +121,12 @@ export function StartDMDialog({
 
           <div className="max-h-60 overflow-y-auto space-y-2">
             {availableMembers.length === 0 ? (
-              <p className="text-sm text-gray-500">No other members in this workspace</p>
+              <p className="text-sm text-muted-foreground">No other members in this workspace</p>
             ) : (
               availableMembers.map((member) => (
                 <label
                   key={member.userId}
-                  className="flex items-center gap-3 p-2 rounded hover:bg-gray-50 cursor-pointer"
+                  className="flex items-center gap-3 p-2 rounded hover:bg-muted cursor-pointer"
                 >
                   <Checkbox
                     checked={selectedIds.includes(member.userId)}
@@ -142,7 +142,7 @@ export function StartDMDialog({
                         className="w-8 h-8 rounded-full"
                       />
                     ) : (
-                      <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-sm font-medium">
+                      <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-sm font-medium">
                         {(member.user.name || member.user.email)[0].toUpperCase()}
                       </div>
                     )}
@@ -151,7 +151,7 @@ export function StartDMDialog({
                         {member.user.name || member.user.email}
                       </p>
                       {member.user.name && (
-                        <p className="text-xs text-gray-500">{member.user.email}</p>
+                        <p className="text-xs text-muted-foreground">{member.user.email}</p>
                       )}
                     </div>
                   </div>

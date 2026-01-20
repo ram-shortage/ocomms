@@ -17,7 +17,7 @@ export default async function VerifyEmailPage({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-muted-foreground">
           Click the link in the email to verify your account.
           The link expires in 24 hours.
         </p>
