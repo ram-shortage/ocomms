@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 ## Current Position
 
 Phase: 25 of 29 (Job Queue Foundation)
-Plan: 2 of 7 complete
+Plan: 2 of 5 complete
 Status: In progress
-Last activity: 2026-01-20 - Completed 25-02-PLAN.md (Database schemas)
+Last activity: 2026-01-20 - Completed 25-01-PLAN.md and 25-02-PLAN.md (BullMQ infra + DB schemas)
 
-Progress: [███░░░░░░░] 2/7 plans in phase 25
+Progress: [████░░░░░░] 2/5 plans in phase 25
 
 ## Shipped Milestones
 
@@ -70,6 +70,11 @@ Phase 24-03 decisions:
 - Conditional category view (flat list when no categories exist)
 - Empty categories auto-hide from sidebar
 
+Phase 25-01 decisions:
+- Use ConnectionOptions instead of Redis instance to avoid ioredis type conflicts
+- Separate worker process from Next.js server for non-blocking job processing
+- Configure 3 attempts with exponential backoff (1s base) for job retries
+
 Phase 25-02 decisions:
 - withTimezone for all timestamp columns (scheduledFor, remindAt, etc.) for UTC handling
 - Nullable channelId/conversationId on scheduled_messages allows either target type
@@ -77,8 +82,8 @@ Phase 25-02 decisions:
 
 ### Pending Todos
 
-1 todo pending — see `.planning/todos/pending/`
-- **Fix channel category drag-drop and management** (ui) — drag-drop not working, no delete UI
+1 todo pending - see `.planning/todos/pending/`
+- **Fix channel category drag-drop and management** (ui) - drag-drop not working, no delete UI
 
 ### Blockers/Concerns
 
@@ -87,5 +92,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-20
-Stopped at: Completed 25-02-PLAN.md
+Stopped at: Completed 25-01-PLAN.md and 25-02-PLAN.md
 Resume file: None - continue with 25-03-PLAN.md
