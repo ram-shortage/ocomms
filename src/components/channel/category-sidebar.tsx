@@ -396,6 +396,7 @@ export function CategorySidebar({
 
   return (
     <DndContext
+      id="category-sidebar-dnd"
       sensors={sensors}
       collisionDetection={closestCenter}
       onDragStart={handleDragStart}
@@ -420,9 +421,6 @@ export function CategorySidebar({
         {/* Uncategorized channels section - always at bottom */}
         {channelsByCategory.uncategorized.length > 0 && (
           <div className="mb-2">
-            <div className="px-2 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              Channels
-            </div>
             <SortableContext
               items={channelsByCategory.uncategorized.map((c) => c.id)}
               strategy={verticalListSortingStrategy}
