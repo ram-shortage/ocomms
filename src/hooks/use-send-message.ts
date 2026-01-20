@@ -23,7 +23,7 @@ export interface UseSendMessageOptions {
  * Return type for useSendMessage hook.
  */
 export interface UseSendMessageReturn {
-  sendMessage: (content: string) => Promise<{ clientId: string }>;
+  sendMessage: (content: string, attachmentIds?: string[]) => Promise<{ clientId: string }>;
   isOnline: boolean;
 }
 
@@ -46,7 +46,7 @@ export function useSendMessage({
   const { isOnline } = useOnlineStatus();
 
   const sendMessage = useCallback(
-    async (content: string): Promise<{ clientId: string }> => {
+    async (content: string, attachmentIds?: string[]): Promise<{ clientId: string }> => {
       // Generate unique client ID
       const clientId = crypto.randomUUID();
 
@@ -58,6 +58,7 @@ export function useSendMessage({
         targetId,
         targetType,
         parentId: parentId ?? null,
+        attachmentIds: attachmentIds ?? null,
         status: "pending",
         createdAt: new Date(),
       };

@@ -1,15 +1,26 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect, FormEvent, KeyboardEvent, ChangeEvent } from "react";
+import { useState, useCallback, useRef, useEffect, FormEvent, KeyboardEvent, ChangeEvent, ClipboardEvent } from "react";
 import { useSocket } from "@/lib/socket-client";
 import { useSendMessage } from "@/hooks/use-send-message";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Send } from "lucide-react";
+import { Send, X, ImageIcon, FileIcon } from "lucide-react";
 import { MentionAutocomplete, type MentionMember } from "./mention-autocomplete";
 import { formatMentionForInsert } from "@/lib/mentions";
+import { FileUploadZone } from "./file-upload-zone";
+import { UploadProgress } from "./upload-progress";
+import { uploadFile, type UploadResult } from "@/lib/upload-file";
 
 const MAX_MESSAGE_LENGTH = 10_000;
+
+interface PendingUpload {
+  file: File;
+  progress: number;
+  abortController: AbortController;
+  result?: UploadResult;
+  error?: string;
+}
 
 interface MessageInputProps {
   targetId: string;
@@ -27,8 +38,21 @@ export function MessageInput({ targetId, targetType, members = [] }: MessageInpu
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const socket = useSocket();
 
+  // File upload state
+  const [pendingUploads, setPendingUploads] = useState<Map<string, PendingUpload>>(new Map());
+  const [stagedAttachments, setStagedAttachments] = useState<UploadResult[]>([]);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
   // Offline send queue hook
   const { sendMessage: queueAndSend, isOnline } = useSendMessage({ targetId, targetType });
+
+  // Clear upload error after 5 seconds
+  useEffect(() => {
+    if (uploadError) {
+      const timer = setTimeout(() => setUploadError(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [uploadError]);
 
   // SECFIX-06: Listen for rate limit errors
   useEffect(() => {
@@ -50,23 +74,120 @@ export function MessageInput({ targetId, targetType, members = [] }: MessageInpu
 
   // SECFIX-05: Character limit validation
   const isOverLimit = content.length > MAX_MESSAGE_LENGTH;
-  const isSendDisabled = !content.trim() || isSending || isOverLimit || rateLimitMessage !== null;
+  const hasContent = content.trim() || stagedAttachments.length > 0;
+  const isSendDisabled = !hasContent || isSending || isOverLimit || rateLimitMessage !== null;
+
+  // Handle file selection (from drag-drop or click-to-browse)
+  const handleFilesSelected = useCallback((files: File[]) => {
+    for (const file of files) {
+      const clientId = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      const abortController = new AbortController();
+
+      // Add to pending uploads
+      setPendingUploads((prev) => {
+        const next = new Map(prev);
+        next.set(clientId, {
+          file,
+          progress: 0,
+          abortController,
+        });
+        return next;
+      });
+
+      // Start upload
+      uploadFile(file, {
+        onProgress: (percent) => {
+          setPendingUploads((prev) => {
+            const next = new Map(prev);
+            const upload = next.get(clientId);
+            if (upload) {
+              next.set(clientId, { ...upload, progress: percent });
+            }
+            return next;
+          });
+        },
+        signal: abortController.signal,
+      })
+        .then((result) => {
+          // Remove from pending, add to staged
+          setPendingUploads((prev) => {
+            const next = new Map(prev);
+            next.delete(clientId);
+            return next;
+          });
+          setStagedAttachments((prev) => [...prev, result]);
+        })
+        .catch((err) => {
+          // Remove from pending, show error
+          setPendingUploads((prev) => {
+            const next = new Map(prev);
+            next.delete(clientId);
+            return next;
+          });
+          // Don't show error for cancelled uploads
+          if (err.message !== "Upload cancelled") {
+            setUploadError(err.message || "Upload failed");
+          }
+        });
+    }
+  }, []);
+
+  // Handle cancel upload
+  const handleCancelUpload = useCallback((clientId: string) => {
+    setPendingUploads((prev) => {
+      const upload = prev.get(clientId);
+      if (upload) {
+        upload.abortController.abort();
+      }
+      const next = new Map(prev);
+      next.delete(clientId);
+      return next;
+    });
+  }, []);
+
+  // Handle remove staged attachment
+  const handleRemoveAttachment = useCallback((attachmentId: string) => {
+    setStagedAttachments((prev) => prev.filter((a) => a.id !== attachmentId));
+  }, []);
+
+  // Handle clipboard paste for images (FILE-10)
+  const handlePaste = useCallback((e: ClipboardEvent<HTMLTextAreaElement>) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+
+    const imageFiles: File[] = [];
+    for (const item of items) {
+      if (item.type.startsWith("image/")) {
+        const file = item.getAsFile();
+        if (file) {
+          imageFiles.push(file);
+        }
+      }
+    }
+
+    if (imageFiles.length > 0) {
+      e.preventDefault();
+      handleFilesSelected(imageFiles);
+    }
+  }, [handleFilesSelected]);
 
   const sendMessage = useCallback(async () => {
-    if (!content.trim() || isSending) return;
+    if (!hasContent || isSending) return;
 
     setIsSending(true);
     try {
-      // Queue message to IndexedDB and trigger processing
-      await queueAndSend(content.trim());
-      // Clear input immediately (optimistic UI)
+      // Include attachment IDs if any staged
+      const attachmentIds = stagedAttachments.map((a) => a.id);
+      await queueAndSend(content.trim(), attachmentIds.length > 0 ? attachmentIds : undefined);
+      // Clear input and attachments immediately (optimistic UI)
       setContent("");
+      setStagedAttachments([]);
     } catch (err) {
       console.error("[MessageInput] Failed to queue message:", err);
     } finally {
       setIsSending(false);
     }
-  }, [content, isSending, queueAndSend]);
+  }, [content, hasContent, isSending, queueAndSend, stagedAttachments]);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -121,7 +242,6 @@ export function MessageInput({ targetId, targetType, members = [] }: MessageInpu
 
       // Calculate position for dropdown (above the textarea)
       if (textareaRef.current) {
-        const rect = textareaRef.current.getBoundingClientRect();
         // Position above the input
         setMentionPosition({
           top: 8, // distance from bottom of dropdown to top of textarea
@@ -156,8 +276,57 @@ export function MessageInput({ targetId, targetType, members = [] }: MessageInpu
     }
   };
 
+  const isUploading = pendingUploads.size > 0;
+
   return (
     <form onSubmit={handleSubmit} className="border-t bg-background p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+      {/* Pending uploads */}
+      {pendingUploads.size > 0 && (
+        <div className="mb-2 space-y-2">
+          {Array.from(pendingUploads.entries()).map(([clientId, upload]) => (
+            <UploadProgress
+              key={clientId}
+              filename={upload.file.name}
+              progress={upload.progress}
+              isImage={upload.file.type.startsWith("image/")}
+              onCancel={() => handleCancelUpload(clientId)}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Staged attachments */}
+      {stagedAttachments.length > 0 && (
+        <div className="mb-2 flex flex-wrap gap-2">
+          {stagedAttachments.map((attachment) => (
+            <div
+              key={attachment.id}
+              className="flex items-center gap-1.5 bg-muted px-2 py-1 rounded-md text-sm"
+            >
+              {attachment.isImage ? (
+                <ImageIcon className="h-4 w-4 text-muted-foreground" />
+              ) : (
+                <FileIcon className="h-4 w-4 text-muted-foreground" />
+              )}
+              <span className="truncate max-w-[150px]" title={attachment.originalName}>
+                {attachment.originalName}
+              </span>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => handleRemoveAttachment(attachment.id)}
+                className="h-5 w-5 ml-1"
+                title="Remove attachment"
+              >
+                <X className="h-3 w-3" />
+                <span className="sr-only">Remove attachment</span>
+              </Button>
+            </div>
+          ))}
+        </div>
+      )}
+
       <div className="relative flex gap-2 items-end">
         {mentionQuery !== null && mentionPosition && members.length > 0 && (
           <MentionAutocomplete
@@ -168,11 +337,16 @@ export function MessageInput({ targetId, targetType, members = [] }: MessageInpu
             position={mentionPosition}
           />
         )}
+        <FileUploadZone
+          onFilesSelected={handleFilesSelected}
+          disabled={isSending || rateLimitMessage !== null}
+        />
         <Textarea
           ref={textareaRef}
           value={content}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
+          onPaste={handlePaste}
           placeholder={
             targetType === "channel"
               ? "Type a message..."
@@ -203,6 +377,13 @@ export function MessageInput({ targetId, targetType, members = [] }: MessageInpu
           </span>
         )}
       </div>
+
+      {/* Upload error */}
+      {uploadError && (
+        <div className="text-sm text-red-500 mt-1 px-1">
+          {uploadError}
+        </div>
+      )}
 
       {/* Offline indicator */}
       {!isOnline && (

@@ -47,6 +47,8 @@ export interface QueuedMessage {
   targetType: "channel" | "dm";
   /** Parent message ID for thread replies */
   parentId: string | null;
+  /** Attachment IDs to associate with message (FILE-01) */
+  attachmentIds: string[] | null;
   /** Current send status */
   status: SendStatus;
   /** Number of retry attempts */
