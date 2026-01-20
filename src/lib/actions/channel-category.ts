@@ -135,10 +135,12 @@ export async function getCategories(organizationId: string) {
     throw new Error("Not authorized to view categories");
   }
 
+  console.log("[getCategories] Fetching for org:", organizationId);
   const categories = await db.query.channelCategories.findMany({
     where: eq(channelCategories.organizationId, organizationId),
     orderBy: (cat, { asc }) => [asc(cat.sortOrder)],
   });
+  console.log("[getCategories] Found:", categories.length);
 
   // Get channel counts per category
   const channelCounts = await db
@@ -159,8 +161,11 @@ export async function getCategories(organizationId: string) {
     channelCounts.map((c) => [c.categoryId, c.count])
   );
 
+  // Return only fields needed by sidebar (avoid Date serialization issues)
   return categories.map((cat) => ({
-    ...cat,
+    id: cat.id,
+    name: cat.name,
+    sortOrder: cat.sortOrder,
     channelCount: countMap.get(cat.id) ?? 0,
   }));
 }
