@@ -64,6 +64,22 @@ async function handleSendMessage(
 
     // Validate membership
     if (targetType === "channel") {
+      // ARCH-01: Check if channel is archived before accepting message
+      const [channel] = await db
+        .select({ isArchived: channels.isArchived })
+        .from(channels)
+        .where(eq(channels.id, targetId))
+        .limit(1);
+
+      if (channel?.isArchived) {
+        socket.emit("error", {
+          message: "Cannot send messages to archived channels",
+          code: "CHANNEL_ARCHIVED",
+        });
+        callback?.({ success: false });
+        return;
+      }
+
       const membership = await db
         .select()
         .from(channelMembers)

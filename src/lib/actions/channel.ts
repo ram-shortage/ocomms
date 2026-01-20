@@ -83,8 +83,10 @@ export async function getChannels(organizationId: string) {
     },
   });
 
+  // Filter: user can see public channels or private channels they're a member of
+  // ARCH-03: Exclude archived channels from main list
   return allChannels.filter(
-    (ch) => !ch.isPrivate || ch.members.some((m) => m.userId === session.user.id)
+    (ch) => !ch.isArchived && (!ch.isPrivate || ch.members.some((m) => m.userId === session.user.id))
   );
 }
 
@@ -99,8 +101,9 @@ export async function getUserChannels(organizationId: string) {
     },
   });
 
+  // ARCH-03: Exclude archived channels from user's channel list
   return userMemberships
-    .filter((m) => m.channel.organizationId === organizationId)
+    .filter((m) => m.channel.organizationId === organizationId && !m.channel.isArchived)
     .map((m) => m.channel);
 }
 
@@ -301,4 +304,121 @@ export async function getWorkspaceMembers(organizationId: string) {
   });
 
   return orgMembers;
+}
+
+/**
+ * ARCH-01: Archive a channel making it read-only
+ * ARCH-06: Cannot archive the default channel (slug === "general")
+ */
+export async function archiveChannel(channelId: string) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) throw new Error("Unauthorized");
+
+  // Get channel with members
+  const channel = await db.query.channels.findFirst({
+    where: eq(channels.id, channelId),
+    with: {
+      members: true,
+    },
+  });
+
+  if (!channel) throw new Error("Channel not found");
+
+  // ARCH-06: Default channel cannot be archived
+  if (channel.slug === "general") {
+    throw new Error("The default channel cannot be archived");
+  }
+
+  // Permission: must be channel admin or creator
+  const membership = channel.members.find((m) => m.userId === session.user.id);
+  const isCreator = channel.createdBy === session.user.id;
+  const isAdmin = membership?.role === "admin";
+
+  if (!isCreator && !isAdmin) {
+    throw new Error("Only channel admins or the creator can archive this channel");
+  }
+
+  // Update: isArchived=true, archivedAt=now, archivedBy=session.user.id
+  await db.update(channels)
+    .set({
+      isArchived: true,
+      archivedAt: new Date(),
+      archivedBy: session.user.id,
+      updatedAt: new Date(),
+    })
+    .where(eq(channels.id, channelId));
+
+  revalidatePath("/");
+  return { success: true };
+}
+
+/**
+ * ARCH-05: Unarchive a channel to restore normal operation
+ */
+export async function unarchiveChannel(channelId: string) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) throw new Error("Unauthorized");
+
+  // Get channel with members
+  const channel = await db.query.channels.findFirst({
+    where: eq(channels.id, channelId),
+    with: {
+      members: true,
+    },
+  });
+
+  if (!channel) throw new Error("Channel not found");
+
+  // Permission: must be channel admin or creator
+  const membership = channel.members.find((m) => m.userId === session.user.id);
+  const isCreator = channel.createdBy === session.user.id;
+  const isAdmin = membership?.role === "admin";
+
+  if (!isCreator && !isAdmin) {
+    throw new Error("Only channel admins or the creator can unarchive this channel");
+  }
+
+  // Update: isArchived=false, archivedAt=null, archivedBy=null
+  await db.update(channels)
+    .set({
+      isArchived: false,
+      archivedAt: null,
+      archivedBy: null,
+      updatedAt: new Date(),
+    })
+    .where(eq(channels.id, channelId));
+
+  revalidatePath("/");
+  return { success: true };
+}
+
+/**
+ * ARCH-04: Get archived channels for organization
+ * Returns archived channels where user has access (public or member of private)
+ */
+export async function getArchivedChannels(organizationId: string) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) throw new Error("Unauthorized");
+
+  // Verify org membership
+  const isOrgMember = await verifyOrgMembership(session.user.id, organizationId);
+  if (!isOrgMember) {
+    throw new Error("Not authorized to view channels in this organization");
+  }
+
+  // Get all archived channels in org
+  const archivedChannels = await db.query.channels.findMany({
+    where: and(
+      eq(channels.organizationId, organizationId),
+      eq(channels.isArchived, true)
+    ),
+    with: {
+      members: true,
+    },
+  });
+
+  // Filter: user can see public channels or private channels they're a member of
+  return archivedChannels.filter(
+    (ch) => !ch.isPrivate || ch.members.some((m) => m.userId === session.user.id)
+  );
 }
