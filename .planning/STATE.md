@@ -2,20 +2,19 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-01-19)
+See: .planning/PROJECT.md (updated 2026-01-20)
 
 **Core value:** Data sovereignty - complete control over communication data
-**Current focus:** Test coverage expansion
+**Current focus:** v0.4.0 Files, Theming & Notes
 
 ## Current Position
 
-Phase: 20+ (Test Coverage)
-Plan: 20-09 complete (UI Component Tests)
-Status: Complete - all test plans executed
-Last activity: 2026-01-19 - Completed 20-09-PLAN.md (53 tests)
+Phase: 21 of 23 (Dark Mode/Theming)
+Plan: Ready to plan Phase 21
+Status: Ready to plan
+Last activity: 2026-01-20 - Roadmap created for v0.4.0
 
-Progress: [########################] 100% (20/20 phases through v0.3.0)
-Test Plans: [########] 8/8 test plans complete
+Progress: [------------------------] 0% (0/3 phases in v0.4.0)
 
 ## Shipped Milestones
 
@@ -34,33 +33,25 @@ Test Plans: [########] 8/8 test plans complete
 
 ## Performance Metrics
 
-**Cumulative:**
+**Cumulative (through v0.3.0):**
 - Total plans completed: 78 (70 + 8 test plans)
 - Total requirements delivered: 108 (51 + 19 + 38)
 - Total phases completed: 20
-- Test coverage plans completed: 8/8
 
 ## Accumulated Context
 
 ### Decisions
 
-| Decision | Rationale | Plan |
-|----------|-----------|------|
-| Source validation tests for socket handlers | Drizzle ORM chain mocking too complex; source validation verifies contracts effectively | 20-04 |
-| Use simulated stores for concurrency tests | Fast unit tests without DB setup | 20-08 |
-| Add tests/ to vitest include pattern | Organize concurrency tests separately | 20-08 |
-| Documentation-style API tests | Tests verify implementation contracts AND serve as behavior documentation | 20-06 |
-| Extract functions for unit testing | Progressive delay/lockout functions copied to tests for direct testing | 20-06 |
-| Simulated handlers for socket tests | Isolates unit testing from full socket.io infrastructure | 20-05 |
-| Separate mock functions per DB table | Better test isolation, clearer mock setup | 20-07 |
-| Unit tests with fake-indexeddb for IndexedDB | Fast reliable mocking without browser overhead; Playwright e2e documented for future | 20-11 |
-| jsdom environment for component tests | environmentMatchGlobs applies jsdom to .tsx, node to .ts | 20-10 |
-| Pattern-based accessibility testing | Test UI patterns (Button, Dialog) not full app integration | 20-10 |
-| Skip Radix Sheet tests in jsdom | Radix UI Sheet causes infinite render loop in jsdom; test button presence only | 20-09 |
+Decisions are logged in PROJECT.md Key Decisions table.
+Recent decisions for v0.4.0:
+- next-themes for theming (de facto standard, FOUC prevention)
+- Extend avatar upload pattern for file uploads (proven approach)
+- react-markdown for notes (XSS-safe, no dangerouslySetInnerHTML)
+- Last-write-wins with conflict detection for notes (not CRDT/OT)
 
 ### Pending Todos
 
-None - all test plans complete.
+None - starting fresh milestone.
 
 ### Blockers/Concerns
 
@@ -68,6 +59,6 @@ None active.
 
 ## Session Continuity
 
-Last session: 2026-01-19 23:19
-Stopped at: Completed 20-09-PLAN.md (all test plans complete)
+Last session: 2026-01-20
+Stopped at: Roadmap created for v0.4.0
 Resume file: None

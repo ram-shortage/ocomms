@@ -80,34 +80,34 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FILE-01 | TBD | Pending |
-| FILE-02 | TBD | Pending |
-| FILE-03 | TBD | Pending |
-| FILE-04 | TBD | Pending |
-| FILE-05 | TBD | Pending |
-| FILE-06 | TBD | Pending |
-| FILE-07 | TBD | Pending |
-| FILE-08 | TBD | Pending |
-| FILE-09 | TBD | Pending |
-| FILE-10 | TBD | Pending |
-| THEME-01 | TBD | Pending |
-| THEME-02 | TBD | Pending |
-| THEME-03 | TBD | Pending |
-| THEME-04 | TBD | Pending |
-| THEME-05 | TBD | Pending |
-| NOTE-01 | TBD | Pending |
-| NOTE-02 | TBD | Pending |
-| NOTE-03 | TBD | Pending |
-| NOTE-04 | TBD | Pending |
-| NOTE-05 | TBD | Pending |
-| NOTE-06 | TBD | Pending |
-| NOTE-07 | TBD | Pending |
+| THEME-01 | Phase 21 | Pending |
+| THEME-02 | Phase 21 | Pending |
+| THEME-03 | Phase 21 | Pending |
+| THEME-04 | Phase 21 | Pending |
+| THEME-05 | Phase 21 | Pending |
+| FILE-01 | Phase 22 | Pending |
+| FILE-02 | Phase 22 | Pending |
+| FILE-03 | Phase 22 | Pending |
+| FILE-04 | Phase 22 | Pending |
+| FILE-05 | Phase 22 | Pending |
+| FILE-06 | Phase 22 | Pending |
+| FILE-07 | Phase 22 | Pending |
+| FILE-08 | Phase 22 | Pending |
+| FILE-09 | Phase 22 | Pending |
+| FILE-10 | Phase 22 | Pending |
+| NOTE-01 | Phase 23 | Pending |
+| NOTE-02 | Phase 23 | Pending |
+| NOTE-03 | Phase 23 | Pending |
+| NOTE-04 | Phase 23 | Pending |
+| NOTE-05 | Phase 23 | Pending |
+| NOTE-06 | Phase 23 | Pending |
+| NOTE-07 | Phase 23 | Pending |
 
 **Coverage:**
 - v0.4.0 requirements: 22 total
-- Mapped to phases: 0
-- Unmapped: 22
+- Mapped to phases: 22
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-01-20*
-*Last updated: 2026-01-20 after initial definition*
+*Last updated: 2026-01-20 after roadmap creation*

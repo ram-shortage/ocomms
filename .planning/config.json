@@ -7,7 +7,7 @@
     "type": "full-stack-application"
   },
   "milestone": {
-    "current": "Security Hardening",
-    "version": "0.2.0"
+    "current": "Files, Theming & Notes",
+    "version": "0.4.0"
   }
 }
