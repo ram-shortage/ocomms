@@ -99,10 +99,17 @@ export async function processQueue(socket: TypedSocket): Promise<void> {
 /**
  * Send a message via socket with timeout.
  * Routes to message:send or thread:reply based on parentId.
+ * FILE-08/FILE-09: Includes attachmentIds when sending messages with attachments.
  */
 async function sendMessage(
   socket: TypedSocket,
-  msg: { targetId: string; targetType: "channel" | "dm"; content: string; parentId: string | null }
+  msg: {
+    targetId: string;
+    targetType: "channel" | "dm";
+    content: string;
+    parentId: string | null;
+    attachmentIds: string[] | null;
+  }
 ): Promise<{ success: boolean; messageId?: string }> {
   return new Promise((resolve, reject) => {
     const timeoutId = setTimeout(() => {
@@ -115,14 +122,15 @@ async function sendMessage(
     };
 
     if (msg.parentId) {
-      // Thread reply
+      // Thread reply (attachments not yet supported in threads)
       socket.emit("thread:reply", { parentId: msg.parentId, content: msg.content }, callback);
     } else {
-      // Channel or DM message
+      // Channel or DM message with optional attachments
       socket.emit("message:send", {
         targetId: msg.targetId,
         targetType: msg.targetType,
         content: msg.content,
+        attachmentIds: msg.attachmentIds ?? undefined,
       }, callback);
     }
   });

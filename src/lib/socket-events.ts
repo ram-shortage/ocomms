@@ -3,6 +3,19 @@
  * Shared between server and client for type safety.
  */
 
+/**
+ * Attachment interface for file attachments on messages.
+ * FILE-04/FILE-05: Used for displaying attachments in message UI.
+ */
+export interface Attachment {
+  id: string;
+  originalName: string;
+  path: string;
+  mimeType: string;
+  sizeBytes: number;
+  isImage: boolean;
+}
+
 export interface Message {
   id: string;
   content: string;
@@ -20,6 +33,8 @@ export interface Message {
     name: string | null;
     email: string;
   };
+  /** File attachments for this message (FILE-04/FILE-05) */
+  attachments?: Attachment[];
 }
 
 export interface ReactionGroup {
@@ -79,7 +94,13 @@ export interface ServerToClientEvents {
 
 export interface ClientToServerEvents {
   "message:send": (
-    data: { targetId: string; targetType: "channel" | "dm"; content: string },
+    data: {
+      targetId: string;
+      targetType: "channel" | "dm";
+      content: string;
+      /** Attachment IDs to link to this message (FILE-08/FILE-09) */
+      attachmentIds?: string[];
+    },
     callback?: (response: { success: boolean; messageId?: string }) => void
   ) => void;
   "message:delete": (data: { messageId: string }) => void;

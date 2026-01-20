@@ -1,10 +1,10 @@
 import type { Server, Socket } from "socket.io";
 import { db } from "@/db";
-import { messages, channelMembers, conversationParticipants, channels, conversations } from "@/db/schema";
-import { eq, and, isNull, sql } from "drizzle-orm";
+import { messages, channelMembers, conversationParticipants, channels, conversations, fileAttachments } from "@/db/schema";
+import { eq, and, isNull, sql, inArray } from "drizzle-orm";
 import { RateLimiterMemory } from "rate-limiter-flexible";
 import { getRoomName } from "../rooms";
-import type { ClientToServerEvents, ServerToClientEvents, SocketData, Message } from "@/lib/socket-events";
+import type { ClientToServerEvents, ServerToClientEvents, SocketData, Message, Attachment } from "@/lib/socket-events";
 import { users } from "@/db/schema";
 import { parseMentions } from "@/lib/mentions";
 import { createNotifications } from "./notification";
@@ -26,15 +26,16 @@ type SocketWithData = Socket<ClientToServerEvents, ServerToClientEvents, Record<
 /**
  * Handle message:send event.
  * Validates membership, generates sequence number, persists message, and broadcasts to room.
+ * FILE-08/FILE-09: Links attachments to message and includes them in broadcast.
  */
 async function handleSendMessage(
   socket: SocketWithData,
   io: SocketIOServer,
-  data: { targetId: string; targetType: "channel" | "dm"; content: string },
+  data: { targetId: string; targetType: "channel" | "dm"; content: string; attachmentIds?: string[] },
   callback?: (response: { success: boolean; messageId?: string }) => void
 ): Promise<void> {
   const userId = socket.data.userId;
-  const { targetId, targetType, content } = data;
+  const { targetId, targetType, content, attachmentIds } = data;
 
   try {
     // SECFIX-06: Rate limit check
@@ -121,6 +122,40 @@ async function handleSendMessage(
 
     const newMessage = await insertMessageWithRetry();
 
+    // FILE-08/FILE-09: Link attachments to message if provided
+    let messageAttachments: Attachment[] = [];
+    if (attachmentIds && attachmentIds.length > 0) {
+      // Validate attachments exist and belong to current user
+      const validAttachments = await db
+        .select()
+        .from(fileAttachments)
+        .where(
+          and(
+            inArray(fileAttachments.id, attachmentIds),
+            eq(fileAttachments.uploadedBy, userId),
+            isNull(fileAttachments.messageId) // Only unassigned attachments
+          )
+        );
+
+      if (validAttachments.length > 0) {
+        // Update attachments to link to this message
+        await db
+          .update(fileAttachments)
+          .set({ messageId: newMessage.id })
+          .where(inArray(fileAttachments.id, validAttachments.map((a) => a.id)));
+
+        // Map to Attachment type for broadcast
+        messageAttachments = validAttachments.map((a) => ({
+          id: a.id,
+          originalName: a.originalName,
+          path: a.path,
+          mimeType: a.mimeType,
+          sizeBytes: a.sizeBytes,
+          isImage: a.isImage,
+        }));
+      }
+    }
+
     // Get author info for broadcast
     const [author] = await db
       .select({ id: users.id, name: users.name, email: users.email })
@@ -138,6 +173,7 @@ async function handleSendMessage(
       createdAt: newMessage.createdAt,
       updatedAt: newMessage.updatedAt,
       author: author ? { id: author.id, name: author.name, email: author.email } : undefined,
+      attachments: messageAttachments.length > 0 ? messageAttachments : undefined,
     };
 
     // Broadcast to room

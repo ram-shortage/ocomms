@@ -3,6 +3,7 @@ import { relations, SQL, sql } from "drizzle-orm";
 import { users } from "./auth";
 import { channels } from "./channel";
 import { conversations } from "./conversation";
+import { fileAttachments } from "./file-attachment";
 
 export const tsvector = customType<{ data: string }>({
   dataType() {
@@ -58,4 +59,6 @@ export const messagesRelations = relations(messages, ({ one, many }) => ({
     relationName: "thread",
   }),
   replies: many(messages, { relationName: "thread" }),
+  /** FILE-04/FILE-05: File attachments for this message */
+  attachments: many(fileAttachments),
 }));
