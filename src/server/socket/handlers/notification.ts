@@ -7,7 +7,7 @@ import type { ClientToServerEvents, ServerToClientEvents, SocketData, Message, N
 import type { ParsedMention } from "@/lib/mentions";
 import type { PresenceManager } from "./presence";
 import type { NotificationMode } from "@/db/schema/channel-notification-settings";
-import { sendPushToUser, type PushPayload } from "@/lib/push";
+import { sendPushToUser, isUserDndEnabled, type PushPayload } from "@/lib/push";
 
 type SocketIOServer = Server<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
 type SocketWithData = Socket<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
@@ -217,7 +217,15 @@ export async function createNotifications(params: {
     .where(eq(users.id, senderId));
 
   // Emit notification:new to each user's room and send push
+  // Note: Notifications are still stored in DB (for history) but real-time delivery respects DND
   for (const notification of insertedNotifications) {
+    // Check DND status before sending real-time notifications (STAT-06)
+    const isDnd = await isUserDndEnabled(notification.userId);
+    if (isDnd) {
+      console.log(`[Notification] User ${notification.userId} has DND enabled, skipping real-time notification`);
+      continue;
+    }
+
     const notificationPayload: Notification = {
       id: notification.id,
       type: notification.type as "mention" | "channel" | "here",

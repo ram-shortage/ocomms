@@ -10,7 +10,7 @@ import { db } from "@/db";
 import { reminders } from "@/db/schema";
 import { getQueueConnection } from "@/server/queue/connection";
 import { getEmitter } from "@/server/queue/emitter";
-import { sendPushToUser, type PushPayload } from "@/lib/push/send";
+import { sendPushToUser, isUserDndEnabled, type PushPayload } from "@/lib/push/send";
 import type { ReminderJobData } from "@/server/queue/reminder.queue";
 import type { Reminder as ReminderSocketType, Message } from "@/lib/socket-events";
 
@@ -87,6 +87,15 @@ async function processReminderJob(job: Job<ReminderJobData>): Promise<{ success:
     status: "fired",
     recurringPattern: reminder.recurringPattern,
   };
+
+  // Check DND status before sending real-time notifications (STAT-06)
+  // Note: Reminder status is already updated to "fired" above - this only affects real-time delivery
+  const isDnd = await isUserDndEnabled(reminder.userId);
+  if (isDnd) {
+    console.log(`[Reminder Worker] User ${reminder.userId} has DND enabled, skipping real-time notification`);
+    console.log(`[Reminder Worker] Successfully fired reminder ${reminderId} (DND blocked notification)`);
+    return { success: true };
+  }
 
   // Emit Socket.IO event to user's personal room
   try {
