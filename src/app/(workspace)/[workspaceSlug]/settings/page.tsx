@@ -64,12 +64,30 @@ export default async function WorkspaceSettingsPage({
           <h2 className="text-xl font-semibold">Administration</h2>
           <nav className="space-y-2">
             <Link
+              href={`/${workspaceSlug}/settings/user-groups`}
+              className="block p-4 bg-card border rounded hover:bg-muted"
+            >
+              <h3 className="font-medium">User Groups</h3>
+              <p className="text-sm text-muted-foreground">
+                Create groups for @mentions
+              </p>
+            </Link>
+            <Link
               href={`/${workspaceSlug}/settings/emoji`}
               className="block p-4 bg-card border rounded hover:bg-muted"
             >
               <h3 className="font-medium">Custom Emoji</h3>
               <p className="text-sm text-muted-foreground">
                 Upload and manage workspace emoji
+              </p>
+            </Link>
+            <Link
+              href={`/${workspaceSlug}/settings/analytics`}
+              className="block p-4 bg-card border rounded hover:bg-muted"
+            >
+              <h3 className="font-medium">Analytics</h3>
+              <p className="text-sm text-muted-foreground">
+                View workspace metrics and activity trends
               </p>
             </Link>
             <Link
