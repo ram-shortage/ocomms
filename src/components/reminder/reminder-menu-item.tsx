@@ -17,11 +17,12 @@ import { addDays, setHours, setMinutes, nextMonday, format } from "date-fns";
 
 interface ReminderMenuItemProps {
   messageId: string;
+  hasReminder?: boolean;
 }
 
 type RecurringPattern = "daily" | "weekly" | undefined;
 
-export function ReminderMenuItem({ messageId }: ReminderMenuItemProps) {
+export function ReminderMenuItem({ messageId, hasReminder = false }: ReminderMenuItemProps) {
   const [open, setOpen] = useState(false);
   const [customDate, setCustomDate] = useState("");
   const [note, setNote] = useState("");
@@ -88,10 +89,14 @@ export function ReminderMenuItem({ messageId }: ReminderMenuItemProps) {
         <Button
           variant="ghost"
           size="sm"
-          className="opacity-0 group-hover:opacity-100 transition-opacity h-7 w-7 p-0 text-muted-foreground hover:text-primary"
+          className={`transition-opacity h-7 w-7 p-0 ${
+            hasReminder
+              ? "opacity-100 text-amber-500 hover:text-amber-600"
+              : "opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-primary"
+          }`}
         >
-          <Bell className="h-4 w-4" />
-          <span className="sr-only">Remind me</span>
+          <Bell className={`h-4 w-4 ${hasReminder ? "fill-current" : ""}`} />
+          <span className="sr-only">{hasReminder ? "Has reminder set" : "Remind me"}</span>
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-72" align="start">
@@ -134,6 +139,12 @@ export function ReminderMenuItem({ messageId }: ReminderMenuItemProps) {
               type="datetime-local"
               value={customDate}
               onChange={(e) => setCustomDate(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && customDate) {
+                  e.preventDefault();
+                  handleCustomSubmit();
+                }
+              }}
               className="text-sm"
             />
           </div>

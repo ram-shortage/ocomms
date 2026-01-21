@@ -3,30 +3,8 @@
 import { useState } from "react";
 import { useParams } from "next/navigation";
 import { Bell } from "lucide-react";
-import { RemindersList } from "@/components/reminder/reminders-list";
+import { RemindersList, type Reminder } from "@/components/reminder/reminders-list";
 import { ReminderDetailPanel } from "@/components/reminder/reminder-detail-panel";
-
-type ReminderStatus = "pending" | "fired" | "snoozed" | "completed" | "cancelled";
-
-interface Reminder {
-  id: string;
-  note: string | null;
-  remindAt: Date;
-  status: ReminderStatus;
-  recurringPattern: "daily" | "weekly" | null;
-  snoozedUntil: Date | null;
-  message: {
-    id: string;
-    content: string;
-    channelId: string | null;
-    conversationId: string | null;
-    author: {
-      id: string;
-      name: string | null;
-      email: string;
-    } | null;
-  };
-}
 
 export default function RemindersPage() {
   const params = useParams();
@@ -56,7 +34,7 @@ export default function RemindersPage() {
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto p-4">
-        <RemindersList onReminderClick={handleReminderClick} />
+        <RemindersList onReminderClick={handleReminderClick} showCompleted />
       </div>
 
       {/* Detail panel */}

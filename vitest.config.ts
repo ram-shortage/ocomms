@@ -16,11 +16,6 @@ export default defineConfig({
       "**/node_modules/**",
       "tests/functional.test.ts", // Run separately with npm run test:functional
     ],
-    // Use node for non-component tests
-    environmentMatchGlobs: [
-      ["src/**/__tests__/**/*.test.ts", "node"],
-      ["tests/**/*.test.ts", "node"],
-    ],
     setupFiles: ["./vitest.setup.ts"],
     css: true,
   },

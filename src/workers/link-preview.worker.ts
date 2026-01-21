@@ -178,11 +178,17 @@ export function createLinkPreviewWorker(): Worker<LinkPreviewJobData> {
       console.log(
         `[LinkPreview] Processing job ${job.id} for ${job.data.url}`
       );
-      await fetchAndCachePreview(
-        job.data.messageId,
-        job.data.url,
-        job.data.position
-      );
+      try {
+        await fetchAndCachePreview(
+          job.data.messageId,
+          job.data.url,
+          job.data.position
+        );
+        console.log(`[LinkPreview] Job ${job.id} completed successfully`);
+      } catch (error) {
+        console.error(`[LinkPreview] Job ${job.id} failed:`, error);
+        throw error; // Re-throw to let BullMQ handle retry
+      }
     },
     {
       connection: getQueueConnection(),

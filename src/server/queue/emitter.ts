@@ -14,10 +14,7 @@ let emitter: Emitter<ServerToClientEvents> | null = null;
  */
 export function getEmitter(): Emitter<ServerToClientEvents> {
   if (!emitter) {
-    const redisUrl = process.env.REDIS_URL;
-    if (!redisUrl) {
-      throw new Error("REDIS_URL environment variable is required");
-    }
+    const redisUrl = process.env.REDIS_URL || "redis://localhost:6379";
 
     const redisClient = new Redis(redisUrl);
     emitter = new Emitter<ServerToClientEvents>(redisClient);

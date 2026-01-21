@@ -95,10 +95,13 @@ export function BookmarkItem({ bookmark, onRemove }: BookmarkItemProps) {
     const isDM = !!message.conversationId;
 
     return (
-      <button
+      <div
+        role="button"
+        tabIndex={0}
         onClick={handleClick}
-        disabled={isPending}
-        className="w-full text-left px-3 py-2 rounded-md hover:bg-accent transition-colors group"
+        onKeyDown={(e) => e.key === "Enter" && handleClick()}
+        aria-disabled={isPending}
+        className="w-full text-left px-3 py-2 rounded-md hover:bg-accent transition-colors group cursor-pointer"
       >
         <div className="flex items-start gap-2">
           {isDM ? (
@@ -148,7 +151,7 @@ export function BookmarkItem({ bookmark, onRemove }: BookmarkItemProps) {
             <ExternalLink className="h-3 w-3 text-muted-foreground" />
           </div>
         </div>
-      </button>
+      </div>
     );
   }
 
@@ -188,10 +191,13 @@ export function BookmarkItem({ bookmark, onRemove }: BookmarkItemProps) {
     const channelName = file.message?.channel?.name;
 
     return (
-      <button
+      <div
+        role="button"
+        tabIndex={0}
         onClick={handleClick}
-        disabled={isPending}
-        className="w-full text-left px-3 py-2 rounded-md hover:bg-accent transition-colors group"
+        onKeyDown={(e) => e.key === "Enter" && handleClick()}
+        aria-disabled={isPending}
+        className="w-full text-left px-3 py-2 rounded-md hover:bg-accent transition-colors group cursor-pointer"
       >
         <div className="flex items-start gap-2">
           <FileIcon className="h-4 w-4 mt-0.5 shrink-0 text-muted-foreground" />
@@ -232,7 +238,7 @@ export function BookmarkItem({ bookmark, onRemove }: BookmarkItemProps) {
             <ExternalLink className="h-3 w-3 text-muted-foreground" />
           </div>
         </div>
-      </button>
+      </div>
     );
   }
 

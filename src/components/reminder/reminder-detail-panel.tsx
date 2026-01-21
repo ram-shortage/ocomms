@@ -36,10 +36,14 @@ interface ReminderDetailPanelProps {
         name: string | null;
         email: string;
       } | null;
+      channel?: {
+        id: string;
+        slug: string;
+        name: string;
+      } | null;
     };
   } | null;
   workspaceSlug?: string;
-  channelSlug?: string;
 }
 
 export function ReminderDetailPanel({
@@ -94,17 +98,17 @@ export function ReminderDetailPanel({
     }
 
     // Navigate to the message location
-    // For channels: /{workspaceSlug}/channels/{channelSlug}?message={messageId}
-    // For DMs: /{workspaceSlug}/dm/{conversationId}?message={messageId}
-    // Note: We don't have channelSlug here, so we might need to look it up
-    // For now, navigate and let the page handle scroll to message
-    if (reminder.message.channelId) {
-      // We'd need to look up the channel slug, for now just close
-      toast.info("Navigate to the channel to view the message");
+    // For channels: /{workspaceSlug}/channels/{channelSlug}
+    // For DMs: /{workspaceSlug}/dm/{conversationId}
+    if (reminder.message.channelId && reminder.message.channel?.slug) {
+      router.push(`/${workspaceSlug}/channels/${reminder.message.channel.slug}`);
+      onClose();
     } else if (reminder.message.conversationId) {
       router.push(`/${workspaceSlug}/dm/${reminder.message.conversationId}`);
+      onClose();
+    } else {
+      toast.error("Unable to navigate to message");
     }
-    onClose();
   };
 
   // Determine display time
@@ -151,6 +155,11 @@ export function ReminderDetailPanel({
               <div className="flex-1 min-w-0">
                 <div className="flex items-baseline gap-2">
                   <span className="font-semibold text-sm">{authorName}</span>
+                  {reminder.message.channel?.name && (
+                    <span className="text-xs text-muted-foreground">
+                      in #{reminder.message.channel.name}
+                    </span>
+                  )}
                 </div>
                 <p className="text-sm mt-1 whitespace-pre-wrap break-words">
                   {reminder.message.content}

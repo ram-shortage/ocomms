@@ -294,8 +294,10 @@ async function createNotifications(params: {
  * to prevent DoS attacks and N+1 query patterns.
  */
 describe("Notification Handler DoS Prevention (M-13)", () => {
-  const sourcePath = require("path").resolve(__dirname, "../handlers/notification.ts");
-  const source = require("fs").readFileSync(sourcePath, "utf-8");
+  const fs = require("fs");
+  const path = require("path");
+  const sourcePath = path.resolve(__dirname, "../handlers/notification.ts");
+  const source = fs.readFileSync(sourcePath, "utf-8");
 
   describe("Limit capping", () => {
     it("defines maximum notification limit constant", () => {

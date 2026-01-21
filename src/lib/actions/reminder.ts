@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db";
-import { reminders, messages, channelMembers, conversationParticipants } from "@/db/schema";
+import { reminders, messages, channelMembers, conversationParticipants, channels } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { eq, and, inArray } from "drizzle-orm";
@@ -130,20 +130,32 @@ export async function createReminder(data: CreateReminderData) {
 /**
  * Get all reminders for the current user
  * RMND-03: View list of pending reminders in sidebar
+ * Includes channel slug for navigation
  */
-export async function getReminders() {
+export async function getReminders(includeCompleted = false) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) throw new Error("Unauthorized");
+
+  const statusFilter = includeCompleted
+    ? (["pending", "fired", "snoozed", "completed"] as const)
+    : (["pending", "fired", "snoozed"] as const);
 
   const userReminders = await db.query.reminders.findMany({
     where: and(
       eq(reminders.userId, session.user.id),
-      inArray(reminders.status, ["pending", "fired", "snoozed"])
+      inArray(reminders.status, statusFilter)
     ),
     with: {
       message: {
         with: {
           author: true,
+          channel: {
+            columns: {
+              id: true,
+              slug: true,
+              name: true,
+            },
+          },
         },
       },
     },
@@ -299,6 +311,27 @@ export async function completeReminder(id: string) {
 
   revalidatePath("/");
   return updated;
+}
+
+/**
+ * Get message IDs that have active reminders for the current user
+ * Used to highlight reminder bells on messages in the message list
+ */
+export async function getMessageIdsWithReminders(): Promise<string[]> {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) return [];
+
+  const activeReminders = await db.query.reminders.findMany({
+    where: and(
+      eq(reminders.userId, session.user.id),
+      inArray(reminders.status, ["pending", "fired", "snoozed"])
+    ),
+    columns: {
+      messageId: true,
+    },
+  });
+
+  return activeReminders.map((r) => r.messageId);
 }
 
 /**

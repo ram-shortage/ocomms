@@ -7,6 +7,7 @@ import type { ClientToServerEvents, ServerToClientEvents } from "./socket-events
 type TypedSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
 
 let socket: TypedSocket | null = null;
+let connectionRefCount = 0;
 
 /**
  * Get the singleton socket instance.
@@ -28,7 +29,8 @@ export function getSocket(): TypedSocket {
 
 /**
  * React hook for socket connection management.
- * Connects on mount, disconnects on unmount.
+ * Uses reference counting to maintain connection across component lifecycles.
+ * Only disconnects when all components using the socket have unmounted.
  *
  * @returns The typed socket instance
  */
@@ -37,6 +39,7 @@ export function useSocket(): TypedSocket {
 
   useEffect(() => {
     const socket = socketRef.current;
+    connectionRefCount++;
 
     // Connect if not already connected
     if (!socket.connected) {
@@ -44,8 +47,16 @@ export function useSocket(): TypedSocket {
     }
 
     return () => {
-      // Disconnect on unmount
-      socket.disconnect();
+      connectionRefCount--;
+      // Only disconnect when no components are using the socket
+      // and after a delay to allow for navigation between pages
+      if (connectionRefCount === 0) {
+        setTimeout(() => {
+          if (connectionRefCount === 0 && socket.connected) {
+            socket.disconnect();
+          }
+        }, 5000); // 5 second grace period for navigation
+      }
     };
   }, []);
 

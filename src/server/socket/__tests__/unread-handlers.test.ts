@@ -309,8 +309,10 @@ async function notifyUnreadIncrement(
  * through unbounded array inputs.
  */
 describe("Unread Handler DoS Prevention (M-12)", () => {
-  const sourcePath = require("path").resolve(__dirname, "../handlers/unread.ts");
-  const source = require("fs").readFileSync(sourcePath, "utf-8");
+  const fs = require("fs");
+  const path = require("path");
+  const sourcePath = path.resolve(__dirname, "../handlers/unread.ts");
+  const source = fs.readFileSync(sourcePath, "utf-8");
 
   describe("Array size caps", () => {
     it("defines maximum IDs per request constant", () => {
