@@ -1,14 +1,14 @@
 /**
  * Mention parsing and extraction utilities.
- * Supports @username, @"Display Name", @channel, and @here mentions.
+ * Supports @username, @"Display Name", @channel, @here, and @group mentions.
  */
 
 import type { ReactNode } from "react";
 import { createElement } from "react";
 
 export interface ParsedMention {
-  type: "user" | "channel" | "here";
-  value: string; // username for user, "channel" or "here" for special
+  type: "user" | "channel" | "here" | "group";
+  value: string; // username for user/group, "channel" or "here" for special
   start: number; // position in string
   end: number; // position in string
   raw: string; // original text matched (e.g., @john or @"John Doe")
@@ -60,9 +60,22 @@ export function parseMentions(content: string): ParsedMention[] {
 }
 
 /**
- * Extract just the usernames from mentions (excludes @channel and @here).
+ * Extract just the usernames from mentions (excludes @channel, @here, and @group).
  */
 export function extractMentionedUsernames(content: string): string[] {
+  const mentions = parseMentions(content);
+  return mentions
+    .filter((m) => m.type === "user")
+    .map((m) => m.value);
+}
+
+/**
+ * Extract potential group handles from mentions.
+ * Since groups and users use the same @handle syntax, this returns all
+ * "user" type mentions as potential group handles.
+ * The caller must check against the database to determine if a handle is a group.
+ */
+export function extractPotentialGroupHandles(content: string): string[] {
   const mentions = parseMentions(content);
   return mentions
     .filter((m) => m.type === "user")
@@ -73,19 +86,24 @@ export function extractMentionedUsernames(content: string): string[] {
  * Props for highlighted mention spans.
  */
 interface MentionSpanProps {
-  type: "user" | "channel" | "here";
+  type: "user" | "channel" | "here" | "group";
   isSelf: boolean;
   children: string;
 }
 
 /**
  * Create a styled mention span element.
+ * - User mentions: blue background
+ * - @channel/@here: orange/amber background
+ * - Group mentions: purple background
  */
 function MentionSpan({ type, isSelf, children }: MentionSpanProps): ReactNode {
   let className = "rounded px-0.5 ";
 
   if (type === "channel" || type === "here") {
     className += "text-amber-600 bg-amber-50";
+  } else if (type === "group") {
+    className += "text-purple-600 bg-purple-50";
   } else {
     className += "text-blue-600 bg-blue-50";
     if (isSelf) {
