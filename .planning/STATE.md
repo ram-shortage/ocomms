@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 ## Current Position
 
 Phase: 29 of 29 (Stabilization)
-Plan: 0 of TBD complete
-Status: Not started
-Last activity: 2026-01-21 - Completed Phase 28 (Authorization & Analytics)
+Plan: 1 of TBD complete (29-04)
+Status: In progress
+Last activity: 2026-01-21 - Completed 29-04-PLAN.md (Socket DoS Prevention)
 
 Progress: [████████████████████] 5/6 phases in v0.5.0
 
@@ -196,6 +196,11 @@ Phase 28-08 decisions:
 - Chart colors brightened for dark mode contrast (lightness 0.7-0.8)
 - GUST-04 marked for further testing (email verification returnUrl complexity)
 
+Phase 29-04 decisions:
+- 100 IDs per request limit for presence/unread (prevents memory exhaustion)
+- 100 max / 50 default notification limit (balances UX and performance)
+- inArray batch query for channels (eliminates N+1 in notification handler)
+
 ### Pending Todos
 
 2 todos pending - see `.planning/todos/pending/`
@@ -209,5 +214,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-21
-Stopped at: Completed Phase 28 (Authorization & Analytics) - verified
-Resume file: None - ready for Phase 29
+Stopped at: Completed 29-04-PLAN.md (Socket DoS Prevention)
+Resume file: None
