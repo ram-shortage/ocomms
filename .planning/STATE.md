@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 ## Current Position
 
 Phase: 28 of 29 (Authorization & Analytics)
-Plan: 1 of 8 complete
+Plan: 2 of 8 complete
 Status: In progress
-Last activity: 2026-01-21 - Completed 28-01-PLAN.md (Schema for User Groups and Guests)
+Last activity: 2026-01-21 - Completed 28-02-PLAN.md (Analytics Components & Server Actions)
 
 Progress: [████████████████░░░░] 4/6 phases in v0.5.0
 
@@ -157,6 +157,11 @@ Phase 28-01 decisions:
 - Guest invites store channelIds as JSON text for simplicity
 - guestJobId on members for BullMQ expiration job tracking (matching status-expiration pattern)
 
+Phase 28-02 decisions:
+- Explicit TypeScript interfaces for Recharts v3 payload types (avoids complex generic inference)
+- Filter channels by organizationId first, then query messages - efficient multi-tenant isolation
+- WAU/MAU trend calculated by comparing current vs previous week counts
+
 ### Pending Todos
 
 2 todos pending - see `.planning/todos/pending/`
@@ -170,5 +175,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-21
-Stopped at: Completed 28-01-PLAN.md (Schema for User Groups and Guests)
-Resume file: None - ready for 28-02-PLAN.md
+Stopped at: Completed 28-02-PLAN.md (Analytics Components & Server Actions)
+Resume file: None - ready for 28-03-PLAN.md
