@@ -1,10 +1,17 @@
 import type { Server, Socket } from "socket.io";
 import { db } from "@/db";
 import { messages, threadParticipants, users } from "@/db/schema";
-import { eq, and, isNull, sql, max } from "drizzle-orm";
+import { eq, and, isNull, sql, asc, gt } from "drizzle-orm";
 import { getRoomName } from "../rooms";
 import type { ClientToServerEvents, ServerToClientEvents, SocketData, Message } from "@/lib/socket-events";
 import { isChannelMember, isConversationParticipant, getMessageContext } from "../authz";
+
+// M-3: Maximum message length validation (matching message.ts)
+const MAX_MESSAGE_LENGTH = 10_000;
+
+// M-11: Pagination constants for thread replies
+const MAX_PAGE_SIZE = 100;
+const DEFAULT_PAGE_SIZE = 50;
 
 type SocketIOServer = Server<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
 type SocketWithData = Socket<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
@@ -23,6 +30,16 @@ async function handleThreadReply(
   const { parentId, content } = data;
 
   try {
+    // M-3: Server-side length validation
+    if (content.length > MAX_MESSAGE_LENGTH) {
+      socket.emit("error", {
+        message: `Message exceeds maximum length of ${MAX_MESSAGE_LENGTH.toLocaleString()} characters`,
+        code: "MESSAGE_TOO_LONG",
+      });
+      callback?.({ success: false });
+      return;
+    }
+
     // Get parent message and verify it exists and is not deleted
     const [parent] = await db
       .select()
@@ -70,30 +87,39 @@ async function handleThreadReply(
       return;
     }
 
-    // Get next sequence number for the channel/conversation
-    const condition = targetType === "channel"
-      ? eq(messages.channelId, targetId)
-      : eq(messages.conversationId, targetId);
+    // M-2: Atomic sequence generation with retry (matching message.ts pattern)
+    const insertReplyWithRetry = async (retries = 3): Promise<typeof messages.$inferSelect> => {
+      const condition = targetType === "channel"
+        ? sql`channel_id = ${targetId}`
+        : sql`conversation_id = ${targetId}`;
 
-    const [maxSeq] = await db
-      .select({ maxSequence: max(messages.sequence) })
-      .from(messages)
-      .where(condition);
+      for (let attempt = 0; attempt < retries; attempt++) {
+        try {
+          const [newMsg] = await db
+            .insert(messages)
+            .values({
+              content,
+              authorId: userId,
+              channelId: parent.channelId,
+              conversationId: parent.conversationId,
+              parentId,
+              sequence: sql`(SELECT COALESCE(MAX(sequence), 0) + 1 FROM messages WHERE ${condition})`,
+            })
+            .returning();
+          return newMsg;
+        } catch (error: unknown) {
+          const dbError = error as { code?: string };
+          // PostgreSQL unique constraint violation - retry
+          if (dbError.code === "23505" && attempt < retries - 1) {
+            continue;
+          }
+          throw error;
+        }
+      }
+      throw new Error("Failed to insert reply after retries");
+    };
 
-    const sequence = (maxSeq?.maxSequence ?? 0) + 1;
-
-    // Insert reply and update parent's replyCount atomically
-    const [newMessage] = await db
-      .insert(messages)
-      .values({
-        content,
-        authorId: userId,
-        channelId: parent.channelId,
-        conversationId: parent.conversationId,
-        parentId,
-        sequence,
-      })
-      .returning();
+    const newMessage = await insertReplyWithRetry();
 
     // Increment parent's replyCount
     await db
@@ -213,12 +239,12 @@ function handleLeaveThread(socket: SocketWithData, data: { threadId: string }): 
 
 /**
  * Handle thread:getReplies event.
- * Fetches all replies for a thread.
+ * M-11: Fetches replies for a thread with pagination support.
  */
 async function handleGetReplies(
   socket: SocketWithData,
-  data: { threadId: string },
-  callback: (response: { success: boolean; replies?: Message[] }) => void
+  data: { threadId: string; limit?: number; cursor?: number },
+  callback: (response: { success: boolean; replies?: Message[]; hasMore?: boolean; nextCursor?: number }) => void
 ): Promise<void> {
   const userId = socket.data.userId;
 
@@ -247,6 +273,22 @@ async function handleGetReplies(
       }
     }
 
+    // M-11: Clamp limit to prevent abuse
+    const requestedLimit = data.limit ?? DEFAULT_PAGE_SIZE;
+    const safeLimit = Math.min(Math.max(1, requestedLimit), MAX_PAGE_SIZE);
+
+    // Build where conditions
+    const whereConditions = [
+      eq(messages.parentId, data.threadId),
+      isNull(messages.deletedAt),
+    ];
+
+    // Add cursor condition if provided
+    if (data.cursor !== undefined) {
+      whereConditions.push(gt(messages.sequence, data.cursor));
+    }
+
+    // Fetch one extra to detect hasMore
     const replies = await db
       .select({
         id: messages.id,
@@ -265,10 +307,16 @@ async function handleGetReplies(
       })
       .from(messages)
       .leftJoin(users, eq(messages.authorId, users.id))
-      .where(and(eq(messages.parentId, data.threadId), isNull(messages.deletedAt)))
-      .orderBy(messages.sequence);
+      .where(and(...whereConditions))
+      .orderBy(asc(messages.sequence))
+      .limit(safeLimit + 1);
 
-    const formattedReplies: Message[] = replies.map((r) => ({
+    // Determine if there are more results
+    const hasMore = replies.length > safeLimit;
+    const items = hasMore ? replies.slice(0, safeLimit) : replies;
+    const nextCursor = hasMore ? items[items.length - 1]?.sequence : undefined;
+
+    const formattedReplies: Message[] = items.map((r) => ({
       id: r.id,
       content: r.content,
       authorId: r.authorId,
@@ -287,7 +335,7 @@ async function handleGetReplies(
       },
     }));
 
-    callback({ success: true, replies: formattedReplies });
+    callback({ success: true, replies: formattedReplies, hasMore, nextCursor });
   } catch (error) {
     console.error("[Thread] Error fetching replies:", error);
     callback({ success: false });

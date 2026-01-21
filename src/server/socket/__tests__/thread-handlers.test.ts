@@ -9,6 +9,74 @@ import { describe, it, expect } from "vitest";
 describe("Thread Handler Tests", () => {
   // These tests validate the configuration and logic at a code level
 
+  describe("M-2: Thread Reply Race Condition Fix", () => {
+    it("uses retry logic for sequence conflicts", async () => {
+      const fs = await import("fs");
+      const path = await import("path");
+      const sourcePath = path.resolve(__dirname, "../handlers/thread.ts");
+      const source = fs.readFileSync(sourcePath, "utf-8");
+
+      // Should have retry logic like message.ts
+      expect(source).toContain("insertReplyWithRetry");
+      expect(source).toContain("for (let attempt = 0; attempt < retries; attempt++)");
+    });
+
+    it("handles PostgreSQL unique constraint violation 23505", async () => {
+      const fs = await import("fs");
+      const path = await import("path");
+      const sourcePath = path.resolve(__dirname, "../handlers/thread.ts");
+      const source = fs.readFileSync(sourcePath, "utf-8");
+
+      expect(source).toContain('dbError.code === "23505"');
+    });
+  });
+
+  describe("M-3: Thread Reply Length Validation", () => {
+    it("validates message length before insert", async () => {
+      const fs = await import("fs");
+      const path = await import("path");
+      const sourcePath = path.resolve(__dirname, "../handlers/thread.ts");
+      const source = fs.readFileSync(sourcePath, "utf-8");
+
+      expect(source).toContain("MAX_MESSAGE_LENGTH");
+      expect(source).toContain("content.length > MAX_MESSAGE_LENGTH");
+      expect(source).toContain("MESSAGE_TOO_LONG");
+    });
+  });
+
+  describe("M-11: Thread Reply Pagination", () => {
+    it("accepts pagination parameters (limit, cursor)", async () => {
+      const fs = await import("fs");
+      const path = await import("path");
+      const sourcePath = path.resolve(__dirname, "../handlers/thread.ts");
+      const source = fs.readFileSync(sourcePath, "utf-8");
+
+      expect(source).toContain("data.limit");
+      expect(source).toContain("data.cursor");
+    });
+
+    it("clamps limit to prevent abuse", async () => {
+      const fs = await import("fs");
+      const path = await import("path");
+      const sourcePath = path.resolve(__dirname, "../handlers/thread.ts");
+      const source = fs.readFileSync(sourcePath, "utf-8");
+
+      expect(source).toContain("MAX_PAGE_SIZE");
+      expect(source).toContain("Math.min(Math.max(1, requestedLimit), MAX_PAGE_SIZE)");
+    });
+
+    it("returns hasMore and nextCursor for pagination", async () => {
+      const fs = await import("fs");
+      const path = await import("path");
+      const sourcePath = path.resolve(__dirname, "../handlers/thread.ts");
+      const source = fs.readFileSync(sourcePath, "utf-8");
+
+      expect(source).toContain("hasMore");
+      expect(source).toContain("nextCursor");
+      expect(source).toContain("safeLimit + 1"); // Fetch one extra to detect hasMore
+    });
+  });
+
   describe("thread:reply Authorization", () => {
     it("verifies channel membership for replies in channels", async () => {
       const fs = await import("fs");
@@ -127,7 +195,8 @@ describe("Thread Handler Tests", () => {
       const sourcePath = path.resolve(__dirname, "../handlers/thread.ts");
       const source = fs.readFileSync(sourcePath, "utf-8");
 
-      expect(source).toContain("orderBy(messages.sequence)");
+      // M-11: Uses explicit asc() for ascending order
+      expect(source).toContain("orderBy(asc(messages.sequence))");
     });
 
     it("excludes deleted replies", async () => {
