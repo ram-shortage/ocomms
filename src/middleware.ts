@@ -44,7 +44,9 @@ export async function middleware(request: NextRequest) {
   // Validate session with better-auth API
   try {
     // Call the session endpoint to validate
-    const sessionResponse = await fetch(new URL("/api/auth/get-session", request.url), {
+    // Use the request URL for the fetch - Next.js middleware handles this correctly
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || request.nextUrl.origin;
+    const sessionResponse = await fetch(`${baseUrl}/api/auth/get-session`, {
       headers: {
         cookie: request.headers.get("cookie") || "",
       },
@@ -76,6 +78,7 @@ export async function middleware(request: NextRequest) {
     return response;
   } catch (error) {
     console.error("[Middleware] Session validation error:", error);
+    console.error("[Middleware] URL attempted:", `${process.env.NEXT_PUBLIC_APP_URL || request.nextUrl.origin}/api/auth/get-session`);
     // SECFIX-02: Fail closed - redirect to login on any validation error
     const response = NextResponse.redirect(new URL("/login", request.url));
     response.cookies.delete("better-auth.session_token");
