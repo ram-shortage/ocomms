@@ -13,11 +13,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { PresenceIndicator, usePresence } from "@/components/presence";
+import { GuestBadge } from "@/components/guest/guest-badge";
 
 interface Member {
   id: string;
   userId: string;
   role: "owner" | "admin" | "member";
+  /** GUST-03: Whether this member is a guest */
+  isGuest?: boolean;
   user: {
     id: string;
     name: string | null;
@@ -133,13 +136,17 @@ export function MemberList({
               />
             </div>
             <div>
-              <Link
-                href={`/${workspaceSlug}/members/${member.id}`}
-                className="font-medium hover:underline"
-              >
-                {member.user.name || member.user.email}
-                {member.userId === currentUserId && " (you)"}
-              </Link>
+              <div className="flex items-center gap-2">
+                <Link
+                  href={`/${workspaceSlug}/members/${member.id}`}
+                  className="font-medium hover:underline"
+                >
+                  {member.user.name || member.user.email}
+                  {member.userId === currentUserId && " (you)"}
+                </Link>
+                {/* GUST-03: Show guest badge */}
+                {member.isGuest && <GuestBadge size="sm" />}
+              </div>
               <p className="text-sm text-muted-foreground">{member.user.email}</p>
             </div>
           </div>

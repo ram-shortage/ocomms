@@ -262,6 +262,20 @@ async function handleSendMessage(
       .from(users)
       .where(eq(users.id, userId));
 
+    // GUST-03: Check if author is a guest in the relevant organization
+    let authorIsGuest = false;
+    const orgId = targetType === "channel"
+      ? (await db.select({ organizationId: channels.organizationId }).from(channels).where(eq(channels.id, targetId)).limit(1))[0]?.organizationId
+      : (await db.select({ organizationId: conversations.organizationId }).from(conversations).where(eq(conversations.id, targetId)).limit(1))[0]?.organizationId;
+
+    if (orgId) {
+      const membership = await db.query.members.findFirst({
+        where: and(eq(members.userId, userId), eq(members.organizationId, orgId)),
+        columns: { isGuest: true },
+      });
+      authorIsGuest = membership?.isGuest ?? false;
+    }
+
     const messageWithAuthor: Message = {
       id: newMessage.id,
       content: newMessage.content,
@@ -272,7 +286,7 @@ async function handleSendMessage(
       deletedAt: newMessage.deletedAt,
       createdAt: newMessage.createdAt,
       updatedAt: newMessage.updatedAt,
-      author: author ? { id: author.id, name: author.name, email: author.email } : undefined,
+      author: author ? { id: author.id, name: author.name, email: author.email, isGuest: authorIsGuest } : undefined,
       attachments: messageAttachments.length > 0 ? messageAttachments : undefined,
     };
 

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { GuestBadge } from "@/components/guest/guest-badge";
 
 interface ProfileCardProps {
   displayName?: string | null;
@@ -6,6 +7,10 @@ interface ProfileCardProps {
   avatarPath?: string | null;
   bio?: string | null;
   role?: string;
+  /** GUST-03: Whether this profile is a guest */
+  isGuest?: boolean;
+  /** GUST-*: Whether to hide sensitive info (for guests viewing others) */
+  limitedView?: boolean;
 }
 
 export function ProfileCard({
@@ -14,6 +19,8 @@ export function ProfileCard({
   avatarPath,
   bio,
   role,
+  isGuest,
+  limitedView,
 }: ProfileCardProps) {
   return (
     <div className="bg-card border rounded-lg p-6">
@@ -39,16 +46,23 @@ export function ProfileCard({
           )}
         </div>
         <div className="flex-1 min-w-0">
-          <h2 className="text-xl font-semibold truncate">
-            {displayName || email}
-          </h2>
-          <p className="text-sm text-muted-foreground">{email}</p>
-          {role && (
+          <div className="flex items-center gap-2">
+            <h2 className="text-xl font-semibold truncate">
+              {displayName || email}
+            </h2>
+            {/* GUST-03: Show guest badge */}
+            {isGuest && <GuestBadge />}
+          </div>
+          {/* Hide email from guests viewing other profiles */}
+          {!limitedView && (
+            <p className="text-sm text-muted-foreground">{email}</p>
+          )}
+          {role && !isGuest && (
             <span className="inline-block mt-1 px-2 py-0.5 text-xs bg-muted rounded capitalize">
               {role}
             </span>
           )}
-          {bio && <p className="mt-3 text-foreground">{bio}</p>}
+          {bio && !limitedView && <p className="mt-3 text-foreground">{bio}</p>}
         </div>
       </div>
     </div>

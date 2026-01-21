@@ -32,9 +32,20 @@ export interface Message {
     id: string;
     name: string | null;
     email: string;
+    /** GUST-03: Whether author is a guest */
+    isGuest?: boolean;
   };
   /** File attachments for this message (FILE-04/FILE-05) */
   attachments?: Attachment[];
+  /** Link previews for this message (LINK-01) */
+  linkPreviews?: Array<{
+    id: string;
+    url: string;
+    title: string | null;
+    description: string | null;
+    imageUrl: string | null;
+    siteName: string | null;
+  }>;
 }
 
 export interface ReactionGroup {

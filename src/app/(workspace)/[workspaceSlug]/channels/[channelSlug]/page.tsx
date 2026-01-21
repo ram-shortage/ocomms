@@ -7,7 +7,7 @@ import { getUserGroups } from "@/lib/actions/user-group";
 import { ChannelHeader } from "@/components/channel/channel-header";
 import { ChannelContent } from "@/components/channel/channel-content";
 import { db } from "@/db";
-import { messages, users, pinnedMessages, channelNotificationSettings, fileAttachments, messageLinkPreviews, linkPreviews } from "@/db/schema";
+import { messages, users, pinnedMessages, channelNotificationSettings, fileAttachments, messageLinkPreviews, linkPreviews, members } from "@/db/schema";
 import { eq, and, isNull, asc, inArray } from "drizzle-orm";
 import type { Message, Attachment } from "@/lib/socket-events";
 import type { NotificationMode } from "@/db/schema/channel-notification-settings";
@@ -149,6 +149,22 @@ export default async function ChannelPage({
     }
   }
 
+  // GUST-03: Fetch guest status for message authors
+  const uniqueAuthorIds = [...new Set(channelMessages.map((m) => m.authorId))];
+  const guestStatusMap = new Map<string, boolean>();
+  if (uniqueAuthorIds.length > 0) {
+    const guestMembers = await db
+      .select({ userId: members.userId, isGuest: members.isGuest })
+      .from(members)
+      .where(and(
+        inArray(members.userId, uniqueAuthorIds),
+        eq(members.organizationId, workspace.id)
+      ));
+    for (const m of guestMembers) {
+      guestStatusMap.set(m.userId, m.isGuest ?? false);
+    }
+  }
+
   // Transform to Message type for client
   const initialMessages: Message[] = channelMessages.map((m) => ({
     id: m.id,
@@ -166,6 +182,7 @@ export default async function ChannelPage({
       id: m.authorId,
       name: m.authorName,
       email: m.authorEmail || "",
+      isGuest: guestStatusMap.get(m.authorId) ?? false,
     },
     attachments: attachmentsByMessageId.get(m.id),
     linkPreviews: linkPreviewsByMessageId.get(m.id),
