@@ -153,8 +153,37 @@ export function BookmarkItem({ bookmark, onRemove }: BookmarkItemProps) {
   }
 
   // File bookmark
-  if (bookmark.type === "file" && bookmark.file) {
+  if (bookmark.type === "file") {
     const file = bookmark.file;
+
+    // Handle case where file's parent message was deleted
+    if (!file) {
+      return (
+        <div className="w-full px-3 py-2 rounded-md hover:bg-accent transition-colors group">
+          <div className="flex items-start gap-2">
+            <FileIcon className="h-4 w-4 mt-0.5 shrink-0 text-muted-foreground" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm text-muted-foreground italic">File no longer available</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Saved {formatDistanceToNow(new Date(bookmark.createdAt), { addSuffix: true })}
+              </p>
+            </div>
+            {/* Still allow removal */}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-red-500"
+              onClick={handleRemove}
+              disabled={isPending}
+            >
+              <X className="h-3.5 w-3.5" />
+              <span className="sr-only">Remove from saved</span>
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
     const uploaderName = file.uploader?.name || file.uploader?.email || "Unknown";
     const channelName = file.message?.channel?.name;
 
