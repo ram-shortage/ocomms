@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 ## Current Position
 
 Phase: 26 of 29 (Collections & Presence)
-Plan: 3 of 4 complete
-Status: In progress
-Last activity: 2026-01-21 - Completed 26-02-PLAN.md (Server Actions)
+Plan: 4 of 4 complete
+Status: Phase complete
+Last activity: 2026-01-21 - Completed 26-04-PLAN.md (Bookmarks UI)
 
-Progress: [███████░░░] 3/4 plans in phase 26
+Progress: [██████████] 4/4 plans in phase 26
 
 ## Shipped Milestones
 
@@ -106,6 +106,12 @@ Phase 26-03 decisions:
 - DND check happens early in push sender (before getting subscriptions) for efficiency
 - Centralized isUserDndEnabled function exported from push/send.ts for reuse
 
+Phase 26-04 decisions:
+- Yellow highlight for bookmark button (matches Slack convention)
+- No initial bookmarked state fetching - users see filled icon after clicking
+- Click bookmark item navigates to channel/DM (no detail panel like reminders)
+- Separate messages and files sections in bookmark list
+
 ### Pending Todos
 
 2 todos pending - see `.planning/todos/pending/`
@@ -119,5 +125,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-21
-Stopped at: Completed 26-02-PLAN.md (Server Actions)
-Resume file: None - continue with 26-04-PLAN.md
+Stopped at: Completed 26-04-PLAN.md (Bookmarks UI) - Phase 26 complete
+Resume file: None - continue with Phase 27
