@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean, uuid } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
 // better-auth core tables
@@ -74,6 +74,11 @@ export const member = pgTable("members", {
     .references(() => organization.id, { onDelete: "cascade" }),
   role: text("role").notNull().default("member"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
+  // Guest account fields
+  isGuest: boolean("is_guest").notNull().default(false),
+  guestExpiresAt: timestamp("guest_expires_at"),
+  guestSoftLocked: boolean("guest_soft_locked").notNull().default(false),
+  guestJobId: text("guest_job_id"), // BullMQ expiration job tracking
 });
 
 export const invitation = pgTable("invitations", {
