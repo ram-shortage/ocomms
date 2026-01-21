@@ -2,10 +2,12 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect, notFound } from "next/navigation";
 import { getChannel } from "@/lib/actions/channel";
+import { getWorkspaceEmojis } from "@/lib/actions/custom-emoji";
+import { getUserGroups } from "@/lib/actions/user-group";
 import { ChannelHeader } from "@/components/channel/channel-header";
 import { ChannelContent } from "@/components/channel/channel-content";
 import { db } from "@/db";
-import { messages, users, pinnedMessages, channelNotificationSettings, fileAttachments } from "@/db/schema";
+import { messages, users, pinnedMessages, channelNotificationSettings, fileAttachments, messageLinkPreviews, linkPreviews } from "@/db/schema";
 import { eq, and, isNull, asc, inArray } from "drizzle-orm";
 import type { Message, Attachment } from "@/lib/socket-events";
 import type { NotificationMode } from "@/db/schema/channel-notification-settings";
@@ -106,6 +108,47 @@ export default async function ChannelPage({
     }
   }
 
+  // LINK-01: Fetch link previews for these messages
+  const linkPreviewsData = messageIds.length > 0
+    ? await db
+        .select({
+          messageId: messageLinkPreviews.messageId,
+          previewId: linkPreviews.id,
+          url: linkPreviews.url,
+          title: linkPreviews.title,
+          description: linkPreviews.description,
+          imageUrl: linkPreviews.imageUrl,
+          siteName: linkPreviews.siteName,
+          hidden: messageLinkPreviews.hidden,
+          position: messageLinkPreviews.position,
+        })
+        .from(messageLinkPreviews)
+        .innerJoin(linkPreviews, eq(messageLinkPreviews.linkPreviewId, linkPreviews.id))
+        .where(and(
+          inArray(messageLinkPreviews.messageId, messageIds),
+          eq(messageLinkPreviews.hidden, false)
+        ))
+        .orderBy(asc(messageLinkPreviews.position))
+    : [];
+
+  // Group link previews by messageId
+  type LinkPreview = { id: string; url: string; title: string | null; description: string | null; imageUrl: string | null; siteName: string | null };
+  const linkPreviewsByMessageId = new Map<string, LinkPreview[]>();
+  for (const lp of linkPreviewsData) {
+    if (lp.messageId) {
+      const existing = linkPreviewsByMessageId.get(lp.messageId) || [];
+      existing.push({
+        id: lp.previewId,
+        url: lp.url,
+        title: lp.title,
+        description: lp.description,
+        imageUrl: lp.imageUrl,
+        siteName: lp.siteName,
+      });
+      linkPreviewsByMessageId.set(lp.messageId, existing);
+    }
+  }
+
   // Transform to Message type for client
   const initialMessages: Message[] = channelMessages.map((m) => ({
     id: m.id,
@@ -125,6 +168,7 @@ export default async function ChannelPage({
       email: m.authorEmail || "",
     },
     attachments: attachmentsByMessageId.get(m.id),
+    linkPreviews: linkPreviewsByMessageId.get(m.id),
   }));
 
   // Fetch pinned message IDs for this channel
@@ -152,8 +196,26 @@ export default async function ChannelPage({
   // No settings = "all" mode (default)
   const notificationMode: NotificationMode = (notificationSettingsData?.mode as NotificationMode) ?? "all";
 
+  // EMOJ-02: Fetch custom emojis for emoji picker
+  const workspaceEmojis = await getWorkspaceEmojis(workspace.id);
+  const customEmojis = workspaceEmojis.map((e) => ({
+    id: e.id,
+    name: e.name,
+    path: e.path,
+    isAnimated: e.isAnimated,
+  }));
+
+  // UGRP-02: Fetch user groups for mention autocomplete
+  const userGroups = await getUserGroups(workspace.id);
+  const groups = userGroups.map((g) => ({
+    id: g.id,
+    name: g.name,
+    handle: g.handle,
+    memberCount: g.memberCount,
+  }));
+
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col flex-1 min-h-0">
       <ChannelHeader
         channel={{
           id: channel.id,
@@ -180,6 +242,7 @@ export default async function ChannelPage({
 
       <ChannelContent
         channelId={channel.id}
+        organizationId={workspace.id}
         initialMessages={initialMessages}
         initialPinnedMessageIds={initialPinnedMessageIds}
         currentUserId={session.user.id}
@@ -189,7 +252,9 @@ export default async function ChannelPage({
           name: m.user.name,
           email: m.user.email,
         }))}
+        groups={groups}
         isArchived={channel.isArchived}
+        customEmojis={customEmojis}
       />
     </div>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { MessageList, MessageInput, type MentionMember } from "@/components/message";
+import { MessageList, MessageInput, type MentionMember, type MentionGroup } from "@/components/message";
 import type { Message } from "@/lib/socket-events";
 import { useMarkAsRead, useMarkMessageUnread } from "@/lib/hooks/use-unread";
 
@@ -11,6 +11,7 @@ interface DMContentProps {
   currentUserId: string;
   currentUsername?: string;
   members: MentionMember[];
+  groups?: MentionGroup[];
 }
 
 export function DMContent({
@@ -19,6 +20,7 @@ export function DMContent({
   currentUserId,
   currentUsername,
   members,
+  groups = [],
 }: DMContentProps) {
   // Unread management hooks
   const markAsRead = useMarkAsRead();
@@ -30,7 +32,7 @@ export function DMContent({
   }, [conversationId, markAsRead]);
 
   return (
-    <>
+    <div className="flex flex-col flex-1 min-h-0">
       {/* Message list - grows to fill available space */}
       <MessageList
         initialMessages={initialMessages}
@@ -42,7 +44,9 @@ export function DMContent({
       />
 
       {/* Message input - fixed at bottom */}
-      <MessageInput targetId={conversationId} targetType="dm" members={members} />
-    </>
+      <div className="shrink-0">
+        <MessageInput targetId={conversationId} targetType="dm" members={members} groups={groups} />
+      </div>
+    </div>
   );
 }

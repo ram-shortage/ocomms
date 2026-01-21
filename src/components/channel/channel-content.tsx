@@ -2,29 +2,42 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { Archive } from "lucide-react";
-import { MessageList, MessageInput, type MentionMember } from "@/components/message";
+import { MessageList, MessageInput, type MentionMember, type MentionGroup } from "@/components/message";
 import type { Message } from "@/lib/socket-events";
 import { useMarkAsRead, useMarkMessageUnread } from "@/lib/hooks/use-unread";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
+interface CustomEmojiData {
+  id: string;
+  name: string;
+  path: string;
+  isAnimated: boolean;
+}
+
 interface ChannelContentProps {
   channelId: string;
+  organizationId: string;
   initialMessages: Message[];
   initialPinnedMessageIds: string[];
   currentUserId: string;
   currentUsername?: string;
   members: MentionMember[];
+  groups?: MentionGroup[];
   isArchived?: boolean;
+  customEmojis?: CustomEmojiData[];
 }
 
 export function ChannelContent({
   channelId,
+  organizationId,
   initialMessages,
   initialPinnedMessageIds,
   currentUserId,
   currentUsername,
   members,
+  groups = [],
   isArchived = false,
+  customEmojis = [],
 }: ChannelContentProps) {
   const [pinnedMessageIds, setPinnedMessageIds] = useState<Set<string>>(
     () => new Set(initialPinnedMessageIds)
@@ -89,10 +102,10 @@ export function ChannelContent({
   );
 
   return (
-    <>
+    <div className="flex flex-col flex-1 min-h-0">
       {/* Archived channel banner */}
       {isArchived && (
-        <Alert className="mx-4 mt-4 border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950">
+        <Alert className="mx-4 mt-4 border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950 shrink-0">
           <Archive className="h-4 w-4 text-amber-600 dark:text-amber-400" />
           <AlertDescription className="text-amber-800 dark:text-amber-200">
             This channel is archived. Messages are read-only.
@@ -101,24 +114,28 @@ export function ChannelContent({
       )}
 
       {/* Message list - grows to fill available space */}
-      <div className={isArchived ? "opacity-75" : ""}>
-        <MessageList
-          initialMessages={initialMessages}
-          targetId={channelId}
-          targetType="channel"
-          currentUserId={currentUserId}
-          currentUsername={currentUsername}
-          pinnedMessageIds={pinnedMessageIds}
-          onPin={handlePin}
-          onUnpin={handleUnpin}
-          onMarkUnread={markMessageUnread}
-        />
-      </div>
+      <MessageList
+        initialMessages={initialMessages}
+        targetId={channelId}
+        targetType="channel"
+        currentUserId={currentUserId}
+        currentUsername={currentUsername}
+        pinnedMessageIds={pinnedMessageIds}
+        onPin={handlePin}
+        onUnpin={handleUnpin}
+        onMarkUnread={markMessageUnread}
+        className={isArchived ? "opacity-75" : ""}
+        customEmojis={customEmojis}
+        groupHandles={groups.map((g) => ({ handle: g.handle }))}
+        organizationId={organizationId}
+      />
 
-      {/* Message input - hidden for archived channels */}
+      {/* Message input - fixed at bottom, hidden for archived channels */}
       {!isArchived && (
-        <MessageInput targetId={channelId} targetType="channel" members={members} />
+        <div className="shrink-0">
+          <MessageInput targetId={channelId} targetType="channel" members={members} groups={groups} customEmojis={customEmojis} />
+        </div>
       )}
-    </>
+    </div>
   );
 }

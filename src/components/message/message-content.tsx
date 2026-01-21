@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { highlightMentions } from "@/lib/mentions";
+import { highlightMentionsWithGroups } from "@/lib/mentions";
 
 // Custom emoji regex pattern
 const CUSTOM_EMOJI_REGEX = /:([a-zA-Z0-9_-]+):/g;
@@ -11,10 +11,16 @@ interface CustomEmojiData {
   path: string;
 }
 
+interface GroupHandle {
+  handle: string;
+}
+
 interface MessageContentProps {
   content: string;
   currentUsername?: string;
   customEmojis?: CustomEmojiData[]; // Map of name -> path
+  groupHandles?: GroupHandle[]; // Known group handles for popup
+  organizationId?: string; // For group popup lookups
 }
 
 /**
@@ -29,9 +35,14 @@ export function MessageContent({
   content,
   currentUsername,
   customEmojis = [],
+  groupHandles = [],
+  organizationId,
 }: MessageContentProps) {
   // Build emoji lookup map
   const emojiMap = new Map(customEmojis.map((e) => [e.name, e.path]));
+
+  // Build group handle set for quick lookup
+  const groupHandleSet = new Set(groupHandles.map((g) => g.handle.toLowerCase()));
 
   // Two-pass rendering:
   // 1. Replace :emoji: patterns with images, leaving text segments
@@ -52,7 +63,12 @@ export function MessageContent({
     // Add text before this match (with mention highlighting)
     if (match.index > lastIndex) {
       const textSegment = content.slice(lastIndex, match.index);
-      const mentionNodes = highlightMentions(textSegment, currentUsername);
+      const mentionNodes = highlightMentionsWithGroups(
+        textSegment,
+        currentUsername,
+        groupHandleSet,
+        organizationId
+      );
       // Wrap in a span to provide key for the segment
       nodes.push(
         <span key={`seg-${segmentIndex}`}>{mentionNodes}</span>
@@ -82,7 +98,12 @@ export function MessageContent({
   // Add remaining text (with mention highlighting)
   if (lastIndex < content.length) {
     const textSegment = content.slice(lastIndex);
-    const mentionNodes = highlightMentions(textSegment, currentUsername);
+    const mentionNodes = highlightMentionsWithGroups(
+      textSegment,
+      currentUsername,
+      groupHandleSet,
+      organizationId
+    );
     nodes.push(
       <span key={`seg-final`}>{mentionNodes}</span>
     );
@@ -90,7 +111,12 @@ export function MessageContent({
 
   // If no emoji were found, just use mention highlighting directly
   if (nodes.length === 0) {
-    const mentionNodes = highlightMentions(content, currentUsername);
+    const mentionNodes = highlightMentionsWithGroups(
+      content,
+      currentUsername,
+      groupHandleSet,
+      organizationId
+    );
     return (
       <p className="text-foreground whitespace-pre-wrap break-words">
         {mentionNodes}

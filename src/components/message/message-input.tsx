@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { X, ImageIcon, FileIcon, SmilePlus } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { EmojiPicker } from "@/components/emoji/emoji-picker";
-import { MentionAutocomplete, type MentionMember } from "./mention-autocomplete";
+import { MentionAutocomplete, type MentionMember, type MentionGroup } from "./mention-autocomplete";
 import { formatMentionForInsert } from "@/lib/mentions";
 import { FileUploadZone } from "./file-upload-zone";
 import { UploadProgress } from "./upload-progress";
@@ -40,10 +40,11 @@ interface MessageInputProps {
   targetId: string;
   targetType: "channel" | "dm";
   members?: MentionMember[];
+  groups?: MentionGroup[];
   customEmojis?: CustomEmojiData[];
 }
 
-export function MessageInput({ targetId, targetType, members = [], customEmojis = [] }: MessageInputProps) {
+export function MessageInput({ targetId, targetType, members = [], groups = [], customEmojis = [] }: MessageInputProps) {
   const [content, setContent] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false);
@@ -394,9 +395,10 @@ export function MessageInput({ targetId, targetType, members = [], customEmojis 
       )}
 
       <div className="relative flex gap-2 items-end">
-        {mentionQuery !== null && mentionPosition && members.length > 0 && (
+        {mentionQuery !== null && mentionPosition && (members.length > 0 || groups.length > 0) && (
           <MentionAutocomplete
             members={members}
+            groups={groups}
             filter={mentionQuery}
             onSelect={handleMentionSelect}
             onClose={closeMentionAutocomplete}

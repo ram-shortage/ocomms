@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect, notFound } from "next/navigation";
 import { getConversation } from "@/lib/actions/conversation";
+import { getUserGroups } from "@/lib/actions/user-group";
 import { DMHeader } from "@/components/dm/dm-header";
 import { DMContent } from "@/components/dm/dm-content";
 import { db } from "@/db";
@@ -124,8 +125,17 @@ export default async function DMPage({
     attachments: attachmentsByMessageId.get(m.id),
   }));
 
+  // UGRP-02: Fetch user groups for mention autocomplete
+  const userGroups = await getUserGroups(workspace.id);
+  const groups = userGroups.map((g) => ({
+    id: g.id,
+    name: g.name,
+    handle: g.handle,
+    memberCount: g.memberCount,
+  }));
+
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col flex-1 min-h-0">
       <DMHeader
         conversation={conversation}
         organizationId={workspace.id}
@@ -143,6 +153,7 @@ export default async function DMPage({
           name: p.user.name,
           email: p.user.email,
         }))}
+        groups={groups}
       />
     </div>
   );

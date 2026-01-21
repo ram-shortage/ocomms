@@ -18,6 +18,7 @@ import {
   type SendStatus,
 } from "@/lib/cache";
 import { useOnlineStatus } from "@/lib/pwa/use-online-status";
+import { getMessageIdsWithReminders } from "@/lib/actions/reminder";
 
 interface MessageListProps {
   initialMessages: Message[];
@@ -29,6 +30,13 @@ interface MessageListProps {
   onPin?: (messageId: string) => void;
   onUnpin?: (messageId: string) => void;
   onMarkUnread?: (messageId: string) => void;
+  className?: string;
+  /** EMOJ-02: Custom emojis for rendering :name: syntax */
+  customEmojis?: Array<{ name: string; path: string }>;
+  /** UGRP-03: Group handles for mention popup */
+  groupHandles?: Array<{ handle: string }>;
+  /** UGRP-03: Organization ID for group popup lookups */
+  organizationId?: string;
 }
 
 // Track reactions per message
@@ -44,11 +52,16 @@ export function MessageList({
   onPin,
   onUnpin,
   onMarkUnread,
+  className,
+  customEmojis = [],
+  groupHandles = [],
+  organizationId,
 }: MessageListProps) {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [reactionsMap, setReactionsMap] = useState<ReactionsMap>({});
   const [selectedThread, setSelectedThread] = useState<Message | null>(null);
   const [isThreadPanelOpen, setIsThreadPanelOpen] = useState(false);
+  const [messageIdsWithReminders, setMessageIdsWithReminders] = useState<Set<string>>(new Set());
   const bottomRef = useRef<HTMLDivElement>(null);
   const socket = useSocket();
   const router = useRouter();
@@ -71,6 +84,19 @@ export function MessageList({
       cacheMessages(initialMessages);
     }
   }, [initialMessages]);
+
+  // Fetch message IDs that have reminders for highlighting
+  useEffect(() => {
+    const fetchReminderMessageIds = async () => {
+      try {
+        const ids = await getMessageIdsWithReminders();
+        setMessageIdsWithReminders(new Set(ids));
+      } catch (error) {
+        console.error("Failed to fetch reminder message IDs:", error);
+      }
+    };
+    fetchReminderMessageIds();
+  }, []);
 
   // Scroll to bottom when messages or pending messages change
   useEffect(() => {
@@ -312,36 +338,43 @@ export function MessageList({
 
   if (normalizedMessages.length === 0) {
     return (
-      <div className="flex-1 flex items-center justify-center text-muted-foreground">
+      <div className={`flex-1 min-h-0 flex items-center justify-center text-muted-foreground ${className || ""}`}>
         <p>No messages yet. Be the first to say something!</p>
       </div>
     );
   }
 
   return (
-    <>
-      <PullToRefresh onRefresh={handleRefresh} className="flex-1 py-4">
-        {normalizedMessages.map((message) => (
-          <MessageItem
-            key={message.id}
-            message={message}
-            currentUserId={currentUserId}
-            currentUsername={currentUsername}
-            onDelete={handleDelete}
-            reactions={reactionsMap[message.id] || []}
-            onToggleReaction={handleToggleReaction}
-            onReply={handleReply}
-            isPinned={pinnedMessageIds?.has(message.id) ?? false}
-            onPin={onPin}
-            onUnpin={onUnpin}
-            isChannelMessage={targetType === "channel"}
-            onMarkUnread={onMarkUnread}
-            sendStatus={"_status" in message ? (message as { _status: SendStatus })._status : undefined}
-            retryCount={"_retryCount" in message ? (message as { _retryCount: number })._retryCount : undefined}
-            onRetry={"_isPending" in message ? handleRetry : undefined}
-          />
-        ))}
-        <div ref={bottomRef} />
+    <div className={`flex flex-col flex-1 min-h-0 overflow-hidden ${className || ""}`}>
+      <PullToRefresh onRefresh={handleRefresh} className="flex-1 min-h-0">
+        <div className="py-4">
+          {normalizedMessages.map((message) => (
+            <MessageItem
+              key={message.id}
+              message={message}
+              currentUserId={currentUserId}
+              currentUsername={currentUsername}
+              onDelete={handleDelete}
+              reactions={reactionsMap[message.id] || []}
+              onToggleReaction={handleToggleReaction}
+              onReply={handleReply}
+              isPinned={pinnedMessageIds?.has(message.id) ?? false}
+              onPin={onPin}
+              onUnpin={onUnpin}
+              isChannelMessage={targetType === "channel"}
+              onMarkUnread={onMarkUnread}
+              sendStatus={"_status" in message ? (message as { _status: SendStatus })._status : undefined}
+              retryCount={"_retryCount" in message ? (message as { _retryCount: number })._retryCount : undefined}
+              onRetry={"_isPending" in message ? handleRetry : undefined}
+              hasReminder={messageIdsWithReminders.has(message.id)}
+              linkPreviews={"linkPreviews" in message ? message.linkPreviews : undefined}
+              customEmojis={customEmojis}
+              groupHandles={groupHandles}
+              organizationId={organizationId}
+            />
+          ))}
+          <div ref={bottomRef} />
+        </div>
       </PullToRefresh>
 
       <ThreadPanel
@@ -351,6 +384,6 @@ export function MessageList({
         currentUserId={currentUserId}
         currentUsername={currentUsername}
       />
-    </>
+    </div>
   );
 }

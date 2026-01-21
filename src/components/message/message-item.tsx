@@ -14,6 +14,7 @@ import { LinkPreviewCard } from "./link-preview-card";
 import { ReminderMenuItem } from "@/components/reminder/reminder-menu-item";
 import { BookmarkButton } from "@/components/bookmark/bookmark-button";
 import { StatusDisplay } from "@/components/status/status-display";
+import { GuestBadge } from "@/components/guest/guest-badge";
 
 interface MessageItemProps {
   message: Message;
@@ -45,6 +46,12 @@ interface MessageItemProps {
   }>;
   /** LINK-06: Callback when user hides a preview */
   onHidePreview?: (messageId: string, previewId: string) => void;
+  /** EMOJ-02: Custom emojis for rendering :name: syntax */
+  customEmojis?: Array<{ name: string; path: string }>;
+  /** UGRP-03: Group handles for mention popup */
+  groupHandles?: Array<{ handle: string }>;
+  /** UGRP-03: Organization ID for group popup lookups */
+  organizationId?: string;
 }
 
 export function MessageItem({
@@ -67,6 +74,9 @@ export function MessageItem({
   authorStatus,
   linkPreviews,
   onHidePreview,
+  customEmojis = [],
+  groupHandles = [],
+  organizationId,
 }: MessageItemProps) {
   const isOwn = message.authorId === currentUserId;
   const isDeleted = message.deletedAt !== null && message.deletedAt !== undefined;
@@ -86,6 +96,8 @@ export function MessageItem({
           <span className="font-semibold text-foreground">
             {message.author?.name || message.author?.email || "Unknown"}
           </span>
+          {/* GUST-03: Show guest badge next to name */}
+          {message.author?.isGuest && <GuestBadge size="sm" />}
           {/* STAT-02: Show author status emoji next to name */}
           {authorStatus?.emoji && (
             <StatusDisplay emoji={authorStatus.emoji} text={authorStatus.text} />
@@ -99,7 +111,7 @@ export function MessageItem({
           <p className="text-muted-foreground italic text-sm">[Message deleted]</p>
         ) : (
           <>
-            <MessageContent content={message.content} currentUsername={currentUsername} />
+            <MessageContent content={message.content} currentUsername={currentUsername} customEmojis={customEmojis} groupHandles={groupHandles} organizationId={organizationId} />
             {/* LINK-01: Link previews */}
             {linkPreviews && linkPreviews.length > 0 && (
               <div className="flex flex-col gap-2 mt-2">
@@ -125,6 +137,7 @@ export function MessageItem({
               reactions={reactions}
               currentUserId={currentUserId}
               onToggle={(emoji) => onToggleReaction(message.id, emoji)}
+              customEmojis={customEmojis}
             />
             <MessageStatus
               status={sendStatus}
@@ -138,7 +151,7 @@ export function MessageItem({
       {/* Action buttons - visible on hover for non-deleted messages */}
       {!isDeleted && (
         <div className="flex items-center gap-1">
-          <ReactionPicker onSelectEmoji={(emoji) => onToggleReaction(message.id, emoji)} />
+          <ReactionPicker onSelectEmoji={(emoji) => onToggleReaction(message.id, emoji)} customEmojis={customEmojis} />
           {/* RMND-01: Remind me button - highlighted if reminder exists */}
           <ReminderMenuItem messageId={message.id} hasReminder={hasReminder} />
           {/* BOOK-01: Bookmark button */}
