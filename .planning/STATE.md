@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 ## Current Position
 
 Phase: 26 of 29 (Collections & Presence)
-Plan: 4 of 4 complete
-Status: Phase complete
-Last activity: 2026-01-21 - Completed 26-04-PLAN.md (Bookmarks UI)
+Plan: 5 of 6 complete
+Status: In progress
+Last activity: 2026-01-21 - Completed 26-05-PLAN.md (Status UI Components)
 
-Progress: [██████████] 4/4 plans in phase 26
+Progress: [████████░░] 5/6 plans in phase 26
 
 ## Shipped Milestones
 
@@ -112,6 +112,12 @@ Phase 26-04 decisions:
 - Click bookmark item navigates to channel/DM (no detail panel like reminders)
 - Separate messages and files sections in bookmark list
 
+Phase 26-05 decisions:
+- Added Switch UI component (radix-ui) that was missing from project
+- Status passed as prop to MessageItem to avoid N+1 queries
+- Expiration stored as label, recalculated to Date on save
+- StatusIndicator uses 30s refresh interval for status updates
+
 ### Pending Todos
 
 2 todos pending - see `.planning/todos/pending/`
@@ -125,5 +131,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-21
-Stopped at: Completed 26-04-PLAN.md (Bookmarks UI) - Phase 26 complete
-Resume file: None - continue with Phase 27
+Stopped at: Completed 26-05-PLAN.md (Status UI Components)
+Resume file: None - continue with 26-06-PLAN.md
