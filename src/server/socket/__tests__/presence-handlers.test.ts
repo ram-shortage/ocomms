@@ -151,6 +151,38 @@ function setupPresenceEventHandlers(
   });
 }
 
+/**
+ * M-12 DoS Prevention Tests for Presence
+ *
+ * Tests that validate array size caps in presence:fetch handler
+ * to prevent DoS attacks through unbounded userIds arrays.
+ */
+describe("Presence Handler DoS Prevention (M-12)", () => {
+  const sourcePath = require("path").resolve(__dirname, "../index.ts");
+  const source = require("fs").readFileSync(sourcePath, "utf-8");
+
+  describe("Array size caps in presence:fetch", () => {
+    it("defines maximum IDs per request constant", () => {
+      expect(source).toContain("MAX_IDS_PER_REQUEST");
+      expect(source).toMatch(/MAX_IDS_PER_REQUEST\s*=\s*100/);
+    });
+
+    it("checks userIds array length before processing", () => {
+      // Should check data.userIds.length against MAX_IDS_PER_REQUEST
+      expect(source).toContain("data.userIds.length > MAX_IDS_PER_REQUEST");
+    });
+
+    it("emits error when array exceeds limit", () => {
+      expect(source).toContain("Maximum ${MAX_IDS_PER_REQUEST} user IDs per request");
+    });
+
+    it("returns empty object when limit exceeded", () => {
+      // Should return empty presence map
+      expect(source).toContain("callback({});");
+    });
+  });
+});
+
 describe("Presence Handlers", () => {
   let mockSocket: MockSocket;
   let mockIO: MockIO;

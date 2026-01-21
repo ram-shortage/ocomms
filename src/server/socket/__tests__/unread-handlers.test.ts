@@ -302,6 +302,39 @@ async function notifyUnreadIncrement(
   }
 }
 
+/**
+ * M-12 DoS Prevention Tests
+ *
+ * Tests that validate array size caps are in place to prevent DoS attacks
+ * through unbounded array inputs.
+ */
+describe("Unread Handler DoS Prevention (M-12)", () => {
+  const sourcePath = require("path").resolve(__dirname, "../handlers/unread.ts");
+  const source = require("fs").readFileSync(sourcePath, "utf-8");
+
+  describe("Array size caps", () => {
+    it("defines maximum IDs per request constant", () => {
+      expect(source).toContain("MAX_IDS_PER_REQUEST");
+      expect(source).toMatch(/MAX_IDS_PER_REQUEST\s*=\s*100/);
+    });
+
+    it("checks combined array length before processing", () => {
+      // Should check total IDs across channelIds and conversationIds
+      expect(source).toContain(".length");
+      expect(source).toContain("totalIds > MAX_IDS_PER_REQUEST");
+    });
+
+    it("emits error when array exceeds limit", () => {
+      expect(source).toContain(`Maximum \${MAX_IDS_PER_REQUEST} IDs per request`);
+    });
+
+    it("returns empty response when limit exceeded", () => {
+      // Should return empty channels/conversations objects
+      expect(source).toContain("callback({ channels: {}, conversations: {} });");
+    });
+  });
+});
+
 describe("Unread Handlers", () => {
   let mockSocket: MockSocket;
   let mockIO: MockIO;
