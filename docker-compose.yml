@@ -20,7 +20,7 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      - DATABASE_URL=postgresql://postgres:${DB_PASSWORD}@db:5432/ocomms?sslmode=require
+      - DATABASE_URL=postgresql://postgres:${DB_PASSWORD}@db:5432/ocomms
       - REDIS_URL=redis://redis:6379
       - BETTER_AUTH_SECRET=${AUTH_SECRET}
       - BETTER_AUTH_URL=${APP_URL}
@@ -52,11 +52,6 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./backups:/backups
-      - ./certs/postgres:/var/lib/postgresql/certs:ro
-    command: >
-      -c ssl=on
-      -c ssl_cert_file=/var/lib/postgresql/certs/server.crt
-      -c ssl_key_file=/var/lib/postgresql/certs/server.key
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
