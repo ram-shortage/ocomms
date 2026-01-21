@@ -1,6 +1,6 @@
 import type { Server, Socket } from "socket.io";
 import { db } from "@/db";
-import { notifications, users, channelMembers, channels, channelNotificationSettings, members } from "@/db/schema";
+import { notifications, users, channelMembers, channels, channelNotificationSettings, members, userGroups, userGroupMembers } from "@/db/schema";
 import { eq, and, isNull, desc } from "drizzle-orm";
 import { getRoomName } from "../rooms";
 import type { ClientToServerEvents, ServerToClientEvents, SocketData, Message, Notification } from "@/lib/socket-events";
@@ -18,13 +18,13 @@ type SocketWithData = Socket<ClientToServerEvents, ServerToClientEvents, Record<
  *
  * Rules:
  * - muted: No notifications at all
- * - mentions: Only direct @user mentions (not @channel/@here)
+ * - mentions: Only direct @user or @group mentions (not @channel/@here)
  * - all: All notifications (default)
  */
 async function shouldNotify(
   userId: string,
   channelId: string,
-  mentionType: "user" | "channel" | "here"
+  mentionType: "user" | "channel" | "here" | "group"
 ): Promise<boolean> {
   // Query user's notification settings for this channel
   const settings = await db.query.channelNotificationSettings.findFirst({
@@ -42,13 +42,75 @@ async function shouldNotify(
       // No notifications at all
       return false;
     case "mentions":
-      // Only direct @user mentions
-      return mentionType === "user";
+      // Direct @user or @group mentions (UGRP-02: group mentions count as direct mentions)
+      return mentionType === "user" || mentionType === "group";
     case "all":
     default:
       // All notifications
       return true;
   }
+}
+
+/**
+ * UGRP-06: Get group mention recipients - only members who are ALSO in the channel.
+ * Returns userIds of group members who are also channel members.
+ */
+async function getGroupMentionRecipients(
+  organizationId: string,
+  channelId: string,
+  groupHandle: string
+): Promise<string[]> {
+  // Normalize handle to lowercase
+  const normalizedHandle = groupHandle.toLowerCase().replace(/[^a-z0-9_]/g, "");
+
+  // Get group by handle
+  const group = await db.query.userGroups.findFirst({
+    where: and(
+      eq(userGroups.organizationId, organizationId),
+      eq(userGroups.handle, normalizedHandle)
+    ),
+  });
+
+  if (!group) return [];
+
+  // Get group members
+  const groupMemberships = await db
+    .select({ userId: userGroupMembers.userId })
+    .from(userGroupMembers)
+    .where(eq(userGroupMembers.groupId, group.id));
+
+  const groupUserIds = new Set(groupMemberships.map((m) => m.userId));
+
+  // Get channel members
+  const channelMemberships = await db
+    .select({ userId: channelMembers.userId })
+    .from(channelMembers)
+    .where(eq(channelMembers.channelId, channelId));
+
+  const channelUserIds = new Set(channelMemberships.map((m) => m.userId));
+
+  // Return intersection: group members who are also channel members
+  return [...groupUserIds].filter((id) => channelUserIds.has(id));
+}
+
+/**
+ * Check if a handle is a group handle in the workspace.
+ * Returns the group if found, null otherwise.
+ */
+async function findGroupByHandle(
+  organizationId: string,
+  handle: string
+): Promise<{ id: string; name: string; handle: string } | null> {
+  const normalizedHandle = handle.toLowerCase().replace(/[^a-z0-9_]/g, "");
+
+  const group = await db.query.userGroups.findFirst({
+    where: and(
+      eq(userGroups.organizationId, organizationId),
+      eq(userGroups.handle, normalizedHandle)
+    ),
+  });
+
+  return group ? { id: group.id, name: group.name, handle: group.handle } : null;
 }
 
 /**
@@ -98,6 +160,36 @@ export async function createNotifications(params: {
 
   for (const mention of mentions) {
     if (mention.type === "user") {
+      // UGRP-02: Check if this handle is a group first (only in channel context with workspaceId)
+      if (workspaceId && channelId) {
+        const group = await findGroupByHandle(workspaceId, mention.value);
+        if (group) {
+          // UGRP-06: Get group members who are also channel members
+          const recipientIds = await getGroupMentionRecipients(workspaceId, channelId, mention.value);
+
+          for (const recipientId of recipientIds) {
+            if (recipientId !== senderId && !notifiedUserIds.has(recipientId)) {
+              // Check notification settings
+              const allowed = await shouldNotify(recipientId, channelId, "group");
+              if (!allowed) continue;
+
+              notifiedUserIds.add(recipientId);
+              notificationsToCreate.push({
+                userId: recipientId,
+                type: "mention", // Group mentions show as "mention" type for simplicity
+                messageId: message.id,
+                channelId,
+                conversationId: null,
+                actorId: senderId,
+                content: contentPreview,
+              });
+            }
+          }
+          // Skip user lookup since this was a group mention
+          continue;
+        }
+      }
+
       // SECFIX-01: Scope user lookup to organization
       let targetUser: { id: string } | undefined;
 
