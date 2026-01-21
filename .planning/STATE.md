@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 ## Current Position
 
 Phase: 28 of 29 (Authorization & Analytics)
-Plan: 5 of 8 complete
+Plan: 6 of 8 complete
 Status: In progress
-Last activity: 2026-01-21 - Completed 28-07-PLAN.md (Analytics Dashboard UI)
+Last activity: 2026-01-21 - Completed 28-05-PLAN.md (User Groups UI)
 
 Progress: [████████████████░░░░] 4/6 phases in v0.5.0
 
@@ -174,6 +174,11 @@ Phase 28-04 decisions:
 - Guests cannot initiate DMs but can reply to member-initiated ones
 - Guest channel access checked at both action and socket handler level (defense in depth)
 
+Phase 28-05 decisions:
+- Group handles use same @syntax as users - differentiated by purple color and popup
+- Groups tab only shows if workspace has at least one group defined
+- Guests excluded from groups with tooltip explanation (GUST-07 compliance)
+
 Phase 28-07 decisions:
 - Lazy load data per tab to optimize initial page load
 - Manual refresh only (no auto-polling) per CONTEXT.md
@@ -193,5 +198,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-21
-Stopped at: Completed 28-07-PLAN.md (Analytics Dashboard UI)
+Stopped at: Completed 28-05-PLAN.md (User Groups UI)
 Resume file: None - ready for next plan
