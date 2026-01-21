@@ -1,10 +1,14 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect, notFound } from "next/navigation";
+import { db } from "@/db";
+import { eq, and } from "drizzle-orm";
+import { members } from "@/db/schema";
 import { PresenceWrapper } from "@/components/presence/presence-wrapper";
 import { WorkspaceSidebar } from "@/components/workspace/workspace-sidebar";
 import { MobileTabBar } from "@/components/layout";
 import { ReminderListener } from "@/components/reminder/reminder-listener";
+import { GuestWelcomeWrapper } from "@/components/guest/guest-welcome-wrapper";
 import { getUserChannels } from "@/lib/actions/channel";
 import { getUserConversations } from "@/lib/actions/conversation";
 import { getCategories, getCollapseStates } from "@/lib/actions/channel-category";
@@ -50,6 +54,18 @@ export default async function WorkspaceSlugLayout({
     (m) => m.userId === session.user.id
   );
   const isAdmin = currentMember?.role === "owner" || currentMember?.role === "admin";
+
+  // Check if current user is a guest (from our members table, not better-auth)
+  const memberRecord = await db.query.members.findFirst({
+    where: and(
+      eq(members.userId, session.user.id),
+      eq(members.organizationId, workspace.id)
+    ),
+    columns: {
+      isGuest: true,
+    },
+  });
+  const isGuest = memberRecord?.isGuest ?? false;
 
   // Fetch channels, conversations, categories, and collapse states for sidebar
   const [channels, conversations, categories, collapseStates] = await Promise.all([
@@ -109,7 +125,7 @@ export default async function WorkspaceSlugLayout({
         </div>
 
         {/* Main content - with bottom padding on mobile for tab bar */}
-        <main className="flex-1 overflow-hidden pb-16 md:pb-0">
+        <main className="flex-1 min-h-0 flex flex-col overflow-hidden pb-16 md:pb-0">
           {children}
         </main>
 
@@ -118,6 +134,14 @@ export default async function WorkspaceSlugLayout({
 
         {/* RMND-*: Reminder toast listener */}
         <ReminderListener workspaceSlug={workspaceSlug} />
+
+        {/* GUST-*: Guest welcome modal */}
+        <GuestWelcomeWrapper
+          organizationId={workspace.id}
+          workspaceName={workspace.name}
+          channels={sidebarChannels.map((ch) => ch.name)}
+          isGuest={isGuest}
+        />
       </div>
     </PresenceWrapper>
   );
