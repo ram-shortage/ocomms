@@ -1,6 +1,6 @@
 import type { Server, Socket } from "socket.io";
 import { db } from "@/db";
-import { messages, channelMembers, conversationParticipants, channels, conversations, fileAttachments } from "@/db/schema";
+import { messages, channelMembers, conversationParticipants, channels, conversations, fileAttachments, members, guestChannelAccess } from "@/db/schema";
 import { eq, and, isNull, sql, inArray } from "drizzle-orm";
 import { RateLimiterMemory } from "rate-limiter-flexible";
 import { getRoomName } from "../rooms";
@@ -12,6 +12,77 @@ import { getPresenceManager, getUnreadManager } from "../index";
 import { sendPushToUser, type PushPayload } from "@/lib/push";
 import { extractUrls } from "@/lib/url-extractor";
 import { linkPreviewQueue } from "@/server/queue/link-preview.queue";
+
+/**
+ * Check if user is a guest and if so, verify access and soft-lock status
+ */
+async function checkGuestAccess(
+  userId: string,
+  targetId: string,
+  targetType: "channel" | "dm"
+): Promise<{ allowed: boolean; error?: string }> {
+  // Get channel's organization to find membership
+  let organizationId: string | null = null;
+  if (targetType === "channel") {
+    const [channel] = await db
+      .select({ organizationId: channels.organizationId })
+      .from(channels)
+      .where(eq(channels.id, targetId))
+      .limit(1);
+    organizationId = channel?.organizationId ?? null;
+  } else {
+    const [conv] = await db
+      .select({ organizationId: conversations.organizationId })
+      .from(conversations)
+      .where(eq(conversations.id, targetId))
+      .limit(1);
+    organizationId = conv?.organizationId ?? null;
+  }
+
+  if (!organizationId) {
+    return { allowed: true }; // Let normal validation handle missing channel/conversation
+  }
+
+  // Check if user is a guest in this organization
+  const membership = await db.query.members.findFirst({
+    where: and(
+      eq(members.userId, userId),
+      eq(members.organizationId, organizationId)
+    ),
+  });
+
+  if (!membership || !membership.isGuest) {
+    return { allowed: true }; // Not a guest, skip guest-specific checks
+  }
+
+  // Guest is soft-locked - can view but not post
+  if (membership.guestSoftLocked) {
+    return {
+      allowed: false,
+      error: "Your guest access has expired. Please contact an admin to extend your access.",
+    };
+  }
+
+  // For channels, verify guest has access to this specific channel
+  if (targetType === "channel") {
+    const guestAccess = await db.query.guestChannelAccess.findFirst({
+      where: and(
+        eq(guestChannelAccess.memberId, membership.id),
+        eq(guestChannelAccess.channelId, targetId)
+      ),
+    });
+
+    if (!guestAccess) {
+      return {
+        allowed: false,
+        error: "You do not have access to this channel.",
+      };
+    }
+  }
+
+  // GUST-04: Guests can send messages in allowed channels
+  return { allowed: true };
+}
 
 const MAX_MESSAGE_LENGTH = 10_000;
 
@@ -59,6 +130,17 @@ async function handleSendMessage(
       socket.emit("error", {
         message: `Message exceeds maximum length of ${MAX_MESSAGE_LENGTH.toLocaleString()} characters`,
         code: "MESSAGE_TOO_LONG",
+      });
+      callback?.({ success: false });
+      return;
+    }
+
+    // GUST-02, GUST-04: Check guest access and soft-lock status
+    const guestCheck = await checkGuestAccess(userId, targetId, targetType);
+    if (!guestCheck.allowed) {
+      socket.emit("error", {
+        message: guestCheck.error || "Guest access denied",
+        code: "GUEST_ACCESS_DENIED",
       });
       callback?.({ success: false });
       return;
@@ -220,7 +302,8 @@ async function handleSendMessage(
           },
           {
             // Dedupe by URL+message to avoid double-fetching on reconnects
-            jobId: `${newMessage.id}-${url}`,
+            // Note: BullMQ jobId cannot contain colons, so we encode the URL
+            jobId: `${newMessage.id}-${Buffer.from(url).toString('base64url')}`,
           }
         ).catch((err) => {
           console.error("[Message] Error queueing link preview:", err);

@@ -1,11 +1,17 @@
 "use server";
 
 import { db } from "@/db";
-import { channels, channelMembers, members } from "@/db/schema";
+import { channels, channelMembers, members, guestChannelAccess } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { eq, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+
+interface OrgMembership {
+  id: string;
+  isGuest: boolean;
+  guestSoftLocked: boolean;
+}
 
 async function verifyOrgMembership(userId: string, organizationId: string): Promise<boolean> {
   const membership = await db.query.members.findFirst({
@@ -15,6 +21,37 @@ async function verifyOrgMembership(userId: string, organizationId: string): Prom
     ),
   });
   return !!membership;
+}
+
+/**
+ * Get full membership info including guest status
+ */
+async function getOrgMembership(userId: string, organizationId: string): Promise<OrgMembership | null> {
+  const membership = await db.query.members.findFirst({
+    where: and(
+      eq(members.userId, userId),
+      eq(members.organizationId, organizationId)
+    ),
+    columns: {
+      id: true,
+      isGuest: true,
+      guestSoftLocked: true,
+    },
+  });
+  return membership ?? null;
+}
+
+/**
+ * Get channels a guest has access to (by memberId)
+ */
+async function getGuestChannelIds(memberId: string): Promise<string[]> {
+  const accessRecords = await db.query.guestChannelAccess.findMany({
+    where: eq(guestChannelAccess.memberId, memberId),
+    columns: {
+      channelId: true,
+    },
+  });
+  return accessRecords.map((r) => r.channelId);
 }
 
 function slugify(name: string): string {
@@ -69,9 +106,9 @@ export async function getChannels(organizationId: string) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) throw new Error("Unauthorized");
 
-  // Verify user is member of target organization
-  const isOrgMember = await verifyOrgMembership(session.user.id, organizationId);
-  if (!isOrgMember) {
+  // Get full membership info including guest status
+  const membership = await getOrgMembership(session.user.id, organizationId);
+  if (!membership) {
     throw new Error("Not authorized to view channels in this organization");
   }
 
@@ -82,6 +119,14 @@ export async function getChannels(organizationId: string) {
       members: true,
     },
   });
+
+  // GUST-02: Guests can only see their allowed channels
+  if (membership.isGuest) {
+    const guestChannelIds = await getGuestChannelIds(membership.id);
+    return allChannels.filter(
+      (ch) => !ch.isArchived && guestChannelIds.includes(ch.id)
+    );
+  }
 
   // Filter: user can see public channels or private channels they're a member of
   // ARCH-03: Exclude archived channels from main list
@@ -212,9 +257,9 @@ export async function getChannel(organizationId: string, slug: string) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) throw new Error("Unauthorized");
 
-  // SECFIX-04: Verify organization membership FIRST
-  const isOrgMember = await verifyOrgMembership(session.user.id, organizationId);
-  if (!isOrgMember) {
+  // SECFIX-04: Verify organization membership FIRST (includes guest status)
+  const membership = await getOrgMembership(session.user.id, organizationId);
+  if (!membership) {
     return null; // Don't reveal channel exists - per CONTEXT.md
   }
 
@@ -233,6 +278,16 @@ export async function getChannel(organizationId: string, slug: string) {
   });
 
   if (!channel) return null;
+
+  // GUST-02: Guests can only access their allowed channels
+  if (membership.isGuest) {
+    const guestChannelIds = await getGuestChannelIds(membership.id);
+    if (!guestChannelIds.includes(channel.id)) {
+      return null; // Guest doesn't have access to this channel
+    }
+    // Return channel with guest soft-lock info appended
+    return { ...channel, _guestSoftLocked: membership.guestSoftLocked };
+  }
 
   // Check access for private channels
   if (channel.isPrivate) {
@@ -290,9 +345,9 @@ export async function getWorkspaceMembers(organizationId: string) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) throw new Error("Unauthorized");
 
-  // Verify user is member of target organization
-  const isOrgMember = await verifyOrgMembership(session.user.id, organizationId);
-  if (!isOrgMember) {
+  // Get full membership info including guest status
+  const membership = await getOrgMembership(session.user.id, organizationId);
+  if (!membership) {
     throw new Error("Not authorized to view members of this organization");
   }
 
@@ -302,6 +357,23 @@ export async function getWorkspaceMembers(organizationId: string) {
       user: true,
     },
   });
+
+  // GUST-06: Guests can only see members of their allowed channels
+  if (membership.isGuest) {
+    const guestChannelIds = await getGuestChannelIds(membership.id);
+
+    // Collect unique user IDs from all allowed channels
+    const allowedUserIds = new Set<string>();
+    for (const chId of guestChannelIds) {
+      const chMembers = await db.query.channelMembers.findMany({
+        where: eq(channelMembers.channelId, chId),
+      });
+      chMembers.forEach((m) => allowedUserIds.add(m.userId));
+    }
+
+    // Filter org members to only include those in allowed channels
+    return orgMembers.filter((m) => allowedUserIds.has(m.userId));
+  }
 
   return orgMembers;
 }

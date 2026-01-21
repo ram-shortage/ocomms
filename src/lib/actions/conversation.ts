@@ -7,6 +7,11 @@ import { headers } from "next/headers";
 import { eq, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
+interface OrgMembershipInfo {
+  exists: boolean;
+  isGuest: boolean;
+}
+
 async function verifyOrgMembership(userId: string, organizationId: string): Promise<boolean> {
   const membership = await db.query.members.findFirst({
     where: and(
@@ -17,6 +22,25 @@ async function verifyOrgMembership(userId: string, organizationId: string): Prom
   return !!membership;
 }
 
+/**
+ * Get membership info including guest status
+ */
+async function getOrgMembershipInfo(userId: string, organizationId: string): Promise<OrgMembershipInfo> {
+  const membership = await db.query.members.findFirst({
+    where: and(
+      eq(members.userId, userId),
+      eq(members.organizationId, organizationId)
+    ),
+    columns: {
+      isGuest: true,
+    },
+  });
+  return {
+    exists: !!membership,
+    isGuest: membership?.isGuest ?? false,
+  };
+}
+
 export async function createConversation(formData: {
   organizationId: string;
   participantIds: string[];
@@ -25,10 +49,15 @@ export async function createConversation(formData: {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) throw new Error("Unauthorized");
 
-  // Verify requester is member of target organization
-  const isRequesterMember = await verifyOrgMembership(session.user.id, formData.organizationId);
-  if (!isRequesterMember) {
+  // Get requester membership info including guest status
+  const requesterInfo = await getOrgMembershipInfo(session.user.id, formData.organizationId);
+  if (!requesterInfo.exists) {
     throw new Error("Not authorized to create conversations in this organization");
+  }
+
+  // GUST-04: Guests cannot initiate DMs (but can reply to member-initiated DMs)
+  if (requesterInfo.isGuest) {
+    throw new Error("Guest accounts cannot initiate direct messages. Members can start conversations with you.");
   }
 
   // Verify all participants are members of the organization
