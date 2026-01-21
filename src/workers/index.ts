@@ -10,6 +10,7 @@ config(); // loads .env, won't override existing values
 import { createScheduledMessageWorker } from "./scheduled-message.worker";
 import { createReminderWorker } from "./reminder.worker";
 import { createStatusExpirationWorker } from "./status-expiration.worker";
+import { createLinkPreviewWorker } from "./link-preview.worker";
 import { closeEmitter } from "@/server/queue/emitter";
 
 // Real scheduled message worker - Plan 03
@@ -21,6 +22,9 @@ const reminderWorker = createReminderWorker();
 // Status expiration worker - Phase 26
 const statusExpirationWorker = createStatusExpirationWorker();
 
+// Link preview worker - Phase 27
+const linkPreviewWorker = createLinkPreviewWorker();
+
 console.log("[Worker] BullMQ workers started");
 
 // Graceful shutdown
@@ -29,6 +33,7 @@ const shutdown = async () => {
   await scheduledMessageWorker.close();
   await reminderWorker.close();
   await statusExpirationWorker.close();
+  await linkPreviewWorker.close();
   await closeEmitter();
   process.exit(0);
 };
