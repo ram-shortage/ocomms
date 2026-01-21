@@ -14,7 +14,7 @@ RUN npx esbuild src/server/index.ts --bundle --platform=node --target=node22 \
     --outfile=dist-server/index.js --minify --sourcemap \
     --external:next --external:sharp --external:lightningcss
 RUN npx esbuild ./scripts/migrate.ts --bundle --platform=node --target=node22 \
-    --outfile=dist-server/migrate.js --minify
+    --outfile=dist-server/migrate.mjs --format=esm --minify
 
 # Stage 3: Production runner
 FROM node:22-alpine AS runner
