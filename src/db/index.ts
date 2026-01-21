@@ -15,10 +15,9 @@ function createDb() {
     throw new Error("DATABASE_URL environment variable is required");
   }
 
-  // Determine SSL mode: use sslmode from URL if specified, otherwise require in production
-  const useSSL =
-    connectionString.includes("sslmode=") ||
-    process.env.NODE_ENV === "production";
+  // Determine SSL mode: only use SSL if explicitly specified in connection string
+  // Internal Docker network doesn't need SSL; external connections should specify sslmode
+  const useSSL = connectionString.includes("sslmode=require");
 
   const client = postgres(connectionString, {
     // postgres.js accepts: false, true, 'require', 'prefer', or tls.connect options
