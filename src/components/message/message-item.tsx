@@ -12,6 +12,7 @@ import { MessageStatus } from "./message-status";
 import { FileAttachment } from "./file-attachment";
 import { ReminderMenuItem } from "@/components/reminder/reminder-menu-item";
 import { BookmarkButton } from "@/components/bookmark/bookmark-button";
+import { StatusDisplay } from "@/components/status/status-display";
 
 interface MessageItemProps {
   message: Message;
@@ -30,6 +31,8 @@ interface MessageItemProps {
   retryCount?: number;
   onRetry?: () => void;
   hasReminder?: boolean;
+  /** STAT-02: Author's custom status for display next to name */
+  authorStatus?: { emoji: string | null; text: string | null } | null;
 }
 
 export function MessageItem({
@@ -49,6 +52,7 @@ export function MessageItem({
   retryCount,
   onRetry,
   hasReminder = false,
+  authorStatus,
 }: MessageItemProps) {
   const isOwn = message.authorId === currentUserId;
   const isDeleted = message.deletedAt !== null && message.deletedAt !== undefined;
@@ -68,6 +72,10 @@ export function MessageItem({
           <span className="font-semibold text-foreground">
             {message.author?.name || message.author?.email || "Unknown"}
           </span>
+          {/* STAT-02: Show author status emoji next to name */}
+          {authorStatus?.emoji && (
+            <StatusDisplay emoji={authorStatus.emoji} text={authorStatus.text} />
+          )}
           <span className="text-xs text-muted-foreground">
             {formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })}
           </span>
