@@ -10,6 +10,7 @@ import { ReactionDisplay } from "./reaction-display";
 import { MessageContent } from "./message-content";
 import { MessageStatus } from "./message-status";
 import { FileAttachment } from "./file-attachment";
+import { LinkPreviewCard } from "./link-preview-card";
 import { ReminderMenuItem } from "@/components/reminder/reminder-menu-item";
 import { BookmarkButton } from "@/components/bookmark/bookmark-button";
 import { StatusDisplay } from "@/components/status/status-display";
@@ -33,6 +34,17 @@ interface MessageItemProps {
   hasReminder?: boolean;
   /** STAT-02: Author's custom status for display next to name */
   authorStatus?: { emoji: string | null; text: string | null } | null;
+  /** LINK-01: Link previews for this message */
+  linkPreviews?: Array<{
+    id: string;
+    url: string;
+    title: string | null;
+    description: string | null;
+    imageUrl: string | null;
+    siteName: string | null;
+  }>;
+  /** LINK-06: Callback when user hides a preview */
+  onHidePreview?: (messageId: string, previewId: string) => void;
 }
 
 export function MessageItem({
@@ -53,6 +65,8 @@ export function MessageItem({
   onRetry,
   hasReminder = false,
   authorStatus,
+  linkPreviews,
+  onHidePreview,
 }: MessageItemProps) {
   const isOwn = message.authorId === currentUserId;
   const isDeleted = message.deletedAt !== null && message.deletedAt !== undefined;
@@ -86,6 +100,19 @@ export function MessageItem({
         ) : (
           <>
             <MessageContent content={message.content} currentUsername={currentUsername} />
+            {/* LINK-01: Link previews */}
+            {linkPreviews && linkPreviews.length > 0 && (
+              <div className="flex flex-col gap-2 mt-2">
+                {linkPreviews.map((preview) => (
+                  <LinkPreviewCard
+                    key={preview.id}
+                    preview={preview}
+                    canHide={isOwn}
+                    onHide={(previewId) => onHidePreview?.(message.id, previewId)}
+                  />
+                ))}
+              </div>
+            )}
             {/* FILE-04/FILE-05: Render file attachments */}
             {message.attachments && message.attachments.length > 0 && (
               <div className="flex flex-col gap-2 mt-2">
