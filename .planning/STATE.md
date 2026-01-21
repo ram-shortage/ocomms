@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 ## Current Position
 
 Phase: 28 of 29 (Authorization & Analytics)
-Plan: 0 of 8 complete
-Status: Not started
-Last activity: 2026-01-21 - Completed Phase 27 (Rich Content)
+Plan: 1 of 8 complete
+Status: In progress
+Last activity: 2026-01-21 - Completed 28-01-PLAN.md (Schema for User Groups and Guests)
 
 Progress: [████████████████░░░░] 4/6 phases in v0.5.0
 
@@ -151,6 +151,12 @@ Phase 27-06 decisions:
 - Client wrappers pattern for emoji settings page
 - Custom emoji regex pattern: :([a-zA-Z0-9_-]+):
 
+Phase 28-01 decisions:
+- Extended members table with guest fields rather than separate guest table
+- Guest channel access uses junction table for flexible channel-scoped permissions
+- Guest invites store channelIds as JSON text for simplicity
+- guestJobId on members for BullMQ expiration job tracking (matching status-expiration pattern)
+
 ### Pending Todos
 
 2 todos pending - see `.planning/todos/pending/`
@@ -164,5 +170,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-21
-Stopped at: Completed Phase 27 (Rich Content) - verified
-Resume file: None - ready for Phase 28
+Stopped at: Completed 28-01-PLAN.md (Schema for User Groups and Guests)
+Resume file: None - ready for 28-02-PLAN.md
