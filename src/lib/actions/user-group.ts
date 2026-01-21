@@ -341,12 +341,32 @@ export async function getUserGroups(organizationId: string) {
 
 /**
  * UGRP-03: Get members of a group.
- * No admin restriction - anyone can see group members.
+ * No admin restriction - anyone in the organization can see group members.
+ * M-9 FIX: Verify requester is in the group's organization.
  */
 export async function getGroupMembers(groupId: string) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) {
     throw new Error("Unauthorized");
+  }
+
+  // Get the group to find its organization
+  const group = await db.query.userGroups.findFirst({
+    where: eq(userGroups.id, groupId),
+  });
+  if (!group) {
+    throw new Error("Group not found");
+  }
+
+  // Verify requester is in the group's organization
+  const membership = await db.query.members.findFirst({
+    where: and(
+      eq(members.organizationId, group.organizationId),
+      eq(members.userId, session.user.id)
+    ),
+  });
+  if (!membership) {
+    throw new Error("Not authorized to view members of this group");
   }
 
   // Get group members with user info
@@ -357,18 +377,37 @@ export async function getGroupMembers(groupId: string) {
     },
   });
 
+  // Return limited fields for non-admins (hide email)
+  const isAdmin = membership.role === "admin" || membership.role === "owner";
   return memberships.map((m) => ({
     userId: m.userId,
     name: m.user.name,
-    email: m.user.email,
+    email: isAdmin ? m.user.email : undefined,
     image: m.user.image,
   }));
 }
 
 /**
  * Get a group by its handle for mention resolution.
+ * L-4 FIX: Require session and org membership before resolving handles.
  */
 export async function getGroupByHandle(organizationId: string, handle: string) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) {
+    throw new Error("Unauthorized");
+  }
+
+  // Verify requester is in the organization
+  const membership = await db.query.members.findFirst({
+    where: and(
+      eq(members.organizationId, organizationId),
+      eq(members.userId, session.user.id)
+    ),
+  });
+  if (!membership) {
+    throw new Error("Not authorized to view groups in this organization");
+  }
+
   const normalizedHandle = normalizeHandle(handle);
 
   const group = await db.query.userGroups.findFirst({
