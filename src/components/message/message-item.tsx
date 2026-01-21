@@ -47,7 +47,7 @@ interface MessageItemProps {
   /** LINK-06: Callback when user hides a preview */
   onHidePreview?: (messageId: string, previewId: string) => void;
   /** EMOJ-02: Custom emojis for rendering :name: syntax */
-  customEmojis?: Array<{ name: string; path: string }>;
+  customEmojis?: Array<{ id: string; name: string; path: string; isAnimated: boolean }>;
   /** UGRP-03: Group handles for mention popup */
   groupHandles?: Array<{ handle: string }>;
   /** UGRP-03: Organization ID for group popup lookups */

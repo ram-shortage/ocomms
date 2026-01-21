@@ -131,7 +131,7 @@ describe("MentionAutocomplete", () => {
       // which item has the highlight class after navigation
       const items = screen.getAllByRole("button");
       // After ArrowDown, second item should be highlighted
-      expect(items[1]).toHaveClass("bg-gray-100");
+      expect(items[1]).toHaveClass("bg-muted");
     });
 
     it("navigates up with ArrowUp key", () => {
@@ -143,7 +143,7 @@ describe("MentionAutocomplete", () => {
 
       const items = screen.getAllByRole("button");
       // Should be back at first item
-      expect(items[0]).toHaveClass("bg-gray-100");
+      expect(items[0]).toHaveClass("bg-muted");
     });
 
     it("wraps around at end of list", () => {
@@ -158,7 +158,7 @@ describe("MentionAutocomplete", () => {
       }
 
       // First item should be highlighted again
-      expect(items[0]).toHaveClass("bg-gray-100");
+      expect(items[0]).toHaveClass("bg-muted");
     });
 
     it("wraps around at start of list", () => {
@@ -169,7 +169,7 @@ describe("MentionAutocomplete", () => {
 
       const items = screen.getAllByRole("button");
       // Last item should be highlighted
-      expect(items[items.length - 1]).toHaveClass("bg-gray-100");
+      expect(items[items.length - 1]).toHaveClass("bg-muted");
     });
   });
 
@@ -265,7 +265,7 @@ describe("MentionAutocomplete", () => {
       const items = screen.getAllByRole("button");
       await user.hover(items[2]);
 
-      expect(items[2]).toHaveClass("bg-gray-100");
+      expect(items[2]).toHaveClass("bg-muted");
     });
   });
 

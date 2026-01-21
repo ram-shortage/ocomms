@@ -64,7 +64,7 @@ describe("MessageInput", () => {
     it("disables send button for empty input", () => {
       render(<MessageInput targetId="channel-1" targetType="channel" />);
 
-      const sendButton = screen.getByRole("button", { name: /send/i });
+      const sendButton = screen.getByRole("button", { name: /send now/i });
       expect(sendButton).toBeDisabled();
     });
 
@@ -75,7 +75,7 @@ describe("MessageInput", () => {
       const input = screen.getByRole("textbox");
       await user.type(input, "Hello");
 
-      const sendButton = screen.getByRole("button", { name: /send/i });
+      const sendButton = screen.getByRole("button", { name: /send now/i });
       expect(sendButton).not.toBeDisabled();
     });
   });
@@ -88,10 +88,10 @@ describe("MessageInput", () => {
       const input = screen.getByRole("textbox");
       await user.type(input, "Hello world");
 
-      const sendButton = screen.getByRole("button", { name: /send/i });
+      const sendButton = screen.getByRole("button", { name: /send now/i });
       await user.click(sendButton);
 
-      expect(mockSendMessage).toHaveBeenCalledWith("Hello world");
+      expect(mockSendMessage).toHaveBeenCalledWith("Hello world", undefined);
     });
 
     it("sends on Enter key", async () => {
@@ -102,7 +102,7 @@ describe("MessageInput", () => {
       await user.type(input, "Hello");
       await user.keyboard("{Enter}");
 
-      expect(mockSendMessage).toHaveBeenCalledWith("Hello");
+      expect(mockSendMessage).toHaveBeenCalledWith("Hello", undefined);
     });
 
     it("clears input after send", async () => {
@@ -127,7 +127,7 @@ describe("MessageInput", () => {
       await user.type(input, "  Hello world  ");
       await user.keyboard("{Enter}");
 
-      expect(mockSendMessage).toHaveBeenCalledWith("Hello world");
+      expect(mockSendMessage).toHaveBeenCalledWith("Hello world", undefined);
     });
 
     it("does not send empty or whitespace-only messages", async () => {
@@ -190,7 +190,7 @@ describe("MessageInput", () => {
       const longText = "a".repeat(10001);
       fireEvent.change(input, { target: { value: longText } });
 
-      const sendButton = screen.getByRole("button", { name: /send/i });
+      const sendButton = screen.getByRole("button", { name: /send now/i });
       expect(sendButton).toBeDisabled();
     });
   });
@@ -215,7 +215,7 @@ describe("MessageInput", () => {
     it("has accessible send button", () => {
       render(<MessageInput targetId="channel-1" targetType="channel" />);
 
-      const sendButton = screen.getByRole("button", { name: /send/i });
+      const sendButton = screen.getByRole("button", { name: /send now/i });
       expect(sendButton).toBeInTheDocument();
     });
 
