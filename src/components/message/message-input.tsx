@@ -5,7 +5,9 @@ import { useSocket } from "@/lib/socket-client";
 import { useSendMessage } from "@/hooks/use-send-message";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { X, ImageIcon, FileIcon } from "lucide-react";
+import { X, ImageIcon, FileIcon, SmilePlus } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { EmojiPicker } from "@/components/emoji/emoji-picker";
 import { MentionAutocomplete, type MentionMember } from "./mention-autocomplete";
 import { formatMentionForInsert } from "@/lib/mentions";
 import { FileUploadZone } from "./file-upload-zone";
@@ -27,15 +29,24 @@ interface PendingUpload {
   error?: string;
 }
 
+interface CustomEmojiData {
+  id: string;
+  name: string;
+  path: string;
+  isAnimated: boolean;
+}
+
 interface MessageInputProps {
   targetId: string;
   targetType: "channel" | "dm";
   members?: MentionMember[];
+  customEmojis?: CustomEmojiData[];
 }
 
-export function MessageInput({ targetId, targetType, members = [] }: MessageInputProps) {
+export function MessageInput({ targetId, targetType, members = [], customEmojis = [] }: MessageInputProps) {
   const [content, setContent] = useState("");
   const [isSending, setIsSending] = useState(false);
+  const [emojiPickerOpen, setEmojiPickerOpen] = useState(false);
   const [mentionQuery, setMentionQuery] = useState<string | null>(null);
   const [mentionPosition, setMentionPosition] = useState<{ top: number; left: number } | null>(null);
   const [mentionTriggerIndex, setMentionTriggerIndex] = useState<number | null>(null);
@@ -334,7 +345,7 @@ export function MessageInput({ targetId, targetType, members = [] }: MessageInpu
   const isUploading = pendingUploads.size > 0;
 
   return (
-    <form onSubmit={handleSubmit} className="border-t bg-background p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+    <form onSubmit={handleSubmit} className="border-t bg-background px-4 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
       {/* Pending uploads */}
       {pendingUploads.size > 0 && (
         <div className="mb-2 space-y-2">
@@ -402,15 +413,35 @@ export function MessageInput({ targetId, targetType, members = [] }: MessageInpu
           onChange={handleChange}
           onKeyDown={handleKeyDown}
           onPaste={handlePaste}
-          placeholder={
-            targetType === "channel"
-              ? "Type a message..."
-              : "Type a message..."
-          }
+          placeholder="Type a message..."
           disabled={isSending || rateLimitMessage !== null}
-          className="min-h-[44px] max-h-[200px] resize-none"
+          className="!min-h-0 h-10 max-h-[200px] resize-none py-2"
           rows={1}
         />
+        {/* Emoji picker button (EMOJ-02) */}
+        <Popover open={emojiPickerOpen} onOpenChange={setEmojiPickerOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0"
+            >
+              <SmilePlus className="h-4 w-4" />
+              <span className="sr-only">Insert emoji</span>
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-[352px] p-0 border-0" align="end">
+            <EmojiPicker
+              onSelect={(emoji) => {
+                // Insert emoji at cursor position or append
+                setContent((prev) => prev + emoji);
+                setEmojiPickerOpen(false);
+              }}
+              customEmojis={customEmojis}
+            />
+          </PopoverContent>
+        </Popover>
         <ScheduleSendDropdown
           onSendNow={sendMessage}
           onSchedule={handleSchedule}
@@ -418,48 +449,18 @@ export function MessageInput({ targetId, targetType, members = [] }: MessageInpu
         />
       </div>
 
-      {/* SECFIX-05: Character counter - always visible per CONTEXT.md */}
-      <div className="flex justify-between items-center mt-1 px-1">
+      {/* Footer row: character counter, typing indicator, and status messages */}
+      <div className="flex items-center gap-2 mt-1 px-1 min-h-[18px]">
         <span className={`text-xs ${isOverLimit ? 'text-red-500' : 'text-muted-foreground'}`}>
           {content.length.toLocaleString()}/{MAX_MESSAGE_LENGTH.toLocaleString()}
         </span>
-        {isOverLimit && (
-          <span className="text-xs text-red-500">
-            Message too long
-          </span>
-        )}
+        {isOverLimit && <span className="text-xs text-red-500">Message too long</span>}
+        {uploadError && <span className="text-xs text-red-500">{uploadError}</span>}
+        {!isOnline && <span className="text-xs text-muted-foreground">(offline)</span>}
+        {rateLimitMessage && <span className="text-xs text-amber-600">{rateLimitMessage}</span>}
+        {scheduleMessage && <span className="text-xs text-emerald-600">{scheduleMessage}</span>}
+        <TypingIndicator targetId={targetId} />
       </div>
-
-      {/* Upload error */}
-      {uploadError && (
-        <div className="text-sm text-red-500 mt-1 px-1">
-          {uploadError}
-        </div>
-      )}
-
-      {/* Offline indicator */}
-      {!isOnline && (
-        <div className="text-xs text-muted-foreground mt-1 px-1">
-          (offline - will send when connected)
-        </div>
-      )}
-
-      {/* SECFIX-06: Rate limit message - inline below input per CONTEXT.md */}
-      {rateLimitMessage && (
-        <div className="text-sm text-amber-600 mt-2 px-1">
-          {rateLimitMessage}
-        </div>
-      )}
-
-      {/* Schedule feedback message */}
-      {scheduleMessage && (
-        <div className="text-sm text-emerald-600 mt-2 px-1">
-          {scheduleMessage}
-        </div>
-      )}
-
-      {/* Typing indicator */}
-      <TypingIndicator targetId={targetId} />
     </form>
   );
 }
