@@ -41,6 +41,9 @@ export const auth = betterAuth({
     provider: "pg",
     schema,
   }),
+  trustedOrigins: process.env.NEXT_PUBLIC_APP_URL
+    ? [process.env.NEXT_PUBLIC_APP_URL]
+    : [],
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: !!process.env.SMTP_HOST, // Only require if SMTP configured
