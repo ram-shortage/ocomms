@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 ## Current Position
 
 Phase: 29 of 29 (Stabilization)
-Plan: 2 of TBD complete (29-01, 29-04)
+Plan: 3 of TBD complete (29-01, 29-03, 29-04)
 Status: In progress
-Last activity: 2026-01-21 - Completed 29-01-PLAN.md (Socket Auth Hardening)
+Last activity: 2026-01-21 - Completed 29-03-PLAN.md (Thread Security Fixes)
 
 Progress: [████████████████████] 5/6 phases in v0.5.0
 
@@ -206,6 +206,11 @@ Phase 29-04 decisions:
 - 100 max / 50 default notification limit (balances UX and performance)
 - inArray batch query for channels (eliminates N+1 in notification handler)
 
+Phase 29-03 decisions:
+- Match message.ts retry pattern for consistency (insertReplyWithRetry)
+- MAX_PAGE_SIZE=100, DEFAULT_PAGE_SIZE=50 for thread pagination
+- Use explicit asc() ordering for clarity in paginated queries
+
 ### Pending Todos
 
 2 todos pending - see `.planning/todos/pending/`
@@ -219,5 +224,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-21
-Stopped at: Completed 29-01-PLAN.md (Socket Auth Hardening)
+Stopped at: Completed 29-03-PLAN.md (Thread Security Fixes)
 Resume file: None
