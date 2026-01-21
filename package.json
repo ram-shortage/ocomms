@@ -52,6 +52,7 @@
     "dexie-react-hooks": "^4.2.0",
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.45.1",
+    "emoji-mart": "^5.6.0",
     "frimousse": "^0.3.0",
     "ioredis": "^5.9.2",
     "lucide-react": "^0.562.0",

@@ -10,6 +10,8 @@ import { parseMentions } from "@/lib/mentions";
 import { createNotifications } from "./notification";
 import { getPresenceManager, getUnreadManager } from "../index";
 import { sendPushToUser, type PushPayload } from "@/lib/push";
+import { extractUrls } from "@/lib/url-extractor";
+import { linkPreviewQueue } from "@/server/queue/link-preview.queue";
 
 const MAX_MESSAGE_LENGTH = 10_000;
 
@@ -203,6 +205,29 @@ async function handleSendMessage(
     callback?.({ success: true, messageId: newMessage.id });
 
     console.log(`[Message] User ${userId} sent message ${newMessage.id} to ${targetType}:${targetId}`);
+
+    // Queue link preview jobs for URLs in message content (LINK-01)
+    const urls = extractUrls(content);
+    if (urls.length > 0) {
+      // Queue each URL as a separate job with position (LINK-02: max 5 URLs enforced by extractUrls)
+      urls.forEach((url, position) => {
+        linkPreviewQueue.add(
+          `preview-${newMessage.id}-${position}`,
+          {
+            messageId: newMessage.id,
+            url,
+            position,
+          },
+          {
+            // Dedupe by URL+message to avoid double-fetching on reconnects
+            jobId: `${newMessage.id}-${url}`,
+          }
+        ).catch((err) => {
+          console.error("[Message] Error queueing link preview:", err);
+        });
+      });
+      console.log(`[Message] Queued ${urls.length} link preview job(s) for message ${newMessage.id}`);
+    }
 
     // Create notifications for mentions
     const mentions = parseMentions(content);
