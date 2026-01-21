@@ -28,7 +28,7 @@ import type { UserGroup } from "./user-group-list";
 interface GroupMember {
   userId: string;
   name: string | null;
-  email: string;
+  email?: string; // Optional - hidden for non-admins (M-9)
   image: string | null;
 }
 
@@ -303,16 +303,18 @@ export function GroupMemberManager({
                               className="h-8 w-8 rounded-full object-cover"
                             />
                           ) : (
-                            (m.name || m.email).charAt(0).toUpperCase()
+                            (m.name || m.email || "?").charAt(0).toUpperCase()
                           )}
                         </div>
                         <div className="min-w-0">
                           <p className="text-sm font-medium truncate">
-                            {m.name || m.email.split("@")[0]}
+                            {m.name || m.email?.split("@")[0] || "Unknown"}
                           </p>
-                          <p className="text-xs text-muted-foreground truncate">
-                            {m.email}
-                          </p>
+                          {m.email && (
+                            <p className="text-xs text-muted-foreground truncate">
+                              {m.email}
+                            </p>
+                          )}
                         </div>
                       </div>
                       <Button

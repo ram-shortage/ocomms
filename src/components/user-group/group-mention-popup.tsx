@@ -12,7 +12,7 @@ import { getGroupByHandle, getGroupMembers } from "@/lib/actions/user-group";
 interface GroupMember {
   userId: string;
   name: string | null;
-  email: string;
+  email?: string; // Optional - hidden for non-admins (M-9)
   image: string | null;
 }
 
@@ -122,11 +122,11 @@ export function GroupMentionPopup({
                         className="w-6 h-6 rounded-full object-cover"
                       />
                     ) : (
-                      (m.name || m.email).charAt(0).toUpperCase()
+                      (m.name || m.email || "?").charAt(0).toUpperCase()
                     )}
                   </div>
                   <span className="text-sm truncate">
-                    {m.name || m.email.split("@")[0]}
+                    {m.name || m.email?.split("@")[0] || "Unknown"}
                   </span>
                 </div>
               ))}
