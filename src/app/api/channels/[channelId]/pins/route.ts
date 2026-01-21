@@ -3,7 +3,7 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { db } from "@/db";
 import { pinnedMessages, channelMembers, messages, users } from "@/db/schema";
-import { eq, and, isNull } from "drizzle-orm";
+import { eq, and, isNull, inArray } from "drizzle-orm";
 
 // GET /api/channels/[channelId]/pins - Get all pinned messages for a channel
 export async function GET(
@@ -59,26 +59,18 @@ export async function GET(
       )
       .orderBy(pinnedMessages.pinnedAt);
 
-    // Get author info for each message
-    const authorIds = [...new Set(pins.map((p) => p.authorId))];
-    const authors = await db
-      .select({ id: users.id, name: users.name, email: users.email })
-      .from(users)
-      .where(
-        authorIds.length > 0
-          ? eq(users.id, authorIds[0]) // drizzle doesn't have a good inArray for this pattern
-          : eq(users.id, "00000000-0000-0000-0000-000000000000") // No results case
-      );
-
-    // Fetch all authors at once
+    // L-6 FIX: Batch fetch all authors at once using inArray
+    const authorIds = [...new Set(pins.map((p) => p.authorId).filter(Boolean))];
     const authorsMap: Record<string, { id: string; name: string; email: string }> = {};
-    for (const authorId of authorIds) {
-      const author = await db.query.users.findFirst({
-        where: eq(users.id, authorId),
-        columns: { id: true, name: true, email: true },
-      });
-      if (author) {
-        authorsMap[authorId] = author;
+
+    if (authorIds.length > 0) {
+      const authors = await db
+        .select({ id: users.id, name: users.name, email: users.email })
+        .from(users)
+        .where(inArray(users.id, authorIds));
+
+      for (const author of authors) {
+        authorsMap[author.id] = author;
       }
     }
 

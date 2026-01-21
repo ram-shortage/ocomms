@@ -25,21 +25,12 @@ const DEFAULT_NOTIFICATION_LIMIT = 50;
  * - mentions: Only direct @user or @group mentions (not @channel/@here)
  * - all: All notifications (default)
  */
-async function shouldNotify(
-  userId: string,
-  channelId: string,
+function shouldNotifyWithSettings(
+  userSettings: NotificationMode | undefined,
   mentionType: "user" | "channel" | "here" | "group"
-): Promise<boolean> {
-  // Query user's notification settings for this channel
-  const settings = await db.query.channelNotificationSettings.findFirst({
-    where: and(
-      eq(channelNotificationSettings.channelId, channelId),
-      eq(channelNotificationSettings.userId, userId)
-    ),
-  });
-
+): boolean {
   // No settings = "all" mode (default)
-  const mode: NotificationMode = (settings?.mode as NotificationMode) ?? "all";
+  const mode: NotificationMode = userSettings ?? "all";
 
   switch (mode) {
     case "muted":
@@ -53,6 +44,28 @@ async function shouldNotify(
       // All notifications
       return true;
   }
+}
+
+/**
+ * L-7 FIX: Batch fetch notification settings for all users in a channel.
+ * Returns a map of userId -> NotificationMode.
+ */
+async function getChannelNotificationSettingsMap(
+  channelId: string
+): Promise<Map<string, NotificationMode>> {
+  const settings = await db
+    .select({
+      userId: channelNotificationSettings.userId,
+      mode: channelNotificationSettings.mode,
+    })
+    .from(channelNotificationSettings)
+    .where(eq(channelNotificationSettings.channelId, channelId));
+
+  const settingsMap = new Map<string, NotificationMode>();
+  for (const setting of settings) {
+    settingsMap.set(setting.userId, setting.mode as NotificationMode);
+  }
+  return settingsMap;
 }
 
 /**
@@ -152,6 +165,8 @@ export async function createNotifications(params: {
   // Get channel name and slug if in channel context
   let channelName: string | undefined;
   let channelSlug: string | undefined;
+  // L-7 FIX: Batch fetch all notification settings for channel once
+  let notificationSettingsMap = new Map<string, NotificationMode>();
   if (channelId) {
     const [channelData] = await db
       .select({ name: channels.name, slug: channels.slug })
@@ -160,6 +175,8 @@ export async function createNotifications(params: {
       .limit(1);
     channelName = channelData?.name;
     channelSlug = channelData?.slug;
+    // Fetch all notification settings for this channel upfront
+    notificationSettingsMap = await getChannelNotificationSettingsMap(channelId);
   }
 
   for (const mention of mentions) {
@@ -173,8 +190,8 @@ export async function createNotifications(params: {
 
           for (const recipientId of recipientIds) {
             if (recipientId !== senderId && !notifiedUserIds.has(recipientId)) {
-              // Check notification settings
-              const allowed = await shouldNotify(recipientId, channelId, "group");
+              // Check notification settings using pre-fetched map
+              const allowed = shouldNotifyWithSettings(notificationSettingsMap.get(recipientId), "group");
               if (!allowed) continue;
 
               notifiedUserIds.add(recipientId);
@@ -222,9 +239,9 @@ export async function createNotifications(params: {
       }
 
       if (targetUser && targetUser.id !== senderId && !notifiedUserIds.has(targetUser.id)) {
-        // Check notification settings if in channel context
+        // Check notification settings if in channel context (using pre-fetched map)
         if (channelId) {
-          const allowed = await shouldNotify(targetUser.id, channelId, "user");
+          const allowed = shouldNotifyWithSettings(notificationSettingsMap.get(targetUser.id), "user");
           if (!allowed) continue;
         }
 
@@ -248,8 +265,8 @@ export async function createNotifications(params: {
 
       for (const member of members) {
         if (member.userId !== senderId && !notifiedUserIds.has(member.userId)) {
-          // Check notification settings
-          const allowed = await shouldNotify(member.userId, channelId, "channel");
+          // Check notification settings using pre-fetched map
+          const allowed = shouldNotifyWithSettings(notificationSettingsMap.get(member.userId), "channel");
           if (!allowed) continue;
 
           notifiedUserIds.add(member.userId);
@@ -279,8 +296,8 @@ export async function createNotifications(params: {
             if (status !== "active") continue;
           }
 
-          // Check notification settings
-          const allowed = await shouldNotify(member.userId, channelId, "here");
+          // Check notification settings using pre-fetched map
+          const allowed = shouldNotifyWithSettings(notificationSettingsMap.get(member.userId), "here");
           if (!allowed) continue;
 
           notifiedUserIds.add(member.userId);
