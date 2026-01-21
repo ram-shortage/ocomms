@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Plus, Search, MessageSquare, StickyNote, FolderPlus, Bell, Clock } from "lucide-react";
+import { Plus, Search, MessageSquare, StickyNote, FolderPlus, Bell, Clock, Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ChannelListClient } from "@/components/channel/channel-list-client";
 import { CategorySidebar } from "@/components/channel/category-sidebar";
@@ -14,6 +14,7 @@ import { StartDMDialog } from "@/components/dm/start-dm-dialog";
 import { NotificationBell } from "@/components/notification/notification-bell";
 import { LogoutButton } from "@/components/auth/logout-button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { ReminderBadge } from "@/components/reminder/reminder-badge";
 import { cn } from "@/lib/utils";
 
 interface Category {
@@ -122,7 +123,7 @@ export function WorkspaceSidebar({
             <Clock className="h-4 w-4" />
             Scheduled
           </Link>
-          {/* RMND-03: Reminders link in sidebar */}
+          {/* RMND-03: Reminders link in sidebar with badge */}
           <Link
             href={`/${workspace.slug}/reminders`}
             className={cn(
@@ -132,6 +133,18 @@ export function WorkspaceSidebar({
           >
             <Bell className="h-4 w-4" />
             Reminders
+            <ReminderBadge />
+          </Link>
+          {/* BOOK-03: Saved items link in sidebar */}
+          <Link
+            href={`/${workspace.slug}/saved`}
+            className={cn(
+              "flex items-center gap-2 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors",
+              pathname === `/${workspace.slug}/saved` && "bg-accent"
+            )}
+          >
+            <Bookmark className="h-4 w-4" />
+            Saved
           </Link>
         </div>
 
