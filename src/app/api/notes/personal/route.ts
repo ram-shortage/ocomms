@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { db } from "@/db";
-import { personalNotes } from "@/db/schema";
+import { personalNotes, member } from "@/db/schema";
 import { eq, and, sql } from "drizzle-orm";
 
 /**
@@ -28,6 +28,20 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         { error: "workspaceId is required" },
         { status: 400 }
+      );
+    }
+
+    // L-5 FIX: Verify user is a member of the workspace
+    const membership = await db.query.members.findFirst({
+      where: and(
+        eq(member.organizationId, workspaceId),
+        eq(member.userId, session.user.id)
+      ),
+    });
+    if (!membership) {
+      return NextResponse.json(
+        { error: "Not authorized to access notes in this workspace" },
+        { status: 403 }
       );
     }
 
@@ -99,6 +113,20 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json(
         { error: "baseVersion must be a number" },
         { status: 400 }
+      );
+    }
+
+    // L-5 FIX: Verify user is a member of the workspace
+    const membership = await db.query.members.findFirst({
+      where: and(
+        eq(member.organizationId, workspaceId),
+        eq(member.userId, session.user.id)
+      ),
+    });
+    if (!membership) {
+      return NextResponse.json(
+        { error: "Not authorized to access notes in this workspace" },
+        { status: 403 }
       );
     }
 
