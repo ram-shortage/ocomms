@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 ## Current Position
 
 Phase: 28 of 29 (Authorization & Analytics)
-Plan: 4 of 8 complete
+Plan: 5 of 8 complete
 Status: In progress
-Last activity: 2026-01-21 - Completed 28-04-PLAN.md (Guest Server Actions & Expiration)
+Last activity: 2026-01-21 - Completed 28-07-PLAN.md (Analytics Dashboard UI)
 
 Progress: [████████████████░░░░] 4/6 phases in v0.5.0
 
@@ -174,6 +174,12 @@ Phase 28-04 decisions:
 - Guests cannot initiate DMs but can reply to member-initiated ones
 - Guest channel access checked at both action and socket handler level (defense in depth)
 
+Phase 28-07 decisions:
+- Lazy load data per tab to optimize initial page load
+- Manual refresh only (no auto-polling) per CONTEXT.md
+- Client-side CSV export with BOM for Excel UTF-8 compatibility
+- Top 10 channels in activity table, rest aggregated as "Other"
+
 ### Pending Todos
 
 2 todos pending - see `.planning/todos/pending/`
@@ -187,5 +193,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-21
-Stopped at: Completed 28-04-PLAN.md (Guest Server Actions & Expiration)
-Resume file: None - ready for 28-05-PLAN.md
+Stopped at: Completed 28-07-PLAN.md (Analytics Dashboard UI)
+Resume file: None - ready for next plan
