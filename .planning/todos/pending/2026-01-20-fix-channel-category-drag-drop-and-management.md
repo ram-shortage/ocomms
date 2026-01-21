@@ -22,5 +22,6 @@ Context: These issues were discovered during Phase 24-04 verification checkpoint
 ## Solution
 
 1. Debug drag-drop: Check if `useDroppable` is working, verify `handleDragEnd` detects category drops
-2. Add delete category UI: Add a delete button/menu to category headers (admin only)
-3. Consider: Edit category name, reorder categories via drag
+2. Move "New Category" button to Settings page (alongside delete capability)
+3. Add delete category UI in Settings (admin only)
+4. Consider: Edit category name, reorder categories via drag
