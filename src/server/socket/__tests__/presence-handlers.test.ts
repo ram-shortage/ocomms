@@ -1,4 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import * as fs from "fs";
+import * as path from "path";
 
 // Mock the rooms module
 vi.mock("../rooms", () => ({
@@ -152,14 +154,81 @@ function setupPresenceEventHandlers(
 }
 
 /**
+ * M-1 Authorization Tests for Presence
+ *
+ * Tests that validate organization membership check in presence:fetch handler
+ * to prevent unauthorized users from fetching presence for other workspaces.
+ */
+describe("Presence Handler Authorization (M-1 fix)", () => {
+  const sourcePath = path.resolve(__dirname, "../index.ts");
+  const source = fs.readFileSync(sourcePath, "utf-8");
+
+  describe("presence:fetch authorization", () => {
+    it("imports isOrganizationMember from authz", () => {
+      expect(source).toContain("isOrganizationMember");
+      expect(source).toContain('from "./authz"');
+    });
+
+    it("validates workspace membership before fetching presence", () => {
+      // Find presence:fetch handler section
+      const presenceSection = source.slice(
+        source.indexOf('socket.on("presence:fetch"'),
+        source.indexOf('socket.on("presence:fetch"') + 800
+      );
+      expect(presenceSection).toContain("isOrganizationMember");
+    });
+
+    it("emits error for unauthorized workspace presence requests", () => {
+      const presenceSection = source.slice(
+        source.indexOf('socket.on("presence:fetch"'),
+        source.indexOf('socket.on("presence:fetch"') + 800
+      );
+      expect(presenceSection).toContain("Not authorized to fetch presence for this workspace");
+    });
+
+    it("returns empty object via callback for unauthorized requests", () => {
+      const presenceSection = source.slice(
+        source.indexOf('socket.on("presence:fetch"'),
+        source.indexOf('socket.on("presence:fetch"') + 800
+      );
+      // Should call callback({}) for unauthorized
+      expect(presenceSection).toContain("callback({})");
+    });
+
+    it("checks authorization before processing userIds array", () => {
+      // The auth check should come before the array length check
+      const presenceSection = source.slice(
+        source.indexOf('socket.on("presence:fetch"')
+      );
+      const authCheckPos = presenceSection.indexOf("isOrganizationMember");
+      const arrayCheckPos = presenceSection.indexOf("data.userIds.length > MAX_IDS_PER_REQUEST");
+      // Auth check should be first
+      expect(authCheckPos).toBeLessThan(arrayCheckPos);
+    });
+
+    it("uses async handler for authorization check", () => {
+      expect(source).toContain('socket.on("presence:fetch", async');
+    });
+
+    it("awaits the organization membership check", () => {
+      const presenceSection = source.slice(
+        source.indexOf('socket.on("presence:fetch"'),
+        source.indexOf('socket.on("presence:fetch"') + 800
+      );
+      expect(presenceSection).toContain("await isOrganizationMember");
+    });
+  });
+});
+
+/**
  * M-12 DoS Prevention Tests for Presence
  *
  * Tests that validate array size caps in presence:fetch handler
  * to prevent DoS attacks through unbounded userIds arrays.
  */
 describe("Presence Handler DoS Prevention (M-12)", () => {
-  const sourcePath = require("path").resolve(__dirname, "../index.ts");
-  const source = require("fs").readFileSync(sourcePath, "utf-8");
+  const sourcePath = path.resolve(__dirname, "../index.ts");
+  const source = fs.readFileSync(sourcePath, "utf-8");
 
   describe("Array size caps in presence:fetch", () => {
     it("defines maximum IDs per request constant", () => {
