@@ -463,3 +463,83 @@ export async function isGuestSoftLocked(memberId: string): Promise<boolean> {
   });
   return member?.guestSoftLocked ?? false;
 }
+
+/**
+ * Revoke an unused guest invite
+ * Admin can invalidate invite links that haven't been redeemed
+ */
+export async function revokeGuestInvite(inviteId: string) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) throw new Error("Unauthorized");
+
+  // Get the invite record
+  const invite = await db.query.guestInvites.findFirst({
+    where: eq(guestInvites.id, inviteId),
+  });
+
+  if (!invite) {
+    throw new Error("Invite not found");
+  }
+
+  // Verify admin access
+  const isAdmin = await verifyAdminAccess(session.user.id, invite.organizationId);
+  if (!isAdmin) {
+    throw new Error("Only admins can revoke guest invites");
+  }
+
+  // Can only revoke unused invites
+  if (invite.usedBy) {
+    throw new Error("Cannot revoke an already-used invite");
+  }
+
+  // Delete the invite
+  await db.delete(guestInvites).where(eq(guestInvites.id, inviteId));
+
+  revalidatePath("/");
+
+  return { success: true };
+}
+
+/**
+ * Get invite details by token for the join page
+ * Public - doesn't require admin access
+ */
+export async function getGuestInviteByToken(token: string) {
+  const invite = await db.query.guestInvites.findFirst({
+    where: eq(guestInvites.token, token),
+    with: {
+      organization: {
+        columns: {
+          id: true,
+          name: true,
+          slug: true,
+          logo: true,
+        },
+      },
+    },
+  });
+
+  if (!invite) {
+    return null;
+  }
+
+  // Parse channel IDs and fetch channel names
+  const channelIds: string[] = JSON.parse(invite.channelIds);
+  const channelList = await db.query.channels.findMany({
+    where: inArray(channels.id, channelIds),
+    columns: {
+      id: true,
+      name: true,
+    },
+  });
+
+  return {
+    id: invite.id,
+    token: invite.token,
+    organization: invite.organization,
+    channels: channelList,
+    expiresAt: invite.expiresAt,
+    isUsed: !!invite.usedBy,
+    isExpired: invite.expiresAt ? invite.expiresAt < new Date() : false,
+  };
+}
