@@ -12,3 +12,9 @@ export {
   reminderQueue,
   type ReminderJobData,
 } from "./reminder.queue";
+
+// Status expiration queue
+export {
+  statusExpirationQueue,
+  type StatusExpirationJobData,
+} from "./status-expiration.queue";
