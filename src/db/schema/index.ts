@@ -16,3 +16,4 @@ export * from "./file-attachment";
 export * from "./note";
 export * from "./scheduled-message";
 export * from "./reminder";
+export * from "./bookmark";
