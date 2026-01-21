@@ -137,10 +137,31 @@ Plans:
   3. Socket.IO event tests cover real-time features (typing indicators at scale)
   4. All bugs discovered during testing are fixed or documented for future
   5. Performance testing confirms typing indicators work at 500+ concurrent users
-**Plans**: TBD
+**Plans**: 12 plans
+Plans:
+- [ ] 29-01-PLAN.md — Fix H-1, M-1, M-7 (notes, typing, presence auth)
+- [ ] 29-02-PLAN.md — Fix M-8, M-9, M-10 (user status, group, link preview auth)
+- [ ] 29-03-PLAN.md — Fix M-2, M-3, M-11 (thread race, limits, pagination)
+- [ ] 29-04-PLAN.md — Fix M-12, M-13 (unbounded arrays, notification limits)
+- [ ] 29-05-PLAN.md — BUG-26-01 user status persistence fix
+- [ ] 29-06-PLAN.md — Low severity quick fixes (L-4, L-5, L-6, L-7)
+- [ ] 29-07-PLAN.md — Tests for socket handler auth fixes (H-1, M-1, M-7)
+- [ ] 29-08-PLAN.md — Tests for action auth fixes (M-8, M-9, M-10)
+- [ ] 29-09-PLAN.md — Tests for thread handler fixes (M-2, M-3, M-11)
+- [ ] 29-10-PLAN.md — Tests for v0.5.0 server actions (scheduled messages, reminders, bookmarks)
+- [ ] 29-11-PLAN.md — Tests for guests and analytics actions
+- [ ] 29-12-PLAN.md — Verification checkpoint
 
 **Known Bugs (from earlier phases):**
 - BUG-26-01: User status not persisting after save (see `.planning/todos/pending/2026-01-21-phase26-status-bugs.md`)
+
+**Deferred from CODE_REVIEW_04.MD:**
+- L-1: Audit log streaming (requires rewrite)
+- L-2: Admin export batching (requires job-based export)
+- L-3: Distributed rate limiting (requires Redis rate limiter)
+- M-4: Attachment auth (needs design decision)
+- M-5: Upload quotas (needs design decision)
+- M-6: CSP hardening (needs deployment config)
 
 ## Progress
 
@@ -154,7 +175,7 @@ Phases execute in numeric order: 24 -> 24.1 (if inserted) -> 25 -> 26 -> 27 -> 2
 | 26. Collections & Presence | 6/6 | Complete (gaps) | 2026-01-21 |
 | 27. Rich Content | 6/6 | Complete | 2026-01-21 |
 | 28. Authorization & Analytics | 8/8 | Complete | 2026-01-21 |
-| 29. Stabilization | 0/TBD | Not started | - |
+| 29. Stabilization | 0/12 | Not started | - |
 
 ## Coverage
 
@@ -174,4 +195,4 @@ All 87 v1 requirements mapped. No orphans.
 
 ---
 *Roadmap created: 2026-01-20*
-*Last updated: 2026-01-21 (Phase 28 complete)*
+*Last updated: 2026-01-21 (Phase 29 planned)*
