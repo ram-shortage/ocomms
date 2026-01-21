@@ -121,6 +121,23 @@ export interface ServerToClientEvents {
     status: Reminder["status"];
     snoozedUntil?: Date;
   }) => void;
+  /** LINK-*: Link preview ready event - worker broadcasts when preview is fetched */
+  "linkPreview:ready": (data: {
+    messageId: string;
+    previews: Array<{
+      id: string;
+      url: string;
+      title: string | null;
+      description: string | null;
+      imageUrl: string | null;
+      siteName: string | null;
+    }>;
+  }) => void;
+  /** LINK-06: User hides a preview on their own message */
+  "linkPreview:hidden": (data: {
+    messageId: string;
+    previewId: string;
+  }) => void;
   error: (data: { message: string; code?: string; retryAfter?: number }) => void;
 }
 
