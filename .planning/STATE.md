@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 ## Current Position
 
 Phase: 29 of 29 (Stabilization)
-Plan: 10 of 12 complete (29-01 through 29-10)
+Plan: 11 of 12 complete (29-01 through 29-11)
 Status: In progress
-Last activity: 2026-01-21 - Completed 29-10-PLAN.md (v0.5.0 Feature Action Tests)
+Last activity: 2026-01-21 - Completed 29-11-PLAN.md (Guest/Analytics Action Tests)
 
 Progress: [████████████████████] 5/6 phases in v0.5.0
 
@@ -246,6 +246,11 @@ Phase 29-10 decisions:
 - Table-specific mock functions for isolated db query testing (avoid sequencing issues)
 - Separate mocks per table: mockChannelMembersFindFirst, mockScheduledMessagesFindFirst, etc.
 
+Phase 29-11 decisions:
+- Simplified analytics tests to focus on authorization verification due to complex Drizzle fluent API mocking
+- Guest-group test validates GUST-07 through addGroupMember function (actual name from user-group.ts)
+- Thenable mock pattern: createThenable(result) for Drizzle query chain termination
+
 ### Pending Todos
 
 2 todos pending - see `.planning/todos/pending/`
@@ -259,5 +264,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-21
-Stopped at: Completed 29-10-PLAN.md (v0.5.0 Feature Action Tests)
+Stopped at: Completed 29-11-PLAN.md (Guest/Analytics Action Tests)
 Resume file: None
