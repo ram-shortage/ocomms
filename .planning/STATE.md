@@ -251,11 +251,30 @@ Phase 29-11 decisions:
 - Guest-group test validates GUST-07 through addGroupMember function (actual name from user-group.ts)
 - Thenable mock pattern: createThenable(result) for Drizzle query chain termination
 
+Phase 29-12 decisions:
+- Added @testing-library/dom dependency (was missing, caused component test failures)
+- Updated component tests for ScheduleSendDropdown API (send now vs schedule options)
+- Fixed customEmojis type to include id and isAnimated fields
+
+### Phase 29 Descoped Items
+
+**TEST-06 (Comprehensive test coverage for v0.1-v0.4):**
+- Status: Descoped from Phase 29
+- Rationale: Existing tests from prior phases remain in place and continue to pass. Adding comprehensive retroactive coverage would significantly expand scope. Prior milestones were verified through UAT.
+- Future: Consider dedicated test coverage phase if regressions emerge.
+
+**TEST-08 (Performance testing for 500+ concurrent users):**
+- Status: Descoped from Phase 29 per CONTEXT.md decision
+- Rationale: Load testing requires dedicated infrastructure (k6, distributed test runners). Current focus is functional correctness and security.
+- Future: See `.planning/todos/pending/load-testing-typing-indicators.md` for tracking.
+
 ### Pending Todos
 
-2 todos pending - see `.planning/todos/pending/`
+4 todos pending - see `.planning/todos/pending/`
 - **Fix channel category drag-drop and management** (ui) - drag-drop not working, no delete UI
 - **Fix typing bar layout - excessive whitespace below input** (ui) - flex layout not constraining height properly
+- **Phase 26 status bugs** (bug) - status persistence issues from Phase 26
+- **Load testing typing indicators** (performance) - TEST-08 descoped, requires infrastructure
 
 ### Blockers/Concerns
 
