@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 ## Current Position
 
 Phase: 27 of 29 (Rich Content)
-Plan: 5 of 6 complete
-Status: In progress
-Last activity: 2026-01-21 - Completed 27-05-PLAN.md (Emoji Picker)
+Plan: 6 of 6 complete
+Status: Phase complete
+Last activity: 2026-01-21 - Completed 27-06-PLAN.md (Integration & UI)
 
-Progress: [████████░░] 5/6 plans in phase 27
+Progress: [██████████] 6/6 plans in phase 27
 
 ## Shipped Milestones
 
@@ -145,6 +145,12 @@ Phase 27-05 decisions:
 - Custom emoji stored as :name: format for display resolution
 - Emoji picker lazy loads data to reduce initial bundle
 
+Phase 27-06 decisions:
+- Fire-and-forget pattern for link preview queueing (non-blocking)
+- Job ID format ${messageId}-${url} for deduplication
+- Client wrappers pattern for emoji settings page
+- Custom emoji regex pattern: :([a-zA-Z0-9_-]+):
+
 ### Pending Todos
 
 2 todos pending - see `.planning/todos/pending/`
@@ -158,5 +164,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-21
-Stopped at: Completed 27-05-PLAN.md (Emoji Picker)
-Resume file: None - continue with 27-06-PLAN.md
+Stopped at: Completed 27-06-PLAN.md (Integration & UI) - Phase 27 complete
+Resume file: None - ready for Phase 28
