@@ -12,15 +12,16 @@ OComms is a self-hosted team communication platform - a Slack-like experience th
 
 ## Current State
 
-**Version:** v0.4.0 (Files, Theming & Notes) - Shipped 2026-01-20
+**Version:** v0.5.0 (Feature Completeness) - Shipped 2026-01-21
 
-Delivered dark mode theming, file uploads with image previews, and markdown notes for channels and personal scratchpads.
+Complete platform feature set with scheduling, reminders, bookmarks, user status, link previews, custom emoji, user groups, guest accounts, and workspace analytics.
 
 **Tech Stack:**
 - Next.js 15 with App Router
-- TypeScript (~17,900 LOC)
+- TypeScript (~48,900 LOC)
 - PostgreSQL with Drizzle ORM (SSL encrypted)
 - Socket.IO with Redis pub-sub
+- BullMQ job queues with Redis
 - Docker Compose deployment (HTTPS with Let's Encrypt)
 - Serwist/Workbox for service worker
 - Dexie.js for IndexedDB
@@ -30,8 +31,8 @@ Delivered dark mode theming, file uploads with image previews, and markdown note
 - Real-time messaging in channels and DMs
 - Public/private channels with membership
 - Single-level message threading
-- Emoji reactions with frimousse picker
-- @user, @channel, @here mentions with notifications
+- Emoji reactions with emoji-mart picker (custom emoji support)
+- @user, @channel, @here, @group mentions with notifications
 - Unread counts and mark-as-read
 - Full-text search with PostgreSQL FTS
 - Presence (active/away/offline)
@@ -54,6 +55,18 @@ Delivered dark mode theming, file uploads with image previews, and markdown note
 - **v0.4.0:** Image inline previews and download cards for attachments
 - **v0.4.0:** Channel notes (shared markdown document per channel)
 - **v0.4.0:** Personal notes scratchpad per user per workspace
+- **v0.5.0:** Typing indicators with real-time "[Name] is typing..."
+- **v0.5.0:** Channel archiving with read-only mode and unarchive
+- **v0.5.0:** Channel categories with collapsible sidebar sections
+- **v0.5.0:** Scheduled messages with timezone-aware delivery
+- **v0.5.0:** Reminders on messages with snooze and recurring options
+- **v0.5.0:** Bookmarks for saving messages and files
+- **v0.5.0:** Custom user status with emoji, text, and DND mode
+- **v0.5.0:** Link previews with Open Graph unfurling and SSRF protection
+- **v0.5.0:** Custom emoji upload with SVG-to-PNG conversion
+- **v0.5.0:** User groups for @team mentions
+- **v0.5.0:** Guest accounts with channel-scoped access and auto-expiration
+- **v0.5.0:** Workspace analytics dashboard (message volume, DAU/WAU/MAU, CSV export)
 
 ## Target Users
 
@@ -111,26 +124,24 @@ Requirements shipped and working in production:
   - FILE-01 to FILE-10: Drag-drop, click-browse, progress, image preview, download links, 25MB limit, magic bytes, channels, DMs, clipboard paste
   - NOTE-01 to NOTE-07: Channel notes, personal notes, markdown editing, preview, member editing, conflict detection, header access
 
+- **v0.5.0 - Feature Completeness** (87 requirements)
+  - TYPE-01 to TYPE-05: Typing indicators with throttle and broadcast
+  - ARCH-01 to ARCH-06: Channel archiving with read-only mode
+  - CCAT-01 to CCAT-06: Channel categories with collapsible sections
+  - SCHD-01 to SCHD-07: Scheduled messages with timezone support
+  - RMND-01 to RMND-07: Reminders with snooze and recurring
+  - BOOK-01 to BOOK-05: Bookmarks for messages and files
+  - STAT-01 to STAT-06: User status with emoji, text, DND mode
+  - LINK-01 to LINK-07: Link previews with SSRF protection
+  - EMOJ-01 to EMOJ-08: Custom emoji with SVG-to-PNG conversion
+  - UGRP-01 to UGRP-06: User groups for @team mentions
+  - GUST-01 to GUST-08: Guest accounts with channel restrictions
+  - ANLY-01 to ANLY-08: Workspace analytics dashboard
+  - TEST-01 to TEST-08: Testing and stabilization (2 descoped)
+
 ### Active
 
-**v0.5.0 - Feature Completeness**
-
-**Goal:** Complete the platform feature set with user experience enhancements, collaboration features, and workspace management capabilities.
-
-**Target features:**
-- User status messages (custom status with emoji)
-- Bookmarks / Saved messages
-- Scheduled messages
-- Reminders
-- User groups (@team mentions)
-- Channel categories / folders
-- Link previews / Unfurling
-- Typing indicators
-- Custom emoji
-- Channel archiving
-- Guest accounts
-- Workspace analytics
-- Test creation & bug fixing (stabilization)
+*No active milestone. Use `/gsd:new-milestone` to start v0.6.0 planning.*
 
 ### Out of Scope
 
@@ -177,6 +188,12 @@ Requirements shipped and working in production:
 | react-markdown for notes | XSS-safe, no dangerouslySetInnerHTML | Good |
 | Last-write-wins for notes | CRDT/OT too complex; conflict detection sufficient | Good |
 | 2s debounce for note save | Balance responsiveness and API load | Good |
+| BullMQ for scheduled jobs | Redis-based, persistent across restarts | Good |
+| unfurl library for link previews | Lightweight, no headless browser | Good |
+| sharp for custom emoji | SVG-to-PNG conversion for XSS protection | Good |
+| emoji-mart for picker | Custom emoji integration, lazy loading | Good |
+| Guest soft-lock for expired access | 24-hour grace period, can view but not post | Good |
+| Aggregate-only analytics | No individual user surveillance | Good |
 
 ---
 
@@ -205,4 +222,4 @@ Requirements shipped and working in production:
 ---
 
 ---
-*Last updated: 2026-01-20 after v0.5.0 milestone start*
+*Last updated: 2026-01-21 after v0.5.0 milestone completion*

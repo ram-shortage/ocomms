@@ -1,5 +1,36 @@
 # Project Milestones: OComms
 
+## v0.5.0 Feature Completeness (Shipped: 2026-01-21)
+
+**Delivered:** Complete platform feature set with scheduling, reminders, bookmarks, user status, link previews, custom emoji, user groups, guest accounts, and workspace analytics.
+
+**Phases completed:** 24-29 (41 plans total)
+
+**Key accomplishments:**
+
+- Typing indicators with real-time "[Name] is typing..." and client throttle
+- BullMQ job queue infrastructure for scheduled messages and reminders
+- Bookmarks for saving messages/files with jump-to-original navigation
+- Custom user status with emoji, text, expiration, and DND mode
+- Link previews with Open Graph unfurling and SSRF protection
+- Custom emoji with upload, SVG-to-PNG conversion, and emoji-mart picker
+- User groups for @team mentions with channel member intersection
+- Guest accounts with channel-scoped access and auto-expiration
+- Workspace analytics dashboard with message volume, DAU/WAU/MAU, and CSV export
+- 885 tests across 48 files with security fix verification
+
+**Stats:**
+
+- ~48,900 lines of TypeScript
+- 6 phases, 41 plans, 87 requirements
+- 2 days from start to ship
+
+**Git range:** `feat(24)` → `feat(29)`
+
+**What's next:** `/gsd:new-milestone` for v0.6.0 planning
+
+---
+
 ## v0.4.0 Files, Theming & Notes (Shipped: 2026-01-20)
 
 **Delivered:** Dark mode theming, file uploads with image previews, and markdown notes for channels and personal scratchpads.
