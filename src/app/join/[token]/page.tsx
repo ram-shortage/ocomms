@@ -124,7 +124,7 @@ export default async function JoinGuestInvitePage({
   // If not logged in, redirect to sign up with return URL
   if (!session) {
     const returnUrl = encodeURIComponent(`/join/${token}`);
-    redirect(`/sign-up?returnUrl=${returnUrl}`);
+    redirect(`/signup?returnUrl=${returnUrl}`);
   }
 
   // Valid invite + logged in: Show welcome page

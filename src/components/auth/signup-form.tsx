@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signUp } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +18,8 @@ export function SignupForm() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const returnUrl = searchParams.get("returnUrl");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,7 +36,10 @@ export function SignupForm() {
       if (result.error) {
         setError(result.error.message || "Signup failed");
       } else {
-        router.push("/verify-email?email=" + encodeURIComponent(email));
+        // Preserve returnUrl through email verification flow
+        const verifyUrl = "/verify-email?email=" + encodeURIComponent(email) +
+          (returnUrl ? "&returnUrl=" + encodeURIComponent(returnUrl) : "");
+        router.push(verifyUrl);
       }
     } catch (err) {
       setError("An unexpected error occurred");
@@ -95,7 +100,7 @@ export function SignupForm() {
         </form>
         <p className="mt-4 text-center text-sm text-muted-foreground">
           Already have an account?{" "}
-          <Link href="/login" className="text-primary hover:underline">
+          <Link href={returnUrl ? `/login?returnUrl=${encodeURIComponent(returnUrl)}` : "/login"} className="text-primary hover:underline">
             Log in
           </Link>
         </p>
