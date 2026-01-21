@@ -190,6 +190,14 @@ export function setupSocketHandlers(io: SocketIOServer, redis?: Redis | null) {
 
     // Handle presence:fetch for getting multiple users' presence
     socket.on("presence:fetch", async (data, callback) => {
+      // Verify requester is a member of the workspace (M-1)
+      const isMember = await isOrganizationMember(userId, data.workspaceId);
+      if (!isMember) {
+        socket.emit("error", { message: "Not authorized to fetch presence for this workspace" });
+        callback({});
+        return;
+      }
+
       // Cap array size to prevent DoS (M-12)
       if (data.userIds.length > MAX_IDS_PER_REQUEST) {
         socket.emit("error", {
@@ -202,8 +210,8 @@ export function setupSocketHandlers(io: SocketIOServer, redis?: Redis | null) {
       if (!presenceManager) {
         // Return all offline if no presence manager
         const offlineMap: Record<string, "active" | "away" | "offline"> = {};
-        for (const userId of data.userIds) {
-          offlineMap[userId] = "offline";
+        for (const uId of data.userIds) {
+          offlineMap[uId] = "offline";
         }
         callback(offlineMap);
         return;
