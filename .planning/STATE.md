@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 ## Current Position
 
 Phase: 29 of 29 (Stabilization)
-Plan: 9 of 12 complete (29-01 through 29-09)
+Plan: 10 of 12 complete (29-01 through 29-10)
 Status: In progress
-Last activity: 2026-01-21 - Completed 29-09-PLAN.md (Socket Handler Security Tests)
+Last activity: 2026-01-21 - Completed 29-10-PLAN.md (v0.5.0 Feature Action Tests)
 
 Progress: [████████████████████] 5/6 phases in v0.5.0
 
@@ -242,6 +242,10 @@ Phase 29-09 decisions:
 - Source validation pattern (read source, assert patterns) for security fix verification
 - Presence tests also include M-1 authorization validation (bonus coverage)
 
+Phase 29-10 decisions:
+- Table-specific mock functions for isolated db query testing (avoid sequencing issues)
+- Separate mocks per table: mockChannelMembersFindFirst, mockScheduledMessagesFindFirst, etc.
+
 ### Pending Todos
 
 2 todos pending - see `.planning/todos/pending/`
@@ -255,5 +259,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-21
-Stopped at: Completed 29-09-PLAN.md (Socket Handler Security Tests)
+Stopped at: Completed 29-10-PLAN.md (v0.5.0 Feature Action Tests)
 Resume file: None
