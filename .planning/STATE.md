@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 ## Current Position
 
 Phase: 29 of 29 (Stabilization)
-Plan: 7 of TBD complete (29-01, 29-02, 29-03, 29-04, 29-05, 29-06, 29-08)
+Plan: 8 of TBD complete (29-01, 29-02, 29-03, 29-04, 29-05, 29-06, 29-07, 29-08)
 Status: In progress
-Last activity: 2026-01-21 - Completed 29-08-PLAN.md (Authorization Test Coverage)
+Last activity: 2026-01-21 - Completed 29-07-PLAN.md (Socket Handler Authorization Tests)
 
 Progress: [████████████████████] 5/6 phases in v0.5.0
 
@@ -228,6 +228,10 @@ Phase 29-06 decisions:
 - Pins batch lookup with inArray replaces N+1 for loop
 - Notification settings pre-fetched once per channel for all users
 
+Phase 29-07 decisions:
+- Source validation test pattern for socket authorization (read source, verify imports/calls)
+- Section slicing to verify authorization checks within correct handler scope
+
 Phase 29-08 decisions:
 - Function name correction: getMessagePreviews not getLinkPreviews (matches actual implementation)
 - Tests verify both positive (authorized) and negative (unauthorized) cases
@@ -246,5 +250,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-21
-Stopped at: Completed 29-08-PLAN.md (Authorization Test Coverage)
+Stopped at: Completed 29-07-PLAN.md (Socket Handler Authorization Tests)
 Resume file: None
