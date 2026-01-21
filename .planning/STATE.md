@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 ## Current Position
 
 Phase: 27 of 29 (Rich Content)
-Plan: 3 of 6 complete
+Plan: 4 of 6 complete
 Status: In progress
-Last activity: 2026-01-21 - Completed 27-02-PLAN.md (Link Preview Infrastructure)
+Last activity: 2026-01-21 - Completed 27-03-PLAN.md (Link Preview UI)
 
-Progress: [█████░░░░░] 3/6 plans in phase 27
+Progress: [██████░░░░] 4/6 plans in phase 27
 
 ## Shipped Milestones
 
@@ -129,6 +129,11 @@ Phase 27-02 decisions:
 - Custom safeFetch wrapper for unfurl.js integration
 - 10 concurrent workers for fetch-heavy link preview processing
 
+Phase 27-03 decisions:
+- Hide button uses nested group (group/preview) for independent hover state
+- Domain extracted from URL as fallback when siteName is null
+- Skip rendering card entirely if no title, description, or image
+
 Phase 27-04 decisions:
 - Admin/owner role required for workspace-level emoji uploads
 - SVG converted to PNG for XSS protection (EMOJ-08)
@@ -148,5 +153,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-21
-Stopped at: Completed 27-02-PLAN.md (Link Preview Infrastructure)
-Resume file: None - continue with 27-03-PLAN.md
+Stopped at: Completed 27-03-PLAN.md (Link Preview UI)
+Resume file: None - continue with 27-04-PLAN.md
