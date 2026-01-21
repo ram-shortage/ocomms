@@ -3,7 +3,13 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { db } from "@/db";
-import { linkPreviews, messageLinkPreviews, messages } from "@/db/schema";
+import {
+  linkPreviews,
+  messageLinkPreviews,
+  messages,
+  channelMembers,
+  conversationParticipants,
+} from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 
 export interface LinkPreview {
@@ -20,11 +26,44 @@ export interface LinkPreview {
 /**
  * Get all link previews for a message.
  * Returns non-hidden previews ordered by position.
+ * M-10 FIX: Verify channel membership or DM participation before returning.
  */
 export async function getMessagePreviews(messageId: string): Promise<LinkPreview[]> {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) {
     throw new Error("Unauthorized");
+  }
+
+  // Get message to find its context (channel or DM)
+  const message = await db.query.messages.findFirst({
+    where: eq(messages.id, messageId),
+    columns: { channelId: true, conversationId: true },
+  });
+  if (!message) {
+    throw new Error("Message not found");
+  }
+
+  // Verify access based on context
+  if (message.channelId) {
+    const membership = await db.query.channelMembers.findFirst({
+      where: and(
+        eq(channelMembers.channelId, message.channelId),
+        eq(channelMembers.userId, session.user.id)
+      ),
+    });
+    if (!membership) {
+      throw new Error("Not authorized to view this message");
+    }
+  } else if (message.conversationId) {
+    const participant = await db.query.conversationParticipants.findFirst({
+      where: and(
+        eq(conversationParticipants.conversationId, message.conversationId),
+        eq(conversationParticipants.userId, session.user.id)
+      ),
+    });
+    if (!participant) {
+      throw new Error("Not authorized to view this message");
+    }
   }
 
   const results = await db
