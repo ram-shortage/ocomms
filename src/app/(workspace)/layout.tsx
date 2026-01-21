@@ -16,7 +16,7 @@ export default async function WorkspaceLayout({
   }
 
   return (
-    <div className="min-h-screen bg-muted">
+    <div className="h-dvh bg-muted overflow-hidden">
       {children}
     </div>
   );

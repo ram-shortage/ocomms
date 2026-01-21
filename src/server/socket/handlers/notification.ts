@@ -4,7 +4,7 @@ import { notifications, users, channelMembers, channels, channelNotificationSett
 import { eq, and, isNull, desc, inArray } from "drizzle-orm";
 import { getRoomName } from "../rooms";
 import type { ClientToServerEvents, ServerToClientEvents, SocketData, Message, Notification } from "@/lib/socket-events";
-import type { ParsedMention } from "@/lib/mentions";
+import type { ParsedMention } from "@/lib/mentions/core";
 import type { PresenceManager } from "./presence";
 import type { NotificationMode } from "@/db/schema/channel-notification-settings";
 import { sendPushToUser, isUserDndEnabled, type PushPayload } from "@/lib/push";

@@ -6,8 +6,8 @@ if (existsSync(".env.local")) {
   config({ path: ".env.local" });
 }
 config(); // loads .env, won't override existing values
+
 import { createServer } from "node:http";
-import next from "next";
 import { Server as SocketServer } from "socket.io";
 import { createRedisAdapter, createPresenceRedisClient } from "./socket/adapter";
 import { setupSocketHandlers } from "./socket";
@@ -22,10 +22,15 @@ if (!dev && !process.env.NEXT_PUBLIC_APP_URL) {
   console.warn("[Server] NEXT_PUBLIC_APP_URL not set in production - using fallback origin");
 }
 
-const app = next({ dev, hostname, port });
-const handler = app.getRequestHandler();
+// Wrap in async IIFE to allow dynamic import of Next.js
+// Next.js 16+ checks for shared AsyncLocalStorage at import time which fails in custom servers
+(async () => {
+  const next = (await import("next")).default;
+  const app = next({ dev, hostname, port });
+  const handler = app.getRequestHandler();
 
-app.prepare().then(async () => {
+  await app.prepare();
+
   const httpServer = createServer(handler);
 
   const io = new SocketServer<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>(httpServer, {
@@ -55,4 +60,4 @@ app.prepare().then(async () => {
     console.log(`> Ready on http://${hostname}:${port}`);
     console.log(`> Socket.IO ready at /socket.io/`);
   });
-});
+})();

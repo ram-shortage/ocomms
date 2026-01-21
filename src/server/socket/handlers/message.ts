@@ -6,7 +6,7 @@ import { RateLimiterMemory } from "rate-limiter-flexible";
 import { getRoomName } from "../rooms";
 import type { ClientToServerEvents, ServerToClientEvents, SocketData, Message, Attachment } from "@/lib/socket-events";
 import { users } from "@/db/schema";
-import { parseMentions } from "@/lib/mentions";
+import { parseMentions } from "@/lib/mentions/core";
 import { createNotifications } from "./notification";
 import { getPresenceManager, getUnreadManager } from "../index";
 import { sendPushToUser, type PushPayload } from "@/lib/push";

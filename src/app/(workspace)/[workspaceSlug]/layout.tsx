@@ -110,7 +110,7 @@ export default async function WorkspaceSlugLayout({
     <PresenceWrapper workspaceId={workspace.id} memberUserIds={memberUserIds}>
       <div className="flex h-dvh flex-col md:flex-row">
         {/* Sidebar - desktop only */}
-        <div className="hidden md:block">
+        <div className="hidden md:flex h-full">
           <WorkspaceSidebar
             workspace={{
               id: workspace.id,
