@@ -115,4 +115,5 @@ export const accounts = account;
 export const verifications = verification;
 export const organizations = organization;
 export const members = member;
+export const membersRelations = memberRelations;
 export const invitations = invitation;
