@@ -58,3 +58,6 @@ cookies.txt
 # Service Worker (generated)
 public/sw*
 public/swe-worker*
+
+# Deployment documentation (local only)
+docs/hetzner-cx22-deployment.md
