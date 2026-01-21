@@ -6,9 +6,21 @@
  */
 import webpush from "web-push";
 import { db } from "@/db";
-import { pushSubscriptions } from "@/db/schema";
+import { pushSubscriptions, userStatuses } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { isVapidConfigured } from "./vapid";
+
+/**
+ * Check if a user has DND enabled.
+ * Exported for use in other notification points (Socket.IO, reminder worker, etc).
+ */
+export async function isUserDndEnabled(userId: string): Promise<boolean> {
+  const status = await db.query.userStatuses.findFirst({
+    where: eq(userStatuses.userId, userId),
+    columns: { dndEnabled: true },
+  });
+  return status?.dndEnabled ?? false;
+}
 
 export interface PushPayload {
   title: string;
@@ -25,16 +37,23 @@ export interface PushPayload {
 /**
  * Send push notification to all of a user's subscribed devices.
  * Handles expired subscriptions by removing them automatically.
+ * Respects DND status - returns early if user has DND enabled (STAT-06).
  *
  * @returns Object with sent count and failed count
  */
 export async function sendPushToUser(
   userId: string,
   payload: PushPayload
-): Promise<{ sent: number; failed: number; removed: number }> {
+): Promise<{ sent: number; failed: number; removed: number; dndBlocked?: boolean }> {
   // Check if push is configured
   if (!isVapidConfigured()) {
     return { sent: 0, failed: 0, removed: 0 };
+  }
+
+  // Check DND status first (STAT-06)
+  if (await isUserDndEnabled(userId)) {
+    console.log(`[Push] User ${userId} has DND enabled, skipping notification`);
+    return { sent: 0, failed: 0, removed: 0, dndBlocked: true };
   }
 
   // Get all subscriptions for user
