@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-20)
 
 **Core value:** Data sovereignty - complete control over communication data
-**Current focus:** v0.5.0 Feature Completeness - Phase 26 (Collections & Presence)
+**Current focus:** v0.5.0 Feature Completeness - Phase 27 (Rich Content)
 
 ## Current Position
 
-Phase: 26 of 29 (Collections & Presence)
-Plan: 5 of 6 complete
+Phase: 27 of 29 (Rich Content)
+Plan: 1 of 6 complete
 Status: In progress
-Last activity: 2026-01-21 - Completed 26-05-PLAN.md (Status UI Components)
+Last activity: 2026-01-21 - Completed 27-01-PLAN.md (Database Schema)
 
-Progress: [████████░░] 5/6 plans in phase 26
+Progress: [█░░░░░░░░░] 1/6 plans in phase 27
 
 ## Shipped Milestones
 
@@ -118,6 +118,12 @@ Phase 26-05 decisions:
 - Expiration stored as label, recalculated to Date on save
 - StatusIndicator uses 30s refresh interval for status updates
 
+Phase 27-01 decisions:
+- withTimezone for all timestamp columns (consistent with Phase 25 patterns)
+- Position tracking in junction table for multiple URL ordering (LINK-02)
+- Hidden flag for user-dismissed previews (LINK-06)
+- isAnimated flag on custom_emojis for GIF detection (EMOJ-07)
+
 ### Pending Todos
 
 2 todos pending - see `.planning/todos/pending/`
@@ -131,5 +137,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-21
-Stopped at: Completed 26-05-PLAN.md (Status UI Components)
-Resume file: None - continue with 26-06-PLAN.md
+Stopped at: Completed 27-01-PLAN.md (Database Schema)
+Resume file: None - continue with 27-02-PLAN.md
