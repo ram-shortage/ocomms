@@ -7,6 +7,8 @@ dist-server
 .env.local
 *.log
 .planning
-scripts
+scripts/seed.ts
+scripts/reset-and-seed.ts
+scripts/export-data.ts
 tests
 TROUBLESHOOTING.md
