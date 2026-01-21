@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 ## Current Position
 
 Phase: 29 of 29 (Stabilization)
-Plan: 4 of TBD complete (29-01, 29-02, 29-03, 29-04)
+Plan: 5 of TBD complete (29-01, 29-02, 29-03, 29-04, 29-05)
 Status: In progress
-Last activity: 2026-01-21 - Completed 29-02-PLAN.md (Server Action Auth Hardening)
+Last activity: 2026-01-21 - Completed 29-05-PLAN.md (User Status Persistence Bug)
 
 Progress: [████████████████████] 5/6 phases in v0.5.0
 
@@ -217,6 +217,11 @@ Phase 29-02 decisions:
 - getGroupByHandle added session + org membership verification
 - getMessagePreviews verifies channel membership or conversation participation
 
+Phase 29-05 decisions:
+- Use local state in WorkspaceSidebar to track status for immediate UI updates
+- Add onStatusSaved/onStatusCleared callbacks to StatusEditor
+- Export UserStatusData interface for type reuse between components
+
 ### Pending Todos
 
 2 todos pending - see `.planning/todos/pending/`
@@ -230,5 +235,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-21
-Stopped at: Completed 29-02-PLAN.md (Server Action Auth Hardening)
+Stopped at: Completed 29-05-PLAN.md (User Status Persistence Bug)
 Resume file: None
