@@ -7,6 +7,11 @@ RUN npm ci --legacy-peer-deps
 # Stage 2: Build Next.js and bundle server
 FROM node:22-alpine AS builder
 WORKDIR /app
+
+# Build-time environment variables for Next.js
+ARG NEXT_PUBLIC_APP_URL
+ENV NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run build
