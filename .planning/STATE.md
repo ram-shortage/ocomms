@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 ## Current Position
 
 Phase: 26 of 29 (Collections & Presence)
-Plan: 1 of 4 complete
+Plan: 2 of 4 complete
 Status: In progress
-Last activity: 2026-01-21 - Completed 26-01-PLAN.md (Schema Foundation)
+Last activity: 2026-01-21 - Completed 26-03-PLAN.md (DND Integration)
 
-Progress: [██░░░░░░░░] 1/4 plans in phase 26
+Progress: [█████░░░░░] 2/4 plans in phase 26
 
 ## Shipped Milestones
 
@@ -96,6 +96,11 @@ Phase 26-01 decisions:
 - One status per user enforced via unique constraint on userId
 - Status expiration uses same BullMQ pattern as reminders (3 attempts, exponential backoff)
 
+Phase 26-03 decisions:
+- Notifications stored in DB (for history) but real-time delivery blocked by DND
+- DND check happens early in push sender (before getting subscriptions) for efficiency
+- Centralized isUserDndEnabled function exported from push/send.ts for reuse
+
 ### Pending Todos
 
 2 todos pending - see `.planning/todos/pending/`
@@ -109,5 +114,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-21
-Stopped at: Completed 26-01-PLAN.md (Schema Foundation)
-Resume file: None - continue with 26-02-PLAN.md
+Stopped at: Completed 26-03-PLAN.md (DND Integration)
+Resume file: None - continue with 26-02-PLAN.md or 26-04-PLAN.md
