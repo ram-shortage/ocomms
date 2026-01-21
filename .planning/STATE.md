@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 ## Current Position
 
 Phase: 29 of 29 (Stabilization)
-Plan: 1 of TBD complete (29-04)
+Plan: 2 of TBD complete (29-01, 29-04)
 Status: In progress
-Last activity: 2026-01-21 - Completed 29-04-PLAN.md (Socket DoS Prevention)
+Last activity: 2026-01-21 - Completed 29-01-PLAN.md (Socket Auth Hardening)
 
 Progress: [████████████████████] 5/6 phases in v0.5.0
 
@@ -196,6 +196,11 @@ Phase 28-08 decisions:
 - Chart colors brightened for dark mode contrast (lightness 0.7-0.8)
 - GUST-04 marked for further testing (email verification returnUrl complexity)
 
+Phase 29-01 decisions:
+- Use existing authz.ts helpers consistently across socket handlers
+- Socket authorization pattern: check membership before socket.join() or socket.to().emit()
+- Error emission pattern: socket.emit('error', { message }) on failed auth with early return
+
 Phase 29-04 decisions:
 - 100 IDs per request limit for presence/unread (prevents memory exhaustion)
 - 100 max / 50 default notification limit (balances UX and performance)
@@ -214,5 +219,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-21
-Stopped at: Completed 29-04-PLAN.md (Socket DoS Prevention)
+Stopped at: Completed 29-01-PLAN.md (Socket Auth Hardening)
 Resume file: None
