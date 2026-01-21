@@ -1,6 +1,7 @@
 import type { Server, Socket } from "socket.io";
 import type { ClientToServerEvents, ServerToClientEvents, SocketData } from "@/lib/socket-events";
 import { getRoomName } from "../rooms";
+import { isChannelMember, isConversationParticipant } from "../authz";
 
 type SocketIOServer = Server<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
 type TypedSocket = Socket<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
@@ -23,8 +24,23 @@ export function handleTypingEvents(socket: TypedSocket, io: SocketIOServer): voi
   let activeTyping: TypingState | null = null;
 
   // Handle typing:start - broadcast to room except sender
-  socket.on("typing:start", (data) => {
+  socket.on("typing:start", async (data) => {
     const { targetId, targetType } = data;
+
+    // Verify membership before broadcasting
+    if (targetType === "channel") {
+      const isMember = await isChannelMember(userId, targetId);
+      if (!isMember) {
+        socket.emit("error", { message: "Not authorized to type in this channel" });
+        return;
+      }
+    } else {
+      const isParticipant = await isConversationParticipant(userId, targetId);
+      if (!isParticipant) {
+        socket.emit("error", { message: "Not authorized to type in this conversation" });
+        return;
+      }
+    }
 
     // Update active typing state
     activeTyping = { targetId, targetType };
@@ -43,8 +59,23 @@ export function handleTypingEvents(socket: TypedSocket, io: SocketIOServer): voi
   });
 
   // Handle typing:stop - broadcast to room except sender
-  socket.on("typing:stop", (data) => {
+  socket.on("typing:stop", async (data) => {
     const { targetId, targetType } = data;
+
+    // Verify membership before broadcasting
+    if (targetType === "channel") {
+      const isMember = await isChannelMember(userId, targetId);
+      if (!isMember) {
+        socket.emit("error", { message: "Not authorized to type in this channel" });
+        return;
+      }
+    } else {
+      const isParticipant = await isConversationParticipant(userId, targetId);
+      if (!isParticipant) {
+        socket.emit("error", { message: "Not authorized to type in this conversation" });
+        return;
+      }
+    }
 
     // Clear active typing state
     activeTyping = null;
