@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 ## Current Position
 
 Phase: 29 of 29 (Stabilization)
-Plan: 3 of TBD complete (29-01, 29-03, 29-04)
+Plan: 4 of TBD complete (29-01, 29-02, 29-03, 29-04)
 Status: In progress
-Last activity: 2026-01-21 - Completed 29-03-PLAN.md (Thread Security Fixes)
+Last activity: 2026-01-21 - Completed 29-02-PLAN.md (Server Action Auth Hardening)
 
 Progress: [████████████████████] 5/6 phases in v0.5.0
 
@@ -211,6 +211,12 @@ Phase 29-03 decisions:
 - MAX_PAGE_SIZE=100, DEFAULT_PAGE_SIZE=50 for thread pagination
 - Use explicit asc() ordering for clarity in paginated queries
 
+Phase 29-02 decisions:
+- getUserStatus requires organizationId for cross-user lookup, self-lookup allowed without
+- getGroupMembers hides email for non-admin users (privacy improvement)
+- getGroupByHandle added session + org membership verification
+- getMessagePreviews verifies channel membership or conversation participation
+
 ### Pending Todos
 
 2 todos pending - see `.planning/todos/pending/`
@@ -224,5 +230,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-21
-Stopped at: Completed 29-03-PLAN.md (Thread Security Fixes)
+Stopped at: Completed 29-02-PLAN.md (Server Action Auth Hardening)
 Resume file: None
