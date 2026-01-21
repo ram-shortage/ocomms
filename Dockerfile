@@ -14,7 +14,8 @@ RUN npx esbuild src/server/index.ts --bundle --platform=node --target=node22 \
     --outfile=dist-server/index.js --minify --sourcemap \
     --external:next --external:sharp --external:lightningcss
 RUN npx esbuild ./scripts/migrate.ts --bundle --platform=node --target=node22 \
-    --outfile=dist-server/migrate.mjs --format=esm --minify
+    --outfile=dist-server/migrate.mjs --format=esm --minify \
+    --external:postgres --external:drizzle-orm
 
 # Stage 3: Production runner
 FROM node:22-alpine AS runner
@@ -37,6 +38,10 @@ COPY --from=builder /app/src/db/migrations ./src/db/migrations
 
 # Copy next module for custom server
 COPY --from=builder /app/node_modules/next ./node_modules/next
+
+# Copy modules for migrations
+COPY --from=builder /app/node_modules/postgres ./node_modules/postgres
+COPY --from=builder /app/node_modules/drizzle-orm ./node_modules/drizzle-orm
 
 # Set ownership
 RUN chown -R nextjs:nodejs /app
