@@ -46,12 +46,12 @@ Requirements for v0.5.0 release. Each maps to roadmap phases.
 
 ### User Groups
 
-- [ ] **UGRP-01**: Admin can create named user group with handle (@designers)
-- [ ] **UGRP-02**: @mention of group notifies all group members in channel
-- [ ] **UGRP-03**: User can click group mention to view members
-- [ ] **UGRP-04**: Admin can add/remove members from group
-- [ ] **UGRP-05**: Group handles are unique within workspace
-- [ ] **UGRP-06**: Group mention only notifies members who are also in the channel
+- [x] **UGRP-01**: Admin can create named user group with handle (@designers)
+- [x] **UGRP-02**: @mention of group notifies all group members in channel
+- [x] **UGRP-03**: User can click group mention to view members
+- [x] **UGRP-04**: Admin can add/remove members from group
+- [x] **UGRP-05**: Group handles are unique within workspace
+- [x] **UGRP-06**: Group mention only notifies members who are also in the channel
 
 ### Channel Categories
 
@@ -102,25 +102,25 @@ Requirements for v0.5.0 release. Each maps to roadmap phases.
 
 ### Guest Accounts
 
-- [ ] **GUST-01**: Admin can invite external user as guest
-- [ ] **GUST-02**: Guest access restricted to specified channels only
-- [ ] **GUST-03**: Guest badge displays on profile and in member lists
-- [ ] **GUST-04**: Guest can send messages, react, upload files in allowed channels
-- [ ] **GUST-05**: Admin can remove guest access
-- [ ] **GUST-06**: Guest cannot see workspace member directory (only channel members)
-- [ ] **GUST-07**: Guest cannot be added to user groups
-- [ ] **GUST-08**: Admin can set guest expiration date (auto-deactivate)
+- [x] **GUST-01**: Admin can invite external user as guest
+- [x] **GUST-02**: Guest access restricted to specified channels only
+- [x] **GUST-03**: Guest badge displays on profile and in member lists
+- [x] **GUST-04**: Guest can send messages, react, upload files in allowed channels
+- [x] **GUST-05**: Admin can remove guest access
+- [x] **GUST-06**: Guest cannot see workspace member directory (only channel members)
+- [x] **GUST-07**: Guest cannot be added to user groups
+- [x] **GUST-08**: Admin can set guest expiration date (auto-deactivate)
 
 ### Workspace Analytics
 
-- [ ] **ANLY-01**: Admin dashboard shows message volume over time
-- [ ] **ANLY-02**: Dashboard shows active users (DAU/WAU/MAU)
-- [ ] **ANLY-03**: Dashboard shows channel activity ranking
-- [ ] **ANLY-04**: Admin can filter analytics by date range
-- [ ] **ANLY-05**: Admin can export analytics to CSV
-- [ ] **ANLY-06**: Dashboard shows peak usage times (hourly distribution)
-- [ ] **ANLY-07**: Dashboard shows file storage usage
-- [ ] **ANLY-08**: Analytics data is aggregate only (no individual user surveillance)
+- [x] **ANLY-01**: Admin dashboard shows message volume over time
+- [x] **ANLY-02**: Dashboard shows active users (DAU/WAU/MAU)
+- [x] **ANLY-03**: Dashboard shows channel activity ranking
+- [x] **ANLY-04**: Admin can filter analytics by date range
+- [x] **ANLY-05**: Admin can export analytics to CSV
+- [x] **ANLY-06**: Dashboard shows peak usage times (hourly distribution)
+- [x] **ANLY-07**: Dashboard shows file storage usage
+- [x] **ANLY-08**: Analytics data is aggregate only (no individual user surveillance)
 
 ### Testing & Stabilization
 
@@ -200,12 +200,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | RMND-05 | Phase 25 | Pending |
 | RMND-06 | Phase 25 | Pending |
 | RMND-07 | Phase 25 | Pending |
-| UGRP-01 | Phase 28 | Pending |
-| UGRP-02 | Phase 28 | Pending |
-| UGRP-03 | Phase 28 | Pending |
-| UGRP-04 | Phase 28 | Pending |
-| UGRP-05 | Phase 28 | Pending |
-| UGRP-06 | Phase 28 | Pending |
+| UGRP-01 | Phase 28 | Complete |
+| UGRP-02 | Phase 28 | Complete |
+| UGRP-03 | Phase 28 | Complete |
+| UGRP-04 | Phase 28 | Complete |
+| UGRP-05 | Phase 28 | Complete |
+| UGRP-06 | Phase 28 | Complete |
 | CCAT-01 | Phase 24 | Pending |
 | CCAT-02 | Phase 24 | Pending |
 | CCAT-03 | Phase 24 | Pending |
@@ -238,22 +238,22 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ARCH-04 | Phase 24 | Pending |
 | ARCH-05 | Phase 24 | Pending |
 | ARCH-06 | Phase 24 | Pending |
-| GUST-01 | Phase 28 | Pending |
-| GUST-02 | Phase 28 | Pending |
-| GUST-03 | Phase 28 | Pending |
-| GUST-04 | Phase 28 | Pending |
-| GUST-05 | Phase 28 | Pending |
-| GUST-06 | Phase 28 | Pending |
-| GUST-07 | Phase 28 | Pending |
-| GUST-08 | Phase 28 | Pending |
-| ANLY-01 | Phase 28 | Pending |
-| ANLY-02 | Phase 28 | Pending |
-| ANLY-03 | Phase 28 | Pending |
-| ANLY-04 | Phase 28 | Pending |
-| ANLY-05 | Phase 28 | Pending |
-| ANLY-06 | Phase 28 | Pending |
-| ANLY-07 | Phase 28 | Pending |
-| ANLY-08 | Phase 28 | Pending |
+| GUST-01 | Phase 28 | Complete |
+| GUST-02 | Phase 28 | Complete |
+| GUST-03 | Phase 28 | Complete |
+| GUST-04 | Phase 28 | Complete |
+| GUST-05 | Phase 28 | Complete |
+| GUST-06 | Phase 28 | Complete |
+| GUST-07 | Phase 28 | Complete |
+| GUST-08 | Phase 28 | Complete |
+| ANLY-01 | Phase 28 | Complete |
+| ANLY-02 | Phase 28 | Complete |
+| ANLY-03 | Phase 28 | Complete |
+| ANLY-04 | Phase 28 | Complete |
+| ANLY-05 | Phase 28 | Complete |
+| ANLY-06 | Phase 28 | Complete |
+| ANLY-07 | Phase 28 | Complete |
+| ANLY-08 | Phase 28 | Complete |
 | TEST-01 | Phase 29 | Pending |
 | TEST-02 | Phase 29 | Pending |
 | TEST-03 | Phase 29 | Pending |

@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-20)
 
 **Core value:** Data sovereignty - complete control over communication data
-**Current focus:** v0.5.0 Feature Completeness - Phase 28 (Authorization & Analytics)
+**Current focus:** v0.5.0 Feature Completeness - Phase 29 (Stabilization)
 
 ## Current Position
 
-Phase: 28 of 29 (Authorization & Analytics)
-Plan: 7 of 8 complete
-Status: In progress
-Last activity: 2026-01-21 - Completed 28-06-PLAN.md (Guest UI)
+Phase: 29 of 29 (Stabilization)
+Plan: 0 of TBD complete
+Status: Not started
+Last activity: 2026-01-21 - Completed Phase 28 (Authorization & Analytics)
 
-Progress: [████████████████░░░░] 4/6 phases in v0.5.0
+Progress: [████████████████████] 5/6 phases in v0.5.0
 
 ## Shipped Milestones
 
@@ -190,6 +190,12 @@ Phase 28-07 decisions:
 - Client-side CSV export with BOM for Excel UTF-8 compatibility
 - Top 10 channels in activity table, rest aggregated as "Other"
 
+Phase 28-08 decisions:
+- membersRelations alias required for Drizzle relational query API compatibility
+- returnUrl preserved through login/signup flow for guest invite redemption
+- Chart colors brightened for dark mode contrast (lightness 0.7-0.8)
+- GUST-04 marked for further testing (email verification returnUrl complexity)
+
 ### Pending Todos
 
 2 todos pending - see `.planning/todos/pending/`
@@ -203,5 +209,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-21
-Stopped at: Completed 28-06-PLAN.md (Guest UI)
-Resume file: None - ready for next plan
+Stopped at: Completed Phase 28 (Authorization & Analytics) - verified
+Resume file: None - ready for Phase 29

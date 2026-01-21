@@ -22,7 +22,7 @@ v0.5.0 delivers the complete platform feature set: user presence enhancements (s
 - [x] **Phase 25: Job Queue Foundation** - BullMQ infrastructure, scheduled messages, reminders
 - [ ] **Phase 26: Collections & Presence** - Bookmarks/saved messages, user status messages
 - [x] **Phase 27: Rich Content** - Link previews/unfurling, custom emoji
-- [ ] **Phase 28: Authorization & Analytics** - User groups, guest accounts, workspace analytics
+- [x] **Phase 28: Authorization & Analytics** - User groups, guest accounts, workspace analytics
 - [ ] **Phase 29: Stabilization** - Testing, bug fixes, performance verification
 
 ## Phase Details
@@ -117,14 +117,14 @@ Plans:
   5. Admin dashboard shows aggregate workspace metrics (message volume, active users, channel activity, storage usage)
 **Plans**: 8 plans
 Plans:
-- [ ] 28-01-PLAN.md - Database schema (user_groups, guest tables, members extension)
-- [ ] 28-02-PLAN.md - Analytics foundation (shadcn chart/tabs, server actions)
-- [ ] 28-03-PLAN.md - User group backend (CRUD actions, mention system extension)
-- [ ] 28-04-PLAN.md - Guest backend (invite links, expiration worker, access control)
-- [ ] 28-05-PLAN.md - User groups UI (settings page, mention autocomplete tabs)
-- [ ] 28-06-PLAN.md - Guest UI (settings page, invite flow, badge components)
-- [ ] 28-07-PLAN.md - Analytics dashboard (charts, metrics, export)
-- [ ] 28-08-PLAN.md - Verification checkpoint
+- [x] 28-01-PLAN.md - Database schema (user_groups, guest tables, members extension)
+- [x] 28-02-PLAN.md - Analytics foundation (shadcn chart/tabs, server actions)
+- [x] 28-03-PLAN.md - User group backend (CRUD actions, mention system extension)
+- [x] 28-04-PLAN.md - Guest backend (invite links, expiration worker, access control)
+- [x] 28-05-PLAN.md - User groups UI (settings page, mention autocomplete tabs)
+- [x] 28-06-PLAN.md - Guest UI (settings page, invite flow, badge components)
+- [x] 28-07-PLAN.md - Analytics dashboard (charts, metrics, export)
+- [x] 28-08-PLAN.md - Verification checkpoint
 
 ### Phase 29: Stabilization
 
@@ -153,7 +153,7 @@ Phases execute in numeric order: 24 -> 24.1 (if inserted) -> 25 -> 26 -> 27 -> 2
 | 25. Job Queue Foundation | 5/5 | Complete | 2026-01-21 |
 | 26. Collections & Presence | 6/6 | Complete (gaps) | 2026-01-21 |
 | 27. Rich Content | 6/6 | Complete | 2026-01-21 |
-| 28. Authorization & Analytics | 0/8 | Planned | - |
+| 28. Authorization & Analytics | 8/8 | Complete | 2026-01-21 |
 | 29. Stabilization | 0/TBD | Not started | - |
 
 ## Coverage
@@ -174,4 +174,4 @@ All 87 v1 requirements mapped. No orphans.
 
 ---
 *Roadmap created: 2026-01-20*
-*Last updated: 2026-01-21 (Phase 27 complete)*
+*Last updated: 2026-01-21 (Phase 28 complete)*
