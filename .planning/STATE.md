@@ -5,18 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-20)
 
 **Core value:** Data sovereignty - complete control over communication data
-**Current focus:** v0.5.0 Feature Completeness - Phase 29 (Stabilization)
+**Current focus:** v0.5.0 Feature Completeness - COMPLETE
 
 ## Current Position
 
-Phase: 29 of 29 (Stabilization)
-Plan: 11 of 12 complete (29-01 through 29-11)
-Status: In progress
-Last activity: 2026-01-21 - Completed 29-11-PLAN.md (Guest/Analytics Action Tests)
+Phase: 29 of 29 (Stabilization) - COMPLETE
+Plan: 12 of 12 complete
+Status: Milestone complete - awaiting audit
+Last activity: 2026-01-21 - Completed Phase 29 (Stabilization)
 
-Progress: [████████████████████] 5/6 phases in v0.5.0
+Progress: [████████████████████] 6/6 phases in v0.5.0 ✓
 
 ## Shipped Milestones
+
+- **v0.5.0 Feature Completeness** - 2026-01-21
+  - 6 phases (24-29), 41 plans, 87 requirements
+  - Typing indicators, scheduling, reminders, bookmarks, status, link previews, custom emoji, user groups, guests, analytics, stabilization
+  - See: .planning/ROADMAP.md (current milestone)
 
 - **v0.4.0 Files, Theming & Notes** - 2026-01-20
   - 3 phases (21-23), 9 plans, 22 requirements
@@ -38,10 +43,10 @@ Progress: [████████████████████] 5/6 pha
 
 ## Performance Metrics
 
-**Cumulative (through v0.4.0):**
-- Total plans completed: 87 (23 + 24 + 31 + 9)
-- Total requirements delivered: 130 (51 + 19 + 38 + 22)
-- Total phases completed: 23
+**Cumulative (through v0.5.0):**
+- Total plans completed: 128 (23 + 24 + 31 + 9 + 41)
+- Total requirements delivered: 217 (51 + 19 + 38 + 22 + 87)
+- Total phases completed: 29
 
 ## Accumulated Context
 
