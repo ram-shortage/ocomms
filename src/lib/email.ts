@@ -1,14 +1,21 @@
 import nodemailer from "nodemailer";
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: parseInt(process.env.SMTP_PORT || "587"),
-  secure: process.env.SMTP_PORT === "465",
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
+// Only create transporter if SMTP is configured
+const transporter = process.env.SMTP_HOST
+  ? nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: parseInt(process.env.SMTP_PORT || "587"),
+      secure: process.env.SMTP_PORT === "465",
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    })
+  : null;
+
+function isEmailConfigured(): boolean {
+  return !!transporter;
+}
 
 export async function sendVerificationEmail({
   to,
@@ -17,7 +24,11 @@ export async function sendVerificationEmail({
   to: string;
   url: string;
 }) {
-  await transporter.sendMail({
+  if (!isEmailConfigured()) {
+    console.log("[Email] SMTP not configured, skipping verification email to:", to);
+    return;
+  }
+  await transporter!.sendMail({
     from: process.env.EMAIL_FROM,
     to,
     subject: "Verify your email - OComms",
@@ -41,7 +52,11 @@ export async function sendInviteEmail({
   orgName: string;
   acceptUrl: string;
 }) {
-  await transporter.sendMail({
+  if (!isEmailConfigured()) {
+    console.log("[Email] SMTP not configured, skipping invite email to:", to);
+    return;
+  }
+  await transporter!.sendMail({
     from: process.env.EMAIL_FROM,
     to,
     subject: `You've been invited to ${orgName} - OComms`,
@@ -60,7 +75,11 @@ export async function sendUnlockEmail({
   to: string;
   resetUrl: string;
 }) {
-  await transporter.sendMail({
+  if (!isEmailConfigured()) {
+    console.log("[Email] SMTP not configured, skipping unlock email to:", to);
+    return;
+  }
+  await transporter!.sendMail({
     from: process.env.EMAIL_FROM,
     to,
     subject: "Account Access - OComms",
@@ -81,7 +100,11 @@ export async function sendResetPasswordEmail({
   to: string;
   url: string;
 }) {
-  await transporter.sendMail({
+  if (!isEmailConfigured()) {
+    console.log("[Email] SMTP not configured, skipping password reset email to:", to);
+    return;
+  }
+  await transporter!.sendMail({
     from: process.env.EMAIL_FROM,
     to,
     subject: "Reset Your Password - OComms",
