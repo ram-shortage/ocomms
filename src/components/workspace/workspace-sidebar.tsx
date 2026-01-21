@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Plus, Search, MessageSquare, StickyNote, FolderPlus, Bell, Clock, Bookmark, Smile } from "lucide-react";
@@ -16,7 +17,7 @@ import { LogoutButton } from "@/components/auth/logout-button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ReminderBadge } from "@/components/reminder/reminder-badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { StatusEditor } from "@/components/status/status-editor";
+import { StatusEditor, UserStatusData } from "@/components/status/status-editor";
 import { StatusDisplay } from "@/components/status/status-display";
 import { cn } from "@/lib/utils";
 
@@ -72,9 +73,22 @@ export function WorkspaceSidebar({
   categories,
   collapseStates,
   isAdmin = false,
-  myStatus,
+  myStatus: initialStatus,
 }: WorkspaceSidebarProps) {
   const pathname = usePathname();
+  // Local state for immediate UI updates after save/clear
+  const [currentStatus, setCurrentStatus] = useState<UserStatusData | null | undefined>(initialStatus);
+  const [statusOpen, setStatusOpen] = useState(false);
+
+  const handleStatusSaved = (status: UserStatusData) => {
+    setCurrentStatus(status);
+    setStatusOpen(false);
+  };
+
+  const handleStatusCleared = () => {
+    setCurrentStatus(null);
+    setStatusOpen(false);
+  };
 
   // Determine if we should use category view (when categories exist)
   const useCategoryView = categories && categories.length > 0;
@@ -274,21 +288,26 @@ export function WorkspaceSidebar({
       {/* Footer */}
       <div className="p-3 border-t space-y-1 text-sm">
         {/* STAT-01: Status editor trigger */}
-        <Popover>
+        <Popover open={statusOpen} onOpenChange={setStatusOpen}>
           <PopoverTrigger asChild>
             <button className="flex items-center gap-2 px-3 py-1.5 rounded-md hover:bg-accent w-full text-left transition-colors">
-              {myStatus?.emoji ? (
-                <StatusDisplay emoji={myStatus.emoji} text={myStatus.text} />
+              {currentStatus?.emoji ? (
+                <StatusDisplay emoji={currentStatus.emoji} text={currentStatus.text} />
               ) : (
                 <Smile className="h-4 w-4 text-muted-foreground" />
               )}
-              <span className={myStatus?.emoji || myStatus?.text ? "" : "text-muted-foreground"}>
-                {myStatus?.text || "Set status"}
+              <span className={currentStatus?.emoji || currentStatus?.text ? "" : "text-muted-foreground"}>
+                {currentStatus?.text || "Set status"}
               </span>
             </button>
           </PopoverTrigger>
           <PopoverContent align="start" className="p-0 w-auto">
-            <StatusEditor currentStatus={myStatus} />
+            <StatusEditor
+              currentStatus={currentStatus}
+              onClose={() => setStatusOpen(false)}
+              onStatusSaved={handleStatusSaved}
+              onStatusCleared={handleStatusCleared}
+            />
           </PopoverContent>
         </Popover>
         <Link

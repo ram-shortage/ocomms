@@ -9,14 +9,18 @@ import { setUserStatus, clearUserStatus } from "@/lib/actions/user-status";
 import { STATUS_PRESETS } from "@/lib/constants/status-presets";
 import { addHours, addDays } from "date-fns";
 
+export interface UserStatusData {
+  emoji: string | null;
+  text: string | null;
+  expiresAt: Date | null;
+  dndEnabled: boolean;
+}
+
 interface StatusEditorProps {
-  currentStatus?: {
-    emoji: string | null;
-    text: string | null;
-    expiresAt: Date | null;
-    dndEnabled: boolean;
-  } | null;
+  currentStatus?: UserStatusData | null;
   onClose?: () => void;
+  onStatusSaved?: (status: UserStatusData) => void;
+  onStatusCleared?: () => void;
 }
 
 const EXPIRATION_OPTIONS = [
@@ -28,7 +32,7 @@ const EXPIRATION_OPTIONS = [
   { label: "Don't clear", getValue: () => null },
 ] as const;
 
-export function StatusEditor({ currentStatus, onClose }: StatusEditorProps) {
+export function StatusEditor({ currentStatus, onClose, onStatusSaved, onStatusCleared }: StatusEditorProps) {
   const [emoji, setEmoji] = useState(currentStatus?.emoji || "");
   const [text, setText] = useState(currentStatus?.text || "");
   const [selectedExpiration, setSelectedExpiration] = useState<string>("Don't clear");
@@ -52,6 +56,14 @@ export function StatusEditor({ currentStatus, onClose }: StatusEditorProps) {
         expiresAt: expiresAt ?? undefined,
         dndEnabled,
       });
+
+      // Notify parent of saved status for immediate UI update
+      onStatusSaved?.({
+        emoji: emoji || null,
+        text: text || null,
+        expiresAt,
+        dndEnabled,
+      });
       onClose?.();
     } catch (error) {
       console.error("Failed to set status:", error);
@@ -68,6 +80,8 @@ export function StatusEditor({ currentStatus, onClose }: StatusEditorProps) {
       setText("");
       setSelectedExpiration("Don't clear");
       setDndEnabled(false);
+      // Notify parent that status was cleared
+      onStatusCleared?.();
       onClose?.();
     } catch (error) {
       console.error("Failed to clear status:", error);

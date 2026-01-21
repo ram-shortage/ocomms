@@ -12,6 +12,7 @@ import { GuestWelcomeWrapper } from "@/components/guest/guest-welcome-wrapper";
 import { getUserChannels } from "@/lib/actions/channel";
 import { getUserConversations } from "@/lib/actions/conversation";
 import { getCategories, getCollapseStates } from "@/lib/actions/channel-category";
+import { getMyStatus } from "@/lib/actions/user-status";
 
 export default async function WorkspaceSlugLayout({
   children,
@@ -67,12 +68,13 @@ export default async function WorkspaceSlugLayout({
   });
   const isGuest = memberRecord?.isGuest ?? false;
 
-  // Fetch channels, conversations, categories, and collapse states for sidebar
-  const [channels, conversations, categories, collapseStates] = await Promise.all([
+  // Fetch channels, conversations, categories, collapse states, and status for sidebar
+  const [channels, conversations, categories, collapseStates, myStatus] = await Promise.all([
     getUserChannels(workspace.id),
     getUserConversations(workspace.id),
     getCategories(workspace.id),
     getCollapseStates(workspace.id),
+    getMyStatus(),
   ]);
 
   // Transform channels for sidebar
@@ -121,6 +123,7 @@ export default async function WorkspaceSlugLayout({
             categories={categories}
             collapseStates={collapseStates}
             isAdmin={isAdmin}
+            myStatus={myStatus}
           />
         </div>
 
