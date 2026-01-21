@@ -287,6 +287,60 @@ async function createNotifications(params: {
   }
 }
 
+/**
+ * M-13 DoS Prevention Tests for Notifications
+ *
+ * Tests that validate limit capping and batch queries are in place
+ * to prevent DoS attacks and N+1 query patterns.
+ */
+describe("Notification Handler DoS Prevention (M-13)", () => {
+  const sourcePath = require("path").resolve(__dirname, "../handlers/notification.ts");
+  const source = require("fs").readFileSync(sourcePath, "utf-8");
+
+  describe("Limit capping", () => {
+    it("defines maximum notification limit constant", () => {
+      expect(source).toContain("MAX_NOTIFICATION_LIMIT");
+      expect(source).toMatch(/MAX_NOTIFICATION_LIMIT\s*=\s*100/);
+    });
+
+    it("defines default notification limit constant", () => {
+      expect(source).toContain("DEFAULT_NOTIFICATION_LIMIT");
+      expect(source).toMatch(/DEFAULT_NOTIFICATION_LIMIT\s*=\s*50/);
+    });
+
+    it("clamps incoming limit value using Math.min", () => {
+      expect(source).toContain("Math.min");
+      expect(source).toContain("Math.max");
+      // Pattern: Math.min(Math.max(1, requestedLimit), MAX_NOTIFICATION_LIMIT)
+      expect(source).toMatch(/Math\.min\(Math\.max\(1,\s*requestedLimit\),\s*MAX_NOTIFICATION_LIMIT\)/);
+    });
+
+    it("uses safe limit for database query", () => {
+      expect(source).toContain("safeLimit");
+      expect(source).toContain(".limit(safeLimit)");
+    });
+  });
+
+  describe("Batch channel queries", () => {
+    it("uses inArray for batch channel lookup", () => {
+      expect(source).toContain("inArray");
+      expect(source).toContain("inArray(channels.id, channelIds)");
+    });
+
+    it("collects unique channel IDs before query", () => {
+      // Should collect IDs into Set for uniqueness
+      expect(source).toContain("new Set");
+      expect(source).toContain("channelIds");
+    });
+
+    it("builds channel data map from batch query", () => {
+      // Should create a Map for O(1) lookup
+      expect(source).toContain("channelDataMap");
+      expect(source).toContain("new Map");
+    });
+  });
+});
+
 describe("Notification Handlers", () => {
   let mockSocket: MockSocket;
   let mockIO: MockIO;
