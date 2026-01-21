@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-20)
 
 **Core value:** Data sovereignty - complete control over communication data
-**Current focus:** v0.5.0 Feature Completeness - Phase 25 (Job Queue Foundation)
+**Current focus:** v0.5.0 Feature Completeness - Phase 26 (Collections & Presence)
 
 ## Current Position
 
-Phase: 25 of 29 (Job Queue Foundation)
-Plan: 4 of 5 complete
+Phase: 26 of 29 (Collections & Presence)
+Plan: 1 of 4 complete
 Status: In progress
-Last activity: 2026-01-20 - Completed 25-04-PLAN.md (Reminders feature)
+Last activity: 2026-01-21 - Completed 26-01-PLAN.md (Schema Foundation)
 
-Progress: [████████░░] 4/5 plans in phase 25
+Progress: [██░░░░░░░░] 1/4 plans in phase 26
 
 ## Shipped Milestones
 
@@ -91,10 +91,16 @@ Phase 25-04 decisions:
 - Preset times for reminders (Tomorrow 9am, Monday 9am) match scheduled messages
 - Fixed snooze intervals as quick taps (20min, 1hr, 3hr, tomorrow)
 
+Phase 26-01 decisions:
+- Polymorphic bookmarks via nullable messageId/fileId with type enum
+- One status per user enforced via unique constraint on userId
+- Status expiration uses same BullMQ pattern as reminders (3 attempts, exponential backoff)
+
 ### Pending Todos
 
-1 todo pending - see `.planning/todos/pending/`
+2 todos pending - see `.planning/todos/pending/`
 - **Fix channel category drag-drop and management** (ui) - drag-drop not working, no delete UI
+- **Fix typing bar layout - excessive whitespace below input** (ui) - flex layout not constraining height properly
 
 ### Blockers/Concerns
 
@@ -102,6 +108,6 @@ None active.
 
 ## Session Continuity
 
-Last session: 2026-01-20
-Stopped at: Completed 25-04-PLAN.md (Reminders feature)
-Resume file: None - continue with 25-05-PLAN.md if exists
+Last session: 2026-01-21
+Stopped at: Completed 26-01-PLAN.md (Schema Foundation)
+Resume file: None - continue with 26-02-PLAN.md
