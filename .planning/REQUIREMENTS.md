@@ -212,26 +212,26 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CCAT-04 | Phase 24 | Pending |
 | CCAT-05 | Phase 24 | Pending |
 | CCAT-06 | Phase 24 | Pending |
-| LINK-01 | Phase 27 | Pending |
-| LINK-02 | Phase 27 | Pending |
-| LINK-03 | Phase 27 | Pending |
-| LINK-04 | Phase 27 | Pending |
-| LINK-05 | Phase 27 | Pending |
-| LINK-06 | Phase 27 | Pending |
-| LINK-07 | Phase 27 | Pending |
+| LINK-01 | Phase 27 | Complete |
+| LINK-02 | Phase 27 | Complete |
+| LINK-03 | Phase 27 | Complete |
+| LINK-04 | Phase 27 | Complete |
+| LINK-05 | Phase 27 | Complete |
+| LINK-06 | Phase 27 | Complete |
+| LINK-07 | Phase 27 | Complete |
 | TYPE-01 | Phase 24 | Pending |
 | TYPE-02 | Phase 24 | Pending |
 | TYPE-03 | Phase 24 | Pending |
 | TYPE-04 | Phase 24 | Pending |
 | TYPE-05 | Phase 24 | Pending |
-| EMOJ-01 | Phase 27 | Pending |
-| EMOJ-02 | Phase 27 | Pending |
-| EMOJ-03 | Phase 27 | Pending |
-| EMOJ-04 | Phase 27 | Pending |
-| EMOJ-05 | Phase 27 | Pending |
-| EMOJ-06 | Phase 27 | Pending |
-| EMOJ-07 | Phase 27 | Pending |
-| EMOJ-08 | Phase 27 | Pending |
+| EMOJ-01 | Phase 27 | Complete |
+| EMOJ-02 | Phase 27 | Complete |
+| EMOJ-03 | Phase 27 | Complete |
+| EMOJ-04 | Phase 27 | Complete |
+| EMOJ-05 | Phase 27 | Complete |
+| EMOJ-06 | Phase 27 | Complete |
+| EMOJ-07 | Phase 27 | Complete |
+| EMOJ-08 | Phase 27 | Complete |
 | ARCH-01 | Phase 24 | Pending |
 | ARCH-02 | Phase 24 | Pending |
 | ARCH-03 | Phase 24 | Pending |
@@ -270,4 +270,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-20*
-*Last updated: 2026-01-20 after roadmap creation*
+*Last updated: 2026-01-21 (Phase 27 complete)*

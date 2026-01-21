@@ -21,7 +21,7 @@ v0.5.0 delivers the complete platform feature set: user presence enhancements (s
 - [x] **Phase 24: Quick Wins** - Typing indicators, channel archiving, channel categories (completed with gaps)
 - [x] **Phase 25: Job Queue Foundation** - BullMQ infrastructure, scheduled messages, reminders
 - [ ] **Phase 26: Collections & Presence** - Bookmarks/saved messages, user status messages
-- [ ] **Phase 27: Rich Content** - Link previews/unfurling, custom emoji
+- [x] **Phase 27: Rich Content** - Link previews/unfurling, custom emoji
 - [ ] **Phase 28: Authorization & Analytics** - User groups, guest accounts, workspace analytics
 - [ ] **Phase 29: Stabilization** - Testing, bug fixes, performance verification
 
@@ -152,7 +152,7 @@ Phases execute in numeric order: 24 -> 24.1 (if inserted) -> 25 -> 26 -> 27 -> 2
 | 24. Quick Wins | 4/4 | Complete (gaps) | 2026-01-20 |
 | 25. Job Queue Foundation | 5/5 | Complete | 2026-01-21 |
 | 26. Collections & Presence | 6/6 | Complete (gaps) | 2026-01-21 |
-| 27. Rich Content | 0/6 | Planned | - |
+| 27. Rich Content | 6/6 | Complete | 2026-01-21 |
 | 28. Authorization & Analytics | 0/8 | Planned | - |
 | 29. Stabilization | 0/TBD | Not started | - |
 
@@ -174,4 +174,4 @@ All 87 v1 requirements mapped. No orphans.
 
 ---
 *Roadmap created: 2026-01-20*
-*Last updated: 2026-01-21*
+*Last updated: 2026-01-21 (Phase 27 complete)*
