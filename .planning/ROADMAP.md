@@ -19,7 +19,7 @@ v0.5.0 delivers the complete platform feature set: user presence enhancements (s
 - Decimal phases (24.1, 24.2): Urgent insertions (marked with INSERTED)
 
 - [x] **Phase 24: Quick Wins** - Typing indicators, channel archiving, channel categories (completed with gaps)
-- [ ] **Phase 25: Job Queue Foundation** - BullMQ infrastructure, scheduled messages, reminders
+- [x] **Phase 25: Job Queue Foundation** - BullMQ infrastructure, scheduled messages, reminders
 - [ ] **Phase 26: Collections & Presence** - Bookmarks/saved messages, user status messages
 - [ ] **Phase 27: Rich Content** - Link previews/unfurling, custom emoji
 - [ ] **Phase 28: Authorization & Analytics** - User groups, guest accounts, workspace analytics
@@ -95,7 +95,14 @@ Plans:
   3. User can upload custom emoji images including animated GIFs
   4. Custom emoji appear in emoji picker and can be used in messages and reactions
   5. SVG uploads are converted to PNG for XSS protection
-**Plans**: TBD
+**Plans**: 6 plans
+Plans:
+- [ ] 27-01-PLAN.md - Database schema (link_previews, custom_emojis tables)
+- [ ] 27-02-PLAN.md - Link preview worker (URL extraction, SSRF protection, BullMQ)
+- [ ] 27-03-PLAN.md - Link preview UI (card component, message integration)
+- [ ] 27-04-PLAN.md - Custom emoji backend (upload endpoint, SVG conversion)
+- [ ] 27-05-PLAN.md - Emoji picker replacement (emoji-mart, custom emoji support)
+- [ ] 27-06-PLAN.md - Emoji management UI and verification checkpoint
 
 ### Phase 28: Authorization & Analytics
 
@@ -131,9 +138,9 @@ Phases execute in numeric order: 24 -> 24.1 (if inserted) -> 25 -> 26 -> 27 -> 2
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 24. Quick Wins | 4/4 | Complete (gaps) | 2026-01-20 |
-| 25. Job Queue Foundation | 0/5 | Planned | - |
+| 25. Job Queue Foundation | 5/5 | Complete | 2026-01-21 |
 | 26. Collections & Presence | 0/6 | Planned | - |
-| 27. Rich Content | 0/TBD | Not started | - |
+| 27. Rich Content | 0/6 | Planned | - |
 | 28. Authorization & Analytics | 0/TBD | Not started | - |
 | 29. Stabilization | 0/TBD | Not started | - |
 
@@ -155,4 +162,4 @@ All 87 v1 requirements mapped. No orphans.
 
 ---
 *Roadmap created: 2026-01-20*
-*Last updated: 2026-01-20*
+*Last updated: 2026-01-21*
