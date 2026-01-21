@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 ## Current Position
 
 Phase: 28 of 29 (Authorization & Analytics)
-Plan: 3 of 8 complete
+Plan: 4 of 8 complete
 Status: In progress
-Last activity: 2026-01-21 - Completed 28-03-PLAN.md (User Group Actions & Mentions)
+Last activity: 2026-01-21 - Completed 28-04-PLAN.md (Guest Server Actions & Expiration)
 
 Progress: [████████████████░░░░] 4/6 phases in v0.5.0
 
@@ -168,6 +168,12 @@ Phase 28-03 decisions:
 - Group mentions treated as 'mention' type for notification settings compatibility
 - parseMentions remains synchronous - async group lookup happens in notification handler
 
+Phase 28-04 decisions:
+- Guest soft-lock allows viewing but prevents posting (24-hour grace period)
+- Guest expiration job checks jobId match before soft-locking (race condition protection)
+- Guests cannot initiate DMs but can reply to member-initiated ones
+- Guest channel access checked at both action and socket handler level (defense in depth)
+
 ### Pending Todos
 
 2 todos pending - see `.planning/todos/pending/`
@@ -181,5 +187,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-21
-Stopped at: Completed 28-03-PLAN.md (User Group Actions & Mentions)
-Resume file: None - ready for 28-04-PLAN.md
+Stopped at: Completed 28-04-PLAN.md (Guest Server Actions & Expiration)
+Resume file: None - ready for 28-05-PLAN.md
