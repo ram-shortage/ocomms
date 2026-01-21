@@ -4,6 +4,8 @@
  */
 
 export const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25MB
+export const MAX_EMOJI_SIZE = 128 * 1024; // 128KB for emoji (EMOJ-01)
+export const EMOJI_DIMENSIONS = 128; // 128x128 output size
 
 export interface ValidatedFile {
   extension: string;
@@ -76,6 +78,17 @@ export function validateFileSignature(bytes: Uint8Array): ValidatedFile | null {
     bytes[3] === 0x46
   ) {
     return { extension: "pdf", mimeType: "application/pdf", isImage: false };
+  }
+
+  // SVG: <?xml or <svg (text-based, check first bytes for common patterns)
+  // Note: SVG detection is approximate since it's XML text
+  const textStart = new TextDecoder().decode(bytes.slice(0, 100));
+  if (
+    textStart.trim().startsWith("<?xml") ||
+    textStart.trim().startsWith("<svg") ||
+    textStart.includes("<svg")
+  ) {
+    return { extension: "svg", mimeType: "image/svg+xml", isImage: true };
   }
 
   return null; // Unknown or disallowed type
