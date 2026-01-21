@@ -139,6 +139,9 @@ Plans:
   5. Performance testing confirms typing indicators work at 500+ concurrent users
 **Plans**: TBD
 
+**Known Bugs (from earlier phases):**
+- BUG-26-01: User status not persisting after save (see `.planning/todos/pending/2026-01-21-phase26-status-bugs.md`)
+
 ## Progress
 
 **Execution Order:**
@@ -148,7 +151,7 @@ Phases execute in numeric order: 24 -> 24.1 (if inserted) -> 25 -> 26 -> 27 -> 2
 |-------|----------------|--------|-----------|
 | 24. Quick Wins | 4/4 | Complete (gaps) | 2026-01-20 |
 | 25. Job Queue Foundation | 5/5 | Complete | 2026-01-21 |
-| 26. Collections & Presence | 0/6 | Planned | - |
+| 26. Collections & Presence | 6/6 | Complete (gaps) | 2026-01-21 |
 | 27. Rich Content | 0/6 | Planned | - |
 | 28. Authorization & Analytics | 0/8 | Planned | - |
 | 29. Stabilization | 0/TBD | Not started | - |

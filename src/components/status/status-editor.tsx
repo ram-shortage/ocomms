@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { setUserStatus, clearUserStatus, STATUS_PRESETS } from "@/lib/actions/user-status";
+import { setUserStatus, clearUserStatus } from "@/lib/actions/user-status";
+import { STATUS_PRESETS } from "@/lib/constants/status-presets";
 import { addHours, addDays } from "date-fns";
 
 interface StatusEditorProps {
