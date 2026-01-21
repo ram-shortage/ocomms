@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 ## Current Position
 
 Phase: 28 of 29 (Authorization & Analytics)
-Plan: 6 of 8 complete
+Plan: 7 of 8 complete
 Status: In progress
-Last activity: 2026-01-21 - Completed 28-05-PLAN.md (User Groups UI)
+Last activity: 2026-01-21 - Completed 28-06-PLAN.md (Guest UI)
 
 Progress: [████████████████░░░░] 4/6 phases in v0.5.0
 
@@ -179,6 +179,11 @@ Phase 28-05 decisions:
 - Groups tab only shows if workspace has at least one group defined
 - Guests excluded from groups with tooltip explanation (GUST-07 compliance)
 
+Phase 28-06 decisions:
+- Guest badge uses amber color to distinguish from roles
+- Welcome modal shown via localStorage flag set during redemption
+- Guest status fetched per-request for initial messages, included in real-time broadcasts
+
 Phase 28-07 decisions:
 - Lazy load data per tab to optimize initial page load
 - Manual refresh only (no auto-polling) per CONTEXT.md
@@ -198,5 +203,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-21
-Stopped at: Completed 28-05-PLAN.md (User Groups UI)
+Stopped at: Completed 28-06-PLAN.md (Guest UI)
 Resume file: None - ready for next plan
