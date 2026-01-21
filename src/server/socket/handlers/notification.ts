@@ -1,7 +1,7 @@
 import type { Server, Socket } from "socket.io";
 import { db } from "@/db";
 import { notifications, users, channelMembers, channels, channelNotificationSettings, members, userGroups, userGroupMembers } from "@/db/schema";
-import { eq, and, isNull, desc } from "drizzle-orm";
+import { eq, and, isNull, desc, inArray } from "drizzle-orm";
 import { getRoomName } from "../rooms";
 import type { ClientToServerEvents, ServerToClientEvents, SocketData, Message, Notification } from "@/lib/socket-events";
 import type { ParsedMention } from "@/lib/mentions";
@@ -11,6 +11,10 @@ import { sendPushToUser, isUserDndEnabled, type PushPayload } from "@/lib/push";
 
 type SocketIOServer = Server<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
 type SocketWithData = Socket<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
+
+// Maximum notifications to fetch per request to prevent DoS (M-13)
+const MAX_NOTIFICATION_LIMIT = 100;
+const DEFAULT_NOTIFICATION_LIMIT = 50;
 
 /**
  * Check if a user should receive a notification for a mention.
@@ -373,7 +377,9 @@ export function handleNotificationEvents(socket: SocketWithData, io: SocketIOSer
 
   // Fetch notifications
   socket.on("notification:fetch", async (data, callback) => {
-    const limit = data.limit ?? 50;
+    // Clamp limit to prevent DoS (M-13)
+    const requestedLimit = data.limit ?? DEFAULT_NOTIFICATION_LIMIT;
+    const safeLimit = Math.min(Math.max(1, requestedLimit), MAX_NOTIFICATION_LIMIT);
 
     try {
       // Get notifications with actor info
@@ -394,20 +400,20 @@ export function handleNotificationEvents(socket: SocketWithData, io: SocketIOSer
         .leftJoin(users, eq(notifications.actorId, users.id))
         .where(eq(notifications.userId, userId))
         .orderBy(desc(notifications.createdAt))
-        .limit(limit);
+        .limit(safeLimit);
 
       // Get channel names and slugs for notifications in channels
+      // Batch fetch all channels at once using inArray (M-13)
       const channelIds = [...new Set(notificationRows.filter(n => n.channelId).map(n => n.channelId!))];
       const channelDataMap = new Map<string, { name: string; slug: string }>();
 
       if (channelIds.length > 0) {
-        // Fetch all channels in one query using individual fetches
-        for (const chId of channelIds) {
-          const [ch] = await db
-            .select({ id: channels.id, name: channels.name, slug: channels.slug })
-            .from(channels)
-            .where(eq(channels.id, chId));
-          if (ch) channelDataMap.set(ch.id, { name: ch.name, slug: ch.slug });
+        const channelsData = await db
+          .select({ id: channels.id, name: channels.name, slug: channels.slug })
+          .from(channels)
+          .where(inArray(channels.id, channelIds));
+        for (const ch of channelsData) {
+          channelDataMap.set(ch.id, { name: ch.name, slug: ch.slug });
         }
       }
 
