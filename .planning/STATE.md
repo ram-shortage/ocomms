@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 ## Current Position
 
 Phase: 29 of 29 (Stabilization)
-Plan: 8 of TBD complete (29-01, 29-02, 29-03, 29-04, 29-05, 29-06, 29-07, 29-08)
+Plan: 9 of 12 complete (29-01 through 29-09)
 Status: In progress
-Last activity: 2026-01-21 - Completed 29-07-PLAN.md (Socket Handler Authorization Tests)
+Last activity: 2026-01-21 - Completed 29-09-PLAN.md (Socket Handler Security Tests)
 
 Progress: [████████████████████] 5/6 phases in v0.5.0
 
@@ -237,6 +237,11 @@ Phase 29-08 decisions:
 - Tests verify both positive (authorized) and negative (unauthorized) cases
 - Email privacy test added for getGroupMembers (non-admins should not see emails)
 
+Phase 29-09 decisions:
+- Thread tests already comprehensive from Plan 29-03 - verified, no new tests needed
+- Source validation pattern (read source, assert patterns) for security fix verification
+- Presence tests also include M-1 authorization validation (bonus coverage)
+
 ### Pending Todos
 
 2 todos pending - see `.planning/todos/pending/`
@@ -250,5 +255,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-21
-Stopped at: Completed 29-07-PLAN.md (Socket Handler Authorization Tests)
+Stopped at: Completed 29-09-PLAN.md (Socket Handler Security Tests)
 Resume file: None
