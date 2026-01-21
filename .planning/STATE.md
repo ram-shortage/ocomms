@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 ## Current Position
 
 Phase: 29 of 29 (Stabilization)
-Plan: 5 of TBD complete (29-01, 29-02, 29-03, 29-04, 29-05)
+Plan: 6 of TBD complete (29-01, 29-02, 29-03, 29-04, 29-05, 29-06)
 Status: In progress
-Last activity: 2026-01-21 - Completed 29-05-PLAN.md (User Status Persistence Bug)
+Last activity: 2026-01-21 - Completed 29-06-PLAN.md (Low Severity Quick Fixes)
 
 Progress: [████████████████████] 5/6 phases in v0.5.0
 
@@ -222,6 +222,12 @@ Phase 29-05 decisions:
 - Add onStatusSaved/onStatusCleared callbacks to StatusEditor
 - Export UserStatusData interface for type reuse between components
 
+Phase 29-06 decisions:
+- L-4 already fixed in Phase 29-02 - getGroupByHandle has auth
+- Personal notes workspace membership check uses member table
+- Pins batch lookup with inArray replaces N+1 for loop
+- Notification settings pre-fetched once per channel for all users
+
 ### Pending Todos
 
 2 todos pending - see `.planning/todos/pending/`
@@ -235,5 +241,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-21
-Stopped at: Completed 29-05-PLAN.md (User Status Persistence Bug)
+Stopped at: Completed 29-06-PLAN.md (Low Severity Quick Fixes)
 Resume file: None
