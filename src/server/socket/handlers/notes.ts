@@ -1,5 +1,6 @@
 import type { Server, Socket } from "socket.io";
 import type { ClientToServerEvents, ServerToClientEvents, SocketData } from "@/lib/socket-events";
+import { isChannelMember, isOrganizationMember } from "../authz";
 
 type SocketIOServer = Server<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
 type TypedSocket = Socket<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
@@ -26,16 +27,28 @@ export function registerNoteHandlers(io: SocketIOServer, socket: TypedSocket): v
   const userId = socket.data.userId;
 
   // Handle note:subscribe
-  socket.on("note:subscribe", (data) => {
+  socket.on("note:subscribe", async (data) => {
     const { channelId, workspaceId } = data;
 
     if (channelId) {
+      // Verify channel membership before subscribing
+      const isMember = await isChannelMember(userId, channelId);
+      if (!isMember) {
+        socket.emit("error", { message: "Not authorized to subscribe to channel notes" });
+        return;
+      }
       const room = getNoteChannelRoom(channelId);
       socket.join(room);
       console.log(`[Notes] User ${userId} subscribed to channel note room: ${room}`);
     }
 
     if (workspaceId) {
+      // Verify organization membership for personal notes
+      const isMember = await isOrganizationMember(userId, workspaceId);
+      if (!isMember) {
+        socket.emit("error", { message: "Not authorized to subscribe to workspace notes" });
+        return;
+      }
       const room = getNotePersonalRoom(userId, workspaceId);
       socket.join(room);
       console.log(`[Notes] User ${userId} subscribed to personal note room: ${room}`);
@@ -60,10 +73,16 @@ export function registerNoteHandlers(io: SocketIOServer, socket: TypedSocket): v
   });
 
   // Handle note:broadcast - client requests server to broadcast update to room
-  socket.on("note:broadcast", (data) => {
+  socket.on("note:broadcast", async (data) => {
     const { channelId, workspaceId, version, userName } = data;
 
     if (channelId) {
+      // Verify channel membership before broadcasting
+      const isMember = await isChannelMember(userId, channelId);
+      if (!isMember) {
+        socket.emit("error", { message: "Not authorized to broadcast to channel notes" });
+        return;
+      }
       const room = getNoteChannelRoom(channelId);
       // Broadcast to room except sender
       socket.to(room).emit("note:updated", {
@@ -76,6 +95,12 @@ export function registerNoteHandlers(io: SocketIOServer, socket: TypedSocket): v
     }
 
     if (workspaceId) {
+      // Verify organization membership for personal notes
+      const isMember = await isOrganizationMember(userId, workspaceId);
+      if (!isMember) {
+        socket.emit("error", { message: "Not authorized to broadcast to workspace notes" });
+        return;
+      }
       // Personal notes - broadcast to user's own room (other devices)
       const room = getNotePersonalRoom(userId, workspaceId);
       socket.to(room).emit("note:updated", {
