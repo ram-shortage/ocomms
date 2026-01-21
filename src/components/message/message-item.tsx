@@ -11,6 +11,7 @@ import { MessageContent } from "./message-content";
 import { MessageStatus } from "./message-status";
 import { FileAttachment } from "./file-attachment";
 import { ReminderMenuItem } from "@/components/reminder/reminder-menu-item";
+import { BookmarkButton } from "@/components/bookmark/bookmark-button";
 
 interface MessageItemProps {
   message: Message;
@@ -28,6 +29,7 @@ interface MessageItemProps {
   sendStatus?: SendStatus;
   retryCount?: number;
   onRetry?: () => void;
+  hasReminder?: boolean;
 }
 
 export function MessageItem({
@@ -46,6 +48,7 @@ export function MessageItem({
   sendStatus,
   retryCount,
   onRetry,
+  hasReminder = false,
 }: MessageItemProps) {
   const isOwn = message.authorId === currentUserId;
   const isDeleted = message.deletedAt !== null && message.deletedAt !== undefined;
@@ -101,8 +104,10 @@ export function MessageItem({
       {!isDeleted && (
         <div className="flex items-center gap-1">
           <ReactionPicker onSelectEmoji={(emoji) => onToggleReaction(message.id, emoji)} />
-          {/* RMND-01: Remind me button */}
-          <ReminderMenuItem messageId={message.id} />
+          {/* RMND-01: Remind me button - highlighted if reminder exists */}
+          <ReminderMenuItem messageId={message.id} hasReminder={hasReminder} />
+          {/* BOOK-01: Bookmark button */}
+          <BookmarkButton messageId={message.id} />
           {/* Mark as unread - only for other users' messages */}
           {!isOwn && onMarkUnread && (
             <Button
