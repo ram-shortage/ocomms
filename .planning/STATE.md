@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 ## Current Position
 
 Phase: 28 of 29 (Authorization & Analytics)
-Plan: 2 of 8 complete
+Plan: 3 of 8 complete
 Status: In progress
-Last activity: 2026-01-21 - Completed 28-02-PLAN.md (Analytics Components & Server Actions)
+Last activity: 2026-01-21 - Completed 28-03-PLAN.md (User Group Actions & Mentions)
 
 Progress: [████████████████░░░░] 4/6 phases in v0.5.0
 
@@ -162,6 +162,12 @@ Phase 28-02 decisions:
 - Filter channels by organizationId first, then query messages - efficient multi-tenant isolation
 - WAU/MAU trend calculated by comparing current vs previous week counts
 
+Phase 28-03 decisions:
+- Group mentions use same @handle syntax as users - resolved at notification time
+- UGRP-06 intersection: group members must also be channel members to receive notification
+- Group mentions treated as 'mention' type for notification settings compatibility
+- parseMentions remains synchronous - async group lookup happens in notification handler
+
 ### Pending Todos
 
 2 todos pending - see `.planning/todos/pending/`
@@ -175,5 +181,5 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-21
-Stopped at: Completed 28-02-PLAN.md (Analytics Components & Server Actions)
-Resume file: None - ready for 28-03-PLAN.md
+Stopped at: Completed 28-03-PLAN.md (User Group Actions & Mentions)
+Resume file: None - ready for 28-04-PLAN.md
