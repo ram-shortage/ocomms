@@ -6,14 +6,16 @@ import { getUserStatus } from "@/lib/actions/user-status";
 
 interface StatusIndicatorProps {
   userId: string;
+  organizationId: string;
   showText?: boolean;
 }
 
 /**
  * Fetches and displays a user's status.
  * Caches status for 30 seconds to avoid excessive fetching.
+ * M-8 FIX: Requires organizationId for cross-user status lookup authorization.
  */
-export function StatusIndicator({ userId, showText = false }: StatusIndicatorProps) {
+export function StatusIndicator({ userId, organizationId, showText = false }: StatusIndicatorProps) {
   const [status, setStatus] = useState<{
     emoji: string | null;
     text: string | null;
@@ -25,7 +27,7 @@ export function StatusIndicator({ userId, showText = false }: StatusIndicatorPro
 
     async function fetchStatus() {
       try {
-        const result = await getUserStatus(userId);
+        const result = await getUserStatus(userId, organizationId);
         if (mounted) {
           setStatus(result ? { emoji: result.emoji, text: result.text } : null);
         }
@@ -47,7 +49,7 @@ export function StatusIndicator({ userId, showText = false }: StatusIndicatorPro
       mounted = false;
       clearInterval(interval);
     };
-  }, [userId]);
+  }, [userId, organizationId]);
 
   if (isLoading || !status) {
     return null;

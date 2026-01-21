@@ -1,10 +1,10 @@
 "use server";
 
 import { db } from "@/db";
-import { userStatuses } from "@/db/schema";
+import { userStatuses, members } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { statusExpirationQueue } from "@/server/queue/status-expiration.queue";
 
@@ -134,8 +134,44 @@ export async function clearUserStatus() {
 
 /**
  * Get a user's status by ID
+ * M-8 FIX: Requires authentication and org scoping
  */
-export async function getUserStatus(userId: string) {
+export async function getUserStatus(userId: string, organizationId?: string) {
+  // Require authentication
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session?.user?.id) {
+    throw new Error("Unauthorized");
+  }
+
+  // If organizationId provided, verify requester is also a member
+  if (organizationId) {
+    const requesterMembership = await db.query.members.findFirst({
+      where: and(
+        eq(members.organizationId, organizationId),
+        eq(members.userId, session.user.id)
+      ),
+    });
+    if (!requesterMembership) {
+      throw new Error("Not authorized to view user status in this organization");
+    }
+
+    // Also verify target user is in the same organization
+    const targetMembership = await db.query.members.findFirst({
+      where: and(
+        eq(members.organizationId, organizationId),
+        eq(members.userId, userId)
+      ),
+    });
+    if (!targetMembership) {
+      return null; // User not in this org, return nothing
+    }
+  } else {
+    // Without organizationId, only allow self-lookup
+    if (session.user.id !== userId) {
+      throw new Error("Organization context required for cross-user status lookup");
+    }
+  }
+
   const status = await db.query.userStatuses.findFirst({
     where: eq(userStatuses.userId, userId),
   });
