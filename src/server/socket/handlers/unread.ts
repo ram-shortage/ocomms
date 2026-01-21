@@ -12,6 +12,9 @@ type SocketWithData = Socket<ClientToServerEvents, ServerToClientEvents, Record<
 
 const UNREAD_CACHE_TTL = 60; // seconds
 
+// Maximum IDs allowed per unread fetch request to prevent DoS (M-12)
+const MAX_IDS_PER_REQUEST = 100;
+
 /**
  * Get Redis cache key for channel unread count.
  */
@@ -400,6 +403,16 @@ export function handleUnreadEvents(
 
   // Fetch unread counts for multiple channels/conversations
   socket.on("unread:fetch", async (data, callback) => {
+    // Cap combined array size to prevent DoS (M-12)
+    const totalIds = (data.channelIds?.length ?? 0) + (data.conversationIds?.length ?? 0);
+    if (totalIds > MAX_IDS_PER_REQUEST) {
+      socket.emit("error", {
+        message: `Maximum ${MAX_IDS_PER_REQUEST} IDs per request`
+      });
+      callback({ channels: {}, conversations: {} });
+      return;
+    }
+
     try {
       const channels: Record<string, number> = {};
       const conversations: Record<string, number> = {};

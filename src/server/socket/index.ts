@@ -17,6 +17,9 @@ import { auditLog, AuditEventType } from "@/lib/audit-logger";
 type SocketIOServer = Server<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
 type TypedSocket = Socket<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
 
+// Maximum IDs allowed per presence fetch request to prevent DoS
+const MAX_IDS_PER_REQUEST = 100;
+
 // Extend socket type for presence heartbeat function
 interface SocketWithPresence extends TypedSocket {
   startPresenceHeartbeat?: () => void;
@@ -187,6 +190,15 @@ export function setupSocketHandlers(io: SocketIOServer, redis?: Redis | null) {
 
     // Handle presence:fetch for getting multiple users' presence
     socket.on("presence:fetch", async (data, callback) => {
+      // Cap array size to prevent DoS (M-12)
+      if (data.userIds.length > MAX_IDS_PER_REQUEST) {
+        socket.emit("error", {
+          message: `Maximum ${MAX_IDS_PER_REQUEST} user IDs per request`
+        });
+        callback({});
+        return;
+      }
+
       if (!presenceManager) {
         // Return all offline if no presence manager
         const offlineMap: Record<string, "active" | "away" | "offline"> = {};
