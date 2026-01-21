@@ -17,3 +17,4 @@ export * from "./note";
 export * from "./scheduled-message";
 export * from "./reminder";
 export * from "./bookmark";
+export * from "./user-status";
