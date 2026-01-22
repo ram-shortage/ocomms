@@ -11,7 +11,7 @@ Requirements for v0.6.0 Polish & Hardening release.
 
 - [ ] **SEC2-01**: CSP policy removes `unsafe-inline` and `unsafe-eval`, uses nonce-based script loading
 - [ ] **SEC2-02**: Session validation cache moved server-side (Redis), invalidates on session revocation
-- [ ] **SEC2-03**: SVG uploads sanitized with DOMPurify before Sharp processing
+- [ ] **SEC2-03**: SVG uploads blocked at upload time with content detection (raster-only policy)
 
 ### Security - High
 
