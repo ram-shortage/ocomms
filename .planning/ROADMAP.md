@@ -6,19 +6,19 @@ v0.6.0 Polish & Hardening addresses security findings from audit, fixes known bu
 
 ## Milestones
 
-- ✅ **v0.5.0 Feature Completeness** - Phases 24-29 (shipped 2026-01-21)
-- 🚧 **v0.6.0 Polish & Hardening** - Phases 30-36 (in progress)
+- **v0.5.0 Feature Completeness** - Phases 24-29 (shipped 2026-01-21)
+- **v0.6.0 Polish & Hardening** - Phases 30-36 (in progress)
 
 ## Phases
 
 <details>
-<summary>✅ v0.5.0 Feature Completeness (Phases 24-29) - SHIPPED 2026-01-21</summary>
+<summary>v0.5.0 Feature Completeness (Phases 24-29) - SHIPPED 2026-01-21</summary>
 
 See: .planning/milestones/v0.5.0-ROADMAP.md
 
 </details>
 
-### 🚧 v0.6.0 Polish & Hardening (In Progress)
+### v0.6.0 Polish & Hardening (In Progress)
 
 **Milestone Goal:** Harden security posture, fix known bugs, deliver workspace management, sidebar customization, and mobile improvements.
 
@@ -97,11 +97,13 @@ Plans:
   3. User can browse and request to join available workspaces
   4. Workspace owner can approve or reject join requests
   5. Workspace switcher displays unread message counts
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 33-01: TBD
-- [ ] 33-02: TBD
+- [ ] 33-01-PLAN.md — Join request schema and workspace unread aggregation
+- [ ] 33-02-PLAN.md — Workspace switcher UI with last-visited restoration
+- [ ] 33-03-PLAN.md — Browse workspaces page and join flow
+- [ ] 33-04-PLAN.md — Admin join request approval with notifications
 
 ### Phase 34: Sidebar Reorganization
 **Goal**: Users can customize sidebar order with drag-and-drop, synced across devices
@@ -156,14 +158,14 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 30. Critical Security | 3/3 | ✓ Complete | 2026-01-22 |
+| 30. Critical Security | 3/3 | Complete | 2026-01-22 |
 | 31. High Security + Bug Fixes | 0/4 | Ready | - |
 | 32. Medium/Low Security | 0/TBD | Not started | - |
-| 33. Workspace Management | 0/TBD | Not started | - |
+| 33. Workspace Management | 0/4 | Planned | - |
 | 34. Sidebar Reorganization | 0/TBD | Not started | - |
 | 35. Mobile Redesign | 0/TBD | Not started | - |
 | 36. Stabilization | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-01-22*
-*Last updated: 2026-01-22 after Phase 30 completion*
+*Last updated: 2026-01-22 after Phase 33 planning*
