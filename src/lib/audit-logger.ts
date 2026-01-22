@@ -1,6 +1,7 @@
-import { appendFile, mkdir } from "fs/promises";
+import { appendFile, mkdir, readFile } from "fs/promises";
 import { existsSync, readdirSync, unlinkSync } from "fs";
 import * as path from "path";
+import { computeEntryHash } from "./audit-integrity";
 
 /**
  * Audit event types for security logging
@@ -27,6 +28,9 @@ export interface AuditEvent {
   ip?: string;
   userAgent?: string;
   details?: Record<string, unknown>; // Event-specific context
+  // SEC2-07: Hash chain for tamper detection
+  previousHash?: string; // Hash of previous entry (empty for first entry)
+  hash?: string; // HMAC-SHA256 hash of this entry
 }
 
 /**
@@ -56,6 +60,27 @@ async function ensureLogsDir(): Promise<void> {
   const logsDir = getLogsDir();
   if (!existsSync(logsDir)) {
     await mkdir(logsDir, { recursive: true });
+  }
+}
+
+/**
+ * Get the hash of the last entry in a log file
+ * SEC2-07: Used to link entries in hash chain
+ */
+async function getLastEntryHash(logPath: string): Promise<string> {
+  try {
+    if (!existsSync(logPath)) return "";
+    const content = await readFile(logPath, "utf-8");
+    const lines = content
+      .trim()
+      .split("\n")
+      .filter((l) => l);
+    if (lines.length === 0) return "";
+    const lastEntry = JSON.parse(lines[lines.length - 1]);
+    return lastEntry.hash || "";
+  } catch {
+    // If file read fails or parse fails, start fresh chain
+    return "";
   }
 }
 
@@ -100,17 +125,29 @@ export function getUserAgent(
  *
  * Fire-and-forget pattern - does not block on write
  * Failures are logged to console but don't throw
+ *
+ * SEC2-07: Includes HMAC hash chain for tamper detection
  */
 export async function auditLog(data: AuditEventData): Promise<void> {
   try {
-    const event: AuditEvent = {
-      ...data,
-      timestamp: new Date().toISOString(),
-    };
+    const timestamp = new Date().toISOString();
 
     await ensureLogsDir();
-
     const logPath = path.join(getLogsDir(), getLogFilename());
+
+    // SEC2-07: Get previous entry hash for chain linking
+    const previousHash = await getLastEntryHash(logPath);
+
+    // Compute hash for this entry
+    const hash = computeEntryHash({ ...data, timestamp }, previousHash);
+
+    const event: AuditEvent = {
+      ...data,
+      timestamp,
+      previousHash: previousHash || undefined,
+      hash: hash || undefined,
+    };
+
     const line = JSON.stringify(event) + "\n";
 
     // SECFIX-08: Async append - non-blocking

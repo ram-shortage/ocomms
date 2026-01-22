@@ -4,9 +4,10 @@ import * as path from "path";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { db } from "@/db";
-import { eq, inArray } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { members } from "@/db/schema";
 import { AuditEvent, AuditEventType } from "@/lib/audit-logger";
+import { verifyChain } from "@/lib/audit-integrity";
 
 interface AuditLogResponse {
   events: AuditEvent[];
@@ -15,6 +16,11 @@ interface AuditLogResponse {
     limit: number;
     offset: number;
     hasMore: boolean;
+  };
+  // SEC2-07: Integrity verification result
+  integrity: {
+    valid: boolean;
+    warning: string | null;
   };
 }
 
@@ -208,9 +214,14 @@ export async function GET(request: Request) {
       return true;
     });
 
+    // SEC2-07: Verify hash chain integrity on the raw events (before filtering)
+    // This verifies the complete chain, not just the filtered subset
+    const integrityResult = verifyChain(allEvents);
+
     // Sort by timestamp descending (newest first)
     filteredEvents.sort(
-      (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+      (a, b) =>
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     );
 
     // Apply pagination
@@ -224,6 +235,12 @@ export async function GET(request: Request) {
         limit,
         offset,
         hasMore: offset + limit < total,
+      },
+      integrity: {
+        valid: integrityResult.valid,
+        warning: integrityResult.valid
+          ? null
+          : `Audit log integrity check failed at entry ${integrityResult.brokenAt}. Possible tampering detected.`,
       },
     };
 
