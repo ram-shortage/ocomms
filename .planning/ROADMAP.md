@@ -40,10 +40,12 @@ See: .planning/milestones/v0.5.0-ROADMAP.md
   1. Application loads without inline scripts; all scripts use nonces
   2. Session revocation takes effect immediately (not cached in browser)
   3. SVG uploads cannot execute JavaScript or contain malicious content
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 30-01: TBD
+- [ ] 30-01-PLAN.md — CSP nonce implementation with violation reporting
+- [ ] 30-02-PLAN.md — Redis session validation with immediate revocation
+- [ ] 30-03-PLAN.md — SVG upload blocking and asset migration
 
 ### Phase 31: High Security + Bug Fixes
 **Goal**: Close high-severity security gaps and fix known user-facing bugs
@@ -152,7 +154,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 30. Critical Security | 0/TBD | Not started | - |
+| 30. Critical Security | 0/3 | Ready | - |
 | 31. High Security + Bug Fixes | 0/TBD | Not started | - |
 | 32. Medium/Low Security | 0/TBD | Not started | - |
 | 33. Workspace Management | 0/TBD | Not started | - |
