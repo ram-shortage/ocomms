@@ -2,6 +2,7 @@ import type { Server, Socket } from "socket.io";
 import type { Redis } from "ioredis";
 import type { ClientToServerEvents, ServerToClientEvents, SocketData } from "@/lib/socket-events";
 import { authMiddleware } from "./middleware/auth";
+import { createEventRateLimiter } from "./middleware/rate-limit";
 import { joinUserRooms, getRoomName } from "./rooms";
 import { setupPresence, handlePresenceEvents, type PresenceManager } from "./handlers/presence";
 import { handleMessageEvents } from "./handlers/message";
@@ -73,6 +74,9 @@ export function setupSocketHandlers(io: SocketIOServer, redis?: Redis | null) {
   io.on("connection", async (socket: SocketWithPresence) => {
     const userId = socket.data.userId;
     console.log(`[Socket.IO] Client connected: ${socket.id} (user: ${userId})`);
+
+    // Apply rate limiting to all socket events (SEC2-04)
+    createEventRateLimiter(socket);
 
     // Setup presence event handlers if available
     if (presenceManager) {
