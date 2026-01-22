@@ -77,15 +77,17 @@ export function MessageInput({ targetId, targetType, members = [], groups = [], 
     }
   }, [uploadError]);
 
-  // SECFIX-06: Listen for rate limit errors
+  // SEC2-04: Listen for rate limit errors (for inline UI state)
+  // Note: Toast is shown globally via socket-client.ts rate limit handler
   useEffect(() => {
     const handleError = (data: { message: string; code?: string; retryAfter?: number }) => {
-      if (data.code === "RATE_LIMITED") {
+      if (data.code === "RATE_LIMIT") {
         setRateLimitMessage(data.message);
-        // Clear after retryAfter seconds (or 60s default)
+
+        // Clear inline message after retryAfter
         setTimeout(() => {
           setRateLimitMessage(null);
-        }, (data.retryAfter ?? 60) * 1000);
+        }, data.retryAfter ?? 5000);
       }
     };
 
