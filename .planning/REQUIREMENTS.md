@@ -114,69 +114,69 @@ Deferred to future release.
 
 ## Traceability
 
-Which phases cover which requirements. Updated during roadmap creation.
+Which phases cover which requirements.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SEC2-01 | TBD | Pending |
-| SEC2-02 | TBD | Pending |
-| SEC2-03 | TBD | Pending |
-| SEC2-04 | TBD | Pending |
-| SEC2-05 | TBD | Pending |
-| SEC2-06 | TBD | Pending |
-| SEC2-07 | TBD | Pending |
-| SEC2-08 | TBD | Pending |
-| SEC2-09 | TBD | Pending |
-| SEC2-10 | TBD | Pending |
-| SEC2-11 | TBD | Pending |
-| SEC2-12 | TBD | Pending |
-| SEC2-13 | TBD | Pending |
-| SEC2-14 | TBD | Pending |
-| SEC2-15 | TBD | Pending |
-| SEC2-16 | TBD | Pending |
-| SEC2-17 | TBD | Pending |
-| SEC2-18 | TBD | Pending |
-| SEC2-19 | TBD | Pending |
-| SEC2-20 | TBD | Pending |
-| SEC2-21 | TBD | Pending |
-| SEC2-22 | TBD | Pending |
-| FIX-01 | TBD | Pending |
-| FIX-02 | TBD | Pending |
-| FIX-03 | TBD | Pending |
-| FIX-04 | TBD | Pending |
-| FIX-05 | TBD | Pending |
-| WKSP2-01 | TBD | Pending |
-| WKSP2-02 | TBD | Pending |
-| WKSP2-03 | TBD | Pending |
-| WKSP2-04 | TBD | Pending |
-| WKSP2-05 | TBD | Pending |
-| WKSP2-06 | TBD | Pending |
-| SIDE-01 | TBD | Pending |
-| SIDE-02 | TBD | Pending |
-| SIDE-03 | TBD | Pending |
-| SIDE-04 | TBD | Pending |
-| SIDE-05 | TBD | Pending |
-| SIDE-06 | TBD | Pending |
-| SIDE-07 | TBD | Pending |
-| SIDE-08 | TBD | Pending |
-| MOBI2-01 | TBD | Pending |
-| MOBI2-02 | TBD | Pending |
-| MOBI2-03 | TBD | Pending |
-| MOBI2-04 | TBD | Pending |
-| MOBI2-05 | TBD | Pending |
-| MOBI2-06 | TBD | Pending |
-| MOBI2-07 | TBD | Pending |
-| MOBI2-08 | TBD | Pending |
-| MOBI2-09 | TBD | Pending |
-| MOBI2-10 | TBD | Pending |
-| MOBI2-11 | TBD | Pending |
-| MOBI2-12 | TBD | Pending |
+| SEC2-01 | Phase 30 | Pending |
+| SEC2-02 | Phase 30 | Pending |
+| SEC2-03 | Phase 30 | Pending |
+| SEC2-04 | Phase 31 | Pending |
+| SEC2-05 | Phase 31 | Pending |
+| SEC2-06 | Phase 31 | Pending |
+| SEC2-07 | Phase 31 | Pending |
+| SEC2-08 | Phase 31 | Pending |
+| SEC2-09 | Phase 32 | Pending |
+| SEC2-10 | Phase 32 | Pending |
+| SEC2-11 | Phase 32 | Pending |
+| SEC2-12 | Phase 32 | Pending |
+| SEC2-13 | Phase 32 | Pending |
+| SEC2-14 | Phase 32 | Pending |
+| SEC2-15 | Phase 32 | Pending |
+| SEC2-16 | Phase 32 | Pending |
+| SEC2-17 | Phase 32 | Pending |
+| SEC2-18 | Phase 32 | Pending |
+| SEC2-19 | Phase 32 | Pending |
+| SEC2-20 | Phase 32 | Pending |
+| SEC2-21 | Phase 32 | Pending |
+| SEC2-22 | Phase 32 | Pending |
+| FIX-01 | Phase 31 | Pending |
+| FIX-02 | Phase 31 | Pending |
+| FIX-03 | Phase 31 | Pending |
+| FIX-04 | Phase 31 | Pending |
+| FIX-05 | Phase 31 | Pending |
+| WKSP2-01 | Phase 33 | Pending |
+| WKSP2-02 | Phase 33 | Pending |
+| WKSP2-03 | Phase 33 | Pending |
+| WKSP2-04 | Phase 33 | Pending |
+| WKSP2-05 | Phase 33 | Pending |
+| WKSP2-06 | Phase 33 | Pending |
+| SIDE-01 | Phase 34 | Pending |
+| SIDE-02 | Phase 34 | Pending |
+| SIDE-03 | Phase 34 | Pending |
+| SIDE-04 | Phase 34 | Pending |
+| SIDE-05 | Phase 34 | Pending |
+| SIDE-06 | Phase 34 | Pending |
+| SIDE-07 | Phase 34 | Pending |
+| SIDE-08 | Phase 34 | Pending |
+| MOBI2-01 | Phase 35 | Pending |
+| MOBI2-02 | Phase 35 | Pending |
+| MOBI2-03 | Phase 35 | Pending |
+| MOBI2-04 | Phase 35 | Pending |
+| MOBI2-05 | Phase 35 | Pending |
+| MOBI2-06 | Phase 35 | Pending |
+| MOBI2-07 | Phase 35 | Pending |
+| MOBI2-08 | Phase 35 | Pending |
+| MOBI2-09 | Phase 35 | Pending |
+| MOBI2-10 | Phase 35 | Pending |
+| MOBI2-11 | Phase 35 | Pending |
+| MOBI2-12 | Phase 35 | Pending |
 
 **Coverage:**
 - v1 requirements: 53 total
-- Mapped to phases: 0
-- Unmapped: 53
+- Mapped to phases: 53
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-01-22*
-*Last updated: 2026-01-22 after initial definition*
+*Last updated: 2026-01-22 after roadmap creation*
