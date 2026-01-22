@@ -10,6 +10,7 @@ import { customEmojis, members } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import {
   validateFileSignature,
+  isSvgContent,
   MAX_EMOJI_SIZE,
   EMOJI_DIMENSIONS,
 } from "@/lib/file-validation";
@@ -95,41 +96,40 @@ export async function POST(request: NextRequest) {
     let buffer = Buffer.from(arrayBuffer);
     const uint8 = new Uint8Array(arrayBuffer);
 
-    const validated = validateFileSignature(uint8);
-    if (!validated || !["png", "jpg", "gif", "webp", "svg"].includes(validated.extension)) {
+    // Explicit SVG blocking with security logging
+    if (isSvgContent(uint8)) {
+      console.warn('[Security] SVG emoji upload blocked:', {
+        filename: file.name,
+        emojiName: name,
+        userId: session.user.id,
+        workspaceId,
+        timestamp: new Date().toISOString(),
+      });
       return NextResponse.json(
-        { error: "Invalid file type. Allowed: PNG, JPG, GIF, WebP, SVG" },
+        { error: "SVG files are not allowed for security reasons" },
         { status: 400 }
       );
     }
 
-    let finalMimeType: string;
-    let isAnimated = false;
-
-    // SVG -> PNG conversion for XSS protection (EMOJ-08)
-    if (validated.extension === "svg") {
-      const processed = await sharp(buffer)
-        .resize(EMOJI_DIMENSIONS, EMOJI_DIMENSIONS, {
-          fit: "contain",
-          background: { r: 0, g: 0, b: 0, alpha: 0 },
-        })
-        .png()
-        .toBuffer();
-      buffer = Buffer.from(processed);
-      finalMimeType = "image/png";
-    } else {
-      finalMimeType = validated.mimeType;
-      isAnimated = validated.extension === "gif"; // EMOJ-07
-
-      // Resize all images to standard size
-      const processed = await sharp(buffer, { animated: isAnimated })
-        .resize(EMOJI_DIMENSIONS, EMOJI_DIMENSIONS, {
-          fit: "contain",
-          background: { r: 0, g: 0, b: 0, alpha: 0 },
-        })
-        .toBuffer();
-      buffer = Buffer.from(processed);
+    const validated = validateFileSignature(uint8);
+    if (!validated || !["png", "jpg", "gif", "webp"].includes(validated.extension)) {
+      return NextResponse.json(
+        { error: "Invalid file type. Allowed: PNG, JPG, GIF, WebP" },
+        { status: 400 }
+      );
     }
+
+    const finalMimeType = validated.mimeType;
+    const isAnimated = validated.extension === "gif"; // EMOJ-07
+
+    // Resize all images to standard size
+    const processed = await sharp(buffer, { animated: isAnimated })
+      .resize(EMOJI_DIMENSIONS, EMOJI_DIMENSIONS, {
+        fit: "contain",
+        background: { r: 0, g: 0, b: 0, alpha: 0 },
+      })
+      .toBuffer();
+    buffer = Buffer.from(processed);
 
     // Generate filename and save
     const extension = finalMimeType === "image/png" ? "png" :

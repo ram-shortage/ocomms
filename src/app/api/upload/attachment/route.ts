@@ -8,6 +8,7 @@ import { db } from "@/db";
 import { fileAttachments } from "@/db/schema";
 import {
   validateFileSignature,
+  isSvgContent,
   MAX_FILE_SIZE,
 } from "@/lib/file-validation";
 
@@ -40,6 +41,19 @@ export async function POST(request: NextRequest) {
     // Read file bytes for signature validation
     const arrayBuffer = await file.arrayBuffer();
     const uint8 = new Uint8Array(arrayBuffer);
+
+    // Explicit SVG blocking with security logging
+    if (isSvgContent(uint8)) {
+      console.warn('[Security] SVG upload blocked:', {
+        filename: file.name,
+        userId: session.user.id,
+        timestamp: new Date().toISOString(),
+      });
+      return NextResponse.json(
+        { error: "SVG files are not allowed for security reasons" },
+        { status: 400 }
+      );
+    }
 
     // Validate file signature (magic bytes) - don't trust client MIME type (FILE-07)
     const validated = validateFileSignature(uint8);
