@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-21)
 ## Current Position
 
 Phase: 31 of 36 (High Security + Bug Fixes)
-Plan: 2 of 4 in current phase
+Plan: 1 of 4 in current phase
 Status: In progress
-Last activity: 2026-01-22 - Completed 31-04-PLAN.md (Mobile UI Bug Fixes)
+Last activity: 2026-01-22 - Completed 31-01-PLAN.md (Socket.IO Rate Limiting)
 
 Progress: [█████████████████████░░░░] 30/36 phases
 
@@ -47,9 +47,10 @@ Progress: [█████████████████████░░
 
 Decisions are logged in PROJECT.md Key Decisions table.
 
-Recent from 31-04:
-- Used updatedAt instead of lastMessageAt for DM ordering
-- Settings routes highlight Profile tab for logical grouping
+Recent from 31-01:
+- 30 events/sec limit with 5sec cooldown (lenient for normal usage, blocks abuse)
+- Rate limit by userId not socket.id (same user on multiple tabs shares limit)
+- Global toast handler in socket-client.ts with deduplication via toast id
 
 ### Pending Todos
 
@@ -73,7 +74,7 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-22
-Stopped at: Completed 31-04-PLAN.md (Mobile UI Bug Fixes)
+Stopped at: Completed 31-01-PLAN.md (Socket.IO Rate Limiting)
 Resume file: None
 
 ## Human Verification Deferred
