@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { generateNonce, generateCSP } from "@/lib/security/csp";
+import { validateSession } from "@/lib/security/session-store";
 
 // Public routes that don't require authentication
 const publicRoutes = ["/login", "/signup", "/verify-email", "/api/auth", "/api/health", "/socket.io", "/accept-invite", "/api/csp-report"];
@@ -38,19 +39,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // Skip full validation if we validated recently (within last 5 minutes)
-  // This reduces latency for frequent requests while maintaining security
-  const lastValidated = request.cookies.get("_session_validated");
-  if (lastValidated) {
-    const validatedAt = parseInt(lastValidated.value, 10);
-    const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
-    if (validatedAt > fiveMinutesAgo) {
-      // Recently validated, skip full check
-      return NextResponse.next();
-    }
-  }
-
-  // Validate session with better-auth API
+  // Validate session with better-auth API (no caching - Redis validation required)
   try {
     // Call the session endpoint to validate
     // Use the request URL for the fetch - Next.js middleware handles this correctly
@@ -77,13 +66,19 @@ export async function middleware(request: NextRequest) {
       return response;
     }
 
-    // Session valid - set validation timestamp and proceed
+    // Validate session against Redis for immediate revocation support
+    if (session?.session?.id) {
+      const isValid = await validateSession(session.session.id);
+      if (!isValid) {
+        // Session revoked - redirect to login
+        const response = NextResponse.redirect(new URL("/login", request.url));
+        response.cookies.delete("better-auth.session_token");
+        return response;
+      }
+    }
+
+    // Session valid - proceed with request
     const response = NextResponse.next();
-    response.cookies.set("_session_validated", Date.now().toString(), {
-      httpOnly: true,
-      sameSite: "lax",
-      maxAge: 300, // 5 minutes
-    });
     response.headers.set('Content-Security-Policy', csp);
     response.headers.set('x-nonce', nonce);
     return response;

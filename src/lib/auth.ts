@@ -9,6 +9,7 @@ import { eq } from "drizzle-orm";
 import { sendVerificationEmail, sendInviteEmail, sendUnlockEmail, sendResetPasswordEmail } from "./email";
 import { validatePasswordComplexity } from "./password-validation";
 import { auditLog, AuditEventType, getClientIP, getUserAgent } from "./audit-logger";
+import { addUserSession, removeUserSession, revokeAllUserSessions } from "./security/session-store";
 
 /**
  * Progressive delay based on failed attempt count.
@@ -273,6 +274,13 @@ export const auth = betterAuth({
               })
               .where(eq(userLockout.userId, existingUser.id));
           }
+
+          // Add session to Redis index for immediate revocation support
+          const session = ctx.context.session;
+          if (session?.session?.id) {
+            const sessionTTL = 7 * 24 * 60 * 60; // 7 days in seconds (matches better-auth config)
+            await addUserSession(existingUser.id, session.session.id, sessionTTL);
+          }
         }
       }
 
@@ -318,6 +326,9 @@ export const auth = betterAuth({
                   updatedAt: new Date(),
                 })
                 .where(eq(userLockout.userId, userId));
+
+              // Revoke all sessions on password reset for security
+              await revokeAllUserSessions(userId);
             }
           }
         }
@@ -337,12 +348,35 @@ export const auth = betterAuth({
         if (logoutSuccessful) {
           // Try to get user from session context
           const session = ctx.context.session;
-          if (session?.user?.id) {
+          if (session?.user?.id && session?.session?.id) {
             auditLog({
               eventType: AuditEventType.AUTH_LOGOUT,
               userId: session.user.id,
               ip: getClientIP(ctx.headers),
             });
+
+            // Remove session from Redis index
+            await removeUserSession(session.user.id, session.session.id);
+          }
+        }
+      }
+
+      // Handle password change - revoke all other sessions
+      if (ctx.path === "/change-password") {
+        const response = ctx.context.returned;
+        // Check if password change was successful
+        let changeSuccessful = false;
+        if (response instanceof Response) {
+          changeSuccessful = response.ok;
+        } else if (response && !(response instanceof Error)) {
+          changeSuccessful = true;
+        }
+
+        if (changeSuccessful) {
+          const session = ctx.context.session;
+          if (session?.user?.id && session?.session?.id) {
+            // Revoke all other sessions, keep current one active
+            await revokeAllUserSessions(session.user.id, session.session.id);
           }
         }
       }
