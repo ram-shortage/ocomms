@@ -80,12 +80,16 @@ Plans:
   5. Socket.IO rejects connections from non-whitelisted origins
   6. MFA can be enabled with TOTP authenticator app
   7. Orphaned attachments are cleaned up within 24 hours
-**Plans**: TBD
+**Plans**: 7 plans
 
 Plans:
-- [ ] 32-01: TBD
-- [ ] 32-02: TBD
-- [ ] 32-03: TBD
+- [ ] 32-01-PLAN.md — Password breach check (bloom filter) and password history (SEC2-09, SEC2-20)
+- [ ] 32-02-PLAN.md — User storage quota tracking with 1GB default (SEC2-10)
+- [ ] 32-03-PLAN.md — Secure cookies, Pino logging, security headers (SEC2-11, SEC2-12, SEC2-18, SEC2-19)
+- [ ] 32-04-PLAN.md — Socket.IO CORS whitelist and guest disconnection (SEC2-13, SEC2-16)
+- [ ] 32-05-PLAN.md — Redirect validation and SSRF DNS rebinding protection (SEC2-14, SEC2-15)
+- [ ] 32-06-PLAN.md — TOTP MFA with backup codes (SEC2-21)
+- [ ] 32-07-PLAN.md — Orphaned attachment cleanup and SRI hashes (SEC2-22, SEC2-17)
 
 ### Phase 33: Workspace Management
 **Goal**: Users can discover, join, and switch between workspaces
@@ -160,7 +164,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 30. Critical Security | 3/3 | Complete | 2026-01-22 |
 | 31. High Security + Bug Fixes | 0/4 | Ready | - |
-| 32. Medium/Low Security | 0/TBD | Not started | - |
+| 32. Medium/Low Security | 0/7 | Planned | - |
 | 33. Workspace Management | 0/4 | Planned | - |
 | 34. Sidebar Reorganization | 0/TBD | Not started | - |
 | 35. Mobile Redesign | 0/TBD | Not started | - |
@@ -168,4 +172,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-01-22*
-*Last updated: 2026-01-22 after Phase 33 planning*
+*Last updated: 2026-01-22 after Phase 32 planning*
