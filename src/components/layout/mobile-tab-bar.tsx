@@ -17,6 +17,34 @@ const tabs = [
   { href: (slug: string) => `/${slug}/profile`, icon: User, label: "Profile" },
 ];
 
+/**
+ * Determines if a tab should be highlighted as active based on current pathname.
+ * Handles all route cases including subpages and related routes.
+ */
+function getIsActive(label: string, tabHref: string, pathname: string, workspaceSlug: string): boolean {
+  // Exact match always wins
+  if (pathname === tabHref) return true;
+
+  switch (label) {
+    case "Home":
+      // Home is active for workspace root and channels
+      return pathname === `/${workspaceSlug}` ||
+             pathname.startsWith(`/${workspaceSlug}/channels`);
+    case "DMs":
+      return pathname.startsWith(`/${workspaceSlug}/dm`);
+    case "Mentions":
+      return pathname.startsWith(`/${workspaceSlug}/threads`);
+    case "Search":
+      return pathname.startsWith(`/${workspaceSlug}/search`);
+    case "Profile":
+      // Profile tab also active for settings (logical grouping)
+      return pathname.startsWith(`/${workspaceSlug}/profile`) ||
+             pathname.startsWith(`/${workspaceSlug}/settings`);
+    default:
+      return false;
+  }
+}
+
 export function MobileTabBar({ workspaceSlug }: MobileTabBarProps) {
   const pathname = usePathname();
 
@@ -31,13 +59,7 @@ export function MobileTabBar({ workspaceSlug }: MobileTabBarProps) {
       <div className="flex h-16 items-center justify-around">
         {tabs.map(({ href, icon: Icon, label }) => {
           const tabHref = href(workspaceSlug);
-          // Match exact path or check if we're on a subpage of the tab
-          const isActive = pathname === tabHref ||
-            (label === "Home" && pathname === `/${workspaceSlug}`) ||
-            (label === "DMs" && pathname.startsWith(`/${workspaceSlug}/dm`)) ||
-            (label === "Mentions" && pathname.startsWith(`/${workspaceSlug}/threads`)) ||
-            (label === "Search" && pathname.startsWith(`/${workspaceSlug}/search`)) ||
-            (label === "Profile" && pathname.startsWith(`/${workspaceSlug}/profile`));
+          const isActive = getIsActive(label, tabHref, pathname, workspaceSlug);
 
           return (
             <Link

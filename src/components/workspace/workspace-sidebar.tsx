@@ -97,7 +97,11 @@ export function WorkspaceSidebar({
     <aside className="w-64 h-full border-r bg-muted/30 flex flex-col shrink-0">
       {/* Workspace header */}
       <div className="p-4 border-b flex items-center justify-between">
-        <Link href={`/${workspace.slug}`} className="font-bold truncate hover:underline">
+        <Link
+          href={`/${workspace.slug}`}
+          className="font-bold truncate hover:underline"
+          title={workspace.name}
+        >
           {workspace.name}
         </Link>
         <NotificationBell workspaceSlug={workspace.slug} />
