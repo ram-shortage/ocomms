@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { db } from "@/db";
 import { channelNotes, channelMembers, users } from "@/db/schema";
 import { eq, and, sql } from "drizzle-orm";
+import { sanitizeHtml } from "@/lib/sanitize";
 
 /**
  * GET /api/notes/channel?channelId=X - Get channel note content
@@ -142,13 +143,17 @@ export async function PUT(request: NextRequest) {
       );
     }
 
+    // SEC2-05: Sanitize HTML content before storage
+    // Allows safe tags (b, i, strong, em, a, p, ul, ol, li, br) while stripping scripts/styles
+    const sanitizedContent = sanitizeHtml(content);
+
     // If baseVersion is 0, this is a new note - INSERT
     if (baseVersion === 0) {
       const [inserted] = await db
         .insert(channelNotes)
         .values({
           channelId,
-          content,
+          content: sanitizedContent,
           version: 1,
           updatedBy: session.user.id,
         })
@@ -194,7 +199,7 @@ export async function PUT(request: NextRequest) {
     const result = await db
       .update(channelNotes)
       .set({
-        content,
+        content: sanitizedContent,
         version: sql`${channelNotes.version} + 1`,
         updatedBy: session.user.id,
         updatedAt: new Date(),
