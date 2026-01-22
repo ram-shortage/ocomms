@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-21)
 ## Current Position
 
 Phase: 31 of 36 (High Security + Bug Fixes)
-Plan: 1 of 4 in current phase
+Plan: 2 of 4 in current phase
 Status: In progress
-Last activity: 2026-01-22 - Completed 31-03-PLAN.md (Data Export Authorization + Audit Integrity)
+Last activity: 2026-01-22 - Completed 31-04-PLAN.md (Mobile UI Bug Fixes)
 
 Progress: [█████████████████████░░░░] 30/36 phases
 
@@ -37,8 +37,8 @@ Progress: [█████████████████████░░
 ## Performance Metrics
 
 **Cumulative (through Phase 30):**
-- Total plans completed: 131
-- Total requirements delivered: 220
+- Total plans completed: 133
+- Total requirements delivered: 225
 - Total phases completed: 30
 
 ## Accumulated Context
@@ -46,6 +46,10 @@ Progress: [█████████████████████░░
 ### Decisions
 
 Decisions are logged in PROJECT.md Key Decisions table.
+
+Recent from 31-04:
+- Used updatedAt instead of lastMessageAt for DM ordering
+- Settings routes highlight Profile tab for logical grouping
 
 ### Pending Todos
 
@@ -69,7 +73,7 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-22
-Stopped at: Completed 31-03-PLAN.md
+Stopped at: Completed 31-04-PLAN.md (Mobile UI Bug Fixes)
 Resume file: None
 
 ## Human Verification Deferred
