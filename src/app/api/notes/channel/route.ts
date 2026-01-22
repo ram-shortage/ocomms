@@ -5,6 +5,7 @@ import { db } from "@/db";
 import { channelNotes, channelMembers, users } from "@/db/schema";
 import { eq, and, sql } from "drizzle-orm";
 import { sanitizeHtml } from "@/lib/sanitize";
+import { auditLog, AuditEventType, getClientIP, getUserAgent } from "@/lib/audit-logger";
 
 /**
  * GET /api/notes/channel?channelId=X - Get channel note content
@@ -32,7 +33,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Verify user is member of channel
+    // SEC2-06: Verify user is member of channel BEFORE fetching data (fail closed)
     const membership = await db.query.channelMembers.findFirst({
       where: and(
         eq(channelMembers.channelId, channelId),
@@ -41,8 +42,22 @@ export async function GET(request: NextRequest) {
     });
 
     if (!membership) {
+      // Log unauthorized access attempt as security event
+      const requestHeaders = await headers();
+      auditLog({
+        eventType: AuditEventType.AUTHZ_FAILURE,
+        userId: session.user.id,
+        ip: getClientIP(requestHeaders),
+        userAgent: getUserAgent(requestHeaders),
+        details: {
+          action: "channel_notes_read",
+          channelId,
+          reason: "not_channel_member",
+        },
+      });
+      // Same error for "not found" and "not authorized" to prevent info leakage
       return NextResponse.json(
-        { error: "Not a channel member" },
+        { error: "Not authorized" },
         { status: 403 }
       );
     }
@@ -128,7 +143,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // Verify user is member of channel
+    // SEC2-06: Verify user is member of channel BEFORE modifying data (fail closed)
     const membership = await db.query.channelMembers.findFirst({
       where: and(
         eq(channelMembers.channelId, channelId),
@@ -137,8 +152,22 @@ export async function PUT(request: NextRequest) {
     });
 
     if (!membership) {
+      // Log unauthorized access attempt as security event
+      const requestHeaders = await headers();
+      auditLog({
+        eventType: AuditEventType.AUTHZ_FAILURE,
+        userId: session.user.id,
+        ip: getClientIP(requestHeaders),
+        userAgent: getUserAgent(requestHeaders),
+        details: {
+          action: "channel_notes_write",
+          channelId,
+          reason: "not_channel_member",
+        },
+      });
+      // Same error for "not found" and "not authorized" to prevent info leakage
       return NextResponse.json(
-        { error: "Not a channel member" },
+        { error: "Not authorized" },
         { status: 403 }
       );
     }
