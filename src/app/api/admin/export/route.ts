@@ -39,7 +39,7 @@ interface ExportManifest {
 }
 
 // POST /api/admin/export - Export all organization data as JSON
-export async function POST(request: Request) {
+export async function POST() {
   try {
     // Authenticate user
     const session = await auth.api.getSession({
@@ -50,43 +50,39 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Parse request body
-    const body = await request.json();
-    const { organizationId } = body;
-
-    if (!organizationId) {
-      return NextResponse.json(
-        { error: "organizationId is required" },
-        { status: 400 }
-      );
-    }
-
-    // Verify organization exists
-    const organization = await db.query.organizations.findFirst({
-      where: eq(organizations.id, organizationId),
-    });
-
-    if (!organization) {
-      return NextResponse.json(
-        { error: "Organization not found" },
-        { status: 404 }
-      );
-    }
-
-    // Verify user is owner of the organization
-    const userMembership = await db.query.members.findFirst({
+    // SEC2-08 FIX: Derive organizationId from authenticated user's ownership
+    // NEVER use organizationId from request body - that would allow cross-tenant export
+    const ownerMembership = await db.query.members.findFirst({
       where: and(
         eq(members.userId, session.user.id),
-        eq(members.organizationId, organizationId)
+        eq(members.role, "owner")
       ),
     });
 
-    if (!userMembership || userMembership.role !== "owner") {
+    if (!ownerMembership) {
+      // Log security event for unauthorized attempt
+      await auditLog({
+        eventType: AuditEventType.AUTHZ_FAILURE,
+        userId: session.user.id,
+        ip: getClientIP(await headers()),
+        details: {
+          action: "data_export",
+          reason: "not_owner"
+        }
+      });
       return NextResponse.json(
         { error: "Only organization owners can export data" },
         { status: 403 }
       );
     }
+
+    // Use ONLY the derived organizationId - never from request body
+    const organizationId = ownerMembership.organizationId;
+
+    // Get organization details (membership proves it exists)
+    const organization = await db.query.organizations.findFirst({
+      where: eq(organizations.id, organizationId),
+    });
 
     // Export all organization data
     console.log(`Exporting organization ${organizationId} for user ${session.user.id}`);

@@ -27,45 +27,51 @@ describe("Export API Tests", () => {
       const sourcePath = path.resolve(__dirname, "../export/route.ts");
       const source = fs.readFileSync(sourcePath, "utf-8");
 
-      // Admin is not enough - must be owner
-      expect(source).toContain('role !== "owner"');
+      // Must be owner - queries for owner role membership
+      expect(source).toContain('eq(members.role, "owner")');
       expect(source).toContain("Only organization owners can export data");
       expect(source).toContain("status: 403");
     });
-  });
 
-  describe("Cross-Tenant Isolation", () => {
-    it("validates user is member of requested organization", async () => {
+    it("logs security event on unauthorized export attempt", async () => {
       const fs = await import("fs");
       const path = await import("path");
       const sourcePath = path.resolve(__dirname, "../export/route.ts");
       const source = fs.readFileSync(sourcePath, "utf-8");
 
-      // Should query membership for the specific org
-      expect(source).toContain("members.userId, session.user.id");
-      expect(source).toContain("members.organizationId, organizationId");
-    });
-
-    it("verifies organization exists before export", async () => {
-      const fs = await import("fs");
-      const path = await import("path");
-      const sourcePath = path.resolve(__dirname, "../export/route.ts");
-      const source = fs.readFileSync(sourcePath, "utf-8");
-
-      expect(source).toContain("Organization not found");
-      expect(source).toContain("status: 404");
+      // Should log AUTHZ_FAILURE when user is not owner
+      expect(source).toContain("AuditEventType.AUTHZ_FAILURE");
+      expect(source).toContain("data_export");
+      expect(source).toContain("not_owner");
     });
   });
 
-  describe("Request Validation", () => {
-    it("requires organizationId in request body", async () => {
+  describe("Cross-Tenant Isolation (SEC2-08)", () => {
+    it("derives organizationId from session, not request body", async () => {
       const fs = await import("fs");
       const path = await import("path");
       const sourcePath = path.resolve(__dirname, "../export/route.ts");
       const source = fs.readFileSync(sourcePath, "utf-8");
 
-      expect(source).toContain("organizationId is required");
-      expect(source).toContain("status: 400");
+      // SEC2-08 FIX: Must derive org from session membership, never from request
+      expect(source).toContain("ownerMembership.organizationId");
+      expect(source).toContain("NEVER use organizationId from request body");
+      // Should NOT accept organizationId from request body
+      expect(source).not.toContain("body.organizationId");
+      expect(source).not.toContain("const { organizationId } = body");
+    });
+
+    it("user cannot export other organizations data", async () => {
+      const fs = await import("fs");
+      const path = await import("path");
+      const sourcePath = path.resolve(__dirname, "../export/route.ts");
+      const source = fs.readFileSync(sourcePath, "utf-8");
+
+      // Organization ID comes from user's owner membership only
+      expect(source).toContain("eq(members.userId, session.user.id)");
+      expect(source).toContain('eq(members.role, "owner")');
+      // The organizationId used for export must come from the membership query result
+      expect(source).toContain("const organizationId = ownerMembership.organizationId");
     });
   });
 
