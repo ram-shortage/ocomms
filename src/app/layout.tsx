@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { headers } from "next/headers";
 import { Toaster } from "sonner";
 import { PWAProvider } from "@/components/pwa";
 import { SyncProvider, ThemeProvider } from "@/components/providers";
@@ -39,11 +40,14 @@ export const viewport: Viewport = {
   interactiveWidget: "resizes-content",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Read nonce from middleware for CSP script authorization
+  const nonce = (await headers()).get('x-nonce') || '';
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body
