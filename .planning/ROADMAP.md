@@ -23,7 +23,7 @@ See: .planning/milestones/v0.5.0-ROADMAP.md
 **Milestone Goal:** Harden security posture, fix known bugs, deliver workspace management, sidebar customization, and mobile improvements.
 
 - [x] **Phase 30: Critical Security** - CSP hardening, session validation, SVG sanitization
-- [ ] **Phase 31: High Security + Bug Fixes** - Socket.IO rate limiting, content sanitization, authorization fixes, quick bug fixes
+- [x] **Phase 31: High Security + Bug Fixes** - Socket.IO rate limiting, content sanitization, authorization fixes, quick bug fixes
 - [ ] **Phase 32: Medium/Low Security** - Password breach checks, quotas, logging, MFA, cleanup jobs
 - [ ] **Phase 33: Workspace Management** - Workspace switcher, discovery, join flow
 - [ ] **Phase 34: Sidebar Reorganization** - Drag-and-drop reordering, user preferences
@@ -63,10 +63,10 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 31-01-PLAN.md — Socket.IO rate limiting with toast warnings
-- [ ] 31-02-PLAN.md — Unicode and HTML content sanitization
-- [ ] 31-03-PLAN.md — Data export authorization and audit log integrity
-- [ ] 31-04-PLAN.md — Mobile UI bug fixes (DM route, profile spacing, nav highlighting)
+- [x] 31-01-PLAN.md — Socket.IO rate limiting with toast warnings
+- [x] 31-02-PLAN.md — Unicode and HTML content sanitization
+- [x] 31-03-PLAN.md — Data export authorization and audit log integrity
+- [x] 31-04-PLAN.md — Mobile UI bug fixes (DM route, profile spacing, nav highlighting)
 
 ### Phase 32: Medium/Low Security
 **Goal**: Complete security hardening with medium and low severity items
@@ -163,8 +163,8 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 30. Critical Security | 3/3 | Complete | 2026-01-22 |
-| 31. High Security + Bug Fixes | 0/4 | Ready | - |
-| 32. Medium/Low Security | 0/7 | Planned | - |
+| 31. High Security + Bug Fixes | 4/4 | Complete | 2026-01-22 |
+| 32. Medium/Low Security | 0/7 | Ready | - |
 | 33. Workspace Management | 0/4 | Planned | - |
 | 34. Sidebar Reorganization | 0/TBD | Not started | - |
 | 35. Mobile Redesign | 0/TBD | Not started | - |
@@ -172,4 +172,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-01-22*
-*Last updated: 2026-01-22 after Phase 32 planning*
+*Last updated: 2026-01-22 after Phase 31 execution*

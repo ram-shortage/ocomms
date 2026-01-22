@@ -15,11 +15,11 @@ Requirements for v0.6.0 Polish & Hardening release.
 
 ### Security - High
 
-- [ ] **SEC2-04**: Rate limiting applied to all Socket.IO handlers (reactions, typing, presence, threads)
-- [ ] **SEC2-05**: Message content sanitized for Unicode control chars, RTL override, zero-width chars
-- [ ] **SEC2-06**: Channel notes API verifies channel membership, not just workspace membership
-- [ ] **SEC2-07**: Audit logs signed with HMAC, integrity verified on read
-- [ ] **SEC2-08**: Data export derives organizationId from authenticated user, not request body
+- [x] **SEC2-04**: Rate limiting applied to all Socket.IO handlers (reactions, typing, presence, threads)
+- [x] **SEC2-05**: Message content sanitized for Unicode control chars, RTL override, zero-width chars
+- [x] **SEC2-06**: Channel notes API verifies channel membership, not just workspace membership
+- [x] **SEC2-07**: Audit logs signed with HMAC, integrity verified on read
+- [x] **SEC2-08**: Data export derives organizationId from authenticated user, not request body
 
 ### Security - Medium
 
@@ -43,11 +43,11 @@ Requirements for v0.6.0 Polish & Hardening release.
 
 ### Bug Fixes
 
-- [ ] **FIX-01**: DMs route returns valid page on mobile (not 404)
-- [ ] **FIX-02**: Profile page title and back link properly spaced
-- [ ] **FIX-03**: Mobile channel header uses overflow menu for actions
-- [ ] **FIX-04**: Truncated workspace names show full name on hover
-- [ ] **FIX-05**: Mobile navigation highlights correct route after all navigations
+- [x] **FIX-01**: DMs route returns valid page on mobile (not 404)
+- [x] **FIX-02**: Profile page title and back link properly spaced
+- [x] **FIX-03**: Mobile channel header uses overflow menu for actions
+- [x] **FIX-04**: Truncated workspace names show full name on hover
+- [x] **FIX-05**: Mobile navigation highlights correct route after all navigations
 
 ### Workspace Management
 
@@ -121,11 +121,11 @@ Which phases cover which requirements.
 | SEC2-01 | Phase 30 | Complete |
 | SEC2-02 | Phase 30 | Complete |
 | SEC2-03 | Phase 30 | Complete |
-| SEC2-04 | Phase 31 | Pending |
-| SEC2-05 | Phase 31 | Pending |
-| SEC2-06 | Phase 31 | Pending |
-| SEC2-07 | Phase 31 | Pending |
-| SEC2-08 | Phase 31 | Pending |
+| SEC2-04 | Phase 31 | Complete |
+| SEC2-05 | Phase 31 | Complete |
+| SEC2-06 | Phase 31 | Complete |
+| SEC2-07 | Phase 31 | Complete |
+| SEC2-08 | Phase 31 | Complete |
 | SEC2-09 | Phase 32 | Pending |
 | SEC2-10 | Phase 32 | Pending |
 | SEC2-11 | Phase 32 | Pending |
@@ -140,11 +140,11 @@ Which phases cover which requirements.
 | SEC2-20 | Phase 32 | Pending |
 | SEC2-21 | Phase 32 | Pending |
 | SEC2-22 | Phase 32 | Pending |
-| FIX-01 | Phase 31 | Pending |
-| FIX-02 | Phase 31 | Pending |
-| FIX-03 | Phase 31 | Pending |
-| FIX-04 | Phase 31 | Pending |
-| FIX-05 | Phase 31 | Pending |
+| FIX-01 | Phase 31 | Complete |
+| FIX-02 | Phase 31 | Complete |
+| FIX-03 | Phase 31 | Complete |
+| FIX-04 | Phase 31 | Complete |
+| FIX-05 | Phase 31 | Complete |
 | WKSP2-01 | Phase 33 | Pending |
 | WKSP2-02 | Phase 33 | Pending |
 | WKSP2-03 | Phase 33 | Pending |
@@ -179,4 +179,4 @@ Which phases cover which requirements.
 
 ---
 *Requirements defined: 2026-01-22*
-*Last updated: 2026-01-22 after Phase 30 completion*
+*Last updated: 2026-01-22 after Phase 31 completion*

@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-21)
 
 **Core value:** Data sovereignty - complete control over communication data
-**Current focus:** v0.6.0 Polish & Hardening - Phase 31 High Security + Bug Fixes
+**Current focus:** v0.6.0 Polish & Hardening - Phase 32 Medium/Low Security
 
 ## Current Position
 
-Phase: 31 of 36 (High Security + Bug Fixes)
-Plan: 2 of 4 in current phase
-Status: In progress
-Last activity: 2026-01-22 - Completed 31-02-PLAN.md (Content Sanitization)
+Phase: 32 of 36 (Medium/Low Security)
+Plan: 0 of 7 in current phase
+Status: Ready to plan
+Last activity: 2026-01-22 - Phase 31 High Security + Bug Fixes complete (4 plans)
 
-Progress: [█████████████████████░░░░] 30/36 phases
+Progress: [██████████████████████░░░] 31/36 phases
 
 ## Shipped Milestones
 
@@ -36,10 +36,10 @@ Progress: [█████████████████████░░
 
 ## Performance Metrics
 
-**Cumulative (through Phase 30 + 31-02):**
-- Total plans completed: 134
-- Total requirements delivered: 227
-- Total phases completed: 30
+**Cumulative (through Phase 31):**
+- Total plans completed: 135
+- Total requirements delivered: 230
+- Total phases completed: 31
 
 ## Accumulated Context
 
@@ -47,15 +47,13 @@ Progress: [█████████████████████░░
 
 Decisions are logged in PROJECT.md Key Decisions table.
 
-Recent from 31-02:
+Recent from Phase 31:
+- 30 events/sec rate limit with 5sec cooldown (lenient for normal usage, blocks abuse)
+- Rate limit by userId not socket.id (same user on multiple tabs shares limit)
 - Preserve ZWJ (U+200D) for emoji sequences - family/professional emoji work correctly
 - Replace dangerous chars with visible placeholder (U+25A1) rather than silent removal
 - Standardize 403 error to "Not authorized" (same for not-found and not-member)
-
-Recent from 31-01:
-- 30 events/sec limit with 5sec cooldown (lenient for normal usage, blocks abuse)
-- Rate limit by userId not socket.id (same user on multiple tabs shares limit)
-- Global toast handler in socket-client.ts with deduplication via toast id
+- Export endpoint derives org from session ownership, not request body
 
 ### Pending Todos
 
@@ -69,7 +67,7 @@ Recent from 31-01:
 ### Deferred Tech Debt
 
 From v0.5.0 (some addressed in v0.6.0):
-- CSP hardening (addressed in SEC2-01)
+- CSP hardening (addressed in SEC2-01) ✓
 - Attachment auth / Upload quotas (addressed in SEC2-10)
 
 ### Blockers/Concerns
@@ -79,7 +77,7 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-22
-Stopped at: Completed 31-02-PLAN.md (Content Sanitization)
+Stopped at: Phase 31 complete, ready for Phase 32
 Resume file: None
 
 ## Human Verification Deferred
@@ -90,3 +88,11 @@ Phase 30 manual testing deferred to milestone audit:
 - Password change session revocation
 - SVG upload rejection through UI
 - SVG MIME spoofing protection
+
+Phase 31 manual testing deferred to milestone audit:
+- Socket.IO rate limit toast appearance
+- Mobile DM page layout
+- Profile page responsive spacing
+- Channel header overflow menu on mobile
+- Workspace name tooltip on hover
+- Mobile nav highlighting across routes
