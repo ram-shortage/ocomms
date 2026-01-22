@@ -12,6 +12,7 @@ import { getPresenceManager, getUnreadManager } from "../index";
 import { sendPushToUser, type PushPayload } from "@/lib/push";
 import { extractUrls } from "@/lib/url-extractor";
 import { linkPreviewQueue } from "@/server/queue/link-preview.queue";
+import { sanitizeUnicode } from "@/lib/sanitize";
 
 /**
  * Check if user is a guest and if so, verify access and soft-lock status
@@ -189,6 +190,11 @@ async function handleSendMessage(
       }
     }
 
+    // SEC2-05: Sanitize Unicode control characters before storage
+    // Replaces dangerous chars (control, zero-width, RTL override) with visible placeholder
+    // Preserves ZWJ for emoji sequences (family emoji, professional emoji)
+    const sanitizedContent = sanitizeUnicode(content);
+
     // SECFIX-03: Atomic sequence generation with retry
     const insertMessageWithRetry = async (retries = 3): Promise<typeof messages.$inferSelect> => {
       const condition = targetType === "channel"
@@ -200,7 +206,7 @@ async function handleSendMessage(
           const [newMsg] = await db
             .insert(messages)
             .values({
-              content,
+              content: sanitizedContent,
               authorId: userId,
               channelId: targetType === "channel" ? targetId : null,
               conversationId: targetType === "dm" ? targetId : null,
