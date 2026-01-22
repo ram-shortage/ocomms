@@ -154,4 +154,38 @@ describe("Audit Logs API Tests", () => {
       expect(source).toContain("a.timestamp");
     });
   });
+
+  describe("Integrity Verification (SEC2-07)", () => {
+    it("includes integrity check in response", async () => {
+      const fs = await import("fs");
+      const path = await import("path");
+      const sourcePath = path.resolve(__dirname, "../audit-logs/route.ts");
+      const source = fs.readFileSync(sourcePath, "utf-8");
+
+      expect(source).toContain("verifyChain");
+      expect(source).toContain("integrity:");
+      expect(source).toContain("valid:");
+      expect(source).toContain("warning:");
+    });
+
+    it("warns when integrity check fails", async () => {
+      const fs = await import("fs");
+      const path = await import("path");
+      const sourcePath = path.resolve(__dirname, "../audit-logs/route.ts");
+      const source = fs.readFileSync(sourcePath, "utf-8");
+
+      expect(source).toContain("Possible tampering detected");
+      expect(source).toContain("integrityResult.brokenAt");
+    });
+
+    it("verifies complete chain before filtering", async () => {
+      const fs = await import("fs");
+      const path = await import("path");
+      const sourcePath = path.resolve(__dirname, "../audit-logs/route.ts");
+      const source = fs.readFileSync(sourcePath, "utf-8");
+
+      // Should verify all events, not just filtered ones
+      expect(source).toContain("verifyChain(allEvents)");
+    });
+  });
 });
