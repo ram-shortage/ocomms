@@ -21,6 +21,9 @@ export interface ValidatedFile {
  * - Images: JPEG, PNG, GIF, WebP
  * - Documents: PDF
  *
+ * NOT supported (security risk):
+ * - SVG (can contain JavaScript, XSS vector)
+ *
  * @param bytes - Uint8Array of file content
  * @returns ValidatedFile with extension, mimeType, isImage or null if invalid
  */
@@ -80,16 +83,21 @@ export function validateFileSignature(bytes: Uint8Array): ValidatedFile | null {
     return { extension: "pdf", mimeType: "application/pdf", isImage: false };
   }
 
-  // SVG: <?xml or <svg (text-based, check first bytes for common patterns)
-  // Note: SVG detection is approximate since it's XML text
-  const textStart = new TextDecoder().decode(bytes.slice(0, 100));
-  if (
-    textStart.trim().startsWith("<?xml") ||
-    textStart.trim().startsWith("<svg") ||
-    textStart.includes("<svg")
-  ) {
-    return { extension: "svg", mimeType: "image/svg+xml", isImage: true };
-  }
+  // SVG files are explicitly NOT supported (security risk - can contain JavaScript)
+  // They will be rejected as null (unknown type)
 
   return null; // Unknown or disallowed type
+}
+
+/**
+ * Check if content appears to be SVG (for security logging).
+ * Returns true if SVG content detected.
+ */
+export function isSvgContent(bytes: Uint8Array): boolean {
+  const textStart = new TextDecoder().decode(bytes.slice(0, 200));
+  return (
+    textStart.trim().startsWith('<?xml') ||
+    textStart.trim().startsWith('<svg') ||
+    textStart.includes('<svg')
+  );
 }
