@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-21)
 ## Current Position
 
 Phase: 31 of 36 (High Security + Bug Fixes)
-Plan: 1 of 4 in current phase
+Plan: 2 of 4 in current phase
 Status: In progress
-Last activity: 2026-01-22 - Completed 31-01-PLAN.md (Socket.IO Rate Limiting)
+Last activity: 2026-01-22 - Completed 31-02-PLAN.md (Content Sanitization)
 
 Progress: [█████████████████████░░░░] 30/36 phases
 
@@ -36,9 +36,9 @@ Progress: [█████████████████████░░
 
 ## Performance Metrics
 
-**Cumulative (through Phase 30):**
-- Total plans completed: 133
-- Total requirements delivered: 225
+**Cumulative (through Phase 30 + 31-02):**
+- Total plans completed: 134
+- Total requirements delivered: 227
 - Total phases completed: 30
 
 ## Accumulated Context
@@ -46,6 +46,11 @@ Progress: [█████████████████████░░
 ### Decisions
 
 Decisions are logged in PROJECT.md Key Decisions table.
+
+Recent from 31-02:
+- Preserve ZWJ (U+200D) for emoji sequences - family/professional emoji work correctly
+- Replace dangerous chars with visible placeholder (U+25A1) rather than silent removal
+- Standardize 403 error to "Not authorized" (same for not-found and not-member)
 
 Recent from 31-01:
 - 30 events/sec limit with 5sec cooldown (lenient for normal usage, blocks abuse)
@@ -74,7 +79,7 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-22
-Stopped at: Completed 31-01-PLAN.md (Socket.IO Rate Limiting)
+Stopped at: Completed 31-02-PLAN.md (Content Sanitization)
 Resume file: None
 
 ## Human Verification Deferred
