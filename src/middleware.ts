@@ -1,14 +1,20 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { generateNonce, generateCSP } from "@/lib/security/csp";
 
 // Public routes that don't require authentication
-const publicRoutes = ["/login", "/signup", "/verify-email", "/api/auth", "/api/health", "/socket.io", "/accept-invite"];
+const publicRoutes = ["/login", "/signup", "/verify-email", "/api/auth", "/api/health", "/socket.io", "/accept-invite", "/api/csp-report"];
 
 // Static assets and other paths to skip
 const skipPaths = ["/_next", "/favicon.ico", "/uploads"];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // Generate CSP nonce for this request
+  const nonce = generateNonce();
+  const isDev = process.env.NODE_ENV === 'development';
+  const csp = generateCSP(nonce, isDev);
 
   // Skip static assets
   if (skipPaths.some((path) => pathname.startsWith(path))) {
@@ -17,7 +23,10 @@ export async function middleware(request: NextRequest) {
 
   // Allow public routes
   if (publicRoutes.some((route) => pathname.startsWith(route))) {
-    return NextResponse.next();
+    const response = NextResponse.next();
+    response.headers.set('Content-Security-Policy', csp);
+    response.headers.set('x-nonce', nonce);
+    return response;
   }
 
   // Check for session cookie (may have __Secure- prefix in production)
@@ -75,6 +84,8 @@ export async function middleware(request: NextRequest) {
       sameSite: "lax",
       maxAge: 300, // 5 minutes
     });
+    response.headers.set('Content-Security-Policy', csp);
+    response.headers.set('x-nonce', nonce);
     return response;
   } catch (error) {
     console.error("[Middleware] Session validation error:", error);
