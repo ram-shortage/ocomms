@@ -60,11 +60,13 @@ Plans:
   6. DMs page loads correctly on mobile
   7. Profile page layout has proper spacing
   8. Mobile navigation correctly highlights current route
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 31-01: TBD
-- [ ] 31-02: TBD
+- [ ] 31-01-PLAN.md — Socket.IO rate limiting with toast warnings
+- [ ] 31-02-PLAN.md — Unicode and HTML content sanitization
+- [ ] 31-03-PLAN.md — Data export authorization and audit log integrity
+- [ ] 31-04-PLAN.md — Mobile UI bug fixes (DM route, profile spacing, nav highlighting)
 
 ### Phase 32: Medium/Low Security
 **Goal**: Complete security hardening with medium and low severity items
@@ -155,7 +157,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 30. Critical Security | 0/3 | Ready | - |
-| 31. High Security + Bug Fixes | 0/TBD | Not started | - |
+| 31. High Security + Bug Fixes | 0/4 | Ready | - |
 | 32. Medium/Low Security | 0/TBD | Not started | - |
 | 33. Workspace Management | 0/TBD | Not started | - |
 | 34. Sidebar Reorganization | 0/TBD | Not started | - |
