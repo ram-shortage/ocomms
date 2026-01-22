@@ -9,9 +9,9 @@ Requirements for v0.6.0 Polish & Hardening release.
 
 ### Security - Critical
 
-- [ ] **SEC2-01**: CSP policy removes `unsafe-inline` and `unsafe-eval`, uses nonce-based script loading
-- [ ] **SEC2-02**: Session validation cache moved server-side (Redis), invalidates on session revocation
-- [ ] **SEC2-03**: SVG uploads blocked at upload time with content detection (raster-only policy)
+- [x] **SEC2-01**: CSP policy removes `unsafe-inline` and `unsafe-eval`, uses nonce-based script loading
+- [x] **SEC2-02**: Session validation cache moved server-side (Redis), invalidates on session revocation
+- [x] **SEC2-03**: SVG uploads blocked at upload time with content detection (raster-only policy)
 
 ### Security - High
 
@@ -118,9 +118,9 @@ Which phases cover which requirements.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SEC2-01 | Phase 30 | Pending |
-| SEC2-02 | Phase 30 | Pending |
-| SEC2-03 | Phase 30 | Pending |
+| SEC2-01 | Phase 30 | Complete |
+| SEC2-02 | Phase 30 | Complete |
+| SEC2-03 | Phase 30 | Complete |
 | SEC2-04 | Phase 31 | Pending |
 | SEC2-05 | Phase 31 | Pending |
 | SEC2-06 | Phase 31 | Pending |
@@ -179,4 +179,4 @@ Which phases cover which requirements.
 
 ---
 *Requirements defined: 2026-01-22*
-*Last updated: 2026-01-22 after roadmap creation*
+*Last updated: 2026-01-22 after Phase 30 completion*

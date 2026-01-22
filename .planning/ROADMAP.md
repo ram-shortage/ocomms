@@ -22,7 +22,7 @@ See: .planning/milestones/v0.5.0-ROADMAP.md
 
 **Milestone Goal:** Harden security posture, fix known bugs, deliver workspace management, sidebar customization, and mobile improvements.
 
-- [ ] **Phase 30: Critical Security** - CSP hardening, session validation, SVG sanitization
+- [x] **Phase 30: Critical Security** - CSP hardening, session validation, SVG sanitization
 - [ ] **Phase 31: High Security + Bug Fixes** - Socket.IO rate limiting, content sanitization, authorization fixes, quick bug fixes
 - [ ] **Phase 32: Medium/Low Security** - Password breach checks, quotas, logging, MFA, cleanup jobs
 - [ ] **Phase 33: Workspace Management** - Workspace switcher, discovery, join flow
@@ -43,9 +43,9 @@ See: .planning/milestones/v0.5.0-ROADMAP.md
 **Plans**: 3 plans
 
 Plans:
-- [ ] 30-01-PLAN.md — CSP nonce implementation with violation reporting
-- [ ] 30-02-PLAN.md — Redis session validation with immediate revocation
-- [ ] 30-03-PLAN.md — SVG upload blocking and asset migration
+- [x] 30-01-PLAN.md — CSP nonce implementation with violation reporting
+- [x] 30-02-PLAN.md — Redis session validation with immediate revocation
+- [x] 30-03-PLAN.md — SVG upload blocking and asset migration
 
 ### Phase 31: High Security + Bug Fixes
 **Goal**: Close high-severity security gaps and fix known user-facing bugs
@@ -156,7 +156,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 30. Critical Security | 0/3 | Ready | - |
+| 30. Critical Security | 3/3 | ✓ Complete | 2026-01-22 |
 | 31. High Security + Bug Fixes | 0/4 | Ready | - |
 | 32. Medium/Low Security | 0/TBD | Not started | - |
 | 33. Workspace Management | 0/TBD | Not started | - |
@@ -166,4 +166,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-01-22*
-*Last updated: 2026-01-22*
+*Last updated: 2026-01-22 after Phase 30 completion*
