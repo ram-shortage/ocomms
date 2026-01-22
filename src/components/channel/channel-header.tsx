@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Hash, Lock, Users, Settings, LogOut, Check, X } from "lucide-react";
+import { Hash, Lock, Users, Settings, LogOut, Check, X, MoreVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -15,6 +15,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { leaveChannel, updateChannelTopic } from "@/lib/actions/channel";
 import { InviteToChannelDialog } from "./invite-to-channel-dialog";
 import { PinnedMessagesDialog } from "./pinned-messages-dialog";
@@ -101,6 +108,81 @@ export function ChannelHeader({
     }
   };
 
+  // Shared dialog content for members
+  const MembersDialogContent = () => (
+    <>
+      <DialogHeader>
+        <DialogTitle>Channel Members</DialogTitle>
+        <DialogDescription>
+          {channel.memberCount} member{channel.memberCount !== 1 ? "s" : ""} in #{channel.name}
+        </DialogDescription>
+      </DialogHeader>
+      <div className="max-h-64 overflow-y-auto space-y-2">
+        {members.map((member) => (
+          <div
+            key={member.id}
+            className="flex items-center gap-3 p-2 rounded-md hover:bg-muted"
+          >
+            <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center text-sm font-medium">
+              {member.image ? (
+                <img
+                  src={member.image}
+                  alt={member.name}
+                  className="h-8 w-8 rounded-full object-cover"
+                />
+              ) : (
+                member.name.charAt(0).toUpperCase()
+              )}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium truncate">{member.name}</p>
+              <p className="text-xs text-muted-foreground truncate">
+                {member.email}
+              </p>
+            </div>
+            {member.role === "admin" && (
+              <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded">
+                Admin
+              </span>
+            )}
+          </div>
+        ))}
+      </div>
+    </>
+  );
+
+  // Shared dialog content for leave
+  const LeaveDialogContent = () => (
+    <>
+      <DialogHeader>
+        <DialogTitle>Leave #{channel.name}?</DialogTitle>
+        <DialogDescription>
+          You can rejoin this channel at any time from the channel directory.
+          {channel.isPrivate && " However, for private channels, you will need to be re-invited."}
+        </DialogDescription>
+      </DialogHeader>
+      {error && (
+        <p className="text-sm text-red-600">{error}</p>
+      )}
+      <DialogFooter>
+        <Button
+          variant="outline"
+          onClick={() => setShowLeaveDialog(false)}
+          disabled={leaving}
+        >
+          Cancel
+        </Button>
+        <Button
+          variant="destructive"
+          onClick={handleLeave}
+          disabled={leaving}
+        >
+          {leaving ? "Leaving..." : "Leave Channel"}
+        </Button>
+      </DialogFooter>
+    </>
+  );
+
   return (
     <header className="border-b px-4 py-3">
       <div className="flex items-center justify-between">
@@ -114,8 +196,8 @@ export function ChannelHeader({
             <h1 className="font-semibold text-lg truncate">{channel.name}</h1>
           </div>
 
-          {/* Topic - inline editable */}
-          <div className="flex-1 min-w-0">
+          {/* Topic - inline editable (hidden on mobile) */}
+          <div className="hidden sm:block flex-1 min-w-0">
             {isEditingTopic ? (
               <div className="flex items-center gap-2">
                 <Input
@@ -159,7 +241,8 @@ export function ChannelHeader({
           </div>
         </div>
 
-        <div className="flex items-center gap-2 ml-4">
+        {/* Desktop actions - hidden on mobile */}
+        <div className="hidden md:flex items-center gap-2 ml-4">
           {error && (
             <span className="text-sm text-red-600">{error}</span>
           )}
@@ -193,43 +276,7 @@ export function ChannelHeader({
               </Button>
             </DialogTrigger>
             <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Channel Members</DialogTitle>
-                <DialogDescription>
-                  {channel.memberCount} member{channel.memberCount !== 1 ? "s" : ""} in #{channel.name}
-                </DialogDescription>
-              </DialogHeader>
-              <div className="max-h-64 overflow-y-auto space-y-2">
-                {members.map((member) => (
-                  <div
-                    key={member.id}
-                    className="flex items-center gap-3 p-2 rounded-md hover:bg-muted"
-                  >
-                    <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center text-sm font-medium">
-                      {member.image ? (
-                        <img
-                          src={member.image}
-                          alt={member.name}
-                          className="h-8 w-8 rounded-full object-cover"
-                        />
-                      ) : (
-                        member.name.charAt(0).toUpperCase()
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{member.name}</p>
-                      <p className="text-xs text-muted-foreground truncate">
-                        {member.email}
-                      </p>
-                    </div>
-                    {member.role === "admin" && (
-                      <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded">
-                        Admin
-                      </span>
-                    )}
-                  </div>
-                ))}
-              </div>
+              <MembersDialogContent />
             </DialogContent>
           </Dialog>
 
@@ -262,36 +309,58 @@ export function ChannelHeader({
               </Button>
             </DialogTrigger>
             <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Leave #{channel.name}?</DialogTitle>
-                <DialogDescription>
-                  You can rejoin this channel at any time from the channel directory.
-                  {channel.isPrivate && " However, for private channels, you will need to be re-invited."}
-                </DialogDescription>
-              </DialogHeader>
-              {error && (
-                <p className="text-sm text-red-600">{error}</p>
-              )}
-              <DialogFooter>
-                <Button
-                  variant="outline"
-                  onClick={() => setShowLeaveDialog(false)}
-                  disabled={leaving}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  variant="destructive"
-                  onClick={handleLeave}
-                  disabled={leaving}
-                >
-                  {leaving ? "Leaving..." : "Leave Channel"}
-                </Button>
-              </DialogFooter>
+              <LeaveDialogContent />
             </DialogContent>
           </Dialog>
         </div>
+
+        {/* Mobile overflow menu - shown only on mobile */}
+        <div className="md:hidden ml-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <MoreVertical className="h-5 w-5" />
+                <span className="sr-only">Channel actions</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onSelect={() => setShowMembersDialog(true)}>
+                <Users className="h-4 w-4 mr-2" />
+                Members ({channel.memberCount})
+              </DropdownMenuItem>
+              {isAdmin && (
+                <DropdownMenuItem asChild>
+                  <Link href={`/${workspaceSlug}/channels/${channel.slug}/settings`}>
+                    <Settings className="h-4 w-4 mr-2" />
+                    Settings
+                  </Link>
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onSelect={() => setShowLeaveDialog(true)}
+                className="text-destructive focus:text-destructive"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Leave channel
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
+
+      {/* Dialogs for mobile menu (rendered outside the mobile-only div) */}
+      <Dialog open={showMembersDialog} onOpenChange={setShowMembersDialog}>
+        <DialogContent>
+          <MembersDialogContent />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showLeaveDialog} onOpenChange={setShowLeaveDialog}>
+        <DialogContent>
+          <LeaveDialogContent />
+        </DialogContent>
+      </Dialog>
     </header>
   );
 }

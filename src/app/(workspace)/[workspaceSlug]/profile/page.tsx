@@ -36,9 +36,10 @@ export default async function ProfilePage({
   }
 
   return (
-    <div className="p-8 max-w-2xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Your Profile</h1>
+    <div className="p-4 sm:p-8 max-w-2xl mx-auto">
+      {/* Mobile: stack vertically. Desktop: side by side */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-6">
+        <h1 className="text-xl sm:text-2xl font-bold">Your Profile</h1>
         <Link
           href={`/${workspaceSlug}`}
           className="text-sm text-primary hover:underline"
