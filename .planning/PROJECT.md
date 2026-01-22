@@ -141,7 +141,62 @@ Requirements shipped and working in production:
 
 ### Active
 
-*No active milestone. Use `/gsd:new-milestone` to start v0.6.0 planning.*
+**v0.6.0 - Polish & Hardening**
+
+Security:
+- [ ] Fix CSP policy (remove unsafe-inline/unsafe-eval)
+- [ ] Fix session validation cache bypass vulnerability
+- [ ] Implement proper SVG sanitization for emoji uploads
+- [ ] Add rate limiting to all Socket.IO event handlers
+- [ ] Add message content sanitization (Unicode, RTL, control chars)
+- [ ] Add channel membership check to notes API
+- [ ] Add audit log integrity protection
+- [ ] Strengthen export authorization (IDOR fix)
+- [ ] Implement password breach checking
+- [ ] Add per-user storage quotas
+- [ ] Enforce secure cookie handling in production
+- [ ] Implement structured logging (no debug info leakage)
+- [ ] Strengthen Socket.IO CORS validation
+- [ ] Validate redirect URLs
+- [ ] Add DNS rebinding protection for link previews
+- [ ] Disconnect soft-locked guests from Socket.IO
+- [ ] Add Subresource Integrity (SRI)
+- [ ] Add security headers to API routes
+- [ ] Prevent verbose error messages in development
+- [ ] Add password history tracking
+- [ ] Add MFA support (TOTP)
+- [ ] Implement orphaned attachment cleanup
+
+Bug Fixes:
+- [ ] Fix DMs 404 on mobile
+- [ ] Fix profile page title concatenation
+- [ ] Fix mobile channel header crowding
+- [ ] Add tooltip for truncated workspace names
+- [ ] Fix mobile navigation state inconsistency
+
+Workspace Management:
+- [ ] Workspace switcher (for users in multiple workspaces)
+- [ ] Workspace discovery and join flow
+
+Sidebar Reorganization:
+- [ ] Move "new category" to settings
+- [ ] Drag-and-drop reordering for categories
+- [ ] Drag-and-drop reordering for channels within categories
+- [ ] Drag-and-drop reordering for DM conversations
+- [ ] Drag-and-drop reordering for sidebar sections (Notes, Scheduled, Reminders, Saved)
+- [ ] Per-user sidebar order preferences
+
+Mobile Redesign:
+- [ ] Mobile access to scheduled messages
+- [ ] Mobile access to reminders
+- [ ] Mobile access to bookmarks/saved items
+- [ ] Mobile access to user status management
+- [ ] Mobile access to custom emoji picker
+- [ ] Mobile access to user groups management
+- [ ] Mobile access to guest management
+- [ ] Mobile access to workspace analytics
+- [ ] Fix visual polish (crowding, spacing, touch targets)
+- [ ] Ensure navigation state correctness across all routes
 
 ### Out of Scope
 
@@ -222,4 +277,4 @@ Requirements shipped and working in production:
 ---
 
 ---
-*Last updated: 2026-01-21 after v0.5.0 milestone completion*
+*Last updated: 2026-01-22 after v0.6.0 milestone initialization*
