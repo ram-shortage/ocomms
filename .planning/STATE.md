@@ -68,6 +68,9 @@ Recent from Phase 36:
 - Touch target validation uses 44px minimum per iOS HIG (E2E-06)
 - Multi-user realtime tests use browser.newContext with storage states (E2E-07)
 - Regression tests use Date.now() timestamps to avoid collision (E2E-08)
+- Multi-browser context for cross-user approval flow testing (E2E-WS-01)
+- dnd-kit compatible drag operations with 300ms UI delay (E2E-SIDE-01)
+- Hover before drag pattern - handles appear on hover (E2E-SIDE-02)
 
 Recent from Phase 35:
 - vaul 1.1.2 via --legacy-peer-deps for React 19 compatibility (MOB-01)
