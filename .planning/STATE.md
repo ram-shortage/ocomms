@@ -48,6 +48,7 @@ Progress: [██████████████████████░
 Decisions are logged in PROJECT.md Key Decisions table.
 
 Recent from Phase 32:
+- 1GB default storage quota per user with 80% warning, 100% block (SEC2-10)
 - 24-hour grace period for orphaned attachment cleanup (avoids deleting in-progress uploads)
 - Daily cleanup at 3 AM (low traffic time, once daily sufficient)
 - SHA-384 for SRI hashes (industry standard balance of security and performance)
