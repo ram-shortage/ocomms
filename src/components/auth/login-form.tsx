@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,17 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 
+/**
+ * Client-side redirect URL validation.
+ * Mirrors server-side validation in lib/redirect-validation.ts
+ * Only allows relative URLs starting with / (same origin).
+ */
+function isValidReturnUrl(url: string | null): boolean {
+  if (!url) return false;
+  // Only allow relative URLs starting with / but not // (protocol-relative)
+  return url.startsWith("/") && !url.startsWith("//");
+}
+
 export function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,7 +27,13 @@ export function LoginForm() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const returnUrl = searchParams.get("returnUrl");
+  const rawReturnUrl = searchParams.get("returnUrl");
+
+  // SEC2-14: Validate returnUrl to prevent open redirect attacks
+  const returnUrl = useMemo(() =>
+    isValidReturnUrl(rawReturnUrl) ? rawReturnUrl : null,
+    [rawReturnUrl]
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -12,6 +12,7 @@ import { Server as SocketServer } from "socket.io";
 import { createRedisAdapter, createPresenceRedisClient } from "./socket/adapter";
 import { setupSocketHandlers } from "./socket";
 import { initAllowedRedirectDomains } from "@/lib/redirect-validation";
+import { scheduleAttachmentCleanup } from "./queue/attachment-cleanup.queue";
 import type { ClientToServerEvents, ServerToClientEvents, SocketData } from "@/lib/socket-events";
 
 const dev = process.env.NODE_ENV !== "production";
@@ -95,6 +96,14 @@ const allowedOrigins = getAllowedOrigins();
 
   // Setup event handlers with Redis for presence
   setupSocketHandlers(io, presenceRedis);
+
+  // Schedule attachment cleanup job (runs daily at 3 AM)
+  try {
+    await scheduleAttachmentCleanup();
+  } catch (error) {
+    // Non-fatal: cleanup scheduling failed (Redis may not be available)
+    console.warn("[Server] Failed to schedule attachment cleanup:", error);
+  }
 
   httpServer.listen(port, () => {
     console.log(`> Ready on http://${hostname}:${port}`);
