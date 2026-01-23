@@ -64,6 +64,13 @@ export const organization = pgTable("organizations", {
   logo: text("logo"),
   metadata: text("metadata"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
+  // Workspace join policy - controls how users can join
+  // "invite_only": Hidden from browse, only via invitation (default)
+  // "request": Visible in browse, user can request to join (admin approval required)
+  // "open": Visible in browse, instant join (no approval needed)
+  joinPolicy: text("join_policy").notNull().default("invite_only"),
+  // Optional description shown in browse workspaces page
+  description: text("description"),
 });
 
 export const member = pgTable("members", {
