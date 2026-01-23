@@ -2,26 +2,44 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, MessageSquare, AtSign, Search, User } from "lucide-react";
+import { Home, MessageSquare, AtSign, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { MobileMoreMenu } from "@/components/mobile/mobile-more-menu";
 
 interface MobileTabBarProps {
   workspaceSlug: string;
 }
 
+// Primary tabs - reduced to 4 to make room for More button
 const tabs = [
   { href: (slug: string) => `/${slug}`, icon: Home, label: "Home" },
   { href: (slug: string) => `/${slug}/dm`, icon: MessageSquare, label: "DMs" },
   { href: (slug: string) => `/${slug}/threads`, icon: AtSign, label: "Mentions" },
   { href: (slug: string) => `/${slug}/search`, icon: Search, label: "Search" },
-  { href: (slug: string) => `/${slug}/profile`, icon: User, label: "Profile" },
+];
+
+// Routes handled by the More menu (for active state detection)
+const moreMenuRoutes = [
+  "/scheduled",
+  "/reminders",
+  "/saved",
+  "/notes",
+  "/settings",
+  "/profile",
 ];
 
 /**
  * Determines if a tab should be highlighted as active based on current pathname.
  * Handles all route cases including subpages and related routes.
+ * Returns false if current route is in the More menu (handled separately).
  */
 function getIsActive(label: string, tabHref: string, pathname: string, workspaceSlug: string): boolean {
+  // If we're on a More menu route, no primary tab should be highlighted
+  const isOnMoreRoute = moreMenuRoutes.some(route =>
+    pathname.startsWith(`/${workspaceSlug}${route}`)
+  );
+  if (isOnMoreRoute) return false;
+
   // Exact match always wins
   if (pathname === tabHref) return true;
 
@@ -36,10 +54,6 @@ function getIsActive(label: string, tabHref: string, pathname: string, workspace
       return pathname.startsWith(`/${workspaceSlug}/threads`);
     case "Search":
       return pathname.startsWith(`/${workspaceSlug}/search`);
-    case "Profile":
-      // Profile tab also active for settings (logical grouping)
-      return pathname.startsWith(`/${workspaceSlug}/profile`) ||
-             pathname.startsWith(`/${workspaceSlug}/settings`);
     default:
       return false;
   }
@@ -76,6 +90,7 @@ export function MobileTabBar({ workspaceSlug }: MobileTabBarProps) {
             </Link>
           );
         })}
+        <MobileMoreMenu workspaceSlug={workspaceSlug} />
       </div>
     </nav>
   );
