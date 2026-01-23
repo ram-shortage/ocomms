@@ -23,23 +23,23 @@ Requirements for v0.6.0 Polish & Hardening release.
 
 ### Security - Medium
 
-- [ ] **SEC2-09**: Password validation checks against Have I Been Pwned breach database
-- [ ] **SEC2-10**: Per-user storage quota tracking with configurable limits
-- [ ] **SEC2-11**: Production accepts only `__Secure-` prefixed session cookies
-- [ ] **SEC2-12**: Structured logging with log levels, no stack traces in production
-- [ ] **SEC2-13**: Socket.IO CORS validates origin against whitelist, logs violations
-- [ ] **SEC2-14**: Redirect URLs validated against allowed domains on startup
-- [ ] **SEC2-15**: Link preview SSRF protection includes DNS rebinding checks
-- [ ] **SEC2-16**: Soft-locked guests disconnected from Socket.IO with notification
+- [x] **SEC2-09**: Password validation checks against Have I Been Pwned breach database
+- [x] **SEC2-10**: Per-user storage quota tracking with configurable limits
+- [x] **SEC2-11**: Production accepts only `__Secure-` prefixed session cookies
+- [x] **SEC2-12**: Structured logging with log levels, no stack traces in production
+- [x] **SEC2-13**: Socket.IO CORS validates origin against whitelist, logs violations
+- [x] **SEC2-14**: Redirect URLs validated against allowed domains on startup
+- [x] **SEC2-15**: Link preview SSRF protection includes DNS rebinding checks
+- [x] **SEC2-16**: Soft-locked guests disconnected from Socket.IO with notification
 
 ### Security - Low
 
-- [ ] **SEC2-17**: Static assets use Subresource Integrity (SRI) hashes
-- [ ] **SEC2-18**: API routes set security headers directly, not just via nginx
-- [ ] **SEC2-19**: Development error messages sanitized, no implementation detail leaks
-- [ ] **SEC2-20**: Password changes check against last 5 passwords
-- [ ] **SEC2-21**: TOTP-based MFA with QR code setup and backup codes
-- [ ] **SEC2-22**: Background job cleans up orphaned attachments older than 24h
+- [x] **SEC2-17**: Static assets use Subresource Integrity (SRI) hashes
+- [x] **SEC2-18**: API routes set security headers directly, not just via nginx
+- [x] **SEC2-19**: Development error messages sanitized, no implementation detail leaks
+- [x] **SEC2-20**: Password changes check against last 5 passwords
+- [x] **SEC2-21**: TOTP-based MFA with QR code setup and backup codes
+- [x] **SEC2-22**: Background job cleans up orphaned attachments older than 24h
 
 ### Bug Fixes
 
@@ -126,20 +126,20 @@ Which phases cover which requirements.
 | SEC2-06 | Phase 31 | Complete |
 | SEC2-07 | Phase 31 | Complete |
 | SEC2-08 | Phase 31 | Complete |
-| SEC2-09 | Phase 32 | Pending |
-| SEC2-10 | Phase 32 | Pending |
-| SEC2-11 | Phase 32 | Pending |
-| SEC2-12 | Phase 32 | Pending |
-| SEC2-13 | Phase 32 | Pending |
-| SEC2-14 | Phase 32 | Pending |
-| SEC2-15 | Phase 32 | Pending |
-| SEC2-16 | Phase 32 | Pending |
-| SEC2-17 | Phase 32 | Pending |
-| SEC2-18 | Phase 32 | Pending |
-| SEC2-19 | Phase 32 | Pending |
-| SEC2-20 | Phase 32 | Pending |
-| SEC2-21 | Phase 32 | Pending |
-| SEC2-22 | Phase 32 | Pending |
+| SEC2-09 | Phase 32 | Complete |
+| SEC2-10 | Phase 32 | Complete |
+| SEC2-11 | Phase 32 | Complete |
+| SEC2-12 | Phase 32 | Complete |
+| SEC2-13 | Phase 32 | Complete |
+| SEC2-14 | Phase 32 | Complete |
+| SEC2-15 | Phase 32 | Complete |
+| SEC2-16 | Phase 32 | Complete |
+| SEC2-17 | Phase 32 | Complete |
+| SEC2-18 | Phase 32 | Complete |
+| SEC2-19 | Phase 32 | Complete |
+| SEC2-20 | Phase 32 | Complete |
+| SEC2-21 | Phase 32 | Complete |
+| SEC2-22 | Phase 32 | Complete |
 | FIX-01 | Phase 31 | Complete |
 | FIX-02 | Phase 31 | Complete |
 | FIX-03 | Phase 31 | Complete |
@@ -179,4 +179,4 @@ Which phases cover which requirements.
 
 ---
 *Requirements defined: 2026-01-22*
-*Last updated: 2026-01-22 after Phase 31 completion*
+*Last updated: 2026-01-23 after Phase 32 completion*

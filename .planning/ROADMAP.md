@@ -24,7 +24,7 @@ See: .planning/milestones/v0.5.0-ROADMAP.md
 
 - [x] **Phase 30: Critical Security** - CSP hardening, session validation, SVG sanitization
 - [x] **Phase 31: High Security + Bug Fixes** - Socket.IO rate limiting, content sanitization, authorization fixes, quick bug fixes
-- [ ] **Phase 32: Medium/Low Security** - Password breach checks, quotas, logging, MFA, cleanup jobs
+- [x] **Phase 32: Medium/Low Security** - Password breach checks, quotas, logging, MFA, cleanup jobs
 - [ ] **Phase 33: Workspace Management** - Workspace switcher, discovery, join flow
 - [ ] **Phase 34: Sidebar Reorganization** - Drag-and-drop reordering, user preferences
 - [ ] **Phase 35: Mobile Redesign** - Feature accessibility, visual polish
@@ -83,13 +83,13 @@ Plans:
 **Plans**: 7 plans
 
 Plans:
-- [ ] 32-01-PLAN.md — Password breach check (bloom filter) and password history (SEC2-09, SEC2-20)
-- [ ] 32-02-PLAN.md — User storage quota tracking with 1GB default (SEC2-10)
-- [ ] 32-03-PLAN.md — Secure cookies, Pino logging, security headers (SEC2-11, SEC2-12, SEC2-18, SEC2-19)
-- [ ] 32-04-PLAN.md — Socket.IO CORS whitelist and guest disconnection (SEC2-13, SEC2-16)
-- [ ] 32-05-PLAN.md — Redirect validation and SSRF DNS rebinding protection (SEC2-14, SEC2-15)
-- [ ] 32-06-PLAN.md — TOTP MFA with backup codes (SEC2-21)
-- [ ] 32-07-PLAN.md — Orphaned attachment cleanup and SRI hashes (SEC2-22, SEC2-17)
+- [x] 32-01-PLAN.md — Password breach check (bloom filter) and password history (SEC2-09, SEC2-20)
+- [x] 32-02-PLAN.md — User storage quota tracking with 1GB default (SEC2-10)
+- [x] 32-03-PLAN.md — Secure cookies, Pino logging, security headers (SEC2-11, SEC2-12, SEC2-18, SEC2-19)
+- [x] 32-04-PLAN.md — Socket.IO CORS whitelist and guest disconnection (SEC2-13, SEC2-16)
+- [x] 32-05-PLAN.md — Redirect validation and SSRF DNS rebinding protection (SEC2-14, SEC2-15)
+- [x] 32-06-PLAN.md — TOTP MFA with backup codes (SEC2-21)
+- [x] 32-07-PLAN.md — Orphaned attachment cleanup and SRI hashes (SEC2-22, SEC2-17)
 
 ### Phase 33: Workspace Management
 **Goal**: Users can discover, join, and switch between workspaces
@@ -164,7 +164,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 30. Critical Security | 3/3 | Complete | 2026-01-22 |
 | 31. High Security + Bug Fixes | 4/4 | Complete | 2026-01-22 |
-| 32. Medium/Low Security | 0/7 | Ready | - |
+| 32. Medium/Low Security | 7/7 | Complete | 2026-01-23 |
 | 33. Workspace Management | 0/4 | Planned | - |
 | 34. Sidebar Reorganization | 0/TBD | Not started | - |
 | 35. Mobile Redesign | 0/TBD | Not started | - |
@@ -172,4 +172,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-01-22*
-*Last updated: 2026-01-22 after Phase 31 execution*
+*Last updated: 2026-01-23 after Phase 32 execution*
