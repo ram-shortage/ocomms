@@ -1,3 +1,34 @@
+/**
+ * Link Preview Worker
+ *
+ * Processes link preview jobs from BullMQ queue, fetching Open Graph metadata
+ * for URLs in messages.
+ *
+ * SSRF Protection (LINK-07, SEC2-15):
+ * - isUrlSafe() validates URL format before processing:
+ *   - Blocks direct IP addresses (forces DNS resolution path)
+ *   - Blocks known internal hostnames (localhost, 127.0.0.1, etc.)
+ *   - Blocks internal TLDs (.local, .internal, .localhost)
+ *   - Blocks cloud metadata endpoints (169.254.169.254, etc.)
+ *
+ * - RequestFilteringHttpAgent/HttpsAgent block requests to private IPs:
+ *   - DNS rebinding attacks are prevented because the agent validates
+ *     the resolved IP address (after DNS resolution), not just hostname
+ *   - The agent intercepts the request after DNS resolution, checking:
+ *     - 10.0.0.0/8 (private)
+ *     - 172.16.0.0/12 (private)
+ *     - 192.168.0.0/16 (private)
+ *     - 127.0.0.0/8 (loopback)
+ *     - 169.254.0.0/16 (link-local)
+ *     - ::1 (IPv6 loopback)
+ *     - fc00::/7 (IPv6 unique local)
+ *     - fe80::/10 (IPv6 link-local)
+ *
+ * This two-layer protection ensures:
+ * 1. Obvious malicious URLs blocked immediately (isUrlSafe)
+ * 2. DNS rebinding attacks blocked at request time (request-filtering-agent)
+ */
+
 import { Worker } from "bullmq";
 import { unfurl } from "unfurl.js";
 import fetch from "node-fetch";
@@ -15,13 +46,15 @@ import type { LinkPreviewJobData } from "@/server/queue/link-preview.queue";
 
 const CACHE_TTL_HOURS = 24;
 
-// Create filtering agents for SSRF protection (LINK-07)
+// Create filtering agents for SSRF protection (LINK-07, SEC2-15)
+// These agents validate resolved IP addresses, preventing DNS rebinding attacks
 const httpAgent = new RequestFilteringHttpAgent();
 const httpsAgent = new RequestFilteringHttpsAgent();
 
 /**
  * Custom fetch with SSRF protection via request-filtering-agent.
- * Blocks requests to private/internal IP addresses.
+ * Blocks requests to private/internal IP addresses after DNS resolution.
+ * This prevents DNS rebinding attacks where attacker DNS resolves to private IP.
  */
 async function safeFetch(url: string): Promise<Response> {
   const parsedUrl = new URL(url);
@@ -77,11 +110,14 @@ async function fetchAndCachePreview(
   }
 
   // 4. Fetch metadata with SSRF protection (request-filtering-agent)
+  // The safeFetch function uses request-filtering-agent which:
+  // - Validates resolved IP address (not just hostname)
+  // - Blocks requests to private/internal IPs after DNS resolution
+  // - Prevents DNS rebinding attacks (SEC2-15)
   try {
     const metadata = await unfurl(url, {
       timeout: 5000,
       follow: 3,
-      // Pass filtering fetch for SSRF protection (blocks private IPs after DNS resolution)
       fetch: safeFetch,
     });
 
