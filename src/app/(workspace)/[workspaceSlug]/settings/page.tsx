@@ -8,6 +8,7 @@ import { organizations, members } from "@/db/schema";
 import { NotificationsSection } from "./notifications-section";
 import { StorageUsage } from "@/components/settings/storage-usage";
 import { Badge } from "@/components/ui/badge";
+import { LeaveWorkspaceButton } from "@/components/workspace/leave-workspace-button";
 
 export default async function WorkspaceSettingsPage({
   params,
@@ -25,32 +26,47 @@ export default async function WorkspaceSettingsPage({
   }
 
   // Get organization and membership for admin check
-  const organization = await db.query.organizations.findFirst({
+  const org = await db.query.organizations.findFirst({
     where: eq(organizations.slug, workspaceSlug),
   });
 
-  let isAdmin = false;
+  if (!org) {
+    redirect("/");
+  }
+
+  const membership = await db.query.members.findFirst({
+    where: and(
+      eq(members.userId, session.user.id),
+      eq(members.organizationId, org.id)
+    ),
+  });
+
+  if (!membership) {
+    redirect("/");
+  }
+
+  const isAdmin = membership.role === "owner" || membership.role === "admin";
+
+  // Count owners in the workspace
+  const ownerMembers = await db.query.members.findMany({
+    where: and(
+      eq(members.organizationId, org.id),
+      eq(members.role, "owner")
+    ),
+  });
+  const ownerCount = ownerMembers.length;
+
+  // Get pending join request count for badge
   let pendingRequestCount = 0;
-  if (organization) {
-    const membership = await db.query.members.findFirst({
+  if (isAdmin) {
+    const { workspaceJoinRequests } = await import("@/db/schema");
+    const pendingRequests = await db.query.workspaceJoinRequests.findMany({
       where: and(
-        eq(members.userId, session.user.id),
-        eq(members.organizationId, organization.id)
+        eq(workspaceJoinRequests.organizationId, org.id),
+        eq(workspaceJoinRequests.status, "pending")
       ),
     });
-    isAdmin = membership?.role === "owner" || membership?.role === "admin";
-
-    // Get pending join request count for badge
-    if (isAdmin) {
-      const { workspaceJoinRequests } = await import("@/db/schema");
-      const pendingRequests = await db.query.workspaceJoinRequests.findMany({
-        where: and(
-          eq(workspaceJoinRequests.organizationId, organization.id),
-          eq(workspaceJoinRequests.status, "pending")
-        ),
-      });
-      pendingRequestCount = pendingRequests.length;
-    }
+    pendingRequestCount = pendingRequests.length;
   }
 
   return (
@@ -151,6 +167,17 @@ export default async function WorkspaceSettingsPage({
         <div className="p-4 bg-card border rounded">
           <StorageUsage />
         </div>
+      </section>
+
+      {/* Danger Zone section */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold text-destructive">Danger Zone</h2>
+        <LeaveWorkspaceButton
+          workspaceId={org.id}
+          workspaceName={org.name}
+          userRole={membership.role as "owner" | "admin" | "member"}
+          ownerCount={ownerCount}
+        />
       </section>
 
       <div className="pt-4">

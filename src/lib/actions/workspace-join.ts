@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { organizations, members, workspaceJoinRequests } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { revalidatePath } from "next/cache";
 import { eq, and, ne, sql, notInArray } from "drizzle-orm";
 import { nanoid } from "nanoid";
 
@@ -503,4 +504,59 @@ export async function bulkRejectRequests(requestIds: string[], reason?: string) 
   }
 
   return { success: true, rejected, failed };
+}
+
+/**
+ * Leave a workspace.
+ * Users can leave any workspace they're a member of, unless they're the only owner.
+ */
+export async function leaveWorkspace(workspaceId: string) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session?.user) {
+    throw new Error("Not authorized");
+  }
+
+  // Get user's membership
+  const membership = await db.query.members.findFirst({
+    where: and(
+      eq(members.userId, session.user.id),
+      eq(members.organizationId, workspaceId)
+    ),
+  });
+
+  if (!membership) {
+    throw new Error("You are not a member of this workspace");
+  }
+
+  // If user is an owner, check if there are other owners
+  if (membership.role === "owner") {
+    const ownerCount = await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(members)
+      .where(
+        and(
+          eq(members.organizationId, workspaceId),
+          eq(members.role, "owner")
+        )
+      );
+
+    if (ownerCount[0]?.count === 1) {
+      throw new Error(
+        "You cannot leave as the only owner. Transfer ownership first."
+      );
+    }
+  }
+
+  // Delete the membership
+  await db
+    .delete(members)
+    .where(eq(members.id, membership.id));
+
+  // Revalidate to update the UI
+  revalidatePath("/");
+
+  return { success: true };
 }

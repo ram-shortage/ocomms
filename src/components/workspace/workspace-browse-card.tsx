@@ -74,9 +74,13 @@ export function WorkspaceBrowseCard({
               </Button>
             ) : workspace.joinPolicy === "open" ? (
               <Button onClick={onJoin}>Join</Button>
-            ) : (
+            ) : workspace.joinPolicy === "request" ? (
               <Button onClick={onRequest} variant="secondary">
                 Request to Join
+              </Button>
+            ) : (
+              <Button variant="outline" disabled>
+                Invite Only
               </Button>
             )}
           </div>
