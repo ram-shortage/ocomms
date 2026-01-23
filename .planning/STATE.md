@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-21)
 ## Current Position
 
 Phase: 35 of 36 (Mobile Redesign)
-Plan: 1 of 6 in current phase
+Plan: 2 of 6 in current phase
 Status: In progress
-Last activity: 2026-01-23 - Completed 35-01-PLAN.md (Mobile Foundation)
+Last activity: 2026-01-23 - Completed 35-02-PLAN.md (Analytics Mobile Responsive)
 
 Progress: [█████████████████████████░] 35/36 phases
 
@@ -63,6 +63,10 @@ Recent from Phase 35:
 - vaul 1.1.2 via --legacy-peer-deps for React 19 compatibility (MOB-01)
 - Touch-only long-press (no mouse events) - desktop uses right-click (MOB-02)
 - 50ms haptic feedback on long-press for subtle tactile confirmation (MOB-03)
+- overflow-x-auto for PeakTimesChart - horizontal scroll for 24-bar chart on mobile (MOBI2-01)
+- Hide progress bar in ChannelActivityTable on mobile - percentage text sufficient (MOBI2-02)
+- Native HTML date inputs for date picker - touch-optimized by OS (MOBI2-03)
+- min-h-11 (44px) touch targets per iOS HIG guidelines (MOBI2-04)
 
 Recent from Phase 33:
 - SQL aggregation with LATERAL joins for workspace unreads (efficient single query) (WS-01)
@@ -127,7 +131,7 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-23
-Stopped at: Completed 35-01-PLAN.md (Mobile Foundation)
+Stopped at: Completed 35-02-PLAN.md (Analytics Mobile Responsive)
 Resume file: None
 
 ## Human Verification Deferred
