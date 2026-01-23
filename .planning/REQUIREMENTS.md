@@ -51,12 +51,12 @@ Requirements for v0.6.0 Polish & Hardening release.
 
 ### Workspace Management
 
-- [ ] **WKSP2-01**: User can view list of workspaces they belong to
-- [ ] **WKSP2-02**: User can switch between workspaces from header dropdown
-- [ ] **WKSP2-03**: User can browse available workspaces to join
-- [ ] **WKSP2-04**: User can request to join a workspace (owner approval)
-- [ ] **WKSP2-05**: Owner can approve/reject join requests
-- [ ] **WKSP2-06**: Workspace switcher shows unread counts per workspace
+- [x] **WKSP2-01**: User can view list of workspaces they belong to
+- [x] **WKSP2-02**: User can switch between workspaces from header dropdown
+- [x] **WKSP2-03**: User can browse available workspaces to join
+- [x] **WKSP2-04**: User can request to join a workspace (owner approval)
+- [x] **WKSP2-05**: Owner can approve/reject join requests
+- [x] **WKSP2-06**: Workspace switcher shows unread counts per workspace
 
 ### Sidebar Reorganization
 
@@ -145,12 +145,12 @@ Which phases cover which requirements.
 | FIX-03 | Phase 31 | Complete |
 | FIX-04 | Phase 31 | Complete |
 | FIX-05 | Phase 31 | Complete |
-| WKSP2-01 | Phase 33 | Pending |
-| WKSP2-02 | Phase 33 | Pending |
-| WKSP2-03 | Phase 33 | Pending |
-| WKSP2-04 | Phase 33 | Pending |
-| WKSP2-05 | Phase 33 | Pending |
-| WKSP2-06 | Phase 33 | Pending |
+| WKSP2-01 | Phase 33 | Complete |
+| WKSP2-02 | Phase 33 | Complete |
+| WKSP2-03 | Phase 33 | Complete |
+| WKSP2-04 | Phase 33 | Complete |
+| WKSP2-05 | Phase 33 | Complete |
+| WKSP2-06 | Phase 33 | Complete |
 | SIDE-01 | Phase 34 | Pending |
 | SIDE-02 | Phase 34 | Pending |
 | SIDE-03 | Phase 34 | Pending |

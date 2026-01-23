@@ -5,7 +5,7 @@
 See: .planning/PROJECT.md (updated 2026-01-21)
 
 **Core value:** Data sovereignty - complete control over communication data
-**Current focus:** v0.6.0 Polish & Hardening - Phase 32 Medium/Low Security
+**Current focus:** v0.6.0 Polish & Hardening - Phase 33 Workspace Management (complete)
 
 ## Current Position
 

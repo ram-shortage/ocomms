@@ -25,7 +25,7 @@ See: .planning/milestones/v0.5.0-ROADMAP.md
 - [x] **Phase 30: Critical Security** - CSP hardening, session validation, SVG sanitization
 - [x] **Phase 31: High Security + Bug Fixes** - Socket.IO rate limiting, content sanitization, authorization fixes, quick bug fixes
 - [x] **Phase 32: Medium/Low Security** - Password breach checks, quotas, logging, MFA, cleanup jobs
-- [ ] **Phase 33: Workspace Management** - Workspace switcher, discovery, join flow
+- [x] **Phase 33: Workspace Management** - Workspace switcher, discovery, join flow
 - [ ] **Phase 34: Sidebar Reorganization** - Drag-and-drop reordering, user preferences
 - [ ] **Phase 35: Mobile Redesign** - Feature accessibility, visual polish
 - [ ] **Phase 36: Stabilization** - Integration testing, final polish
@@ -104,10 +104,10 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 33-01-PLAN.md — Join request schema and workspace unread aggregation
-- [ ] 33-02-PLAN.md — Workspace switcher UI with last-visited restoration
-- [ ] 33-03-PLAN.md — Browse workspaces page and join flow
-- [ ] 33-04-PLAN.md — Admin join request approval with notifications
+- [x] 33-01-PLAN.md — Join request schema and workspace unread aggregation
+- [x] 33-02-PLAN.md — Workspace switcher UI with last-visited restoration
+- [x] 33-03-PLAN.md — Browse workspaces page and join flow
+- [x] 33-04-PLAN.md — Admin join request approval with notifications
 
 ### Phase 34: Sidebar Reorganization
 **Goal**: Users can customize sidebar order with drag-and-drop, synced across devices
