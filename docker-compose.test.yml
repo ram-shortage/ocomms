@@ -1,0 +1,60 @@
+# Docker Compose test environment for E2E testing
+# Optimized for speed: tmpfs for database, no persistent volumes
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_APP_URL=http://localhost:3000
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:test_password_123@db:5432/ocomms_test
+      - REDIS_URL=redis://redis:6379
+      - BETTER_AUTH_SECRET=test_auth_secret_minimum_32_chars_long_for_security
+      - BETTER_AUTH_URL=http://localhost:3000
+      - NEXT_PUBLIC_APP_URL=http://localhost:3000
+      - NODE_ENV=production
+      # Email disabled in test environment
+      - SMTP_HOST=
+      - SMTP_PORT=
+      - SMTP_USER=
+      - SMTP_PASS=
+      - EMAIL_FROM=test@localhost
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/api/health"]
+      interval: 5s
+      timeout: 10s
+      retries: 30
+      start_period: 60s
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: test_password_123
+      POSTGRES_DB: ocomms_test
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
