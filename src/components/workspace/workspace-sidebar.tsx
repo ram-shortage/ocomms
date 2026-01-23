@@ -3,12 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Plus, Search, MessageSquare, StickyNote, FolderPlus, Bell, Clock, Bookmark, Smile } from "lucide-react";
+import { Plus, Search, MessageSquare, StickyNote, Bell, Clock, Bookmark, Smile } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ChannelListClient } from "@/components/channel/channel-list-client";
 import { CategorySidebar } from "@/components/channel/category-sidebar";
 import { ArchivedChannelsSection } from "@/components/channel/archived-channels-section";
-import { CreateCategoryDialog } from "@/components/channel/create-category-dialog";
 import { DMListClient } from "@/components/dm/dm-list-client";
 import { CreateChannelDialog } from "@/components/channel/create-channel-dialog";
 import { StartDMDialog } from "@/components/dm/start-dm-dialog";
@@ -255,24 +254,6 @@ export function WorkspaceSidebar({
               channels={channels}
               workspaceSlug={workspace.slug}
             />
-            {/* Create category button for admins when no categories exist */}
-            {isAdmin && (
-              <div className="px-3 pt-2">
-                <CreateCategoryDialog
-                  organizationId={workspace.id}
-                  trigger={
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="w-full justify-start text-xs text-muted-foreground hover:text-foreground"
-                    >
-                      <FolderPlus className="h-3 w-3 mr-2" />
-                      New Category
-                    </Button>
-                  }
-                />
-              </div>
-            )}
           </>
         )}
         <div className="px-3 py-2">

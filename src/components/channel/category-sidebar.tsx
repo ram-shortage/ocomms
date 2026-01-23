@@ -23,7 +23,7 @@ import {
   arrayMove,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { ChevronRight, ChevronDown, Hash, Lock, GripVertical, FolderPlus } from "lucide-react";
+import { ChevronRight, ChevronDown, Hash, Lock, GripVertical } from "lucide-react";
 import { useUnreadCounts } from "@/lib/hooks/use-unread";
 import {
   assignChannelToCategory,
@@ -32,8 +32,6 @@ import {
 } from "@/lib/actions/channel-category";
 import { updateCategoryOrder } from "@/lib/actions/sidebar-preferences";
 import { cn } from "@/lib/utils";
-import { CreateCategoryDialog } from "./create-category-dialog";
-import { Button } from "@/components/ui/button";
 
 interface Channel {
   id: string;
@@ -696,24 +694,6 @@ export function CategorySidebar({
           </div>
         )}
 
-        {/* Create category button for admins */}
-        {isAdmin && (
-          <div className="px-2 pt-2">
-            <CreateCategoryDialog
-              organizationId={organizationId}
-              trigger={
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="w-full justify-start text-xs text-muted-foreground hover:text-foreground"
-                >
-                  <FolderPlus className="h-3 w-3 mr-2" />
-                  New Category
-                </Button>
-              }
-            />
-          </div>
-        )}
       </div>
 
       {/* Drag overlay */}
