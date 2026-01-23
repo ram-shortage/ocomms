@@ -7,6 +7,7 @@ import { eq, and } from "drizzle-orm";
 import { organizations, members } from "@/db/schema";
 import { NotificationsSection } from "./notifications-section";
 import { StorageUsage } from "@/components/settings/storage-usage";
+import { Badge } from "@/components/ui/badge";
 
 export default async function WorkspaceSettingsPage({
   params,
@@ -29,6 +30,7 @@ export default async function WorkspaceSettingsPage({
   });
 
   let isAdmin = false;
+  let pendingRequestCount = 0;
   if (organization) {
     const membership = await db.query.members.findFirst({
       where: and(
@@ -37,6 +39,18 @@ export default async function WorkspaceSettingsPage({
       ),
     });
     isAdmin = membership?.role === "owner" || membership?.role === "admin";
+
+    // Get pending join request count for badge
+    if (isAdmin) {
+      const { workspaceJoinRequests } = await import("@/db/schema");
+      const pendingRequests = await db.query.workspaceJoinRequests.findMany({
+        where: and(
+          eq(workspaceJoinRequests.organizationId, organization.id),
+          eq(workspaceJoinRequests.status, "pending")
+        ),
+      });
+      pendingRequestCount = pendingRequests.length;
+    }
   }
 
   return (
@@ -65,6 +79,20 @@ export default async function WorkspaceSettingsPage({
         <section className="space-y-4">
           <h2 className="text-xl font-semibold">Administration</h2>
           <nav className="space-y-2">
+            <Link
+              href={`/${workspaceSlug}/settings/join-requests`}
+              className="block p-4 bg-card border rounded hover:bg-muted"
+            >
+              <div className="flex items-center gap-2">
+                <h3 className="font-medium">Join Requests</h3>
+                {pendingRequestCount > 0 && (
+                  <Badge variant="default">{pendingRequestCount}</Badge>
+                )}
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Review and manage workspace join requests
+              </p>
+            </Link>
             <Link
               href={`/${workspaceSlug}/settings/guests`}
               className="block p-4 bg-card border rounded hover:bg-muted"
