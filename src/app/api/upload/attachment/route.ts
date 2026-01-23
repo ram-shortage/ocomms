@@ -11,6 +11,8 @@ import {
   isSvgContent,
   MAX_FILE_SIZE,
 } from "@/lib/file-validation";
+import { checkQuota, updateUsage } from "@/lib/security/storage-quota";
+import { errorResponse } from "@/app/api/error-handling";
 
 export async function POST(request: NextRequest) {
   try {
@@ -35,6 +37,22 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: "File too large. Maximum size: 25MB" },
         { status: 400 }
+      );
+    }
+
+    // Check storage quota (SEC2-10: per-user storage limits)
+    const quotaCheck = await checkQuota(session.user.id, file.size);
+    if (!quotaCheck.allowed) {
+      return NextResponse.json(
+        {
+          error: "Storage quota exceeded",
+          details: {
+            currentUsage: quotaCheck.currentUsage,
+            quota: quotaCheck.quota,
+            percentUsed: quotaCheck.percentUsed,
+          },
+        },
+        { status: 413 } // Payload Too Large
       );
     }
 
@@ -95,6 +113,9 @@ export async function POST(request: NextRequest) {
       })
       .returning();
 
+    // Update user storage usage
+    await updateUsage(session.user.id, file.size);
+
     return NextResponse.json({
       id: attachment.id,
       path: attachment.path,
@@ -102,12 +123,10 @@ export async function POST(request: NextRequest) {
       mimeType: attachment.mimeType,
       sizeBytes: attachment.sizeBytes,
       isImage: attachment.isImage,
+      quotaWarning: quotaCheck.showWarning,
+      quotaPercentUsed: quotaCheck.percentUsed,
     });
   } catch (error) {
-    console.error("Attachment upload error:", error);
-    return NextResponse.json(
-      { error: "Failed to upload attachment" },
-      { status: 500 }
-    );
+    return errorResponse(error);
   }
 }

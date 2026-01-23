@@ -7,6 +7,7 @@ import { v4 as uuid } from "uuid";
 import { db } from "@/db";
 import { profiles } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { errorResponse } from "@/app/api/error-handling";
 
 const MAX_SIZE = 2 * 1024 * 1024; // 2MB
 
@@ -138,10 +139,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ avatarPath });
   } catch (error) {
-    console.error("Avatar upload error:", error);
-    return NextResponse.json(
-      { error: "Failed to upload avatar" },
-      { status: 500 }
-    );
+    return errorResponse(error);
   }
 }

@@ -5,6 +5,7 @@ import { db } from "@/db";
 import { session } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
+import { errorResponse } from "@/app/api/error-handling";
 
 /**
  * Parse user agent string to extract device and browser info.
@@ -92,10 +93,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(validSessions);
   } catch (error) {
-    console.error("[Sessions API] Error fetching sessions:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch sessions" },
-      { status: 500 }
-    );
+    return errorResponse(error);
   }
 }

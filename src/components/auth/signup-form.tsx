@@ -1,14 +1,23 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { signUp } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PasswordStrengthMeter } from "@/components/auth/password-strength-meter";
 import { PasswordRequirements } from "@/components/auth/password-requirements";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import Link from "next/link";
 
 /**
@@ -28,9 +37,11 @@ export function SignupForm() {
   const [name, setName] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [breachWarningOpen, setBreachWarningOpen] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const rawReturnUrl = searchParams.get("returnUrl");
+  const passwordInputRef = useRef<HTMLInputElement>(null);
 
   // SEC2-14: Validate returnUrl to prevent open redirect attacks
   const returnUrl = useMemo(() =>
@@ -38,31 +49,58 @@ export function SignupForm() {
     [rawReturnUrl]
   );
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent, bypassBreachWarning = false) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
-      const result = await signUp.email({
-        email,
-        password,
-        name,
+      // Use fetch directly to pass bypassBreachWarning flag
+      const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || ""}/api/auth/sign-up/email`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          password,
+          name,
+          bypassBreachWarning,
+        }),
+        credentials: "include",
       });
 
-      if (result.error) {
-        setError(result.error.message || "Signup failed");
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Check for password breach warning (SEC2-09)
+        if (data.code === "PASSWORD_BREACHED") {
+          setBreachWarningOpen(true);
+          return;
+        }
+        setError(data.message || "Signup failed");
       } else {
         // Preserve returnUrl through email verification flow
         const verifyUrl = "/verify-email?email=" + encodeURIComponent(email) +
           (returnUrl ? "&returnUrl=" + encodeURIComponent(returnUrl) : "");
         router.push(verifyUrl);
       }
-    } catch (err) {
+    } catch {
       setError("An unexpected error occurred");
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleChooseDifferentPassword = () => {
+    setBreachWarningOpen(false);
+    // Focus the password field for user to enter a new password
+    setTimeout(() => passwordInputRef.current?.focus(), 100);
+  };
+
+  const handleUseAnyway = async () => {
+    setBreachWarningOpen(false);
+    // Resubmit with bypass flag
+    const fakeEvent = { preventDefault: () => {} } as React.FormEvent;
+    await handleSubmit(fakeEvent, true);
   };
 
   return (
@@ -102,6 +140,7 @@ export function SignupForm() {
               onChange={(e) => setPassword(e.target.value)}
               minLength={8}
               required
+              ref={passwordInputRef}
             />
             {password && (
               <div className="space-y-2 pt-1">
@@ -122,6 +161,31 @@ export function SignupForm() {
           </Link>
         </p>
       </CardContent>
+
+      {/* Breach warning dialog (SEC2-09) */}
+      <AlertDialog open={breachWarningOpen} onOpenChange={setBreachWarningOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Password Security Warning</AlertDialogTitle>
+            <AlertDialogDescription>
+              This password has appeared in known data breaches. Using it puts your
+              account at higher risk of being compromised. We strongly recommend
+              choosing a different password.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={handleChooseDifferentPassword}>
+              Choose Different Password
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleUseAnyway}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              I understand the risk, use anyway
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 }

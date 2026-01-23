@@ -18,6 +18,7 @@ import { TypingIndicator } from "./typing-indicator";
 import { ScheduleSendDropdown } from "@/components/schedule/schedule-send-dropdown";
 import { createScheduledMessage } from "@/lib/actions/scheduled-message";
 import { format, isToday, isTomorrow } from "date-fns";
+import { toast } from "sonner";
 
 const MAX_MESSAGE_LENGTH = 10_000;
 
@@ -141,6 +142,16 @@ export function MessageInput({ targetId, targetType, members = [], groups = [], 
             return next;
           });
           setStagedAttachments((prev) => [...prev, result]);
+
+          // Show warning toast if approaching quota limit (SEC2-10)
+          if (result.quotaWarning) {
+            const percentUsed = result.quotaPercentUsed
+              ? Math.round(result.quotaPercentUsed * 100)
+              : 80;
+            toast.warning(
+              `You're using ${percentUsed}% of your storage quota. Consider deleting unused files.`
+            );
+          }
         })
         .catch((err) => {
           // Remove from pending, show error

@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useSession } from "@/lib/auth-client";
 import { MFASetup } from "@/components/settings/mfa-setup";
+import { ChangePasswordForm } from "@/components/settings/change-password-form";
 import Link from "next/link";
 import { use } from "react";
 
@@ -52,13 +53,21 @@ export default function SecuritySettingsPage({
         </Link>
       </div>
 
-      <MFASetup
-        enabled={user?.twoFactorEnabled ?? false}
-        onStatusChange={() => {
-          // Refresh the page to get updated status
-          router.refresh();
-        }}
-      />
+      {/* Change Password section */}
+      <div className="bg-card border rounded-lg p-6">
+        <ChangePasswordForm />
+      </div>
+
+      {/* MFA Setup section */}
+      <div className="bg-card border rounded-lg p-6">
+        <MFASetup
+          enabled={user?.twoFactorEnabled ?? false}
+          onStatusChange={() => {
+            // Refresh the page to get updated status
+            router.refresh();
+          }}
+        />
+      </div>
     </div>
   );
 }

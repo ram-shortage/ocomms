@@ -6,6 +6,7 @@ import { db } from "@/db";
 import { eq, and } from "drizzle-orm";
 import { organizations, members } from "@/db/schema";
 import { NotificationsSection } from "./notifications-section";
+import { StorageUsage } from "@/components/settings/storage-usage";
 
 export default async function WorkspaceSettingsPage({
   params,
@@ -114,6 +115,14 @@ export default async function WorkspaceSettingsPage({
 
       {/* Notifications section */}
       <NotificationsSection />
+
+      {/* Storage usage section */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold">Your Account</h2>
+        <div className="p-4 bg-card border rounded">
+          <StorageUsage />
+        </div>
+      </section>
 
       <div className="pt-4">
         <Link

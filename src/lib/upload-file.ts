@@ -12,6 +12,8 @@ export interface UploadResult {
   mimeType: string;
   sizeBytes: number;
   isImage: boolean;
+  quotaWarning?: boolean;
+  quotaPercentUsed?: number;
 }
 
 export interface UploadOptions {
@@ -22,7 +24,7 @@ export interface UploadOptions {
 }
 
 export interface UploadError extends Error {
-  code?: "FILE_TOO_LARGE" | "UNAUTHORIZED" | "INVALID_TYPE" | "NETWORK_ERROR" | "SERVER_ERROR";
+  code?: "FILE_TOO_LARGE" | "UNAUTHORIZED" | "INVALID_TYPE" | "NETWORK_ERROR" | "SERVER_ERROR" | "QUOTA_EXCEEDED";
 }
 
 /**
@@ -74,6 +76,11 @@ export function uploadFile(
       } else if (xhr.status === 401) {
         const error = new Error("Unauthorized") as UploadError;
         error.code = "UNAUTHORIZED";
+        reject(error);
+      } else if (xhr.status === 413) {
+        // Storage quota exceeded
+        const error = new Error("Storage quota exceeded. Delete files to upload more.") as UploadError;
+        error.code = "QUOTA_EXCEEDED";
         reject(error);
       } else if (xhr.status === 400) {
         // Parse server error message

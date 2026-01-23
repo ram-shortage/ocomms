@@ -4,13 +4,15 @@ import { createAuthMiddleware, APIError } from "better-auth/api";
 import { organization, twoFactor } from "better-auth/plugins";
 import { db } from "@/db";
 import * as schema from "@/db/schema";
-import { userLockout, user } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { userLockout, user, passwordHistory } from "@/db/schema";
+import { eq, desc } from "drizzle-orm";
+import bcrypt from "bcryptjs";
 import { sendVerificationEmail, sendInviteEmail, sendUnlockEmail, sendResetPasswordEmail } from "./email";
 import { validatePasswordComplexity } from "./password-validation";
 import { auditLog, AuditEventType, getClientIP, getUserAgent } from "./audit-logger";
 import { addUserSession, removeUserSession, revokeAllUserSessions } from "./security/session-store";
 import { authLogger } from "./logger";
+import { isPasswordBreached } from "./security/breach-check";
 
 /**
  * Progressive delay based on failed attempt count.
@@ -106,6 +108,43 @@ export const auth = betterAuth({
           if (errors.length > 0) {
             throw new APIError("BAD_REQUEST", {
               message: errors.join(". "),
+            });
+          }
+
+          // Check if password appears in breach database (SEC2-09)
+          // User can bypass this with explicit confirmation
+          const bypassBreachWarning = (ctx.body as { bypassBreachWarning?: boolean })?.bypassBreachWarning;
+          if (isPasswordBreached(password) && !bypassBreachWarning) {
+            // Use custom error code for UI to show breach warning dialog
+            throw new APIError("FORBIDDEN", {
+              message: "This password appeared in data breaches. Choose a different one.",
+              code: "PASSWORD_BREACHED",
+            });
+          }
+        }
+      }
+
+      // Password history check for change-password (SEC2-20)
+      if (ctx.path === "/change-password") {
+        const session = ctx.context.session;
+        const newPassword = (ctx.body as { newPassword?: string })?.newPassword;
+
+        if (session?.user?.id && newPassword) {
+          // Get last 5 passwords from history
+          const history = await db.query.passwordHistory.findMany({
+            where: eq(passwordHistory.userId, session.user.id),
+            orderBy: desc(passwordHistory.createdAt),
+            limit: 5,
+          });
+
+          // Check against all history entries to prevent timing attacks
+          const matchResults = await Promise.all(
+            history.map((h) => bcrypt.compare(newPassword, h.passwordHash))
+          );
+
+          if (matchResults.some((match) => match)) {
+            throw new APIError("BAD_REQUEST", {
+              message: "You cannot reuse your last 5 passwords",
             });
           }
         }
@@ -373,7 +412,7 @@ export const auth = betterAuth({
         }
       }
 
-      // Handle password change - revoke all other sessions
+      // Handle password change - revoke all other sessions and store password history
       if (ctx.path === "/change-password") {
         const response = ctx.context.returned;
         // Check if password change was successful
@@ -386,9 +425,37 @@ export const auth = betterAuth({
 
         if (changeSuccessful) {
           const session = ctx.context.session;
+          const newPassword = (ctx.body as { newPassword?: string })?.newPassword;
+
           if (session?.user?.id && session?.session?.id) {
             // Revoke all other sessions, keep current one active
             await revokeAllUserSessions(session.user.id, session.session.id);
+
+            // Store password in history for reuse prevention (SEC2-20)
+            if (newPassword) {
+              // Hash the new password for history storage
+              const passwordHash = await bcrypt.hash(newPassword, 10);
+              await db.insert(passwordHistory).values({
+                userId: session.user.id,
+                passwordHash,
+              });
+
+              // Delete oldest entries if more than 5 exist
+              const history = await db.query.passwordHistory.findMany({
+                where: eq(passwordHistory.userId, session.user.id),
+                orderBy: desc(passwordHistory.createdAt),
+              });
+
+              if (history.length > 5) {
+                // Get IDs of entries to delete (oldest ones beyond limit)
+                const toDelete = history.slice(5).map((h) => h.id);
+                for (const id of toDelete) {
+                  await db
+                    .delete(passwordHistory)
+                    .where(eq(passwordHistory.id, id));
+                }
+              }
+            }
           }
         }
       }
