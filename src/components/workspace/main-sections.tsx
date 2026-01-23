@@ -72,9 +72,12 @@ function SortableMainSection({
   const config = SECTION_CONFIG[sectionId];
   if (!config) return null;
 
-  // Don't render archived section if it has no content
+  // For archived section: always render children (so it can load and report count)
+  // but hide the header/chrome until we know there's content
   if (sectionId === "archived" && !hasContent) {
-    return null;
+    // Render children in a hidden container so ArchivedChannelsSection can
+    // fetch data and call onCountLoaded, but don't show any UI yet
+    return <div className="hidden">{children}</div>;
   }
 
   const style = {
