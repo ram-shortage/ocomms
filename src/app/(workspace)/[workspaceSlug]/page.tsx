@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
+import { getLastVisited } from "@/server/redis";
 
 export default async function WorkspacePage({
   params,
@@ -27,6 +28,18 @@ export default async function WorkspacePage({
 
   if (!workspace) {
     notFound();
+  }
+
+  // Check for last-visited path and restore position
+  try {
+    const lastVisited = await getLastVisited(session.user.id, workspace.id);
+    if (lastVisited && lastVisited !== `/${workspaceSlug}`) {
+      // Only redirect if not already at workspace root (prevent redirect loop)
+      redirect(lastVisited);
+    }
+  } catch (error) {
+    console.error("Error getting last-visited path:", error);
+    // Continue to show welcome page if Redis fails
   }
 
   return (
