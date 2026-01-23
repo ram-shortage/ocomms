@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-21)
 ## Current Position
 
 Phase: 35 of 36 (Mobile Redesign)
-Plan: 2 of 6 in current phase
+Plan: 5 of 6 in current phase
 Status: In progress
-Last activity: 2026-01-23 - Completed 35-02-PLAN.md (Analytics Mobile Responsive)
+Last activity: 2026-01-23 - Completed 35-05-PLAN.md (Channel Header Mobile Overflow Menu)
 
 Progress: [█████████████████████████░] 35/36 phases
 
@@ -67,6 +67,7 @@ Recent from Phase 35:
 - Hide progress bar in ChannelActivityTable on mobile - percentage text sufficient (MOBI2-02)
 - Native HTML date inputs for date picker - touch-optimized by OS (MOBI2-03)
 - min-h-11 (44px) touch targets per iOS HIG guidelines (MOBI2-04)
+- Channel header overflow menu groups all actions for mobile (MOBI2-10)
 
 Recent from Phase 33:
 - SQL aggregation with LATERAL joins for workspace unreads (efficient single query) (WS-01)
@@ -131,7 +132,7 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-23
-Stopped at: Completed 35-02-PLAN.md (Analytics Mobile Responsive)
+Stopped at: Completed 35-05-PLAN.md (Channel Header Mobile Overflow Menu)
 Resume file: None
 
 ## Human Verification Deferred
