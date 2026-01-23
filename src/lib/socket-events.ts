@@ -118,6 +118,10 @@ export interface ServerToClientEvents {
     conversationId?: string;
     unreadCount: number;
   }) => void;
+  "workspace:unreadUpdate": (data: {
+    workspaceId: string;
+    unreadCount: number;
+  }) => void;
   "notification:new": (notification: Notification) => void;
   "notification:read": (data: { notificationId: string }) => void;
   "notification:readAll": () => void;
@@ -219,6 +223,12 @@ export interface ClientToServerEvents {
     callback: (response: {
       channels: Record<string, number>;
       conversations: Record<string, number>;
+    }) => void
+  ) => void;
+  "workspace:fetchUnreads": (
+    data: { workspaceIds: string[] },
+    callback: (response: {
+      counts: Record<string, number>;
     }) => void
   ) => void;
 }
