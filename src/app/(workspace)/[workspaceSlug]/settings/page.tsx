@@ -87,6 +87,15 @@ export default async function WorkspaceSettingsPage({
               Invite members and manage roles
             </p>
           </Link>
+          <Link
+            href={`/${workspaceSlug}/settings/sidebar`}
+            className="block p-4 bg-card border rounded hover:bg-muted"
+          >
+            <h3 className="font-medium">Sidebar</h3>
+            <p className="text-sm text-muted-foreground">
+              Customize sections and categories
+            </p>
+          </Link>
         </nav>
       </section>
 
