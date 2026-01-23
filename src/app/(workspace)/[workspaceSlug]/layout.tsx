@@ -31,7 +31,7 @@ export default async function WorkspaceSlugLayout({
     redirect("/login");
   }
 
-  // Get organization by slug
+  // Get all organizations for workspace switcher
   const orgs = await auth.api.listOrganizations({
     headers: await headers(),
   });
@@ -49,6 +49,24 @@ export default async function WorkspaceSlugLayout({
   });
 
   const memberUserIds = membersResponse?.members?.map((m) => m.userId) || [];
+
+  // Fetch member counts for all workspaces
+  const workspacesWithMemberCounts = await Promise.all(
+    (orgs || []).map(async (org) => {
+      const orgMembers = await auth.api.listMembers({
+        headers: await headers(),
+        query: { organizationId: org.id },
+      });
+      return {
+        id: org.id,
+        name: org.name,
+        slug: org.slug || "",
+        logo: org.logo || null,
+        memberCount: orgMembers?.members?.length || 0,
+        lastActivityAt: null, // Can be enhanced later to fetch from messages
+      };
+    })
+  );
 
   // Determine if current user is admin/owner
   const currentMember = membersResponse?.members?.find(
@@ -124,6 +142,7 @@ export default async function WorkspaceSlugLayout({
             collapseStates={collapseStates}
             isAdmin={isAdmin}
             myStatus={myStatus}
+            workspaces={workspacesWithMemberCounts}
           />
         </div>
 

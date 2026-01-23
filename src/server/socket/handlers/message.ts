@@ -8,7 +8,7 @@ import type { ClientToServerEvents, ServerToClientEvents, SocketData, Message, A
 import { users } from "@/db/schema";
 import { parseMentions } from "@/lib/mentions/core";
 import { createNotifications } from "./notification";
-import { getPresenceManager, getUnreadManager } from "../index";
+import { getPresenceManager, getUnreadManager, getWorkspaceUnreadManager } from "../index";
 import { sendPushToUser, type PushPayload } from "@/lib/push";
 import { extractUrls } from "@/lib/url-extractor";
 import { linkPreviewQueue } from "@/server/queue/link-preview.queue";
@@ -371,6 +371,45 @@ async function handleSendMessage(
         unreadManager.notifyConversationUnreadIncrement(targetId, userId, newMessage.sequence).catch((err) => {
           console.error("[Message] Error notifying conversation unread increment:", err);
         });
+      }
+    }
+
+    // Notify workspace-level unread count update
+    const workspaceUnreadManager = getWorkspaceUnreadManager();
+    if (workspaceUnreadManager) {
+      // Get workspaceId from channel or conversation
+      let workspaceId: string | undefined;
+      if (targetType === "channel") {
+        const [channelData] = await db
+          .select({ organizationId: channels.organizationId })
+          .from(channels)
+          .where(eq(channels.id, targetId))
+          .limit(1);
+        workspaceId = channelData?.organizationId;
+      } else {
+        const [convData] = await db
+          .select({ organizationId: conversations.organizationId })
+          .from(conversations)
+          .where(eq(conversations.id, targetId))
+          .limit(1);
+        workspaceId = convData?.organizationId;
+      }
+
+      if (workspaceId) {
+        // Get all members of the workspace
+        const workspaceMembers = await db
+          .select({ userId: members.userId })
+          .from(members)
+          .where(eq(members.organizationId, workspaceId));
+
+        // Notify each member (except sender) of workspace unread update
+        for (const member of workspaceMembers) {
+          if (member.userId !== userId) {
+            workspaceUnreadManager.notifyWorkspaceUnreadUpdate(member.userId, workspaceId).catch((err) => {
+              console.error("[Message] Error notifying workspace unread update:", err);
+            });
+          }
+        }
       }
     }
 

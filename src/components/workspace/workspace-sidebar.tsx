@@ -19,6 +19,7 @@ import { ReminderBadge } from "@/components/reminder/reminder-badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { StatusEditor, UserStatusData } from "@/components/status/status-editor";
 import { StatusDisplay } from "@/components/status/status-display";
+import { WorkspaceSwitcher } from "@/components/workspace/workspace-switcher";
 import { cn } from "@/lib/utils";
 
 interface Category {
@@ -63,6 +64,15 @@ interface WorkspaceSidebarProps {
     expiresAt: Date | null;
     dndEnabled: boolean;
   } | null;
+  /** All workspaces user has access to, for workspace switcher */
+  workspaces?: Array<{
+    id: string;
+    name: string;
+    slug: string;
+    logo?: string | null;
+    memberCount: number;
+    lastActivityAt: Date | null;
+  }>;
 }
 
 export function WorkspaceSidebar({
@@ -74,6 +84,7 @@ export function WorkspaceSidebar({
   collapseStates,
   isAdmin = false,
   myStatus: initialStatus,
+  workspaces,
 }: WorkspaceSidebarProps) {
   const pathname = usePathname();
   // Local state for immediate UI updates after save/clear
@@ -97,13 +108,26 @@ export function WorkspaceSidebar({
     <aside className="w-64 h-full border-r bg-muted/30 flex flex-col shrink-0">
       {/* Workspace header */}
       <div className="p-4 border-b flex items-center justify-between">
-        <Link
-          href={`/${workspace.slug}`}
-          className="font-bold truncate hover:underline"
-          title={workspace.name}
-        >
-          {workspace.name}
-        </Link>
+        {workspaces && workspaces.length > 0 ? (
+          <WorkspaceSwitcher
+            currentWorkspace={{
+              id: workspace.id,
+              name: workspace.name,
+              slug: workspace.slug,
+              memberCount: workspaces.find((w) => w.id === workspace.id)?.memberCount || 0,
+              lastActivityAt: null,
+            }}
+            workspaces={workspaces}
+          />
+        ) : (
+          <Link
+            href={`/${workspace.slug}`}
+            className="font-bold truncate hover:underline"
+            title={workspace.name}
+          >
+            {workspace.name}
+          </Link>
+        )}
         <NotificationBell workspaceSlug={workspace.slug} />
       </div>
 

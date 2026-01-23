@@ -10,6 +10,7 @@ import { handleReactionEvents } from "./handlers/reaction";
 import { handleThreadEvents } from "./handlers/thread";
 import { handleNotificationEvents } from "./handlers/notification";
 import { setupUnreadHandlers, handleUnreadEvents, type UnreadManager } from "./handlers/unread";
+import { setupWorkspaceUnreadHandlers, handleWorkspaceUnreadEvents, type WorkspaceUnreadManager } from "./handlers/workspace-unread";
 import { registerNoteHandlers } from "./handlers/notes";
 import { handleTypingEvents } from "./handlers/typing";
 import { setIOInstance } from "./handlers/guest";
@@ -33,6 +34,9 @@ let presenceManager: PresenceManager | null = null;
 // Module-level unread manager (always available)
 let unreadManager: UnreadManager | null = null;
 
+// Module-level workspace unread manager
+let workspaceUnreadManager: WorkspaceUnreadManager | null = null;
+
 /**
  * Get the presence manager instance.
  * Returns null if Redis is not configured.
@@ -47,6 +51,14 @@ export function getPresenceManager(): PresenceManager | null {
  */
 export function getUnreadManager(): UnreadManager | null {
   return unreadManager;
+}
+
+/**
+ * Get the workspace unread manager instance.
+ * Returns null only before setupSocketHandlers is called.
+ */
+export function getWorkspaceUnreadManager(): WorkspaceUnreadManager | null {
+  return workspaceUnreadManager;
 }
 
 /**
@@ -71,6 +83,10 @@ export function setupSocketHandlers(io: SocketIOServer, redis?: Redis | null) {
   // Setup unread manager (works with or without Redis)
   unreadManager = setupUnreadHandlers(io, redis ?? null);
   console.log("[Socket.IO] Unread manager initialized");
+
+  // Setup workspace unread manager (works with or without Redis)
+  workspaceUnreadManager = setupWorkspaceUnreadHandlers(io, redis ?? null);
+  console.log("[Socket.IO] Workspace unread manager initialized");
 
   // Apply authentication middleware
   io.use(authMiddleware);
@@ -102,6 +118,11 @@ export function setupSocketHandlers(io: SocketIOServer, redis?: Redis | null) {
     // Setup unread event handlers
     if (unreadManager) {
       handleUnreadEvents(socket, io, unreadManager);
+    }
+
+    // Setup workspace unread event handlers
+    if (workspaceUnreadManager) {
+      handleWorkspaceUnreadEvents(socket, io, workspaceUnreadManager);
     }
 
     // Setup note event handlers
