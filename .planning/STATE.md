@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-21)
 
 **Core value:** Data sovereignty - complete control over communication data
-**Current focus:** v0.6.0 Polish & Hardening - Phase 34 Sidebar Reorganization
+**Current focus:** v0.6.0 Polish & Hardening - Phase 35 Mobile Redesign
 
 ## Current Position
 
-Phase: 34 of 36 (Sidebar Reorganization)
-Plan: 5 of 5 in current phase
-Status: Phase complete
-Last activity: 2026-01-23 - Completed 34-05-PLAN.md (Cross-device Sync Integration)
+Phase: 35 of 36 (Mobile Redesign)
+Plan: 1 of 6 in current phase
+Status: In progress
+Last activity: 2026-01-23 - Completed 35-01-PLAN.md (Mobile Foundation)
 
-Progress: [█████████████████████████░] 34/36 phases
+Progress: [█████████████████████████░] 35/36 phases
 
 ## Shipped Milestones
 
@@ -58,6 +58,11 @@ Recent from Phase 34:
 - DM drag handle appears on hover, uses same pattern as channel drag handles (SIDE-08)
 - SortableSection uses dnd-kit useSortable hook with grip handle visible on hover (SIDE-09)
 - Section visibility toggles via Checkbox components with immediate persistence (SIDE-10)
+
+Recent from Phase 35:
+- vaul 1.1.2 via --legacy-peer-deps for React 19 compatibility (MOB-01)
+- Touch-only long-press (no mouse events) - desktop uses right-click (MOB-02)
+- 50ms haptic feedback on long-press for subtle tactile confirmation (MOB-03)
 
 Recent from Phase 33:
 - SQL aggregation with LATERAL joins for workspace unreads (efficient single query) (WS-01)
@@ -122,7 +127,7 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-23
-Stopped at: Completed 34-05-PLAN.md (Cross-device Sync Integration) - Phase 34 complete
+Stopped at: Completed 35-01-PLAN.md (Mobile Foundation)
 Resume file: None
 
 ## Human Verification Deferred
