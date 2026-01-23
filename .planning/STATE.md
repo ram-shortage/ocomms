@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-21)
 ## Current Position
 
 Phase: 33 of 36 (Workspace Management)
-Plan: 1 of 3 in current phase
+Plan: 2 of 4 in current phase
 Status: In progress
-Last activity: 2026-01-23 - Completed 33-01-PLAN.md (Workspace Foundation)
+Last activity: 2026-01-23 - Completed 33-02-PLAN.md (Workspace Switcher UI)
 
 Progress: [███████████████████████░░] 33/36 phases
 
@@ -36,9 +36,9 @@ Progress: [███████████████████████
 
 ## Performance Metrics
 
-**Cumulative (through Phase 33-01):**
-- Total plans completed: 136
-- Total requirements delivered: 233
+**Cumulative (through Phase 33-02):**
+- Total plans completed: 137
+- Total requirements delivered: 236
 - Total phases completed: 32
 
 ## Accumulated Context
@@ -51,6 +51,9 @@ Recent from Phase 33:
 - SQL aggregation with LATERAL joins for workspace unreads (efficient single query) (WS-01)
 - 30-second Redis cache TTL for workspace unreads (balance freshness vs load) (WS-02)
 - Unique constraint on (userId, organizationId) for join requests (prevents duplicates) (WS-03)
+- Store last-visited path in Redis with 30-day TTL (WS-04)
+- Workspace switcher fetches member counts at layout load time (WS-05)
+- Notify all workspace members on message send for workspace unread updates (WS-06)
 
 Recent from Phase 32:
 - Bloom filter with 100 common passwords (minimal memory, catches worst offenders) (SEC2-09)
@@ -99,7 +102,7 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-23
-Stopped at: Completed 33-01-PLAN.md (Workspace Foundation)
+Stopped at: Completed 33-02-PLAN.md (Workspace Switcher UI)
 Resume file: None
 
 ## Human Verification Deferred
