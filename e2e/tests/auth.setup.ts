@@ -4,19 +4,37 @@ import path from 'path';
 
 const authDir = path.join(__dirname, '..', '.auth');
 
-// Test user credentials (from demo seed data)
-const testUsers = {
-  alice: {
-    email: 'alice@demo.ocomms.local',
-    password: 'password123',
-    storageFile: 'alice.json',
-  },
-  bob: {
-    email: 'bob@demo.ocomms.local',
-    password: 'password123',
-    storageFile: 'bob.json',
-  },
-};
+// Test user credentials
+// Supports both e2e-seed (minimal) and demo-seed (comprehensive) data
+const DEMO_SEED_MODE = process.env.E2E_SEED_MODE === 'demo';
+
+const testUsers = DEMO_SEED_MODE
+  ? {
+      // demo-seed.ts credentials (comprehensive data)
+      alice: {
+        email: 'alice.chen@example.com',
+        password: 'TheOrder2026!!',
+        storageFile: 'alice.json',
+      },
+      bob: {
+        email: 'bob.martinez@example.com',
+        password: 'TheOrder2026!!',
+        storageFile: 'bob.json',
+      },
+    }
+  : {
+      // e2e-seed.ts credentials (minimal data)
+      alice: {
+        email: 'alice@demo.ocomms.local',
+        password: 'password123',
+        storageFile: 'alice.json',
+      },
+      bob: {
+        email: 'bob@demo.ocomms.local',
+        password: 'password123',
+        storageFile: 'bob.json',
+      },
+    };
 
 /**
  * Authenticate a test user and save storage state.
