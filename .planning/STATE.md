@@ -36,9 +36,9 @@ Progress: [███████████████████████
 
 ## Performance Metrics
 
-**Cumulative (through Phase 34-02):**
-- Total plans completed: 141
-- Total requirements delivered: 253
+**Cumulative (through Phase 34-03):**
+- Total plans completed: 142
+- Total requirements delivered: 254
 - Total phases completed: 33
 
 ## Accumulated Context
@@ -55,6 +55,7 @@ Recent from Phase 34:
 - Category sortable IDs prefixed with 'cat-' to distinguish from channel IDs (SIDE-05)
 - Category reorder available to all users as personal preference (SIDE-06)
 - New categories appear at end of saved order using MAX_SAFE_INTEGER (SIDE-07)
+- DM drag handle appears on hover, uses same pattern as channel drag handles (SIDE-08)
 
 Recent from Phase 33:
 - SQL aggregation with LATERAL joins for workspace unreads (efficient single query) (WS-01)
@@ -119,7 +120,7 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-23
-Stopped at: Completed 34-02-PLAN.md (Category Drag-and-Drop Reordering)
+Stopped at: Completed 34-03-PLAN.md (DM Drag-and-Drop Reordering)
 Resume file: None
 
 ## Human Verification Deferred
