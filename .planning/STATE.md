@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-21)
 
 **Core value:** Data sovereignty - complete control over communication data
-**Current focus:** v0.6.0 Polish & Hardening - Phase 33 Workspace Management (complete)
+**Current focus:** v0.6.0 Polish & Hardening - Phase 34 Sidebar Reorganization
 
 ## Current Position
 
-Phase: 33 of 36 (Workspace Management)
-Plan: 4 of 4 in current phase
-Status: Phase complete
-Last activity: 2026-01-23 - Completed 33-04-PLAN.md (Admin Join Request Approval)
+Phase: 34 of 36 (Sidebar Reorganization)
+Plan: 1 of 6 in current phase
+Status: In progress
+Last activity: 2026-01-23 - Completed 34-01-PLAN.md (Sidebar Preferences Database Foundation)
 
-Progress: [████████████████████████░] 33/36 phases
+Progress: [█████████████████████████░] 34/36 phases
 
 ## Shipped Milestones
 
@@ -36,9 +36,9 @@ Progress: [███████████████████████
 
 ## Performance Metrics
 
-**Cumulative (through Phase 33-04):**
-- Total plans completed: 139
-- Total requirements delivered: 248
+**Cumulative (through Phase 34-01):**
+- Total plans completed: 140
+- Total requirements delivered: 252
 - Total phases completed: 33
 
 ## Accumulated Context
@@ -46,6 +46,12 @@ Progress: [███████████████████████
 ### Decisions
 
 Decisions are logged in PROJECT.md Key Decisions table.
+
+Recent from Phase 34:
+- JSONB preferences column with SidebarPreferencesData type for flexible storage (SIDE-01)
+- Unique index on (userId, organizationId) for per-user per-workspace preferences (SIDE-02)
+- saveSidebarPreferences merges partial updates with existing preferences (SIDE-03)
+- Server-side timestamp for updatedAt field in preferences (SIDE-04)
 
 Recent from Phase 33:
 - SQL aggregation with LATERAL joins for workspace unreads (efficient single query) (WS-01)
@@ -110,7 +116,7 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-23
-Stopped at: Completed 33-04-PLAN.md (Admin Join Request Approval) - Phase 33 complete
+Stopped at: Completed 34-01-PLAN.md (Sidebar Preferences Database Foundation)
 Resume file: None
 
 ## Human Verification Deferred
