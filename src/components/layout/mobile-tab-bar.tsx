@@ -19,22 +19,33 @@ const tabs = [
 ];
 
 // Routes handled by the More menu (for active state detection)
+// These routes highlight the "More" button, not primary tabs
 const moreMenuRoutes = [
-  "/scheduled",
-  "/reminders",
-  "/saved",
-  "/notes",
-  "/settings",
-  "/profile",
+  "/scheduled",  // Scheduled messages
+  "/reminders",  // Reminders page
+  "/saved",      // Saved/bookmarked items
+  "/notes",      // Personal notes
+  "/settings",   // Settings and subpages (/settings/*, /settings/sidebar, etc.)
+  "/profile",    // Profile and subpages (/profile/security, etc.)
 ];
+
+// Routes that don't map to any navigation item (nothing highlights)
+// - /members/[memberId] - viewing another user's profile
 
 /**
  * Determines if a tab should be highlighted as active based on current pathname.
- * Handles all route cases including subpages and related routes.
- * Returns false if current route is in the More menu (handled separately).
+ *
+ * Navigation state rules:
+ * - Home: /workspace, /workspace/channels/*, /workspace/channels/[slug]/settings
+ * - DMs: /workspace/dm, /workspace/dm/[conversationId]
+ * - Mentions: /workspace/threads
+ * - Search: /workspace/search
+ * - More button: /workspace/scheduled, /reminders, /saved, /notes, /settings/*, /profile/*
+ * - Nothing: /workspace/members/[memberId] (viewing another user)
  */
 function getIsActive(label: string, tabHref: string, pathname: string, workspaceSlug: string): boolean {
   // If we're on a More menu route, no primary tab should be highlighted
+  // The MobileMoreMenu component handles its own active state
   const isOnMoreRoute = moreMenuRoutes.some(route =>
     pathname.startsWith(`/${workspaceSlug}${route}`)
   );
@@ -45,16 +56,21 @@ function getIsActive(label: string, tabHref: string, pathname: string, workspace
 
   switch (label) {
     case "Home":
-      // Home is active for workspace root and channels
+      // Home is active for workspace root and all channel routes
+      // Including /channels/[slug], /channels/[slug]/settings, etc.
       return pathname === `/${workspaceSlug}` ||
              pathname.startsWith(`/${workspaceSlug}/channels`);
     case "DMs":
+      // DMs tab active for /dm and /dm/[conversationId]
       return pathname.startsWith(`/${workspaceSlug}/dm`);
     case "Mentions":
+      // Mentions tab active for /threads
       return pathname.startsWith(`/${workspaceSlug}/threads`);
     case "Search":
+      // Search tab active for /search
       return pathname.startsWith(`/${workspaceSlug}/search`);
     default:
+      // Routes like /members/[memberId] don't highlight any tab
       return false;
   }
 }
