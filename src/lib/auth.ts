@@ -1,7 +1,7 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { createAuthMiddleware, APIError } from "better-auth/api";
-import { organization } from "better-auth/plugins";
+import { organization, twoFactor } from "better-auth/plugins";
 import { db } from "@/db";
 import * as schema from "@/db/schema";
 import { userLockout, user } from "@/db/schema";
@@ -10,6 +10,7 @@ import { sendVerificationEmail, sendInviteEmail, sendUnlockEmail, sendResetPassw
 import { validatePasswordComplexity } from "./password-validation";
 import { auditLog, AuditEventType, getClientIP, getUserAgent } from "./audit-logger";
 import { addUserSession, removeUserSession, revokeAllUserSessions } from "./security/session-store";
+import { authLogger } from "./logger";
 
 /**
  * Progressive delay based on failed attempt count.
@@ -45,6 +46,10 @@ export const auth = betterAuth({
   trustedOrigins: process.env.NEXT_PUBLIC_APP_URL
     ? [process.env.NEXT_PUBLIC_APP_URL]
     : [],
+  advanced: {
+    // Use __Secure- cookie prefix in production (requires HTTPS)
+    useSecureCookies: process.env.NODE_ENV === "production",
+  },
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: !!process.env.SMTP_HOST, // Only require if SMTP configured
@@ -185,6 +190,7 @@ export const auth = betterAuth({
 
         if (loginFailed) {
           // Log failed login attempt
+          authLogger.warn({ email }, "Login attempt failed");
           auditLog({
             eventType: AuditEventType.AUTH_LOGIN_FAILURE,
             ip,
@@ -227,6 +233,11 @@ export const auth = betterAuth({
                 updatedAt: now,
               });
             }
+            // Log account lockout
+            authLogger.warn(
+              { userId: existingUser.id, until: lockedUntil },
+              "Account locked due to failed attempts"
+            );
             // Send unlock email with password reset link (fire-and-forget to prevent timing attacks)
             const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL}/forgot-password?email=${encodeURIComponent(email)}`;
             void sendUnlockEmail({ to: email, resetUrl });
@@ -252,6 +263,7 @@ export const auth = betterAuth({
           }
         } else {
           // Log successful login
+          authLogger.info({ userId: existingUser.id }, "User login successful");
           auditLog({
             eventType: AuditEventType.AUTH_LOGIN_SUCCESS,
             userId: existingUser.id,
@@ -392,6 +404,18 @@ export const auth = betterAuth({
           orgName: organization.name,
           acceptUrl,
         });
+      },
+    }),
+    twoFactor({
+      issuer: "OComms",
+      skipVerificationOnEnable: false, // Require code verification before activating
+      totpOptions: {
+        digits: 6,
+        period: 30, // 30-second window
+      },
+      backupCodeOptions: {
+        amount: 10, // 10 backup codes per user decision
+        length: 10, // 10 character codes
       },
     }),
   ],

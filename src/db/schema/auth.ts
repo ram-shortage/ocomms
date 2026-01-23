@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, index } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
 // better-auth core tables
@@ -12,6 +12,8 @@ export const user = pgTable("users", {
   image: text("image"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  // Two-factor authentication status (better-auth twoFactor plugin)
+  twoFactorEnabled: boolean("two_factor_enabled").default(false),
 });
 
 export const session = pgTable("sessions", {
@@ -96,6 +98,23 @@ export const invitation = pgTable("invitations", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+// better-auth twoFactor plugin table
+export const twoFactorTable = pgTable(
+  "two_factor",
+  {
+    id: text("id").primaryKey(),
+    secret: text("secret").notNull(),
+    backupCodes: text("backup_codes").notNull(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+  },
+  (table) => [
+    index("two_factor_secret_idx").on(table.secret),
+    index("two_factor_user_id_idx").on(table.userId),
+  ],
+);
+
 // Relations for organization members
 export const memberRelations = relations(member, ({ one }) => ({
   user: one(user, {
@@ -117,3 +136,5 @@ export const organizations = organization;
 export const members = member;
 export const membersRelations = memberRelations;
 export const invitations = invitation;
+// Export twoFactor table for better-auth plugin
+export const twoFactor = twoFactorTable;

@@ -22,3 +22,5 @@ export * from "./link-preview";
 export * from "./custom-emoji";
 export * from "./user-group";
 export * from "./guest";
+export * from "./user-storage";
+export * from "./password-history";
