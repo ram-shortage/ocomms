@@ -156,6 +156,20 @@ export interface ServerToClientEvents {
   error: (data: { message: string; code?: string; retryAfter?: number }) => void;
   /** SEC2-16: Guest soft-locked disconnect notification */
   "guest:locked": (data: { reason: string; message: string }) => void;
+  /** WS-10: Join request approved notification */
+  "workspace:join-request-approved": (data: {
+    requestId: string;
+    workspaceId: string;
+    workspaceName: string;
+    workspaceSlug: string;
+  }) => void;
+  /** WS-11: Join request rejected notification */
+  "workspace:join-request-rejected": (data: {
+    requestId: string;
+    workspaceId: string;
+    workspaceName: string;
+    reason?: string;
+  }) => void;
 }
 
 export interface ClientToServerEvents {

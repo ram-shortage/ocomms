@@ -117,3 +117,59 @@ export async function sendResetPasswordEmail({
     `,
   });
 }
+
+export async function sendJoinRequestApprovedEmail({
+  to,
+  workspaceName,
+  workspaceSlug,
+}: {
+  to: string;
+  workspaceName: string;
+  workspaceSlug: string;
+}) {
+  if (!isEmailConfigured()) {
+    console.log("[Email] SMTP not configured, skipping join request approved email to:", to);
+    return;
+  }
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const workspaceUrl = `${baseUrl}/${workspaceSlug}`;
+
+  await transporter!.sendMail({
+    from: process.env.EMAIL_FROM,
+    to,
+    subject: `Your request to join ${workspaceName} was approved - OComms`,
+    html: `
+      <h1>Request Approved</h1>
+      <p>Great news! Your request to join <strong>${workspaceName}</strong> has been approved.</p>
+      <p>You can now access the workspace:</p>
+      <a href="${workspaceUrl}">Open ${workspaceName}</a>
+    `,
+  });
+}
+
+export async function sendJoinRequestRejectedEmail({
+  to,
+  workspaceName,
+  reason,
+}: {
+  to: string;
+  workspaceName: string;
+  reason?: string;
+}) {
+  if (!isEmailConfigured()) {
+    console.log("[Email] SMTP not configured, skipping join request rejected email to:", to);
+    return;
+  }
+
+  await transporter!.sendMail({
+    from: process.env.EMAIL_FROM,
+    to,
+    subject: `Your request to join ${workspaceName} - OComms`,
+    html: `
+      <h1>Join Request Update</h1>
+      <p>Your request to join <strong>${workspaceName}</strong> was not approved at this time.</p>
+      ${reason ? `<p><strong>Reason:</strong> ${reason}</p>` : ""}
+      <p>If you have questions, please contact the workspace administrators.</p>
+    `,
+  });
+}

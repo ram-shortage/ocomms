@@ -238,3 +238,269 @@ export async function getMyJoinRequests() {
 
   return requests;
 }
+
+/**
+ * Get all pending join requests for a workspace.
+ * Only accessible to workspace owners and admins.
+ */
+export async function getPendingRequests(workspaceId: string) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session?.user) {
+    throw new Error("Not authorized");
+  }
+
+  // Validate user is owner/admin of workspace
+  const membership = await db.query.members.findFirst({
+    where: and(
+      eq(members.userId, session.user.id),
+      eq(members.organizationId, workspaceId)
+    ),
+  });
+
+  if (!membership || (membership.role !== "owner" && membership.role !== "admin")) {
+    throw new Error("Not authorized");
+  }
+
+  // Get pending requests with requester info using Drizzle relations
+  const requests = await db.query.workspaceJoinRequests.findMany({
+    where: and(
+      eq(workspaceJoinRequests.organizationId, workspaceId),
+      eq(workspaceJoinRequests.status, "pending")
+    ),
+    with: {
+      user: {
+        columns: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+        },
+      },
+    },
+    orderBy: (requests, { desc }) => [desc(requests.createdAt)],
+  });
+
+  return requests;
+}
+
+/**
+ * Approve a join request - adds user to workspace and sends notification.
+ * Only accessible to workspace owners and admins.
+ */
+export async function approveJoinRequest(requestId: string) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session?.user) {
+    throw new Error("Not authorized");
+  }
+
+  // Get request with workspace info
+  const request = await db.query.workspaceJoinRequests.findFirst({
+    where: eq(workspaceJoinRequests.id, requestId),
+    with: {
+      organization: true,
+      user: true,
+    },
+  });
+
+  if (!request) {
+    throw new Error("Request not found");
+  }
+
+  if (request.status !== "pending") {
+    throw new Error("Request has already been processed");
+  }
+
+  // Validate user is owner/admin of the request's workspace
+  const membership = await db.query.members.findFirst({
+    where: and(
+      eq(members.userId, session.user.id),
+      eq(members.organizationId, request.organizationId)
+    ),
+  });
+
+  if (!membership || (membership.role !== "owner" && membership.role !== "admin")) {
+    throw new Error("Not authorized");
+  }
+
+  // Update request status
+  await db
+    .update(workspaceJoinRequests)
+    .set({
+      status: "approved",
+      reviewedAt: new Date(),
+      reviewedBy: session.user.id,
+    })
+    .where(eq(workspaceJoinRequests.id, requestId));
+
+  // Add user to workspace
+  await auth.api.addMember({
+    headers: await headers(),
+    body: {
+      organizationId: request.organizationId,
+      userId: request.userId,
+      role: "member",
+    },
+  });
+
+  // Send approval email and notification (fire-and-forget)
+  const { sendJoinRequestApprovedEmail } = await import("@/lib/email");
+  sendJoinRequestApprovedEmail({
+    to: request.user.email,
+    workspaceName: request.organization.name,
+    workspaceSlug: request.organization.slug || request.organizationId,
+  }).catch((err) => console.error("[Approval] Failed to send email:", err));
+
+  // Emit Socket.IO notification to requester
+  const { getIOInstance } = await import("@/server/socket/handlers/guest");
+  const io = getIOInstance();
+  if (io) {
+    io.to(`user:${request.userId}`).emit("workspace:join-request-approved", {
+      requestId: request.id,
+      workspaceId: request.organizationId,
+      workspaceName: request.organization.name,
+      workspaceSlug: request.organization.slug || request.organizationId,
+    });
+  }
+
+  return { success: true };
+}
+
+/**
+ * Reject a join request with optional reason.
+ * Only accessible to workspace owners and admins.
+ */
+export async function rejectJoinRequest(requestId: string, reason?: string) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session?.user) {
+    throw new Error("Not authorized");
+  }
+
+  // Get request with workspace info
+  const request = await db.query.workspaceJoinRequests.findFirst({
+    where: eq(workspaceJoinRequests.id, requestId),
+    with: {
+      organization: true,
+      user: true,
+    },
+  });
+
+  if (!request) {
+    throw new Error("Request not found");
+  }
+
+  if (request.status !== "pending") {
+    throw new Error("Request has already been processed");
+  }
+
+  // Validate user is owner/admin of the request's workspace
+  const membership = await db.query.members.findFirst({
+    where: and(
+      eq(members.userId, session.user.id),
+      eq(members.organizationId, request.organizationId)
+    ),
+  });
+
+  if (!membership || (membership.role !== "owner" && membership.role !== "admin")) {
+    throw new Error("Not authorized");
+  }
+
+  // Update request status
+  await db
+    .update(workspaceJoinRequests)
+    .set({
+      status: "rejected",
+      rejectionReason: reason || null,
+      reviewedAt: new Date(),
+      reviewedBy: session.user.id,
+    })
+    .where(eq(workspaceJoinRequests.id, requestId));
+
+  // Send rejection email (fire-and-forget)
+  const { sendJoinRequestRejectedEmail } = await import("@/lib/email");
+  sendJoinRequestRejectedEmail({
+    to: request.user.email,
+    workspaceName: request.organization.name,
+    reason,
+  }).catch((err) => console.error("[Rejection] Failed to send email:", err));
+
+  // Emit Socket.IO notification to requester
+  const { getIOInstance } = await import("@/server/socket/handlers/guest");
+  const io = getIOInstance();
+  if (io) {
+    io.to(`user:${request.userId}`).emit("workspace:join-request-rejected", {
+      requestId: request.id,
+      workspaceId: request.organizationId,
+      workspaceName: request.organization.name,
+      reason,
+    });
+  }
+
+  return { success: true };
+}
+
+/**
+ * Approve multiple join requests at once.
+ * Returns counts of successful and failed approvals.
+ */
+export async function bulkApproveRequests(requestIds: string[]) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session?.user) {
+    throw new Error("Not authorized");
+  }
+
+  let approved = 0;
+  const failed: string[] = [];
+
+  for (const requestId of requestIds) {
+    try {
+      await approveJoinRequest(requestId);
+      approved++;
+    } catch (error) {
+      console.error(`[Bulk Approve] Failed to approve request ${requestId}:`, error);
+      failed.push(requestId);
+    }
+  }
+
+  return { success: true, approved, failed };
+}
+
+/**
+ * Reject multiple join requests at once with the same reason.
+ * Returns counts of successful and failed rejections.
+ */
+export async function bulkRejectRequests(requestIds: string[], reason?: string) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session?.user) {
+    throw new Error("Not authorized");
+  }
+
+  let rejected = 0;
+  const failed: string[] = [];
+
+  for (const requestId of requestIds) {
+    try {
+      await rejectJoinRequest(requestId, reason);
+      rejected++;
+    } catch (error) {
+      console.error(`[Bulk Reject] Failed to reject request ${requestId}:`, error);
+      failed.push(requestId);
+    }
+  }
+
+  return { success: true, rejected, failed };
+}
