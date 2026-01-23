@@ -21,6 +21,10 @@ interface ChannelNotesSheetProps {
   channelName: string;
   /** Optional custom trigger element */
   trigger?: React.ReactNode;
+  /** Controlled open state (optional - for opening from external triggers like mobile menu) */
+  open?: boolean;
+  /** Callback when open state changes (required when using controlled mode) */
+  onOpenChange?: (open: boolean) => void;
 }
 
 /**
@@ -31,8 +35,13 @@ export function ChannelNotesSheet({
   channelId,
   channelName,
   trigger,
+  open: controlledOpen,
+  onOpenChange,
 }: ChannelNotesSheetProps) {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isControlled = controlledOpen !== undefined;
+  const open = isControlled ? controlledOpen : internalOpen;
+  const setOpen = isControlled ? onOpenChange! : setInternalOpen;
 
   // Handle sheet open/close for socket subscription
   const handleOpenChange = useCallback((isOpen: boolean) => {
@@ -78,14 +87,17 @@ export function ChannelNotesSheet({
 
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>
-      <SheetTrigger asChild>
-        {trigger || (
-          <Button variant="ghost" size="sm" className="gap-1.5">
-            <FileText className="h-4 w-4" />
-            <span className="hidden sm:inline">Notes</span>
-          </Button>
-        )}
-      </SheetTrigger>
+      {/* Only render trigger in uncontrolled mode */}
+      {!isControlled && (
+        <SheetTrigger asChild>
+          {trigger || (
+            <Button variant="ghost" size="sm" className="gap-1.5">
+              <FileText className="h-4 w-4" />
+              <span className="hidden sm:inline">Notes</span>
+            </Button>
+          )}
+        </SheetTrigger>
+      )}
       <SheetContent
         side="right"
         className="w-[600px] sm:max-w-[600px] flex flex-col p-0"

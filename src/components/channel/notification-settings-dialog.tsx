@@ -22,6 +22,10 @@ interface NotificationSettingsDialogProps {
   channelName: string;
   currentMode: NotificationMode;
   onModeChange: (mode: NotificationMode) => void;
+  /** Controlled open state (optional - for opening from external triggers like mobile menu) */
+  open?: boolean;
+  /** Callback when open state changes (required when using controlled mode) */
+  onOpenChange?: (open: boolean) => void;
 }
 
 export function NotificationSettingsDialog({
@@ -29,8 +33,13 @@ export function NotificationSettingsDialog({
   channelName,
   currentMode,
   onModeChange,
+  open: controlledOpen,
+  onOpenChange,
 }: NotificationSettingsDialogProps) {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isControlled = controlledOpen !== undefined;
+  const open = isControlled ? controlledOpen : internalOpen;
+  const setOpen = isControlled ? onOpenChange! : setInternalOpen;
   const [selectedMode, setSelectedMode] = useState<NotificationMode>(currentMode);
   const [saving, setSaving] = useState(false);
 
@@ -79,21 +88,24 @@ export function NotificationSettingsDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        <Button variant="ghost" size="icon" title="Notification settings">
-          {currentMode === "muted" ? (
-            <BellOff className="h-4 w-4" />
-          ) : currentMode === "mentions" ? (
-            <div className="relative">
+      {/* Only render trigger in uncontrolled mode */}
+      {!isControlled && (
+        <DialogTrigger asChild>
+          <Button variant="ghost" size="icon" title="Notification settings">
+            {currentMode === "muted" ? (
+              <BellOff className="h-4 w-4" />
+            ) : currentMode === "mentions" ? (
+              <div className="relative">
+                <Bell className="h-4 w-4" />
+                <AtSign className="h-2.5 w-2.5 absolute -top-0.5 -right-0.5 bg-background rounded-full" />
+              </div>
+            ) : (
               <Bell className="h-4 w-4" />
-              <AtSign className="h-2.5 w-2.5 absolute -top-0.5 -right-0.5 bg-background rounded-full" />
-            </div>
-          ) : (
-            <Bell className="h-4 w-4" />
-          )}
-          <span className="sr-only">Notification settings</span>
-        </Button>
-      </DialogTrigger>
+            )}
+            <span className="sr-only">Notification settings</span>
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Notification Settings</DialogTitle>

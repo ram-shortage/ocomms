@@ -28,10 +28,22 @@ interface PinnedMessage {
 interface PinnedMessagesDialogProps {
   channelId: string;
   currentUserId: string;
+  /** Controlled open state (optional - for opening from external triggers like mobile menu) */
+  open?: boolean;
+  /** Callback when open state changes (required when using controlled mode) */
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function PinnedMessagesDialog({ channelId, currentUserId }: PinnedMessagesDialogProps) {
-  const [open, setOpen] = useState(false);
+export function PinnedMessagesDialog({
+  channelId,
+  currentUserId,
+  open: controlledOpen,
+  onOpenChange,
+}: PinnedMessagesDialogProps) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isControlled = controlledOpen !== undefined;
+  const open = isControlled ? controlledOpen : internalOpen;
+  const setOpen = isControlled ? onOpenChange! : setInternalOpen;
   const [pins, setPins] = useState<PinnedMessage[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -65,12 +77,15 @@ export function PinnedMessagesDialog({ channelId, currentUserId }: PinnedMessage
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="ghost" size="sm">
-          <Pin className="h-4 w-4 mr-1" />
-          Pins
-        </Button>
-      </DialogTrigger>
+      {/* Only render trigger in uncontrolled mode */}
+      {!isControlled && (
+        <DialogTrigger asChild>
+          <Button variant="ghost" size="sm">
+            <Pin className="h-4 w-4 mr-1" />
+            Pins
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="max-w-lg max-h-[80vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle>Pinned Messages</DialogTitle>

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Hash, Lock, Users, Settings, LogOut, Check, X, MoreVertical } from "lucide-react";
+import { Hash, Lock, Users, Settings, LogOut, Check, X, MoreVertical, Bell, FileText, Pin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -71,6 +71,9 @@ export function ChannelHeader({
   const [savingTopic, setSavingTopic] = useState(false);
   const [showLeaveDialog, setShowLeaveDialog] = useState(false);
   const [showMembersDialog, setShowMembersDialog] = useState(false);
+  const [showNotificationDialog, setShowNotificationDialog] = useState(false);
+  const [showNotesSheet, setShowNotesSheet] = useState(false);
+  const [showPinnedDialog, setShowPinnedDialog] = useState(false);
   const [leaving, setLeaving] = useState(false);
   const [error, setError] = useState("");
   const [currentNotificationMode, setCurrentNotificationMode] = useState<NotificationMode>(notificationMode);
@@ -323,23 +326,70 @@ export function ChannelHeader({
                 <span className="sr-only">Channel actions</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onSelect={() => setShowMembersDialog(true)}>
+            <DropdownMenuContent align="end" className="w-56">
+              {/* Notification settings */}
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault();
+                  setShowNotificationDialog(true);
+                }}
+                className="min-h-11"
+              >
+                <Bell className="h-4 w-4 mr-2" />
+                Notifications
+              </DropdownMenuItem>
+
+              {/* Channel notes */}
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault();
+                  setShowNotesSheet(true);
+                }}
+                className="min-h-11"
+              >
+                <FileText className="h-4 w-4 mr-2" />
+                Channel notes
+              </DropdownMenuItem>
+
+              {/* Pinned messages */}
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault();
+                  setShowPinnedDialog(true);
+                }}
+                className="min-h-11"
+              >
+                <Pin className="h-4 w-4 mr-2" />
+                Pinned messages
+              </DropdownMenuItem>
+
+              <DropdownMenuSeparator />
+
+              {/* Members */}
+              <DropdownMenuItem
+                onSelect={() => setShowMembersDialog(true)}
+                className="min-h-11"
+              >
                 <Users className="h-4 w-4 mr-2" />
                 Members ({channel.memberCount})
               </DropdownMenuItem>
+
+              {/* Settings - admin only */}
               {isAdmin && (
-                <DropdownMenuItem asChild>
+                <DropdownMenuItem asChild className="min-h-11">
                   <Link href={`/${workspaceSlug}/channels/${channel.slug}/settings`}>
                     <Settings className="h-4 w-4 mr-2" />
                     Settings
                   </Link>
                 </DropdownMenuItem>
               )}
+
               <DropdownMenuSeparator />
+
+              {/* Leave channel */}
               <DropdownMenuItem
                 onSelect={() => setShowLeaveDialog(true)}
-                className="text-destructive focus:text-destructive"
+                className="text-destructive focus:text-destructive min-h-11"
               >
                 <LogOut className="h-4 w-4 mr-2" />
                 Leave channel
@@ -361,6 +411,30 @@ export function ChannelHeader({
           <LeaveDialogContent />
         </DialogContent>
       </Dialog>
+
+      {/* Controlled dialogs/sheets for mobile menu */}
+      <NotificationSettingsDialog
+        open={showNotificationDialog}
+        onOpenChange={setShowNotificationDialog}
+        channelId={channel.id}
+        channelName={channel.name}
+        currentMode={currentNotificationMode}
+        onModeChange={setCurrentNotificationMode}
+      />
+
+      <ChannelNotesSheet
+        open={showNotesSheet}
+        onOpenChange={setShowNotesSheet}
+        channelId={channel.id}
+        channelName={channel.name}
+      />
+
+      <PinnedMessagesDialog
+        open={showPinnedDialog}
+        onOpenChange={setShowPinnedDialog}
+        channelId={channel.id}
+        currentUserId={currentUserId}
+      />
     </header>
   );
 }
