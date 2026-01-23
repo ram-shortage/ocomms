@@ -36,9 +36,9 @@ export default async function ProfilePage({
   }
 
   return (
-    <div className="p-4 sm:p-8 max-w-2xl mx-auto">
+    <div className="p-4 sm:p-8 max-w-2xl mx-auto space-y-6">
       {/* Mobile: stack vertically. Desktop: side by side */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <h1 className="text-xl sm:text-2xl font-bold">Your Profile</h1>
         <Link
           href={`/${workspaceSlug}`}
@@ -53,6 +53,24 @@ export default async function ProfilePage({
           userName={session.user.name}
           onSave={saveProfile}
         />
+      </div>
+
+      {/* Security section */}
+      <div className="bg-card border rounded-lg p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="font-semibold">Security</h2>
+            <p className="text-sm text-muted-foreground">
+              Manage two-factor authentication and security settings
+            </p>
+          </div>
+          <Link
+            href={`/${workspaceSlug}/profile/security`}
+            className="text-sm text-primary hover:underline"
+          >
+            Manage
+          </Link>
+        </div>
       </div>
     </div>
   );

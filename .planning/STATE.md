@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-21)
 ## Current Position
 
 Phase: 32 of 36 (Medium/Low Security)
-Plan: 0 of 7 in current phase
-Status: Ready to plan
-Last activity: 2026-01-22 - Phase 31 High Security + Bug Fixes complete (4 plans)
+Plan: 5 of 7 in current phase
+Status: In progress
+Last activity: 2026-01-23 - Completed 32-05-PLAN.md (Redirect URL & SSRF)
 
 Progress: [██████████████████████░░░] 31/36 phases
 
@@ -47,6 +47,11 @@ Progress: [██████████████████████░
 
 Decisions are logged in PROJECT.md Key Decisions table.
 
+Recent from Phase 32:
+- Client-side returnUrl validation only allows relative URLs (no domain checking in browser)
+- Block direct IP addresses in link previews to force DNS resolution path
+- Two-layer SSRF protection: isUrlSafe() before queue, request-filtering-agent at fetch
+
 Recent from Phase 31:
 - 30 events/sec rate limit with 5sec cooldown (lenient for normal usage, blocks abuse)
 - Rate limit by userId not socket.id (same user on multiple tabs shares limit)
@@ -76,8 +81,8 @@ None active.
 
 ## Session Continuity
 
-Last session: 2026-01-22
-Stopped at: Phase 31 complete, ready for Phase 32
+Last session: 2026-01-23
+Stopped at: Completed 32-05-PLAN.md
 Resume file: None
 
 ## Human Verification Deferred
