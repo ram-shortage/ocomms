@@ -162,10 +162,14 @@ Plans:
   2. All bug fixes verified in production-like environment
   3. Workspace management, sidebar, and mobile features work together
   4. No regression in existing v0.5.0 functionality
-**Plans**: TBD
+**Plans**: 5 plans
 
 Plans:
-- [ ] 36-01: TBD
+- [ ] 36-01-PLAN.md — Test infrastructure setup (Docker Compose, Playwright config)
+- [ ] 36-02-PLAN.md — Security requirement verification tests
+- [ ] 36-03-PLAN.md — Workspace and sidebar E2E tests
+- [ ] 36-04-PLAN.md — Mobile E2E and regression tests
+- [ ] 36-05-PLAN.md — Release documentation and final verification
 
 ## Progress
 
@@ -177,8 +181,8 @@ Plans:
 | 33. Workspace Management | 0/4 | Planned | - |
 | 34. Sidebar Reorganization | 0/5 | Planned | - |
 | 35. Mobile Redesign | 0/6 | Planned | - |
-| 36. Stabilization | 0/TBD | Not started | - |
+| 36. Stabilization | 0/5 | Planned | - |
 
 ---
 *Roadmap created: 2026-01-22*
-*Last updated: 2026-01-23 after Phase 35 planning*
+*Last updated: 2026-01-23 after Phase 36 planning*
