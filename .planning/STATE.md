@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-21)
 ## Current Position
 
 Phase: 33 of 36 (Workspace Management)
-Plan: 2 of 4 in current phase
+Plan: 3 of 4 in current phase
 Status: In progress
-Last activity: 2026-01-23 - Completed 33-02-PLAN.md (Workspace Switcher UI)
+Last activity: 2026-01-23 - Completed 33-03-PLAN.md (Workspace Discovery & Join Flow)
 
 Progress: [███████████████████████░░] 33/36 phases
 
@@ -36,9 +36,9 @@ Progress: [███████████████████████
 
 ## Performance Metrics
 
-**Cumulative (through Phase 33-02):**
-- Total plans completed: 137
-- Total requirements delivered: 236
+**Cumulative (through Phase 33-03):**
+- Total plans completed: 138
+- Total requirements delivered: 243
 - Total phases completed: 32
 
 ## Accumulated Context
@@ -54,6 +54,9 @@ Recent from Phase 33:
 - Store last-visited path in Redis with 30-day TTL (WS-04)
 - Workspace switcher fetches member counts at layout load time (WS-05)
 - Notify all workspace members on message send for workspace unread updates (WS-06)
+- Three join policies: invite_only (default, hidden), request (visible, approval required), open (visible, instant join) (WS-07)
+- Browse page excludes user's existing workspaces and workspaces with pending requests (WS-08)
+- better-auth addMember API used for instant joining open workspaces (WS-09)
 
 Recent from Phase 32:
 - Bloom filter with 100 common passwords (minimal memory, catches worst offenders) (SEC2-09)
@@ -102,7 +105,7 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-23
-Stopped at: Completed 33-02-PLAN.md (Workspace Switcher UI)
+Stopped at: Completed 33-03-PLAN.md (Workspace Discovery & Join Flow)
 Resume file: None
 
 ## Human Verification Deferred
