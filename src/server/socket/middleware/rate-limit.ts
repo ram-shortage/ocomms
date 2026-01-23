@@ -4,7 +4,7 @@
  *
  * Uses rate-limiter-flexible for in-memory rate limiting.
  * Configuration tuned to allow normal page loads while preventing abuse:
- * - 100 events/sec sustained rate (handles initial page load with many reactions)
+ * - 1000 events/sec sustained rate (handles initial page load with many reactions)
  * - 2 second cooldown on limit hit (short enough to not frustrate legitimate users)
  */
 import { RateLimiterMemory } from "rate-limiter-flexible";
@@ -14,14 +14,14 @@ import type { ClientToServerEvents, ServerToClientEvents, SocketData } from "@/l
 type SocketWithData = Socket<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
 
 // Rate limiter configuration
-// 100 events per second allows for page load scenarios where many events fire at once:
+// 1000 events per second allows for page load scenarios where many events fire at once:
 // - workspace:join, presence:fetch, notification:fetch
 // - reaction:get for each visible message (can be 30-50+ messages)
 // - typing indicators, presence updates, etc.
 // The 2 second cooldown is short enough to not block legitimate users if they
 // somehow hit the limit, while still preventing sustained abuse.
 const rateLimiter = new RateLimiterMemory({
-  points: 100, // 100 events
+  points: 1000, // 1000 events
   duration: 1, // per 1 second
   blockDuration: 2, // 2 second cooldown after limit hit
 });
