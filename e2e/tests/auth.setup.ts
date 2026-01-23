@@ -27,8 +27,8 @@ async function authenticateUser(
   password: string,
   storageFile: string
 ) {
-  // Navigate to sign-in page
-  await page.goto('/sign-in');
+  // Navigate to login page
+  await page.goto('/login');
 
   // Fill in credentials
   await page.getByLabel(/email/i).fill(email);
@@ -37,8 +37,15 @@ async function authenticateUser(
   // Submit form
   await page.getByRole('button', { name: /sign in/i }).click();
 
-  // Wait for redirect to workspace (indicates successful login)
-  await expect(page).toHaveURL(/\/[a-z0-9-]+$/, { timeout: 30000 });
+  // Wait for redirect - either workspace picker or direct workspace
+  // The app shows a workspace picker if user has workspaces
+  await page.waitForURL(/\/(acme-corp|browse-workspaces)?$/, { timeout: 30000 });
+
+  // If on workspace picker page, click through to acme-corp
+  if (await page.getByText('Your Workspaces').isVisible()) {
+    await page.getByRole('link', { name: /acme-corp/i }).click();
+    await expect(page).toHaveURL(/\/acme-corp/, { timeout: 10000 });
+  }
 
   // Ensure auth directory exists
   if (!fs.existsSync(authDir)) {

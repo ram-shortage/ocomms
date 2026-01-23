@@ -17,7 +17,7 @@ COPY . .
 RUN npm run build
 RUN npx esbuild src/server/index.ts --bundle --platform=node --target=node22 \
     --outfile=dist-server/index.js --minify --sourcemap \
-    --external:next --external:sharp --external:lightningcss
+    --external:next --external:sharp --external:lightningcss --external:isomorphic-dompurify
 RUN npx esbuild ./scripts/migrate.ts --bundle --platform=node --target=node22 \
     --outfile=dist-server/migrate.mjs --format=esm --minify \
     --external:postgres --external:drizzle-orm
@@ -47,6 +47,10 @@ COPY --from=builder /app/node_modules/next ./node_modules/next
 # Copy modules for migrations
 COPY --from=builder /app/node_modules/postgres ./node_modules/postgres
 COPY --from=builder /app/node_modules/drizzle-orm ./node_modules/drizzle-orm
+
+# Copy isomorphic-dompurify and dependencies (external to esbuild)
+COPY --from=builder /app/node_modules/isomorphic-dompurify ./node_modules/isomorphic-dompurify
+COPY --from=builder /app/node_modules/dompurify ./node_modules/dompurify
 
 # Set ownership
 RUN chown -R nextjs:nodejs /app

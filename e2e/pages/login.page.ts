@@ -25,10 +25,10 @@ export class LoginPage {
   }
 
   /**
-   * Navigate to the sign-in page.
+   * Navigate to the login page.
    */
   async goto() {
-    await this.page.goto('/sign-in');
+    await this.page.goto('/login');
   }
 
   /**

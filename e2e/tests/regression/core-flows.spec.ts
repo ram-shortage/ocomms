@@ -19,9 +19,9 @@ test.describe('core flows regression', () => {
       // Start fresh (no storage state)
       await page.context().clearCookies();
 
-      // Navigate to sign-in
+      // Navigate to login page
       await loginPage.goto();
-      await expect(page).toHaveURL(/sign-in/);
+      await expect(page).toHaveURL(/login/);
 
       // Enter credentials
       await loginPage.login('alice@demo.ocomms.local', 'password123');
