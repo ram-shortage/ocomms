@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-21)
 ## Current Position
 
 Phase: 35 of 36 (Mobile Redesign)
-Plan: 5 of 6 in current phase
+Plan: 4 of 6 in current phase
 Status: In progress
-Last activity: 2026-01-23 - Completed 35-05-PLAN.md (Channel Header Mobile Overflow Menu)
+Last activity: 2026-01-23 - Completed 35-04-PLAN.md (Mobile Status & Emoji Picker)
 
 Progress: [█████████████████████████░] 35/36 phases
 
@@ -70,6 +70,9 @@ Recent from Phase 35:
 - More menu in mobile navigation (4 primary tabs + More) (MOBI2-10)
 - Profile and Settings accessible via More menu, not primary tabs (MOBI2-11)
 - Channel header overflow menu groups all actions for mobile (MOBI2-12)
+- MobileStatusDrawer wraps StatusEditor in Drawer for reuse (MOBI-STAT-01)
+- perLine prop forwarded to emoji-mart for mobile 6-column layout (MOBI-EMOJ-01)
+- Status fetched via getMyStatus when More menu opens (MOBI-STAT-02)
 
 Recent from Phase 33:
 - SQL aggregation with LATERAL joins for workspace unreads (efficient single query) (WS-01)
@@ -134,7 +137,7 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-23
-Stopped at: Completed 35-05-PLAN.md (Channel Header Mobile Overflow Menu)
+Stopped at: Completed 35-04-PLAN.md (Mobile Status & Emoji Picker)
 Resume file: None
 
 ## Human Verification Deferred
