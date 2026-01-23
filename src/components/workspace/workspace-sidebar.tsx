@@ -304,6 +304,7 @@ export function WorkspaceSidebar({
         <DMListClient
           conversations={conversations}
           workspaceSlug={workspace.slug}
+          organizationId={workspace.id}
         />
 
         {/* Archived channels section - at bottom of scrollable area */}

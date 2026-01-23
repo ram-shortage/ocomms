@@ -50,7 +50,7 @@ export function LoginForm() {
 
       if (result.error) {
         setError(result.error.message || "Login failed");
-      } else if (result.data?.twoFactorRedirect) {
+      } else if ((result.data as { twoFactorRedirect?: boolean } | undefined)?.twoFactorRedirect) {
         // 2FA is required - show TOTP input
         setRequires2FA(true);
       } else {
