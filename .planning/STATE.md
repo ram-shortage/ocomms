@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-01-21)
 
 ## Current Position
 
-Phase: 32 of 36 (Medium/Low Security)
-Plan: 7 of 7 in current phase
-Status: Phase complete
-Last activity: 2026-01-23 - Completed 32-07-PLAN.md (Orphan Cleanup & SRI)
+Phase: 33 of 36 (Workspace Management)
+Plan: 1 of 3 in current phase
+Status: In progress
+Last activity: 2026-01-23 - Completed 33-01-PLAN.md (Workspace Foundation)
 
-Progress: [██████████████████████░░░] 32/36 phases
+Progress: [███████████████████████░░] 33/36 phases
 
 ## Shipped Milestones
 
@@ -36,16 +36,21 @@ Progress: [██████████████████████░
 
 ## Performance Metrics
 
-**Cumulative (through Phase 31):**
-- Total plans completed: 135
-- Total requirements delivered: 230
-- Total phases completed: 31
+**Cumulative (through Phase 33-01):**
+- Total plans completed: 136
+- Total requirements delivered: 233
+- Total phases completed: 32
 
 ## Accumulated Context
 
 ### Decisions
 
 Decisions are logged in PROJECT.md Key Decisions table.
+
+Recent from Phase 33:
+- SQL aggregation with LATERAL joins for workspace unreads (efficient single query) (WS-01)
+- 30-second Redis cache TTL for workspace unreads (balance freshness vs load) (WS-02)
+- Unique constraint on (userId, organizationId) for join requests (prevents duplicates) (WS-03)
 
 Recent from Phase 32:
 - Bloom filter with 100 common passwords (minimal memory, catches worst offenders) (SEC2-09)
@@ -94,7 +99,7 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-23
-Stopped at: Completed 32-07-PLAN.md (Phase 32 complete)
+Stopped at: Completed 33-01-PLAN.md (Workspace Foundation)
 Resume file: None
 
 ## Human Verification Deferred
