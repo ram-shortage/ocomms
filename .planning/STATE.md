@@ -48,6 +48,9 @@ Progress: [██████████████████████░
 Decisions are logged in PROJECT.md Key Decisions table.
 
 Recent from Phase 32:
+- Bloom filter with 100 common passwords (minimal memory, catches worst offenders) (SEC2-09)
+- Breach warning dismissable, password reuse hard block (SEC2-09, SEC2-20)
+- All 5 history entries compared regardless of match (timing attack prevention)
 - 1GB default storage quota per user with 80% warning, 100% block (SEC2-10)
 - 24-hour grace period for orphaned attachment cleanup (avoids deleting in-progress uploads)
 - Daily cleanup at 3 AM (low traffic time, once daily sufficient)
