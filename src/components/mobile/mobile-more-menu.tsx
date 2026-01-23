@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { MoreHorizontal, Clock, Bell, Bookmark, StickyNote, Settings, User } from "lucide-react";
@@ -11,6 +11,9 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
+import { MobileStatusDrawer } from "@/components/mobile/mobile-status-drawer";
+import { UserStatusData } from "@/components/status/status-editor";
+import { getMyStatus } from "@/lib/actions/user-status";
 
 interface MobileMoreMenuProps {
   workspaceSlug: string;
@@ -29,6 +32,38 @@ const moreItems = [
 export function MobileMoreMenu({ workspaceSlug }: MobileMoreMenuProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [currentStatus, setCurrentStatus] = useState<UserStatusData | null>(null);
+  const [statusLoaded, setStatusLoaded] = useState(false);
+
+  // Fetch current status when More menu opens
+  useEffect(() => {
+    if (open && !statusLoaded) {
+      getMyStatus()
+        .then((status) => {
+          if (status) {
+            setCurrentStatus({
+              emoji: status.emoji,
+              text: status.text,
+              expiresAt: status.expiresAt,
+              dndEnabled: status.dndEnabled,
+            });
+          }
+          setStatusLoaded(true);
+        })
+        .catch((err) => {
+          console.error("[MobileMoreMenu] Failed to fetch status:", err);
+          setStatusLoaded(true);
+        });
+    }
+  }, [open, statusLoaded]);
+
+  const handleStatusSaved = useCallback((status: UserStatusData) => {
+    setCurrentStatus(status);
+  }, []);
+
+  const handleStatusCleared = useCallback(() => {
+    setCurrentStatus(null);
+  }, []);
 
   // Check if any More menu route is active
   const isMoreActive = moreItems.some(item =>
@@ -56,6 +91,16 @@ export function MobileMoreMenu({ workspaceSlug }: MobileMoreMenuProps) {
           <DrawerHeader>
             <DrawerTitle>More</DrawerTitle>
           </DrawerHeader>
+
+          {/* Status section at top - MOBI2-04 */}
+          <div className="px-4 pb-3 border-b mb-3">
+            <MobileStatusDrawer
+              currentStatus={currentStatus}
+              onStatusSaved={handleStatusSaved}
+              onStatusCleared={handleStatusCleared}
+            />
+          </div>
+
           <nav className="px-4 pb-4 space-y-1">
             {moreItems.map(({ href, icon: Icon, label }) => {
               const itemHref = href(workspaceSlug);
