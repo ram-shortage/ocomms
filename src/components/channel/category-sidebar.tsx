@@ -20,6 +20,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
   useSortable,
+  arrayMove,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { ChevronRight, ChevronDown, Hash, Lock, GripVertical, FolderPlus } from "lucide-react";
@@ -29,6 +30,7 @@ import {
   toggleCategoryCollapse,
   reorderChannelsInCategory,
 } from "@/lib/actions/channel-category";
+import { updateCategoryOrder } from "@/lib/actions/sidebar-preferences";
 import { cn } from "@/lib/utils";
 import { CreateCategoryDialog } from "./create-category-dialog";
 import { Button } from "@/components/ui/button";
@@ -56,6 +58,7 @@ interface CategorySidebarProps {
   workspaceSlug: string;
   organizationId: string;
   isAdmin: boolean;
+  savedCategoryOrder?: string[];
 }
 
 // Sortable channel item component
@@ -238,6 +241,144 @@ function CategorySection({
   );
 }
 
+// Sortable category section wrapper
+function SortableCategorySection({
+  category,
+  channels,
+  isCollapsed,
+  onToggleCollapse,
+  workspaceSlug,
+  channelUnreads,
+  isAdmin,
+  activeId,
+  activeCategoryId,
+}: {
+  category: Category;
+  channels: Channel[];
+  isCollapsed: boolean;
+  onToggleCollapse: () => void;
+  workspaceSlug: string;
+  channelUnreads: Record<string, number>;
+  isAdmin: boolean;
+  activeId: string | null;
+  activeCategoryId: string | null;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: `cat-${category.id}` });
+
+  // Make the category header a drop target for channels
+  const { setNodeRef: setDroppableRef, isOver } = useDroppable({
+    id: `category-${category.id}`,
+    data: { type: "category", categoryId: category.id },
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  // Calculate total unread for collapsed category badge
+  const totalUnread = useMemo(() => {
+    return channels.reduce((sum, ch) => sum + (channelUnreads[ch.id] ?? 0), 0);
+  }, [channels, channelUnreads]);
+
+  // Empty categories: show for admins (so they can drag channels in), hide for others
+  if (channels.length === 0 && !isAdmin) {
+    return null;
+  }
+
+  const sortedChannels = [...channels].sort((a, b) => a.sortOrder - b.sortOrder);
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={cn(
+        "mb-2",
+        isDragging && "opacity-50"
+      )}
+    >
+      {/* Category header with drag handle */}
+      <div
+        ref={setDroppableRef}
+        className={cn(
+          "group flex items-center",
+          isOver && "bg-accent rounded"
+        )}
+      >
+        {/* Drag handle for category reordering */}
+        <button
+          className="opacity-0 group-hover:opacity-100 p-1 cursor-grab active:cursor-grabbing"
+          {...attributes}
+          {...listeners}
+        >
+          <GripVertical className="h-3 w-3 text-muted-foreground" />
+        </button>
+        <button
+          onClick={onToggleCollapse}
+          className="flex-1 flex items-center gap-1 px-1 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider hover:text-foreground transition-colors rounded"
+        >
+          {isCollapsed ? (
+            <ChevronRight className="h-3 w-3" />
+          ) : (
+            <ChevronDown className="h-3 w-3" />
+          )}
+          <span className="truncate">{category.name}</span>
+          {/* Show unread badge when collapsed */}
+          {isCollapsed && totalUnread > 0 && (
+            <span className="ml-auto bg-blue-600 text-white text-xs font-medium px-1.5 py-0.5 rounded-full min-w-[1.25rem] text-center">
+              {totalUnread > 99 ? "99+" : totalUnread}
+            </span>
+          )}
+        </button>
+      </div>
+
+      {/* Channels in category */}
+      {!isCollapsed && (
+        <SortableContext
+          items={sortedChannels.map((c) => c.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          <div className="space-y-0.5">
+            {sortedChannels.map((channel) => (
+              <SortableChannelItem
+                key={channel.id}
+                channel={channel}
+                workspaceSlug={workspaceSlug}
+                unreadCount={channelUnreads[channel.id] ?? 0}
+                isAdmin={isAdmin}
+                isDragging={activeId === channel.id}
+              />
+            ))}
+            {/* Empty drop zone when category has no channels */}
+            {channels.length === 0 && isAdmin && (
+              <div className="px-6 py-2 text-xs text-muted-foreground italic">
+                Drag channels here
+              </div>
+            )}
+          </div>
+        </SortableContext>
+      )}
+    </div>
+  );
+}
+
+// Category overlay for drag preview
+function CategoryOverlay({ category }: { category: Category }) {
+  return (
+    <div className="flex items-center gap-1 px-2 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider bg-accent shadow-lg rounded">
+      <ChevronRight className="h-3 w-3" />
+      <span className="truncate">{category.name}</span>
+    </div>
+  );
+}
+
 export function CategorySidebar({
   categories,
   channels,
@@ -245,15 +386,48 @@ export function CategorySidebar({
   workspaceSlug,
   organizationId,
   isAdmin,
+  savedCategoryOrder,
 }: CategorySidebarProps) {
   const [collapseStates, setCollapseStates] = useState(initialCollapseStates);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
   const [localChannels, setLocalChannels] = useState(channels);
+
+  // Initialize localCategories with saved order
+  const [localCategories, setLocalCategories] = useState<Category[]>(() => {
+    if (savedCategoryOrder && savedCategoryOrder.length > 0) {
+      // Sort categories by saved order, put any new categories at end
+      const orderMap = new Map(savedCategoryOrder.map((id, idx) => [id, idx]));
+      return [...categories].sort((a, b) => {
+        const aOrder = orderMap.get(a.id) ?? Number.MAX_SAFE_INTEGER;
+        const bOrder = orderMap.get(b.id) ?? Number.MAX_SAFE_INTEGER;
+        return aOrder - bOrder;
+      });
+    }
+    return [...categories].sort((a, b) => a.sortOrder - b.sortOrder);
+  });
 
   // Sync localChannels when channels prop changes (e.g., after category creation)
   useEffect(() => {
     setLocalChannels(channels);
   }, [channels]);
+
+  // Sync localCategories when categories prop changes (e.g., after category creation)
+  useEffect(() => {
+    if (savedCategoryOrder && savedCategoryOrder.length > 0) {
+      // Merge new categories while preserving order
+      const orderMap = new Map(savedCategoryOrder.map((id, idx) => [id, idx]));
+      setLocalCategories(
+        [...categories].sort((a, b) => {
+          const aOrder = orderMap.get(a.id) ?? Number.MAX_SAFE_INTEGER;
+          const bOrder = orderMap.get(b.id) ?? Number.MAX_SAFE_INTEGER;
+          return aOrder - bOrder;
+        })
+      );
+    } else {
+      setLocalCategories([...categories].sort((a, b) => a.sortOrder - b.sortOrder));
+    }
+  }, [categories, savedCategoryOrder]);
 
   // Get all channel IDs for unread counts
   const channelIds = useMemo(() => localChannels.map((c) => c.id), [localChannels]);
@@ -274,7 +448,7 @@ export function CategorySidebar({
   // Group channels by category
   const channelsByCategory = useMemo(() => {
     const grouped: Record<string, Channel[]> = { uncategorized: [] };
-    categories.forEach((cat) => {
+    localCategories.forEach((cat) => {
       grouped[cat.id] = [];
     });
     localChannels.forEach((channel) => {
@@ -285,7 +459,7 @@ export function CategorySidebar({
       }
     });
     return grouped;
-  }, [localChannels, categories]);
+  }, [localChannels, localCategories]);
 
   // Handle collapse toggle
   const handleToggleCollapse = useCallback(
@@ -308,17 +482,24 @@ export function CategorySidebar({
         return overChannel.categoryId;
       }
       // Check if over a category directly
-      if (categories.find((c) => c.id === overId)) {
+      if (localCategories.find((c) => c.id === overId)) {
         return overId;
       }
       return null;
     },
-    [localChannels, categories]
+    [localChannels, localCategories]
   );
 
   // Handle drag start
   const handleDragStart = useCallback((event: DragStartEvent) => {
-    setActiveId(event.active.id as string);
+    const activeIdStr = event.active.id as string;
+    if (activeIdStr.startsWith("cat-")) {
+      setActiveCategoryId(activeIdStr.replace("cat-", ""));
+      setActiveId(null);
+    } else {
+      setActiveId(activeIdStr);
+      setActiveCategoryId(null);
+    }
   }, []);
 
   // Handle drag end
@@ -326,9 +507,45 @@ export function CategorySidebar({
     async (event: DragEndEvent) => {
       const { active, over } = event;
       setActiveId(null);
+      setActiveCategoryId(null);
 
       if (!over || active.id === over.id) return;
 
+      const activeIdStr = active.id as string;
+
+      // Check if dragging a category (IDs start with "cat-")
+      if (activeIdStr.startsWith("cat-")) {
+        const overIdStr = over.id as string;
+        // Only allow dropping on another category
+        if (!overIdStr.startsWith("cat-")) return;
+
+        const oldIndex = localCategories.findIndex(
+          (c) => `cat-${c.id}` === activeIdStr
+        );
+        const newIndex = localCategories.findIndex(
+          (c) => `cat-${c.id}` === overIdStr
+        );
+
+        if (oldIndex !== -1 && newIndex !== -1 && oldIndex !== newIndex) {
+          const newOrder = arrayMove(localCategories, oldIndex, newIndex);
+          setLocalCategories(newOrder);
+
+          // Persist to server
+          try {
+            await updateCategoryOrder(
+              organizationId,
+              newOrder.map((c) => c.id)
+            );
+          } catch (error) {
+            console.error("Failed to reorder categories:", error);
+            // Revert on error
+            setLocalCategories(localCategories);
+          }
+        }
+        return;
+      }
+
+      // Channel drag logic (existing)
       const activeChannel = localChannels.find((c) => c.id === active.id);
       if (!activeChannel) return;
 
@@ -412,18 +629,17 @@ export function CategorySidebar({
         }
       }
     },
-    [localChannels, channels]
+    [localChannels, localCategories, channels, organizationId]
   );
 
-  // Get active channel for overlay
+  // Get active channel/category for overlay
   const activeChannel = activeId
     ? localChannels.find((c) => c.id === activeId)
     : null;
 
-  // Sort categories by sortOrder
-  const sortedCategories = [...categories].sort(
-    (a, b) => a.sortOrder - b.sortOrder
-  );
+  const activeCategory = activeCategoryId
+    ? localCategories.find((c) => c.id === activeCategoryId)
+    : null;
 
   return (
     <DndContext
@@ -434,20 +650,26 @@ export function CategorySidebar({
       onDragEnd={handleDragEnd}
     >
       <div className="space-y-1">
-        {/* Categories with channels */}
-        {sortedCategories.map((category) => (
-          <CategorySection
-            key={category.id}
-            category={category}
-            channels={channelsByCategory[category.id] || []}
-            isCollapsed={collapseStates[category.id] ?? false}
-            onToggleCollapse={() => handleToggleCollapse(category.id)}
-            workspaceSlug={workspaceSlug}
-            channelUnreads={channelUnreads}
-            isAdmin={isAdmin}
-            activeId={activeId}
-          />
-        ))}
+        {/* Categories with channels - wrapped in SortableContext for category reordering */}
+        <SortableContext
+          items={localCategories.map((c) => `cat-${c.id}`)}
+          strategy={verticalListSortingStrategy}
+        >
+          {localCategories.map((category) => (
+            <SortableCategorySection
+              key={category.id}
+              category={category}
+              channels={channelsByCategory[category.id] || []}
+              isCollapsed={collapseStates[category.id] ?? false}
+              onToggleCollapse={() => handleToggleCollapse(category.id)}
+              workspaceSlug={workspaceSlug}
+              channelUnreads={channelUnreads}
+              isAdmin={isAdmin}
+              activeId={activeId}
+              activeCategoryId={activeCategoryId}
+            />
+          ))}
+        </SortableContext>
 
         {/* Uncategorized channels section - always at bottom */}
         {channelsByCategory.uncategorized.length > 0 && (
@@ -497,6 +719,7 @@ export function CategorySidebar({
       {/* Drag overlay */}
       <DragOverlay>
         {activeChannel && <ChannelItemOverlay channel={activeChannel} />}
+        {activeCategory && <CategoryOverlay category={activeCategory} />}
       </DragOverlay>
     </DndContext>
   );
