@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Plus, Smile } from "lucide-react";
@@ -20,6 +20,7 @@ import { StatusEditor, UserStatusData } from "@/components/status/status-editor"
 import { StatusDisplay } from "@/components/status/status-display";
 import { WorkspaceSwitcher } from "@/components/workspace/workspace-switcher";
 import { SidebarSections } from "@/components/workspace/sidebar-sections";
+import { MainSections } from "@/components/workspace/main-sections";
 import { useSidebarPreferences } from "@/lib/hooks/use-sidebar-preferences";
 import { cn } from "@/lib/utils";
 
@@ -103,7 +104,13 @@ export function WorkspaceSidebar({
   };
 
   // Load sidebar preferences from localStorage + server sync
-  const { categoryOrder, dmOrder, sectionOrder, hiddenSections } = useSidebarPreferences(workspace.id);
+  const { categoryOrder, dmOrder, sectionOrder, hiddenSections, collapsedSections, mainSectionOrder } = useSidebarPreferences(workspace.id);
+
+  // Track whether archived channels exist (for section visibility)
+  const [hasArchivedChannels, setHasArchivedChannels] = useState(false);
+  const handleArchivedCountLoaded = useCallback((count: number) => {
+    setHasArchivedChannels(count > 0);
+  }, []);
 
   // Determine if we should use category view (when categories exist)
   const useCategoryView = categories && categories.length > 0;
@@ -146,100 +153,93 @@ export function WorkspaceSidebar({
           reminderBadge={<ReminderBadge />}
         />
 
-        {/* Channels section */}
-        {useCategoryView ? (
-          <>
-            <div className="px-3 py-2 mt-2 flex items-center justify-between">
-              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                Channels
-              </span>
-              <CreateChannelDialog
-                organizationId={workspace.id}
-                workspaceSlug={workspace.slug}
-                trigger={
-                  <Button variant="ghost" size="icon" className="h-5 w-5">
-                    <Plus className="h-4 w-4" />
-                    <span className="sr-only">Create channel</span>
-                  </Button>
-                }
-              />
-            </div>
-            <div className="px-2">
-              <CategorySidebar
-                categories={categories}
-                channels={channels.map((ch) => ({
-                  ...ch,
-                  categoryId: ch.categoryId ?? null,
-                  sortOrder: ch.sortOrder ?? 0,
-                }))}
-                collapseStates={collapseStates ?? {}}
-                workspaceSlug={workspace.slug}
-                organizationId={workspace.id}
-                isAdmin={isAdmin}
-                savedCategoryOrder={categoryOrder}
-              />
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="px-3 py-2 mt-2 flex items-center justify-between">
-              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                Channels
-              </span>
-              <CreateChannelDialog
-                organizationId={workspace.id}
-                workspaceSlug={workspace.slug}
-                trigger={
-                  <Button variant="ghost" size="icon" className="h-5 w-5">
-                    <Plus className="h-4 w-4" />
-                    <span className="sr-only">Create channel</span>
-                  </Button>
-                }
-              />
-            </div>
-            <ChannelListClient
-              channels={channels}
+        {/* Main sections - Channels, DMs, Archived (collapsible & reorderable) */}
+        <MainSections
+          organizationId={workspace.id}
+          savedMainSectionOrder={mainSectionOrder}
+          collapsedSections={collapsedSections}
+          hasArchivedChannels={hasArchivedChannels}
+          channelsActionButton={
+            <CreateChannelDialog
+              organizationId={workspace.id}
               workspaceSlug={workspace.slug}
+              trigger={
+                <Button variant="ghost" size="icon" className="h-5 w-5">
+                  <Plus className="h-4 w-4" />
+                  <span className="sr-only">Create channel</span>
+                </Button>
+              }
             />
-          </>
-        )}
-        <div className="px-3 py-2">
-          <Link
-            href={`/${workspace.slug}/channels`}
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Browse all channels
-          </Link>
-        </div>
-
-        {/* Direct Messages section */}
-        <div className="px-3 py-2 mt-2 flex items-center justify-between">
-          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-            Direct Messages
-          </span>
-          <StartDMDialog
-            organizationId={workspace.id}
-            workspaceSlug={workspace.slug}
-            currentUserId={currentUserId}
-            trigger={
-              <Button variant="ghost" size="icon" className="h-5 w-5">
-                <Plus className="h-4 w-4" />
-                <span className="sr-only">New message</span>
-              </Button>
-            }
-          />
-        </div>
-        <DMListClient
-          conversations={conversations}
-          workspaceSlug={workspace.slug}
-          organizationId={workspace.id}
-          savedDmOrder={dmOrder}
-        />
-
-        {/* Archived channels section - at bottom of scrollable area */}
-        <ArchivedChannelsSection
-          organizationId={workspace.id}
-          workspaceSlug={workspace.slug}
+          }
+          dmsActionButton={
+            <StartDMDialog
+              organizationId={workspace.id}
+              workspaceSlug={workspace.slug}
+              currentUserId={currentUserId}
+              trigger={
+                <Button variant="ghost" size="icon" className="h-5 w-5">
+                  <Plus className="h-4 w-4" />
+                  <span className="sr-only">New message</span>
+                </Button>
+              }
+            />
+          }
+          renderChannels={(isCollapsed) => {
+            if (isCollapsed) return null;
+            return (
+              <>
+                {useCategoryView ? (
+                  <div className="px-2">
+                    <CategorySidebar
+                      categories={categories!}
+                      channels={channels.map((ch) => ({
+                        ...ch,
+                        categoryId: ch.categoryId ?? null,
+                        sortOrder: ch.sortOrder ?? 0,
+                      }))}
+                      collapseStates={collapseStates ?? {}}
+                      workspaceSlug={workspace.slug}
+                      organizationId={workspace.id}
+                      isAdmin={isAdmin}
+                      savedCategoryOrder={categoryOrder}
+                    />
+                  </div>
+                ) : (
+                  <ChannelListClient
+                    channels={channels}
+                    workspaceSlug={workspace.slug}
+                  />
+                )}
+                <div className="px-3 py-2">
+                  <Link
+                    href={`/${workspace.slug}/channels`}
+                    className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Browse all channels
+                  </Link>
+                </div>
+              </>
+            );
+          }}
+          renderDMs={(isCollapsed) => {
+            if (isCollapsed) return null;
+            return (
+              <DMListClient
+                conversations={conversations}
+                workspaceSlug={workspace.slug}
+                organizationId={workspace.id}
+                savedDmOrder={dmOrder}
+              />
+            );
+          }}
+          renderArchived={(isCollapsed) => (
+            <ArchivedChannelsSection
+              organizationId={workspace.id}
+              workspaceSlug={workspace.slug}
+              isCollapsed={isCollapsed}
+              onCountLoaded={handleArchivedCountLoaded}
+            />
+          )}
         />
       </div>
 
