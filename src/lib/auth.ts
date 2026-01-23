@@ -4,7 +4,7 @@ import { createAuthMiddleware, APIError } from "better-auth/api";
 import { organization, twoFactor } from "better-auth/plugins";
 import { db } from "@/db";
 import * as schema from "@/db/schema";
-import { userLockout, user, passwordHistory } from "@/db/schema";
+import { userLockout, user, passwordHistory, session } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import { sendVerificationEmail, sendInviteEmail, sendUnlockEmail, sendResetPasswordEmail } from "./email";
@@ -327,10 +327,21 @@ export const auth = betterAuth({
           }
 
           // Add session to Redis index for immediate revocation support
-          const session = ctx.context.session;
-          if (session?.session?.id) {
-            const sessionTTL = 7 * 24 * 60 * 60; // 7 days in seconds (matches better-auth config)
-            await addUserSession(existingUser.id, session.session.id, sessionTTL);
+          // Note: ctx.context.session is null in after hook, get session token from response
+          const returned = ctx.context.returned as { token?: string } | undefined;
+          const sessionToken = returned?.token;
+
+          if (sessionToken) {
+            // Look up session by token to get the session ID
+            const sessionRecord = await db.query.session.findFirst({
+              where: eq(session.token, sessionToken),
+            });
+
+            if (sessionRecord) {
+              const sessionTTL = 7 * 24 * 60 * 60; // 7 days in seconds (matches better-auth config)
+              await addUserSession(existingUser.id, sessionRecord.id, sessionTTL);
+              authLogger.debug({ sessionId: sessionRecord.id }, "Session registered in Redis");
+            }
           }
         }
       }

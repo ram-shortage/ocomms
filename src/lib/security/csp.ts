@@ -6,7 +6,8 @@ export function generateNonce(): string {
   // Use Web Crypto API (works in Edge Runtime)
   const buffer = new Uint8Array(16);
   crypto.getRandomValues(buffer);
-  return Buffer.from(buffer).toString('base64');
+  // Use btoa instead of Buffer for Edge Runtime compatibility
+  return btoa(String.fromCharCode(...buffer));
 }
 
 /**
@@ -15,8 +16,9 @@ export function generateNonce(): string {
  * @param isDev - Whether in development mode (allows unsafe-eval for HMR)
  */
 export function generateCSP(nonce: string, isDev: boolean): string {
+  // In dev mode, don't use nonce - 'unsafe-inline' is ignored when nonce is present
   const scriptSrc = isDev
-    ? `'self' 'nonce-${nonce}' 'strict-dynamic' 'unsafe-eval'`
+    ? `'self' 'unsafe-inline' 'unsafe-eval'`
     : `'self' 'nonce-${nonce}' 'strict-dynamic'`;
 
   const csp = `

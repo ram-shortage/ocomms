@@ -138,3 +138,6 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };
+
+// Use Node.js runtime for ioredis compatibility
+export const runtime = "nodejs";

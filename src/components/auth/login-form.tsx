@@ -49,8 +49,8 @@ export function LoginForm() {
       if (result.error) {
         setError(result.error.message || "Login failed");
       } else {
-        router.push(returnUrl || "/");
-        router.refresh();
+        // Use window.location for full page navigation to ensure cookies are sent
+        window.location.href = returnUrl || "/";
       }
     } catch (err) {
       setError("An unexpected error occurred");
