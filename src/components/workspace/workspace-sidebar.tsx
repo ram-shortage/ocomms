@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Plus, Search, MessageSquare, StickyNote, Bell, Clock, Bookmark, Smile } from "lucide-react";
+import { Plus, Smile } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ChannelListClient } from "@/components/channel/channel-list-client";
 import { CategorySidebar } from "@/components/channel/category-sidebar";
@@ -19,6 +19,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { StatusEditor, UserStatusData } from "@/components/status/status-editor";
 import { StatusDisplay } from "@/components/status/status-display";
 import { WorkspaceSwitcher } from "@/components/workspace/workspace-switcher";
+import { SidebarSections } from "@/components/workspace/sidebar-sections";
+import { useSidebarPreferences } from "@/lib/hooks/use-sidebar-preferences";
 import { cn } from "@/lib/utils";
 
 interface Category {
@@ -100,6 +102,9 @@ export function WorkspaceSidebar({
     setStatusOpen(false);
   };
 
+  // Load sidebar preferences from localStorage + server sync
+  const { categoryOrder, dmOrder, sectionOrder, hiddenSections } = useSidebarPreferences(workspace.id);
+
   // Determine if we should use category view (when categories exist)
   const useCategoryView = categories && categories.length > 0;
 
@@ -132,73 +137,14 @@ export function WorkspaceSidebar({
 
       {/* Navigation items */}
       <div className="flex-1 overflow-y-auto py-2">
-        {/* Quick links */}
-        <div className="px-3 py-1">
-          <Link
-            href={`/${workspace.slug}/threads`}
-            className={cn(
-              "flex items-center gap-2 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors",
-              pathname === `/${workspace.slug}/threads` && "bg-accent"
-            )}
-          >
-            <MessageSquare className="h-4 w-4" />
-            Threads
-          </Link>
-          <Link
-            href={`/${workspace.slug}/search`}
-            className={cn(
-              "flex items-center gap-2 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors",
-              pathname === `/${workspace.slug}/search` && "bg-accent"
-            )}
-          >
-            <Search className="h-4 w-4" />
-            Search
-          </Link>
-          <Link
-            href={`/${workspace.slug}/notes`}
-            className={cn(
-              "flex items-center gap-2 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors",
-              pathname === `/${workspace.slug}/notes` && "bg-accent"
-            )}
-          >
-            <StickyNote className="h-4 w-4" />
-            My Notes
-          </Link>
-          {/* SCHD-02: Scheduled messages link in sidebar */}
-          <Link
-            href={`/${workspace.slug}/scheduled`}
-            className={cn(
-              "flex items-center gap-2 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors",
-              pathname === `/${workspace.slug}/scheduled` && "bg-accent"
-            )}
-          >
-            <Clock className="h-4 w-4" />
-            Scheduled
-          </Link>
-          {/* RMND-03: Reminders link in sidebar with badge */}
-          <Link
-            href={`/${workspace.slug}/reminders`}
-            className={cn(
-              "flex items-center gap-2 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors",
-              pathname === `/${workspace.slug}/reminders` && "bg-accent"
-            )}
-          >
-            <Bell className="h-4 w-4" />
-            Reminders
-            <ReminderBadge />
-          </Link>
-          {/* BOOK-03: Saved items link in sidebar */}
-          <Link
-            href={`/${workspace.slug}/saved`}
-            className={cn(
-              "flex items-center gap-2 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors",
-              pathname === `/${workspace.slug}/saved` && "bg-accent"
-            )}
-          >
-            <Bookmark className="h-4 w-4" />
-            Saved
-          </Link>
-        </div>
+        {/* Quick links - reorderable sections (SIDE-06) */}
+        <SidebarSections
+          workspaceSlug={workspace.slug}
+          organizationId={workspace.id}
+          savedSectionOrder={sectionOrder}
+          hiddenSections={hiddenSections}
+          reminderBadge={<ReminderBadge />}
+        />
 
         {/* Channels section */}
         {useCategoryView ? (
@@ -230,6 +176,7 @@ export function WorkspaceSidebar({
                 workspaceSlug={workspace.slug}
                 organizationId={workspace.id}
                 isAdmin={isAdmin}
+                savedCategoryOrder={categoryOrder}
               />
             </div>
           </>
@@ -286,6 +233,7 @@ export function WorkspaceSidebar({
           conversations={conversations}
           workspaceSlug={workspace.slug}
           organizationId={workspace.id}
+          savedDmOrder={dmOrder}
         />
 
         {/* Archived channels section - at bottom of scrollable area */}
