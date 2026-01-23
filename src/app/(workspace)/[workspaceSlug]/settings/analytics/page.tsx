@@ -53,7 +53,7 @@ export default async function AnalyticsPage({
 
   return (
     <div className="h-full overflow-auto">
-      <div className="p-8 max-w-6xl mx-auto space-y-6">
+      <div className="p-4 sm:p-8 max-w-6xl mx-auto space-y-4 sm:space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Workspace Analytics</h1>
           <Link

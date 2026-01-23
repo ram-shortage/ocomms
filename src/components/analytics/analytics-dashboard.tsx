@@ -135,19 +135,23 @@ export function AnalyticsDashboard({
 
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab}>
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <TabsList>
-          <TabsTrigger value="messages">Messages</TabsTrigger>
-          <TabsTrigger value="users">Users</TabsTrigger>
-          <TabsTrigger value="channels">Channels</TabsTrigger>
-          <TabsTrigger value="storage">Storage</TabsTrigger>
-        </TabsList>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 sm:mb-6">
+        {/* Scrollable tabs container for mobile */}
+        <div className="overflow-x-auto -mx-1 px-1">
+          <TabsList className="inline-flex w-auto">
+            <TabsTrigger value="messages" className="min-h-11 px-3 sm:px-4">Messages</TabsTrigger>
+            <TabsTrigger value="users" className="min-h-11 px-3 sm:px-4">Users</TabsTrigger>
+            <TabsTrigger value="channels" className="min-h-11 px-3 sm:px-4">Channels</TabsTrigger>
+            <TabsTrigger value="storage" className="min-h-11 px-3 sm:px-4">Storage</TabsTrigger>
+          </TabsList>
+        </div>
 
         <div className="flex items-center gap-2 flex-wrap">
           <DateRangePicker value={dateRange} onChange={setDateRange} />
           <Button
             variant="outline"
             size="sm"
+            className="min-h-11 min-w-11"
             onClick={fetchData}
             disabled={isLoading}
           >

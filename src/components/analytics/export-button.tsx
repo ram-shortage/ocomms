@@ -80,12 +80,12 @@ export function ExportButton({ data, filename, dateRange }: ExportButtonProps) {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="sm" disabled={isDisabled}>
+        <Button variant="outline" size="sm" disabled={isDisabled} className="min-h-11 min-w-11">
           <Download className="h-4 w-4" />
           <span className="hidden sm:inline ml-1">Export</span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-48" align="end">
+      <PopoverContent className="w-48" align="end" sideOffset={8}>
         <div className="space-y-2">
           <h4 className="font-medium text-sm">Export as CSV</h4>
           <p className="text-xs text-muted-foreground">Select granularity:</p>
@@ -93,7 +93,7 @@ export function ExportButton({ data, filename, dateRange }: ExportButtonProps) {
             <Button
               variant="ghost"
               size="sm"
-              className="justify-start"
+              className="justify-start min-h-11"
               onClick={() => handleExport("hourly")}
             >
               Hourly
@@ -101,7 +101,7 @@ export function ExportButton({ data, filename, dateRange }: ExportButtonProps) {
             <Button
               variant="ghost"
               size="sm"
-              className="justify-start"
+              className="justify-start min-h-11"
               onClick={() => handleExport("daily")}
             >
               Daily
@@ -109,7 +109,7 @@ export function ExportButton({ data, filename, dateRange }: ExportButtonProps) {
             <Button
               variant="ghost"
               size="sm"
-              className="justify-start"
+              className="justify-start min-h-11"
               onClick={() => handleExport("weekly")}
             >
               Weekly
