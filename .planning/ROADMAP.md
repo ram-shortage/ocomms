@@ -120,11 +120,14 @@ Plans:
   4. DM conversations can be reordered via drag-and-drop
   5. Sidebar sections (Notes, Scheduled, Reminders, Saved) can be reordered
   6. Sidebar order syncs across devices for same user
-**Plans**: TBD
+**Plans**: 5 plans
 
 Plans:
-- [ ] 34-01: TBD
-- [ ] 34-02: TBD
+- [ ] 34-01-PLAN.md — Database schema and server actions for sidebar preferences
+- [ ] 34-02-PLAN.md — Category drag-and-drop reordering
+- [ ] 34-03-PLAN.md — DM conversation drag-and-drop reordering
+- [ ] 34-04-PLAN.md — Sidebar sections reordering and Settings page
+- [ ] 34-05-PLAN.md — Cross-device sync integration and verification
 
 ### Phase 35: Mobile Redesign
 **Goal**: All features accessible on mobile with polished, touch-friendly UI
@@ -166,10 +169,10 @@ Plans:
 | 31. High Security + Bug Fixes | 4/4 | Complete | 2026-01-22 |
 | 32. Medium/Low Security | 7/7 | Complete | 2026-01-23 |
 | 33. Workspace Management | 0/4 | Planned | - |
-| 34. Sidebar Reorganization | 0/TBD | Not started | - |
+| 34. Sidebar Reorganization | 0/5 | Planned | - |
 | 35. Mobile Redesign | 0/TBD | Not started | - |
 | 36. Stabilization | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-01-22*
-*Last updated: 2026-01-23 after Phase 32 execution*
+*Last updated: 2026-01-23 after Phase 34 planning*
