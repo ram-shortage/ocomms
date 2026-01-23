@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-21)
 ## Current Position
 
 Phase: 36 of 36 (Stabilization)
-Plan: 4 of 6 in current phase
+Plan: 5 of 6 in current phase
 Status: In progress
-Last activity: 2026-01-23 - Completed 36-04-PLAN.md (Mobile & Regression E2E Tests)
+Last activity: 2026-01-23 - Completed 36-02-PLAN.md (Security E2E Tests)
 
-Progress: [██████████████████████████] 36/36 phases (Plan 4/6)
+Progress: [██████████████████████████] 36/36 phases (Plan 5/6)
 
 ## Shipped Milestones
 
@@ -71,6 +71,9 @@ Recent from Phase 36:
 - Multi-browser context for cross-user approval flow testing (E2E-WS-01)
 - dnd-kit compatible drag operations with 300ms UI delay (E2E-SIDE-01)
 - Hover before drag pattern - handles appear on hover (E2E-SIDE-02)
+- API testing over UI for security features to avoid rate limiting (SEC-E2E-01)
+- Skip on missing auth state for graceful test degradation (SEC-E2E-02)
+- File verification for security config (MFA, rate limit) (SEC-E2E-03)
 
 Recent from Phase 35:
 - vaul 1.1.2 via --legacy-peer-deps for React 19 compatibility (MOB-01)
@@ -151,7 +154,7 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-23
-Stopped at: Completed 36-04-PLAN.md (Mobile & Regression E2E Tests)
+Stopped at: Completed 36-02-PLAN.md (Security E2E Tests)
 Resume file: None
 
 ## Human Verification Deferred
