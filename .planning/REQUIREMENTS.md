@@ -60,14 +60,14 @@ Requirements for v0.6.0 Polish & Hardening release.
 
 ### Sidebar Reorganization
 
-- [ ] **SIDE-01**: "New Category" button moved from sidebar to Settings page
-- [ ] **SIDE-02**: Categories can be reordered via drag-and-drop
-- [ ] **SIDE-03**: Channels can be reordered within categories via drag-and-drop
-- [ ] **SIDE-04**: Channels can be moved between categories via drag-and-drop
-- [ ] **SIDE-05**: DM conversations can be reordered via drag-and-drop
-- [ ] **SIDE-06**: Sidebar sections (Notes, Scheduled, Reminders, Saved) can be reordered
-- [ ] **SIDE-07**: Sidebar order preferences stored per-user in database
-- [ ] **SIDE-08**: Sidebar order syncs across devices for same user
+- [x] **SIDE-01**: "New Category" button moved from sidebar to Settings page
+- [x] **SIDE-02**: Categories can be reordered via drag-and-drop
+- [x] **SIDE-03**: Channels can be reordered within categories via drag-and-drop
+- [x] **SIDE-04**: Channels can be moved between categories via drag-and-drop
+- [x] **SIDE-05**: DM conversations can be reordered via drag-and-drop
+- [x] **SIDE-06**: Sidebar sections (Notes, Scheduled, Reminders, Saved) can be reordered
+- [x] **SIDE-07**: Sidebar order preferences stored per-user in database
+- [x] **SIDE-08**: Sidebar order syncs across devices for same user
 
 ### Mobile Redesign - Feature Accessibility
 

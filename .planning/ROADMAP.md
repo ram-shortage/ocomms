@@ -26,7 +26,7 @@ See: .planning/milestones/v0.5.0-ROADMAP.md
 - [x] **Phase 31: High Security + Bug Fixes** - Socket.IO rate limiting, content sanitization, authorization fixes, quick bug fixes
 - [x] **Phase 32: Medium/Low Security** - Password breach checks, quotas, logging, MFA, cleanup jobs
 - [x] **Phase 33: Workspace Management** - Workspace switcher, discovery, join flow
-- [ ] **Phase 34: Sidebar Reorganization** - Drag-and-drop reordering, user preferences
+- [x] **Phase 34: Sidebar Reorganization** - Drag-and-drop reordering, user preferences
 - [ ] **Phase 35: Mobile Redesign** - Feature accessibility, visual polish
 - [ ] **Phase 36: Stabilization** - Integration testing, final polish
 
@@ -123,11 +123,11 @@ Plans:
 **Plans**: 5 plans
 
 Plans:
-- [ ] 34-01-PLAN.md — Database schema and server actions for sidebar preferences
-- [ ] 34-02-PLAN.md — Category drag-and-drop reordering
-- [ ] 34-03-PLAN.md — DM conversation drag-and-drop reordering
-- [ ] 34-04-PLAN.md — Sidebar sections reordering and Settings page
-- [ ] 34-05-PLAN.md — Cross-device sync integration and verification
+- [x] 34-01-PLAN.md — Database schema and server actions for sidebar preferences
+- [x] 34-02-PLAN.md — Category drag-and-drop reordering
+- [x] 34-03-PLAN.md — DM conversation drag-and-drop reordering
+- [x] 34-04-PLAN.md — Sidebar sections reordering and Settings page
+- [x] 34-05-PLAN.md — Cross-device sync integration and verification
 
 ### Phase 35: Mobile Redesign
 **Goal**: All features accessible on mobile with polished, touch-friendly UI
@@ -178,11 +178,11 @@ Plans:
 | 30. Critical Security | 3/3 | Complete | 2026-01-22 |
 | 31. High Security + Bug Fixes | 4/4 | Complete | 2026-01-22 |
 | 32. Medium/Low Security | 7/7 | Complete | 2026-01-23 |
-| 33. Workspace Management | 0/4 | Planned | - |
-| 34. Sidebar Reorganization | 0/5 | Planned | - |
+| 33. Workspace Management | 4/4 | Complete | 2026-01-23 |
+| 34. Sidebar Reorganization | 5/5 | Complete | 2026-01-23 |
 | 35. Mobile Redesign | 0/6 | Planned | - |
 | 36. Stabilization | 0/5 | Planned | - |
 
 ---
 *Roadmap created: 2026-01-22*
-*Last updated: 2026-01-23 after Phase 36 planning*
+*Last updated: 2026-01-23 after Phase 34 execution*
