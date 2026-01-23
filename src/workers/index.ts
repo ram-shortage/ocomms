@@ -12,6 +12,7 @@ import { createReminderWorker } from "./reminder.worker";
 import { createStatusExpirationWorker } from "./status-expiration.worker";
 import { createLinkPreviewWorker } from "./link-preview.worker";
 import { createGuestExpirationWorker } from "./guest-expiration.worker";
+import { createAttachmentCleanupWorker } from "./attachment-cleanup.worker";
 import { closeEmitter } from "@/server/queue/emitter";
 
 // Real scheduled message worker - Plan 03
@@ -29,6 +30,9 @@ const linkPreviewWorker = createLinkPreviewWorker();
 // Guest expiration worker - Phase 28
 const guestExpirationWorker = createGuestExpirationWorker();
 
+// Attachment cleanup worker - Phase 32
+const attachmentCleanupWorker = createAttachmentCleanupWorker();
+
 console.log("[Worker] BullMQ workers started");
 
 // Graceful shutdown
@@ -39,6 +43,7 @@ const shutdown = async () => {
   await statusExpirationWorker.close();
   await linkPreviewWorker.close();
   await guestExpirationWorker.close();
+  await attachmentCleanupWorker.close();
   await closeEmitter();
   process.exit(0);
 };

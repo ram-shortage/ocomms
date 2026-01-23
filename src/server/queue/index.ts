@@ -18,3 +18,10 @@ export {
   statusExpirationQueue,
   type StatusExpirationJobData,
 } from "./status-expiration.queue";
+
+// Attachment cleanup queue
+export {
+  attachmentCleanupQueue,
+  scheduleAttachmentCleanup,
+  type AttachmentCleanupJobData,
+} from "./attachment-cleanup.queue";
