@@ -27,7 +27,7 @@ See: .planning/milestones/v0.5.0-ROADMAP.md
 - [x] **Phase 32: Medium/Low Security** - Password breach checks, quotas, logging, MFA, cleanup jobs
 - [x] **Phase 33: Workspace Management** - Workspace switcher, discovery, join flow
 - [x] **Phase 34: Sidebar Reorganization** - Drag-and-drop reordering, user preferences
-- [ ] **Phase 35: Mobile Redesign** - Feature accessibility, visual polish
+- [x] **Phase 35: Mobile Redesign** - Feature accessibility, visual polish
 - [ ] **Phase 36: Stabilization** - Integration testing, final polish
 
 ## Phase Details
@@ -146,12 +146,12 @@ Plans:
 **Plans**: 6 plans
 
 Plans:
-- [ ] 35-01-PLAN.md — Install vaul, Drawer component, useLongPress hook
-- [ ] 35-02-PLAN.md — Analytics dashboard mobile responsive
-- [ ] 35-03-PLAN.md — Mobile navigation with More menu (Scheduled, Reminders, Saved)
-- [ ] 35-04-PLAN.md — Mobile status drawer and emoji picker
-- [ ] 35-05-PLAN.md — Channel header mobile overflow menu enhancement
-- [ ] 35-06-PLAN.md — Touch target audit and visual polish
+- [x] 35-01-PLAN.md — Install vaul, Drawer component, useLongPress hook
+- [x] 35-02-PLAN.md — Analytics dashboard mobile responsive
+- [x] 35-03-PLAN.md — Mobile navigation with More menu (Scheduled, Reminders, Saved)
+- [x] 35-04-PLAN.md — Mobile status drawer and emoji picker
+- [x] 35-05-PLAN.md — Channel header mobile overflow menu enhancement
+- [x] 35-06-PLAN.md — Touch target audit and visual polish
 
 ### Phase 36: Stabilization
 **Goal**: Verify all v0.6.0 functionality works together, fix integration issues
@@ -180,9 +180,9 @@ Plans:
 | 32. Medium/Low Security | 7/7 | Complete | 2026-01-23 |
 | 33. Workspace Management | 4/4 | Complete | 2026-01-23 |
 | 34. Sidebar Reorganization | 5/5 | Complete | 2026-01-23 |
-| 35. Mobile Redesign | 0/6 | Planned | - |
+| 35. Mobile Redesign | 6/6 | Complete | 2026-01-23 |
 | 36. Stabilization | 0/5 | Planned | - |
 
 ---
 *Roadmap created: 2026-01-22*
-*Last updated: 2026-01-23 after Phase 34 execution*
+*Last updated: 2026-01-23 after Phase 35 execution*
