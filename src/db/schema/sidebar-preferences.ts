@@ -12,10 +12,12 @@ export interface SidebarPreferencesData {
   sectionOrder: string[];       // Section IDs: 'threads', 'search', 'notes', 'scheduled', 'reminders', 'saved'
   hiddenSections: string[];     // Section IDs user has hidden
   collapsedSections: string[];  // Section IDs user has collapsed (different from hidden)
+  mainSectionOrder: string[];   // Main section IDs: 'channels', 'dms', 'archived' - order of main sections
   updatedAt: string;            // ISO timestamp for conflict resolution
 }
 
 export const DEFAULT_SECTION_ORDER = ['threads', 'search', 'notes', 'scheduled', 'reminders', 'saved'];
+export const DEFAULT_MAIN_SECTION_ORDER = ['channels', 'dms', 'archived'];
 
 export const userSidebarPreferences = pgTable("user_sidebar_preferences", {
   id: uuid("id").primaryKey().defaultRandom(),

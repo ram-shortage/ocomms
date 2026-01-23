@@ -10,8 +10,14 @@ export interface SidebarPreferencesData {
   sectionOrder: string[];       // Section IDs: 'threads', 'search', 'notes', 'scheduled', 'reminders', 'saved'
   hiddenSections: string[];     // Section IDs user has hidden
   collapsedSections: string[];  // Section IDs user has collapsed (different from hidden)
+  mainSectionOrder: string[];   // Main section IDs: 'channels', 'dms', 'archived' - order of main sections
   updatedAt: string;            // ISO timestamp for conflict resolution
 }
+
+/**
+ * Default order for main sidebar sections (Channels, DMs, Archived).
+ */
+export const DEFAULT_MAIN_SECTION_ORDER = ['channels', 'dms', 'archived'];
 
 /**
  * Default section order for new users or when preferences are not set.
@@ -27,5 +33,6 @@ export const EMPTY_SIDEBAR_PREFERENCES: SidebarPreferencesData = {
   sectionOrder: DEFAULT_SECTION_ORDER,
   hiddenSections: [],
   collapsedSections: [],
+  mainSectionOrder: DEFAULT_MAIN_SECTION_ORDER,
   updatedAt: new Date().toISOString(),
 };

@@ -73,6 +73,7 @@ export async function saveSidebarPreferences(
     sectionOrder: preferences.sectionOrder ?? existing?.preferences.sectionOrder ?? [],
     hiddenSections: preferences.hiddenSections ?? existing?.preferences.hiddenSections ?? [],
     collapsedSections: preferences.collapsedSections ?? existing?.preferences.collapsedSections ?? [],
+    mainSectionOrder: preferences.mainSectionOrder ?? existing?.preferences.mainSectionOrder ?? [],
     updatedAt: now,
   };
 
@@ -132,4 +133,26 @@ export async function updateSectionVisibility(
   hiddenSections: string[]
 ): Promise<{ success: true }> {
   return saveSidebarPreferences(organizationId, { hiddenSections });
+}
+
+/**
+ * Update main section order for a workspace.
+ * Main sections are: 'channels', 'dms', 'archived'
+ */
+export async function updateMainSectionOrder(
+  organizationId: string,
+  mainSectionOrder: string[]
+): Promise<{ success: true }> {
+  return saveSidebarPreferences(organizationId, { mainSectionOrder });
+}
+
+/**
+ * Update collapsed sections for a workspace.
+ * This tracks which sections are collapsed (minimized but still visible).
+ */
+export async function updateCollapsedSections(
+  organizationId: string,
+  collapsedSections: string[]
+): Promise<{ success: true }> {
+  return saveSidebarPreferences(organizationId, { collapsedSections });
 }

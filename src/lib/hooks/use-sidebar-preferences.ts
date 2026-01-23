@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { SidebarPreferencesData, DEFAULT_SECTION_ORDER } from "@/lib/types/sidebar";
+import { SidebarPreferencesData, DEFAULT_SECTION_ORDER, DEFAULT_MAIN_SECTION_ORDER } from "@/lib/types/sidebar";
 import { getSidebarPreferences, saveSidebarPreferences } from "@/lib/actions/sidebar-preferences";
 
 const STORAGE_KEY_PREFIX = "sidebar-prefs-";
@@ -82,6 +82,7 @@ export function useSidebarPreferences(organizationId: string) {
       sectionOrder: preferences?.sectionOrder ?? DEFAULT_SECTION_ORDER,
       hiddenSections: preferences?.hiddenSections ?? [],
       collapsedSections: preferences?.collapsedSections ?? [],
+      mainSectionOrder: preferences?.mainSectionOrder ?? DEFAULT_MAIN_SECTION_ORDER,
       ...updates,
       updatedAt: new Date().toISOString(),
     };
@@ -103,5 +104,7 @@ export function useSidebarPreferences(organizationId: string) {
     dmOrder: preferences?.dmOrder ?? [],
     sectionOrder: preferences?.sectionOrder ?? DEFAULT_SECTION_ORDER,
     hiddenSections: preferences?.hiddenSections ?? [],
+    collapsedSections: preferences?.collapsedSections ?? [],
+    mainSectionOrder: preferences?.mainSectionOrder ?? DEFAULT_MAIN_SECTION_ORDER,
   };
 }
