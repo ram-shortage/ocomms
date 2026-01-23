@@ -33,7 +33,7 @@ export function ChannelListClient({
           <Link
             key={channel.id}
             href={`/${workspaceSlug}/channels/${channel.slug}`}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-md hover:bg-accent transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 min-h-11 md:min-h-8 text-sm rounded-md hover:bg-accent transition-colors"
           >
             {channel.isPrivate ? (
               <Lock className="h-4 w-4 text-muted-foreground" />

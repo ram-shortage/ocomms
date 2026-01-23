@@ -65,7 +65,7 @@ export function SortableDMListItem({
       </button>
       <Link
         href={`/${workspaceSlug}/dm/${conversationId}`}
-        className="flex-1 flex items-center gap-2 px-2 py-1.5 rounded hover:bg-muted"
+        className="flex-1 flex items-center gap-2 px-2 py-1.5 min-h-11 md:min-h-8 rounded hover:bg-muted"
       >
         {isGroup ? (
           <div className="w-6 h-6 rounded bg-muted flex items-center justify-center text-xs font-medium">
