@@ -9,7 +9,7 @@ type TypedSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
 
 let socket: TypedSocket | null = null;
 let connectionRefCount = 0;
-let rateLimitHandlerRegistered = false;
+let globalHandlersRegistered = false;
 
 /**
  * Get the singleton socket instance.
@@ -26,8 +26,9 @@ export function getSocket(): TypedSocket {
       reconnectionDelayMax: 5000,
     });
 
-    // SEC2-04: Register global rate limit error handler (once per socket instance)
-    if (!rateLimitHandlerRegistered) {
+    // Register global event handlers (once per socket instance)
+    if (!globalHandlersRegistered) {
+      // SEC2-04: Rate limit error handler
       socket.on("error", (data: { message: string; code?: string; retryAfter?: number }) => {
         // Only handle rate limit errors here if code is RATE_LIMIT
         // Component-specific handlers (like message-input) may handle this too
@@ -41,7 +42,20 @@ export function getSocket(): TypedSocket {
           });
         }
       });
-      rateLimitHandlerRegistered = true;
+
+      // SEC2-16: Guest soft-locked disconnect handler
+      socket.on("guest:locked", (data: { reason: string; message: string }) => {
+        toast.error(data.reason, {
+          description: data.message,
+          duration: 10000, // Show longer since user is being disconnected
+        });
+        // Redirect to home after a brief delay to let user see the message
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 2000);
+      });
+
+      globalHandlersRegistered = true;
     }
   }
   return socket;

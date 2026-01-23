@@ -150,6 +150,8 @@ export interface ServerToClientEvents {
     previewId: string;
   }) => void;
   error: (data: { message: string; code?: string; retryAfter?: number }) => void;
+  /** SEC2-16: Guest soft-locked disconnect notification */
+  "guest:locked": (data: { reason: string; message: string }) => void;
 }
 
 export interface ClientToServerEvents {

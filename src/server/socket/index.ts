@@ -12,6 +12,7 @@ import { handleNotificationEvents } from "./handlers/notification";
 import { setupUnreadHandlers, handleUnreadEvents, type UnreadManager } from "./handlers/unread";
 import { registerNoteHandlers } from "./handlers/notes";
 import { handleTypingEvents } from "./handlers/typing";
+import { setIOInstance } from "./handlers/guest";
 import { isChannelMember, isConversationParticipant, isOrganizationMember } from "./authz";
 import { auditLog, AuditEventType } from "@/lib/audit-logger";
 
@@ -56,6 +57,9 @@ export function getUnreadManager(): UnreadManager | null {
  * @param redis - Optional Redis client for presence (null = no presence features)
  */
 export function setupSocketHandlers(io: SocketIOServer, redis?: Redis | null) {
+  // Store IO instance for guest disconnect (SEC2-16)
+  setIOInstance(io);
+
   // Setup presence manager if Redis is available
   if (redis) {
     presenceManager = setupPresence(io, redis);

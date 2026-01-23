@@ -55,6 +55,11 @@ async function processGuestExpiration(
     .where(eq(members.id, memberId));
 
   console.log(`[Guest Expiration Worker] Soft-locked guest member ${memberId}`);
+
+  // SEC2-16: Guest will be blocked from sending messages (checked in message handler)
+  // and disconnected on next socket event. For immediate disconnect, the Socket.IO
+  // server process can use disconnectSoftLockedGuest() from handlers/guest.ts
+
   return { success: true };
 }
 
