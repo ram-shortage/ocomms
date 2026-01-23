@@ -4,7 +4,7 @@ import { generateNonce, generateCSP } from "@/lib/security/csp";
 import { validateSession } from "@/lib/security/session-store";
 
 // Public routes that don't require authentication
-const publicRoutes = ["/login", "/signup", "/verify-email", "/api/auth", "/api/health", "/socket.io", "/accept-invite", "/api/csp-report"];
+const publicRoutes = ["/login", "/signup", "/verify-email", "/api/auth", "/api/health", "/socket.io", "/accept-invite", "/api/csp-report", "/api/push/vapid-public"];
 
 // Static assets and other paths to skip
 const skipPaths = ["/_next", "/favicon.ico", "/uploads"];

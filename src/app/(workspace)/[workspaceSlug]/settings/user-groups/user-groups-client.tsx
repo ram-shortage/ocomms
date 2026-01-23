@@ -60,53 +60,55 @@ export function UserGroupsClient({
   };
 
   return (
-    <div className="p-8 max-w-4xl mx-auto space-y-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">User Groups</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Create groups for @mentions
-          </p>
+    <div className="h-full overflow-auto">
+      <div className="p-8 max-w-4xl mx-auto space-y-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold">User Groups</h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              Create groups for @mentions
+            </p>
+          </div>
+          <Button onClick={handleCreateNew}>
+            <Plus className="h-4 w-4 mr-2" />
+            Create Group
+          </Button>
         </div>
-        <Button onClick={handleCreateNew}>
-          <Plus className="h-4 w-4 mr-2" />
-          Create Group
-        </Button>
-      </div>
 
-      <UserGroupList
-        groups={initialGroups}
-        onEdit={handleEdit}
-        onManageMembers={handleManageMembers}
-        onDelete={handleRefresh}
-      />
-
-      {/* Create/Edit form dialog */}
-      {showForm && (
-        <UserGroupForm
-          organizationId={organizationId}
-          group={editingGroup}
-          onClose={handleFormClose}
-          onSuccess={handleFormSuccess}
+        <UserGroupList
+          groups={initialGroups}
+          onEdit={handleEdit}
+          onManageMembers={handleManageMembers}
+          onDelete={handleRefresh}
         />
-      )}
 
-      {/* Member manager sheet */}
-      {managingMembersGroup && (
-        <GroupMemberManager
-          organizationId={organizationId}
-          group={managingMembersGroup}
-          onClose={handleMemberManagerClose}
-        />
-      )}
+        {/* Create/Edit form dialog */}
+        {showForm && (
+          <UserGroupForm
+            organizationId={organizationId}
+            group={editingGroup}
+            onClose={handleFormClose}
+            onSuccess={handleFormSuccess}
+          />
+        )}
 
-      <div className="pt-4">
-        <Link
-          href={`/${workspaceSlug}/settings`}
-          className="text-sm text-primary hover:underline"
-        >
-          Back to settings
-        </Link>
+        {/* Member manager sheet */}
+        {managingMembersGroup && (
+          <GroupMemberManager
+            organizationId={organizationId}
+            group={managingMembersGroup}
+            onClose={handleMemberManagerClose}
+          />
+        )}
+
+        <div className="pt-4">
+          <Link
+            href={`/${workspaceSlug}/settings`}
+            className="text-sm text-primary hover:underline"
+          >
+            Back to settings
+          </Link>
+        </div>
       </div>
     </div>
   );

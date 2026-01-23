@@ -52,21 +52,23 @@ export default async function AnalyticsPage({
   }
 
   return (
-    <div className="p-8 max-w-6xl mx-auto space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Workspace Analytics</h1>
-        <Link
-          href={`/${workspaceSlug}/settings`}
-          className="text-sm text-primary hover:underline"
-        >
-          Back to settings
-        </Link>
-      </div>
+    <div className="h-full overflow-auto">
+      <div className="p-8 max-w-6xl mx-auto space-y-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Workspace Analytics</h1>
+          <Link
+            href={`/${workspaceSlug}/settings`}
+            className="text-sm text-primary hover:underline"
+          >
+            Back to settings
+          </Link>
+        </div>
 
-      <AnalyticsDashboard
-        organizationId={organization.id}
-        workspaceSlug={workspaceSlug}
-      />
+        <AnalyticsDashboard
+          organizationId={organization.id}
+          workspaceSlug={workspaceSlug}
+        />
+      </div>
     </div>
   );
 }

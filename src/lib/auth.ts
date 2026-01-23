@@ -202,30 +202,39 @@ export const auth = betterAuth({
 
         const response = ctx.context.returned;
 
-        // Determine if login failed by checking response
+        // Determine if login failed or requires 2FA by checking response
         // better-auth returns APIError for failed logins (Error object with status/statusCode)
         let loginFailed = false;
+        let requires2FA = false;
         if (response instanceof Error) {
           // Failed login - APIError thrown by better-auth
           loginFailed = true;
         } else if (response instanceof Response) {
           loginFailed = !response.ok;
         } else if (response && typeof response === "object") {
-          // Check for error indicators in response object
+          // Check for error indicators or 2FA redirect in response object
           const responseObj = response as {
             error?: unknown;
             status?: string;
             statusCode?: number;
+            twoFactorRedirect?: boolean;
           };
           loginFailed =
             "error" in responseObj ||
             responseObj.status === "UNAUTHORIZED" ||
             responseObj.statusCode === 401;
+          requires2FA = responseObj.twoFactorRedirect === true;
         }
 
         // Extract request info for audit logging
         const ip = getClientIP(ctx.headers);
         const userAgent = getUserAgent(ctx.headers);
+
+        // Skip session registration if 2FA is required - wait until 2FA is verified
+        if (requires2FA) {
+          authLogger.debug({ email }, "2FA required, waiting for verification");
+          return;
+        }
 
         if (loginFailed) {
           // Log failed login attempt
@@ -341,6 +350,49 @@ export const auth = betterAuth({
               const sessionTTL = 7 * 24 * 60 * 60; // 7 days in seconds (matches better-auth config)
               await addUserSession(existingUser.id, sessionRecord.id, sessionTTL);
               authLogger.debug({ sessionId: sessionRecord.id }, "Session registered in Redis");
+            }
+          }
+        }
+      }
+
+      // 2FA verification success - register session in Redis
+      if (ctx.path === "/two-factor/verify-totp") {
+        const response = ctx.context.returned;
+        let verifySuccess = false;
+
+        if (response instanceof Response) {
+          verifySuccess = response.ok;
+        } else if (response && typeof response === "object" && !(response instanceof Error)) {
+          const responseObj = response as { error?: unknown; token?: string };
+          verifySuccess = !responseObj.error && !!responseObj.token;
+        }
+
+        if (verifySuccess) {
+          const returned = ctx.context.returned as { token?: string; user?: { id: string } } | undefined;
+          const sessionToken = returned?.token;
+          const userId = returned?.user?.id;
+
+          if (sessionToken && userId) {
+            // Look up session by token to get the session ID
+            const sessionRecord = await db.query.session.findFirst({
+              where: eq(session.token, sessionToken),
+            });
+
+            if (sessionRecord) {
+              const sessionTTL = 7 * 24 * 60 * 60; // 7 days
+              await addUserSession(userId, sessionRecord.id, sessionTTL);
+              authLogger.info({ userId }, "User login successful (2FA)");
+              authLogger.debug({ sessionId: sessionRecord.id }, "Session registered in Redis after 2FA");
+
+              // Reset lockout on successful 2FA login
+              await db
+                .update(userLockout)
+                .set({
+                  failedAttempts: 0,
+                  lockedUntil: null,
+                  updatedAt: new Date(),
+                })
+                .where(eq(userLockout.userId, userId));
             }
           }
         }

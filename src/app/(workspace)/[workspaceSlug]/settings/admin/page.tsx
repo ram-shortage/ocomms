@@ -54,8 +54,9 @@ export default async function AdminSettingsPage({
   const isOwner = membership?.role === "owner";
 
   return (
-    <div className="p-8 max-w-4xl mx-auto space-y-8">
-      <h1 className="text-2xl font-bold">Administration</h1>
+    <div className="h-full overflow-auto">
+      <div className="p-8 max-w-4xl mx-auto space-y-8">
+        <h1 className="text-2xl font-bold">Administration</h1>
 
       {/* Audit Logs Section */}
       <section className="space-y-4">
@@ -87,6 +88,7 @@ export default async function AdminSettingsPage({
         >
           Back to settings
         </Link>
+      </div>
       </div>
     </div>
   );

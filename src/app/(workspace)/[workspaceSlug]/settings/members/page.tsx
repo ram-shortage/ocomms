@@ -63,35 +63,37 @@ export default async function MembersSettingsPage({
   }));
 
   return (
-    <div className="p-8 max-w-2xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Members</h1>
-        <Link
-          href={`/${workspaceSlug}/settings`}
-          className="text-sm text-primary hover:underline"
-        >
-          Back to settings
-        </Link>
-      </div>
-
-      {canInvite && (
-        <div className="mb-8 p-4 bg-card border rounded">
-          <h2 className="text-lg font-medium mb-4">Invite Member</h2>
-          <InviteMemberForm organizationId={workspace.id} />
+    <div className="h-full overflow-auto">
+      <div className="p-8 max-w-2xl mx-auto">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl font-bold">Members</h1>
+          <Link
+            href={`/${workspaceSlug}/settings`}
+            className="text-sm text-primary hover:underline"
+          >
+            Back to settings
+          </Link>
         </div>
-      )}
 
-      <div>
-        <h2 className="text-lg font-medium mb-4">
-          Members ({members.length})
-        </h2>
-        <MemberList
-          members={members}
-          organizationId={workspace.id}
-          workspaceSlug={workspaceSlug}
-          currentUserId={session.user.id}
-          currentUserRole={currentMembership?.role as "owner" | "admin" | "member" || "member"}
-        />
+        {canInvite && (
+          <div className="mb-8 p-4 bg-card border rounded">
+            <h2 className="text-lg font-medium mb-4">Invite Member</h2>
+            <InviteMemberForm organizationId={workspace.id} />
+          </div>
+        )}
+
+        <div>
+          <h2 className="text-lg font-medium mb-4">
+            Members ({members.length})
+          </h2>
+          <MemberList
+            members={members}
+            organizationId={workspace.id}
+            workspaceSlug={workspaceSlug}
+            currentUserId={session.user.id}
+            currentUserRole={currentMembership?.role as "owner" | "admin" | "member" || "member"}
+          />
+        </div>
       </div>
     </div>
   );

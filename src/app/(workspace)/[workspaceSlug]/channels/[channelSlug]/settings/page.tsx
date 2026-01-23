@@ -48,7 +48,7 @@ export default async function ChannelSettingsPage({
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="h-full overflow-auto">
       <div className="max-w-2xl mx-auto p-8">
         <div className="mb-6">
           <Link

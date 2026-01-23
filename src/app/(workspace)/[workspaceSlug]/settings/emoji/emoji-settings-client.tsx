@@ -28,8 +28,9 @@ export function EmojiSettingsClient({
   };
 
   return (
-    <div className="max-w-3xl mx-auto py-8 px-4">
-      <h1 className="text-2xl font-bold mb-6">Custom Emoji</h1>
+    <div className="h-full overflow-auto">
+      <div className="max-w-3xl mx-auto py-8 px-4">
+        <h1 className="text-2xl font-bold mb-6">Custom Emoji</h1>
 
       {/* Upload form - admin only (CONTEXT decision) */}
       {isAdmin && (
@@ -60,6 +61,7 @@ export function EmojiSettingsClient({
         >
           Back to settings
         </Link>
+      </div>
       </div>
     </div>
   );

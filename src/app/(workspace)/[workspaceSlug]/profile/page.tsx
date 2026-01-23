@@ -36,6 +36,7 @@ export default async function ProfilePage({
   }
 
   return (
+    <div className="h-full overflow-auto">
     <div className="p-4 sm:p-8 max-w-2xl mx-auto space-y-6">
       {/* Mobile: stack vertically. Desktop: side by side */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
@@ -72,6 +73,7 @@ export default async function ProfilePage({
           </Link>
         </div>
       </div>
+    </div>
     </div>
   );
 }

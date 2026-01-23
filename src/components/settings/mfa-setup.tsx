@@ -138,6 +138,44 @@ export function MFASetup({ enabled, onStatusChange }: MFASetupProps) {
     return match ? match[1] : null;
   };
 
+  // Show backup codes even if enabled prop changes during setup
+  // This ensures user can see and save their codes before UI changes
+  if (step === "backup" && backupCodes.length > 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <ShieldCheck className="h-5 w-5 text-green-500" />
+            Save Your Backup Codes
+          </CardTitle>
+          <CardDescription>
+            Two-factor authentication is now enabled. Save these backup codes before continuing.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              These codes can be used to access your account if you lose your
+              authenticator. Each code can only be used once. Store them safely!
+            </p>
+            <div className="bg-muted p-4 rounded font-mono text-sm">
+              {backupCodes.map((code, i) => (
+                <div key={i}>{code}</div>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={copyBackupCodes}>
+                <Copy className="h-4 w-4 mr-2" />
+                Copy Codes
+              </Button>
+              <Button onClick={handleComplete}>I have saved my codes</Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   if (enabled) {
     return (
       <Card>
@@ -277,27 +315,7 @@ export function MFASetup({ enabled, onStatusChange }: MFASetupProps) {
           </div>
         )}
 
-        {step === "backup" && (
-          <div className="space-y-4">
-            <p className="text-sm font-medium">Save your backup codes</p>
-            <p className="text-sm text-muted-foreground">
-              These codes can be used to access your account if you lose your
-              authenticator. Each code can only be used once. Store them safely!
-            </p>
-            <div className="bg-muted p-4 rounded font-mono text-sm">
-              {backupCodes.map((code, i) => (
-                <div key={i}>{code}</div>
-              ))}
-            </div>
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={copyBackupCodes}>
-                <Copy className="h-4 w-4 mr-2" />
-                Copy Codes
-              </Button>
-              <Button onClick={handleComplete}>I have saved my codes</Button>
-            </div>
-          </div>
-        )}
+        {/* Backup codes are now shown in priority section above */}
       </CardContent>
     </Card>
   );

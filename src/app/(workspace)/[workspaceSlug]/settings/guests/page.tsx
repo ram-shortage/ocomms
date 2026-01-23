@@ -78,52 +78,54 @@ export default async function GuestSettingsPage({
   ]);
 
   return (
-    <div className="p-8 max-w-4xl mx-auto space-y-8">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Guest Management</h1>
-        <Link
-          href={`/${workspaceSlug}/settings`}
-          className="text-sm text-primary hover:underline"
-        >
-          Back to settings
-        </Link>
-      </div>
-
-      {/* Invite Links Section */}
-      <section className="space-y-4">
+    <div className="h-full overflow-auto">
+      <div className="p-8 max-w-4xl mx-auto space-y-8">
         <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-semibold">Invite Links</h2>
-            <p className="text-sm text-muted-foreground">
-              Create shareable links to invite guests to specific channels
-            </p>
+          <h1 className="text-2xl font-bold">Guest Management</h1>
+          <Link
+            href={`/${workspaceSlug}/settings`}
+            className="text-sm text-primary hover:underline"
+          >
+            Back to settings
+          </Link>
+        </div>
+
+        {/* Invite Links Section */}
+        <section className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-semibold">Invite Links</h2>
+              <p className="text-sm text-muted-foreground">
+                Create shareable links to invite guests to specific channels
+              </p>
+            </div>
+            <GuestInviteDialog
+              organizationId={organization.id}
+              channels={workspaceChannels}
+            />
           </div>
-          <GuestInviteDialog
-            organizationId={organization.id}
+          <GuestInviteList
+            invites={invites}
             channels={workspaceChannels}
           />
-        </div>
-        <GuestInviteList
-          invites={invites}
-          channels={workspaceChannels}
-        />
-      </section>
+        </section>
 
-      {/* Active Guests Section */}
-      <section className="space-y-4">
-        <div>
-          <h2 className="text-xl font-semibold">
-            Active Guests ({guests.length})
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            Manage guest access and expiration settings
-          </p>
-        </div>
-        <GuestList
-          guests={guests}
-          workspaceSlug={workspaceSlug}
-        />
-      </section>
+        {/* Active Guests Section */}
+        <section className="space-y-4">
+          <div>
+            <h2 className="text-xl font-semibold">
+              Active Guests ({guests.length})
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              Manage guest access and expiration settings
+            </p>
+          </div>
+          <GuestList
+            guests={guests}
+            workspaceSlug={workspaceSlug}
+          />
+        </section>
+      </div>
     </div>
   );
 }

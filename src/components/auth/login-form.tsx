@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { signIn } from "@/lib/auth-client";
+import { signIn, twoFactor } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,8 +23,10 @@ function isValidReturnUrl(url: string | null): boolean {
 export function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [totpCode, setTotpCode] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [requires2FA, setRequires2FA] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const rawReturnUrl = searchParams.get("returnUrl");
@@ -48,6 +50,9 @@ export function LoginForm() {
 
       if (result.error) {
         setError(result.error.message || "Login failed");
+      } else if (result.data?.twoFactorRedirect) {
+        // 2FA is required - show TOTP input
+        setRequires2FA(true);
       } else {
         // Use window.location for full page navigation to ensure cookies are sent
         window.location.href = returnUrl || "/";
@@ -58,6 +63,74 @@ export function LoginForm() {
       setLoading(false);
     }
   };
+
+  const handleTOTPSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      const result = await twoFactor.verifyTotp({
+        code: totpCode,
+      });
+
+      if (result.error) {
+        setError(result.error.message || "Invalid code");
+      } else {
+        window.location.href = returnUrl || "/";
+      }
+    } catch (err) {
+      setError("An unexpected error occurred");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Show 2FA form if required
+  if (requires2FA) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Two-Factor Authentication</CardTitle>
+          <CardDescription>Enter the code from your authenticator app</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleTOTPSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="totp">Authentication Code</Label>
+              <Input
+                id="totp"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                autoComplete="one-time-code"
+                value={totpCode}
+                onChange={(e) => setTotpCode(e.target.value)}
+                placeholder="000000"
+                maxLength={6}
+                required
+              />
+            </div>
+            {error && <p className="text-sm text-red-600">{error}</p>}
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? "Verifying..." : "Verify"}
+            </Button>
+          </form>
+          <button
+            type="button"
+            onClick={() => {
+              setRequires2FA(false);
+              setTotpCode("");
+              setError("");
+            }}
+            className="mt-4 w-full text-center text-sm text-muted-foreground hover:underline"
+          >
+            Back to login
+          </button>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>

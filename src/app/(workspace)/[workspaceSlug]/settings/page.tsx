@@ -40,6 +40,7 @@ export default async function WorkspaceSettingsPage({
   }
 
   return (
+    <div className="h-full overflow-auto">
     <div className="p-8 max-w-2xl mx-auto space-y-8">
       <h1 className="text-2xl font-bold">Workspace Settings</h1>
 
@@ -132,6 +133,7 @@ export default async function WorkspaceSettingsPage({
           Back to workspace
         </Link>
       </div>
+    </div>
     </div>
   );
 }
