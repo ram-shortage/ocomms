@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-21)
 ## Current Position
 
 Phase: 36 of 36 (Stabilization)
-Plan: 1 of 6 in current phase
+Plan: 4 of 6 in current phase
 Status: In progress
-Last activity: 2026-01-23 - Completed 36-01-PLAN.md (E2E Test Infrastructure)
+Last activity: 2026-01-23 - Completed 36-04-PLAN.md (Mobile & Regression E2E Tests)
 
-Progress: [██████████████████████████] 36/36 phases (Plan 1/6)
+Progress: [██████████████████████████] 36/36 phases (Plan 4/6)
 
 ## Shipped Milestones
 
@@ -64,6 +64,10 @@ Recent from Phase 36:
 - 4 Playwright projects - setup, chromium, mobile-chrome, mobile-safari (E2E-02)
 - alice.json and bob.json storage states for multi-user testing (E2E-03)
 - Page object pattern with constructor-injected Page dependency (E2E-04)
+- MobileNavPage uses text-primary class for active tab detection (E2E-05)
+- Touch target validation uses 44px minimum per iOS HIG (E2E-06)
+- Multi-user realtime tests use browser.newContext with storage states (E2E-07)
+- Regression tests use Date.now() timestamps to avoid collision (E2E-08)
 
 Recent from Phase 35:
 - vaul 1.1.2 via --legacy-peer-deps for React 19 compatibility (MOB-01)
@@ -144,7 +148,7 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-23
-Stopped at: Completed 36-01-PLAN.md (E2E Test Infrastructure)
+Stopped at: Completed 36-04-PLAN.md (Mobile & Regression E2E Tests)
 Resume file: None
 
 ## Human Verification Deferred
