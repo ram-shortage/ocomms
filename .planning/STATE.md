@@ -57,6 +57,8 @@ Recent from Phase 32:
 - Pino with pino-pretty for dev, JSON for production (structured logging)
 - 10% sampling for API request logging in production (reduce volume)
 - Safe error messages shown in both dev and prod modes (Unauthorized, Not found, etc.)
+- Socket.IO CORS via origin callback with env-based whitelist (SEC2-13)
+- Guest disconnect uses same-process IO instance access (SEC2-16)
 
 Recent from Phase 31:
 - 30 events/sec rate limit with 5sec cooldown (lenient for normal usage, blocks abuse)
