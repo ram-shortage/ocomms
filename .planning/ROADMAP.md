@@ -132,20 +132,26 @@ Plans:
 ### Phase 35: Mobile Redesign
 **Goal**: All features accessible on mobile with polished, touch-friendly UI
 **Depends on**: Phase 34
-**Requirements**: MOBI2-01, MOBI2-02, MOBI2-03, MOBI2-04, MOBI2-05, MOBI2-06, MOBI2-07, MOBI2-08, MOBI2-09, MOBI2-10, MOBI2-11, MOBI2-12
+**Requirements**: MOBI2-01, MOBI2-02, MOBI2-03, MOBI2-04, MOBI2-05, MOBI2-08, MOBI2-09, MOBI2-10, MOBI2-11, MOBI2-12
+**Note**: MOBI2-06 and MOBI2-07 (User groups and guest management on mobile) are deferred - admin features remain desktop-only
 **Success Criteria** (what must be TRUE):
   1. Scheduled messages, reminders, and bookmarks accessible from mobile navigation
   2. User status can be set/cleared from mobile
   3. Custom emoji picker works on mobile with touch-optimized layout
-  4. User groups and guest management accessible from mobile settings
+  4. Workspace analytics viewable on mobile with responsive charts
   5. All touch targets are minimum 44px
   6. Channel header actions in collapsible overflow menu
   7. Consistent spacing and layout across all mobile views
-**Plans**: TBD
+  8. Navigation state correctly reflects current route on all pages
+**Plans**: 6 plans
 
 Plans:
-- [ ] 35-01: TBD
-- [ ] 35-02: TBD
+- [ ] 35-01-PLAN.md — Install vaul, Drawer component, useLongPress hook
+- [ ] 35-02-PLAN.md — Analytics dashboard mobile responsive
+- [ ] 35-03-PLAN.md — Mobile navigation with More menu (Scheduled, Reminders, Saved)
+- [ ] 35-04-PLAN.md — Mobile status drawer and emoji picker
+- [ ] 35-05-PLAN.md — Channel header mobile overflow menu enhancement
+- [ ] 35-06-PLAN.md — Touch target audit and visual polish
 
 ### Phase 36: Stabilization
 **Goal**: Verify all v0.6.0 functionality works together, fix integration issues
@@ -170,9 +176,9 @@ Plans:
 | 32. Medium/Low Security | 7/7 | Complete | 2026-01-23 |
 | 33. Workspace Management | 0/4 | Planned | - |
 | 34. Sidebar Reorganization | 0/5 | Planned | - |
-| 35. Mobile Redesign | 0/TBD | Not started | - |
+| 35. Mobile Redesign | 0/6 | Planned | - |
 | 36. Stabilization | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-01-22*
-*Last updated: 2026-01-23 after Phase 34 planning*
+*Last updated: 2026-01-23 after Phase 35 planning*
