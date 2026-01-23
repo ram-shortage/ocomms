@@ -67,7 +67,9 @@ Recent from Phase 35:
 - Hide progress bar in ChannelActivityTable on mobile - percentage text sufficient (MOBI2-02)
 - Native HTML date inputs for date picker - touch-optimized by OS (MOBI2-03)
 - min-h-11 (44px) touch targets per iOS HIG guidelines (MOBI2-04)
-- Channel header overflow menu groups all actions for mobile (MOBI2-10)
+- More menu in mobile navigation (4 primary tabs + More) (MOBI2-10)
+- Profile and Settings accessible via More menu, not primary tabs (MOBI2-11)
+- Channel header overflow menu groups all actions for mobile (MOBI2-12)
 
 Recent from Phase 33:
 - SQL aggregation with LATERAL joins for workspace unreads (efficient single query) (WS-01)
