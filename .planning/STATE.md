@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-21)
 ## Current Position
 
 Phase: 34 of 36 (Sidebar Reorganization)
-Plan: 1 of 6 in current phase
+Plan: 3 of 6 in current phase
 Status: In progress
-Last activity: 2026-01-23 - Completed 34-01-PLAN.md (Sidebar Preferences Database Foundation)
+Last activity: 2026-01-23 - Completed 34-03-PLAN.md (DM Drag-and-Drop Reordering)
 
 Progress: [█████████████████████████░] 34/36 phases
 
@@ -36,9 +36,9 @@ Progress: [███████████████████████
 
 ## Performance Metrics
 
-**Cumulative (through Phase 34-01):**
-- Total plans completed: 140
-- Total requirements delivered: 252
+**Cumulative (through Phase 34-02):**
+- Total plans completed: 141
+- Total requirements delivered: 253
 - Total phases completed: 33
 
 ## Accumulated Context
@@ -52,6 +52,9 @@ Recent from Phase 34:
 - Unique index on (userId, organizationId) for per-user per-workspace preferences (SIDE-02)
 - saveSidebarPreferences merges partial updates with existing preferences (SIDE-03)
 - Server-side timestamp for updatedAt field in preferences (SIDE-04)
+- Category sortable IDs prefixed with 'cat-' to distinguish from channel IDs (SIDE-05)
+- Category reorder available to all users as personal preference (SIDE-06)
+- New categories appear at end of saved order using MAX_SAFE_INTEGER (SIDE-07)
 
 Recent from Phase 33:
 - SQL aggregation with LATERAL joins for workspace unreads (efficient single query) (WS-01)
@@ -116,7 +119,7 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-23
-Stopped at: Completed 34-01-PLAN.md (Sidebar Preferences Database Foundation)
+Stopped at: Completed 34-02-PLAN.md (Category Drag-and-Drop Reordering)
 Resume file: None
 
 ## Human Verification Deferred
