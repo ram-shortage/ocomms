@@ -51,21 +51,23 @@ export function MessageVolumeChart({ data, isLoading }: MessageVolumeChartProps)
             <p className="text-muted-foreground">No data for this period</p>
           </div>
         ) : (
-          <ChartContainer config={chartConfig} className="h-[300px] w-full">
+          <ChartContainer config={chartConfig} className="h-[250px] sm:h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={formattedData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+              <LineChart data={formattedData} margin={{ top: 5, right: 10, bottom: 5, left: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                 <XAxis
                   dataKey="displayDate"
-                  tick={{ fontSize: 12 }}
+                  tick={{ fontSize: 10 }}
                   tickLine={false}
                   axisLine={false}
+                  interval="preserveStartEnd"
                 />
                 <YAxis
-                  tick={{ fontSize: 12 }}
+                  tick={{ fontSize: 10 }}
                   tickLine={false}
                   axisLine={false}
                   allowDecimals={false}
+                  width={35}
                 />
                 <ChartTooltip
                   content={

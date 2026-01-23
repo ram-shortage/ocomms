@@ -72,23 +72,25 @@ export function PeakTimesChart({ data, isLoading }: PeakTimesChartProps) {
             <p className="text-muted-foreground">No activity data for this period</p>
           </div>
         ) : (
-          <ChartContainer config={chartConfig} className="h-[200px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={allHours} margin={{ top: 5, right: 10, bottom: 5, left: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" className="stroke-muted" vertical={false} />
-                <XAxis
-                  dataKey="hourLabel"
-                  tick={{ fontSize: 10 }}
-                  tickLine={false}
-                  axisLine={false}
-                  interval={2}
-                />
-                <YAxis
-                  tick={{ fontSize: 12 }}
-                  tickLine={false}
-                  axisLine={false}
-                  allowDecimals={false}
-                />
+          <div className="overflow-x-auto -mx-2 px-2">
+            <ChartContainer config={chartConfig} className="h-[180px] sm:h-[200px] min-w-[400px] sm:min-w-0 w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={allHours} margin={{ top: 5, right: 5, bottom: 5, left: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" vertical={false} />
+                  <XAxis
+                    dataKey="hourLabel"
+                    tick={{ fontSize: 9 }}
+                    tickLine={false}
+                    axisLine={false}
+                    interval={2}
+                  />
+                  <YAxis
+                    tick={{ fontSize: 10 }}
+                    tickLine={false}
+                    axisLine={false}
+                    allowDecimals={false}
+                    width={30}
+                  />
                 <ChartTooltip
                   content={
                     <ChartTooltipContent
@@ -117,6 +119,7 @@ export function PeakTimesChart({ data, isLoading }: PeakTimesChartProps) {
               </BarChart>
             </ResponsiveContainer>
           </ChartContainer>
+          </div>
         )}
       </CardContent>
     </Card>

@@ -69,24 +69,24 @@ export function StorageUsageCard({ data, isLoading }: StorageUsageCardProps) {
       <CardHeader>
         <CardTitle>Storage Usage</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-4 sm:space-y-6">
         {/* Total storage */}
-        <div className="text-center p-4 bg-muted/50 rounded-lg">
-          <div className="text-3xl font-bold">{formatBytes(data.total)}</div>
-          <div className="text-sm text-muted-foreground">Total storage used</div>
+        <div className="text-center p-3 sm:p-4 bg-muted/50 rounded-lg">
+          <div className="text-2xl sm:text-3xl font-bold">{formatBytes(data.total)}</div>
+          <div className="text-xs sm:text-sm text-muted-foreground">Total storage used</div>
         </div>
 
         {/* Breakdown by channel */}
-        <div className="space-y-4">
-          <h4 className="text-sm font-medium text-muted-foreground">By Channel</h4>
-          <div className="space-y-3">
+        <div className="space-y-3 sm:space-y-4">
+          <h4 className="text-xs sm:text-sm font-medium text-muted-foreground">By Channel</h4>
+          <div className="space-y-2 sm:space-y-3">
             {top5.map((channel) => {
               const percentage = (channel.bytes / data.total) * 100;
               return (
                 <div key={channel.channelId} className="space-y-1">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="font-medium">#{channel.channelName}</span>
-                    <span className="text-muted-foreground">{formatBytes(channel.bytes)}</span>
+                  <div className="flex items-center justify-between text-xs sm:text-sm">
+                    <span className="font-medium truncate mr-2">#{channel.channelName}</span>
+                    <span className="text-muted-foreground shrink-0">{formatBytes(channel.bytes)}</span>
                   </div>
                   <div className="h-2 bg-muted rounded-full overflow-hidden">
                     <div
@@ -99,11 +99,11 @@ export function StorageUsageCard({ data, isLoading }: StorageUsageCardProps) {
             })}
             {otherBytes > 0 && (
               <div className="space-y-1">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">
-                    Other ({data.byChannel.length - 5} channels)
+                <div className="flex items-center justify-between text-xs sm:text-sm">
+                  <span className="text-muted-foreground truncate mr-2">
+                    Other ({data.byChannel.length - 5})
                   </span>
-                  <span className="text-muted-foreground">{formatBytes(otherBytes)}</span>
+                  <span className="text-muted-foreground shrink-0">{formatBytes(otherBytes)}</span>
                 </div>
                 <div className="h-2 bg-muted rounded-full overflow-hidden">
                   <div

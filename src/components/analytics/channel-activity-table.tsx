@@ -36,21 +36,21 @@ export function ChannelActivityTable({ data, isLoading }: ChannelActivityTablePr
             <p className="text-muted-foreground">No channel activity in this period</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
+          <div className="overflow-x-auto -mx-2 sm:mx-0">
+            <table className="w-full min-w-[400px]">
               <thead>
                 <tr className="border-b">
-                  <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground w-12">
+                  <th className="text-left py-3 px-2 text-xs sm:text-sm font-medium text-muted-foreground w-8 sm:w-12">
                     #
                   </th>
-                  <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">
+                  <th className="text-left py-3 px-2 text-xs sm:text-sm font-medium text-muted-foreground">
                     Channel
                   </th>
-                  <th className="text-right py-3 px-2 text-sm font-medium text-muted-foreground">
+                  <th className="text-right py-3 px-2 text-xs sm:text-sm font-medium text-muted-foreground">
                     Messages
                   </th>
-                  <th className="text-right py-3 px-2 text-sm font-medium text-muted-foreground w-24">
-                    % of Total
+                  <th className="text-right py-3 px-2 text-xs sm:text-sm font-medium text-muted-foreground w-20 sm:w-24">
+                    %
                   </th>
                 </tr>
               </thead>
@@ -59,26 +59,26 @@ export function ChannelActivityTable({ data, isLoading }: ChannelActivityTablePr
                   const percentage = total > 0 ? ((channel.messageCount / total) * 100).toFixed(1) : "0";
                   return (
                     <tr key={channel.channelId} className="border-b last:border-0">
-                      <td className="py-3 px-2 text-sm text-muted-foreground">
+                      <td className="py-2 sm:py-3 px-2 text-xs sm:text-sm text-muted-foreground">
                         {index + 1}
                       </td>
-                      <td className="py-3 px-2">
-                        <span className="text-sm font-medium">#{channel.channelName}</span>
+                      <td className="py-2 sm:py-3 px-2">
+                        <span className="text-xs sm:text-sm font-medium">#{channel.channelName}</span>
                       </td>
-                      <td className="py-3 px-2 text-right">
-                        <span className="text-sm tabular-nums">
+                      <td className="py-2 sm:py-3 px-2 text-right">
+                        <span className="text-xs sm:text-sm tabular-nums">
                           {channel.messageCount.toLocaleString()}
                         </span>
                       </td>
-                      <td className="py-3 px-2 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
+                      <td className="py-2 sm:py-3 px-2 text-right">
+                        <div className="flex items-center justify-end gap-1 sm:gap-2">
+                          <div className="hidden sm:block w-16 h-2 bg-muted rounded-full overflow-hidden">
                             <div
                               className="h-full bg-primary rounded-full"
                               style={{ width: `${percentage}%` }}
                             />
                           </div>
-                          <span className="text-sm text-muted-foreground tabular-nums w-12 text-right">
+                          <span className="text-xs sm:text-sm text-muted-foreground tabular-nums">
                             {percentage}%
                           </span>
                         </div>
@@ -88,17 +88,17 @@ export function ChannelActivityTable({ data, isLoading }: ChannelActivityTablePr
                 })}
                 {otherCount > 0 && (
                   <tr className="border-t bg-muted/30">
-                    <td className="py-3 px-2 text-sm text-muted-foreground">-</td>
-                    <td className="py-3 px-2">
-                      <span className="text-sm text-muted-foreground">Other ({data.length - 10} channels)</span>
+                    <td className="py-2 sm:py-3 px-2 text-xs sm:text-sm text-muted-foreground">-</td>
+                    <td className="py-2 sm:py-3 px-2">
+                      <span className="text-xs sm:text-sm text-muted-foreground">Other ({data.length - 10})</span>
                     </td>
-                    <td className="py-3 px-2 text-right">
-                      <span className="text-sm text-muted-foreground tabular-nums">
+                    <td className="py-2 sm:py-3 px-2 text-right">
+                      <span className="text-xs sm:text-sm text-muted-foreground tabular-nums">
                         {otherCount.toLocaleString()}
                       </span>
                     </td>
-                    <td className="py-3 px-2 text-right">
-                      <span className="text-sm text-muted-foreground tabular-nums">
+                    <td className="py-2 sm:py-3 px-2 text-right">
+                      <span className="text-xs sm:text-sm text-muted-foreground tabular-nums">
                         {total > 0 ? ((otherCount / total) * 100).toFixed(1) : "0"}%
                       </span>
                     </td>
@@ -108,16 +108,16 @@ export function ChannelActivityTable({ data, isLoading }: ChannelActivityTablePr
               {total > 0 && (
                 <tfoot>
                   <tr className="border-t">
-                    <td className="py-3 px-2 text-sm font-medium" colSpan={2}>
+                    <td className="py-2 sm:py-3 px-2 text-xs sm:text-sm font-medium" colSpan={2}>
                       Total
                     </td>
-                    <td className="py-3 px-2 text-right">
-                      <span className="text-sm font-medium tabular-nums">
+                    <td className="py-2 sm:py-3 px-2 text-right">
+                      <span className="text-xs sm:text-sm font-medium tabular-nums">
                         {total.toLocaleString()}
                       </span>
                     </td>
-                    <td className="py-3 px-2 text-right">
-                      <span className="text-sm font-medium tabular-nums">100%</span>
+                    <td className="py-2 sm:py-3 px-2 text-right">
+                      <span className="text-xs sm:text-sm font-medium tabular-nums">100%</span>
                     </td>
                   </tr>
                 </tfoot>
