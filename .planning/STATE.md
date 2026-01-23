@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-21)
 ## Current Position
 
 Phase: 34 of 36 (Sidebar Reorganization)
-Plan: 3 of 6 in current phase
+Plan: 4 of 6 in current phase
 Status: In progress
-Last activity: 2026-01-23 - Completed 34-03-PLAN.md (DM Drag-and-Drop Reordering)
+Last activity: 2026-01-23 - Completed 34-04-PLAN.md (Sidebar Sections and Settings)
 
 Progress: [█████████████████████████░] 34/36 phases
 
@@ -36,9 +36,9 @@ Progress: [███████████████████████
 
 ## Performance Metrics
 
-**Cumulative (through Phase 34-03):**
-- Total plans completed: 142
-- Total requirements delivered: 254
+**Cumulative (through Phase 34-04):**
+- Total plans completed: 143
+- Total requirements delivered: 255
 - Total phases completed: 33
 
 ## Accumulated Context
@@ -56,6 +56,8 @@ Recent from Phase 34:
 - Category reorder available to all users as personal preference (SIDE-06)
 - New categories appear at end of saved order using MAX_SAFE_INTEGER (SIDE-07)
 - DM drag handle appears on hover, uses same pattern as channel drag handles (SIDE-08)
+- SortableSection uses dnd-kit useSortable hook with grip handle visible on hover (SIDE-09)
+- Section visibility toggles via Checkbox components with immediate persistence (SIDE-10)
 
 Recent from Phase 33:
 - SQL aggregation with LATERAL joins for workspace unreads (efficient single query) (WS-01)
@@ -120,7 +122,7 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-23
-Stopped at: Completed 34-03-PLAN.md (DM Drag-and-Drop Reordering)
+Stopped at: Completed 34-04-PLAN.md (Sidebar Sections and Settings)
 Resume file: None
 
 ## Human Verification Deferred
