@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-21)
 
 **Core value:** Data sovereignty - complete control over communication data
-**Current focus:** v0.6.0 Polish & Hardening - Phase 35 Mobile Redesign
+**Current focus:** v0.6.0 Polish & Hardening - Phase 36 Stabilization
 
 ## Current Position
 
-Phase: 35 of 36 (Mobile Redesign)
-Plan: 6 of 6 in current phase (COMPLETE)
-Status: Phase 35 complete
-Last activity: 2026-01-23 - Completed 35-06-PLAN.md (Touch Target Audit)
+Phase: 36 of 36 (Stabilization)
+Plan: 1 of 6 in current phase
+Status: In progress
+Last activity: 2026-01-23 - Completed 36-01-PLAN.md (E2E Test Infrastructure)
 
-Progress: [█████████████████████████░] 35/36 phases
+Progress: [██████████████████████████] 36/36 phases (Plan 1/6)
 
 ## Shipped Milestones
 
@@ -58,6 +58,12 @@ Recent from Phase 34:
 - DM drag handle appears on hover, uses same pattern as channel drag handles (SIDE-08)
 - SortableSection uses dnd-kit useSortable hook with grip handle visible on hover (SIDE-09)
 - Section visibility toggles via Checkbox components with immediate persistence (SIDE-10)
+
+Recent from Phase 36:
+- tmpfs for PostgreSQL in test compose - RAM disk for speed (E2E-01)
+- 4 Playwright projects - setup, chromium, mobile-chrome, mobile-safari (E2E-02)
+- alice.json and bob.json storage states for multi-user testing (E2E-03)
+- Page object pattern with constructor-injected Page dependency (E2E-04)
 
 Recent from Phase 35:
 - vaul 1.1.2 via --legacy-peer-deps for React 19 compatibility (MOB-01)
@@ -138,7 +144,7 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-23
-Stopped at: Completed 35-06-PLAN.md (Touch Target Audit) - Phase 35 complete
+Stopped at: Completed 36-01-PLAN.md (E2E Test Infrastructure)
 Resume file: None
 
 ## Human Verification Deferred
