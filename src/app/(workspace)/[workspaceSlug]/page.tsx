@@ -31,15 +31,17 @@ export default async function WorkspacePage({
   }
 
   // Check for last-visited path and restore position
+  let lastVisited: string | null = null;
   try {
-    const lastVisited = await getLastVisited(session.user.id, workspace.id);
-    if (lastVisited && lastVisited !== `/${workspaceSlug}`) {
-      // Only redirect if not already at workspace root (prevent redirect loop)
-      redirect(lastVisited);
-    }
+    lastVisited = await getLastVisited(session.user.id, workspace.id);
   } catch (error) {
     console.error("Error getting last-visited path:", error);
     // Continue to show welcome page if Redis fails
+  }
+
+  if (lastVisited && lastVisited !== `/${workspaceSlug}`) {
+    // Only redirect if not already at workspace root (prevent redirect loop)
+    redirect(lastVisited);
   }
 
   return (
