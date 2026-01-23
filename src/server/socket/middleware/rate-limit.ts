@@ -3,7 +3,9 @@
  * SEC2-04: Prevents rapid-fire event abuse on Socket.IO handlers.
  *
  * Uses rate-limiter-flexible for in-memory rate limiting.
- * Limits: 30 events per second per user with 5 second cooldown on limit hit.
+ * Configuration tuned to allow normal page loads while preventing abuse:
+ * - 100 events/sec sustained rate (handles initial page load with many reactions)
+ * - 2 second cooldown on limit hit (short enough to not frustrate legitimate users)
  */
 import { RateLimiterMemory } from "rate-limiter-flexible";
 import type { Socket } from "socket.io";
@@ -12,12 +14,16 @@ import type { ClientToServerEvents, ServerToClientEvents, SocketData } from "@/l
 type SocketWithData = Socket<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
 
 // Rate limiter configuration
-// 30 events per second is lenient for normal usage (typing, reactions, presence)
-// but prevents rapid-fire abuse (DoS, spam)
+// 100 events per second allows for page load scenarios where many events fire at once:
+// - workspace:join, presence:fetch, notification:fetch
+// - reaction:get for each visible message (can be 30-50+ messages)
+// - typing indicators, presence updates, etc.
+// The 2 second cooldown is short enough to not block legitimate users if they
+// somehow hit the limit, while still preventing sustained abuse.
 const rateLimiter = new RateLimiterMemory({
-  points: 30, // 30 events
+  points: 100, // 100 events
   duration: 1, // per 1 second
-  blockDuration: 5, // 5 second cooldown after limit hit
+  blockDuration: 2, // 2 second cooldown after limit hit
 });
 
 /**

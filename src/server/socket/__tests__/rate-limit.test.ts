@@ -208,9 +208,9 @@ describe("Rate Limiting Middleware (SEC2-04)", () => {
       // Create rate limiter on socket
       createEventRateLimiter(mockSocket as unknown as Parameters<typeof createEventRateLimiter>[0]);
 
-      // Manually exhaust the rate limit by calling consume
+      // Manually exhaust the rate limit by calling consume (100 events/sec limit)
       const userId = mockSocket.data.userId;
-      for (let i = 0; i < 30; i++) {
+      for (let i = 0; i < 100; i++) {
         try {
           await rateLimiter.consume(userId);
         } catch {
@@ -288,7 +288,7 @@ describe("Rate Limiting Middleware (SEC2-04)", () => {
 });
 
 describe("Rate limiter configuration", () => {
-  it("uses 30 events per second limit", () => {
+  it("uses 100 events per second limit", () => {
     // Verify the exported rateLimiter has expected configuration
     // RateLimiterMemory stores points internally
     expect(rateLimiter).toBeDefined();
