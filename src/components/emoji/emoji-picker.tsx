@@ -16,9 +16,11 @@ interface EmojiPickerProps {
   onSelect: (emoji: string) => void; // Native emoji or :custom_name:
   customEmojis?: CustomEmojiData[];
   autoFocus?: boolean;
+  /** Number of emojis per row. Default 9, use 6 for mobile (larger targets). */
+  perLine?: number;
 }
 
-export function EmojiPicker({ onSelect, customEmojis = [], autoFocus = false }: EmojiPickerProps) {
+export function EmojiPicker({ onSelect, customEmojis = [], autoFocus = false, perLine }: EmojiPickerProps) {
   const [data, setData] = useState<unknown>(null);
 
   // Lazy load emoji data
@@ -75,6 +77,7 @@ export function EmojiPicker({ onSelect, customEmojis = [], autoFocus = false }: 
         previewPosition="none"
         skinTonePosition="search"
         maxFrequentRows={2}
+        perLine={perLine}
         // CONTEXT: Recently used includes both standard and custom combined
         // emoji-mart handles this automatically with frequentlyUsed
       />
