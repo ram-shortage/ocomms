@@ -24,7 +24,11 @@ Organizations increasingly need real-time communication tools, but cloud-hosted 
 
 ### Organization & Discovery
 - Workspaces with tenant isolation
+- Workspace switcher with unread counts
+- Browse and join available workspaces
+- Join request approval workflow
 - Channel categories with collapsible sidebar sections
+- Drag-and-drop sidebar reordering (categories, channels, DMs, sections)
 - Channel archiving (read-only mode)
 - Full-text search across all accessible messages
 - Member profiles with avatars
@@ -62,6 +66,9 @@ Organizations increasingly need real-time communication tools, but cloud-hosted 
 - Offline send queue with automatic sync
 - Push notifications (Web Push API)
 - Responsive mobile layout with bottom navigation
+- Mobile More menu for Scheduled/Reminders/Saved access
+- Mobile-optimized emoji picker
+- Mobile touch targets (minimum 44px)
 
 ### Access Control
 - Guest accounts with channel-scoped access
@@ -75,6 +82,18 @@ Organizations increasingly need real-time communication tools, but cloud-hosted 
 - CSV export for analytics data
 - GDPR-compliant data export
 - Audit logs with filtering
+
+### Security
+- CSP nonce-based script loading
+- Server-side session validation with immediate revocation
+- SVG upload blocking with content detection
+- Socket.IO rate limiting
+- TOTP MFA with backup codes
+- Password breach detection
+- Per-user storage quotas
+- HMAC-signed audit logs
+- SSRF protection for link previews
+- Subresource Integrity for static assets
 
 ### Self-Hosted Ready
 - Single-command Docker deployment
@@ -230,7 +249,7 @@ npm run test -- --coverage
 
 ## Roadmap
 
-**Current Version: v0.5.0** — Feature Completeness
+**Current Version: v0.6.0** — Polish & Hardening
 
 Completed milestones:
 - **v0.1.0** — Full conversation features (channels, DMs, threads, search)
@@ -238,6 +257,7 @@ Completed milestones:
 - **v0.3.0** — Mobile experience (PWA, offline, push notifications)
 - **v0.4.0** — Files, theming & notes (dark mode, uploads, markdown notes)
 - **v0.5.0** — Feature completeness (scheduling, reminders, bookmarks, status, link previews, custom emoji, user groups, guests, analytics)
+- **v0.6.0** — Polish & hardening (security hardening, workspace management, sidebar reorg, mobile redesign)
 
 Future versions may include:
 - [ ] Message editing
@@ -252,11 +272,14 @@ See [.planning/PROJECT.md](.planning/PROJECT.md) for detailed planning documents
 
 | Version | Date | Highlights |
 |---------|------|------------|
+| v0.6.0 | 2026-01-23 | Security hardening (22 fixes), workspace switcher, sidebar drag-drop, mobile redesign |
 | v0.5.0 | 2026-01-21 | Scheduling, reminders, bookmarks, status, link previews, custom emoji, user groups, guests, analytics |
 | v0.4.0 | 2026-01-20 | Dark mode, file uploads, channel notes, personal notes |
 | v0.3.0 | 2026-01-19 | PWA, offline support, push notifications, mobile layout |
 | v0.2.0 | 2026-01-18 | HTTPS, security headers, rate limiting, audit logging |
 | v0.1.0 | 2026-01-18 | Real-time messaging, channels, DMs, threads, search |
+
+See [CHANGELOG.md](CHANGELOG.md) for detailed release notes.
 
 ## Contributing
 
