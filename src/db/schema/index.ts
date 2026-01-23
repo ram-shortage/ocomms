@@ -25,3 +25,4 @@ export * from "./guest";
 export * from "./user-storage";
 export * from "./password-history";
 export * from "./workspace-join-request";
+export * from "./sidebar-preferences";
