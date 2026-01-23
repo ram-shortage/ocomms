@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-21)
 ## Current Position
 
 Phase: 32 of 36 (Medium/Low Security)
-Plan: 5 of 7 in current phase
-Status: In progress
-Last activity: 2026-01-23 - Completed 32-05-PLAN.md (Redirect URL & SSRF)
+Plan: 7 of 7 in current phase
+Status: Phase complete
+Last activity: 2026-01-23 - Completed 32-07-PLAN.md (Orphan Cleanup & SRI)
 
-Progress: [██████████████████████░░░] 31/36 phases
+Progress: [██████████████████████░░░] 32/36 phases
 
 ## Shipped Milestones
 
@@ -48,6 +48,9 @@ Progress: [██████████████████████░
 Decisions are logged in PROJECT.md Key Decisions table.
 
 Recent from Phase 32:
+- 24-hour grace period for orphaned attachment cleanup (avoids deleting in-progress uploads)
+- Daily cleanup at 3 AM (low traffic time, once daily sufficient)
+- SHA-384 for SRI hashes (industry standard balance of security and performance)
 - Client-side returnUrl validation only allows relative URLs (no domain checking in browser)
 - Block direct IP addresses in link previews to force DNS resolution path
 - Two-layer SSRF protection: isUrlSafe() before queue, request-filtering-agent at fetch
@@ -82,7 +85,7 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-23
-Stopped at: Completed 32-05-PLAN.md
+Stopped at: Completed 32-07-PLAN.md (Phase 32 complete)
 Resume file: None
 
 ## Human Verification Deferred
