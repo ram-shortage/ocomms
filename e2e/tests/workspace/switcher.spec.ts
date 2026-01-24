@@ -19,14 +19,14 @@ test.describe('Workspace Switcher', () => {
     // Verify the switcher dropdown is visible
     await expect(workspaceSwitcher.switcherDropdown).toBeVisible();
 
-    // Verify workspace list is present
-    // The workspace cards should be in the dropdown content
-    const workspaceButtons = page.locator('[role="dialog"] button').filter({
-      has: page.locator('.rounded-md'), // Workspace cards have rounded logos
-    });
+    // Verify workspace list is present in the dropdown
+    // The workspace list has data-testid="workspace-list"
+    const workspaceList = workspaceSwitcher.workspaceList;
+    await expect(workspaceList).toBeVisible();
 
-    // Should have at least one workspace (current user's workspaces)
-    const count = await workspaceButtons.count();
+    // Should have at least one workspace item
+    const workspaceItems = workspaceList.locator('> *');
+    const count = await workspaceItems.count();
     expect(count).toBeGreaterThan(0);
 
     // Close the dropdown
@@ -139,11 +139,9 @@ test.describe('Workspace Switcher Navigation', () => {
     // Open switcher
     await workspaceSwitcher.open();
 
-    // Look for workspace list
-    const dropdownContent = page.locator('[role="dialog"], [data-state="open"]');
-
-    // Verify we have a workspace list
-    await expect(dropdownContent).toBeVisible();
+    // Verify workspace list is visible via testid
+    const workspaceList = workspaceSwitcher.workspaceList;
+    await expect(workspaceList).toBeVisible();
 
     // Close switcher
     await workspaceSwitcher.close();

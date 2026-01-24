@@ -17,19 +17,23 @@ export class WorkspaceSwitcherPage {
 
   constructor(page: Page) {
     this.page = page;
-    this.switcherButton = page.getByRole('button', { name: /switch workspace/i });
+    // Use testid for reliability - the button has aria-label="Switch workspace, current: {name}"
+    this.switcherButton = page.locator('[data-testid="workspace-switcher-button"]');
     this.switcherDropdown = page.locator('[data-testid="workspace-switcher-dropdown"]');
     this.workspaceList = page.locator('[data-testid="workspace-list"]');
     this.createWorkspaceButton = page.getByRole('button', { name: /create workspace/i });
-    this.browseWorkspacesLink = page.getByRole('link', { name: /browse workspaces/i });
+    // The browse link is inside a DropdownMenuItem, so look for link or menuitem role
+    this.browseWorkspacesLink = page.getByRole('menuitem', { name: /browse workspaces/i });
   }
 
   /**
    * Open the workspace switcher dropdown.
    */
   async open() {
+    // Wait for button to be stable before clicking
+    await this.switcherButton.waitFor({ state: 'visible' });
     await this.switcherButton.click();
-    await expect(this.switcherDropdown).toBeVisible();
+    await expect(this.switcherDropdown).toBeVisible({ timeout: 5000 });
   }
 
   /**
