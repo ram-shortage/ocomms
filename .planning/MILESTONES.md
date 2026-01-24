@@ -1,5 +1,34 @@
 # Project Milestones: OComms
 
+## v0.6.0 Polish & Hardening (Shipped: 2026-01-24)
+
+**Delivered:** Security hardening with 22 fixes (CSP nonces, Redis sessions, MFA, breach checking), workspace management (switcher, discovery, join flow), sidebar reorganization (drag-drop reordering), and mobile redesign (More menu, 44px touch targets, responsive analytics).
+
+**Phases completed:** 30-37 (41 plans total)
+
+**Key accomplishments:**
+
+- Security hardening: CSP nonces, Redis session validation, SVG blocking, Socket.IO rate limiting, TOTP MFA
+- Password security: Breach checking (bloom filter), password history (last 5), secure cookie prefixes
+- Audit & logging: HMAC integrity for audit logs, structured Pino logging, error message sanitization
+- Workspace management: Switcher dropdown with unreads, browse/join discovery, admin approval flow
+- Sidebar reorganization: Drag-drop for categories, channels, DMs, sections with cross-device sync
+- Mobile redesign: More menu for secondary features, status drawer, responsive analytics, 44px touch targets
+- E2E testing: Playwright infrastructure with demo-seed support, 91/123 tests passing (74%)
+
+**Stats:**
+
+- ~57,900 lines of TypeScript
+- 8 phases, 41 plans, 53 requirements
+- 3 days from start to ship (2026-01-22 → 2026-01-24)
+- 143 commits
+
+**Git range:** `feat(30-01)` → `docs(37)`
+
+**What's next:** `/gsd:new-milestone` for v0.7.0 planning
+
+---
+
 ## v0.5.0 Feature Completeness (Shipped: 2026-01-21)
 
 **Delivered:** Complete platform feature set with scheduling, reminders, bookmarks, user status, link previews, custom emoji, user groups, guest accounts, and workspace analytics.

@@ -2,21 +2,25 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-01-21)
+See: .planning/PROJECT.md (updated 2026-01-24)
 
 **Core value:** Data sovereignty - complete control over communication data
-**Current focus:** v0.6.0 Polish & Hardening - Phase 37 E2E Test Fixes
+**Current focus:** Planning next milestone (v0.7.0)
 
 ## Current Position
 
-Phase: 37 of 37 (E2E Test Fixes)
-Plan: 7 of 7 in current phase
-Status: Complete (74% pass rate accepted)
-Last activity: 2026-01-24 - Phase 37 complete, flaky tests deferred to future
+Phase: Milestone complete
+Plan: N/A
+Status: v0.6.0 shipped, ready for next milestone
+Last activity: 2026-01-24 - v0.6.0 milestone complete
 
-Progress: [██████████████████████████] 37/37 phases (Plan 7/7)
+Progress: [██████████████████████████] v0.6.0 complete (8 phases, 41 plans)
 
 ## Shipped Milestones
+
+- **v0.6.0 Polish & Hardening** - 2026-01-24
+  - 8 phases (30-37), 41 plans, 53 requirements
+  - See: .planning/milestones/v0.6.0-ROADMAP.md
 
 - **v0.5.0 Feature Completeness** - 2026-01-21
   - 6 phases (24-29), 41 plans, 87 requirements

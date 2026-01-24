@@ -12,13 +12,13 @@ OComms is a self-hosted team communication platform - a Slack-like experience th
 
 ## Current State
 
-**Version:** v0.5.0 (Feature Completeness) - Shipped 2026-01-21
+**Version:** v0.6.0 (Polish & Hardening) - Shipped 2026-01-24
 
-Complete platform feature set with scheduling, reminders, bookmarks, user status, link previews, custom emoji, user groups, guest accounts, and workspace analytics.
+Security hardening with CSP nonces, Redis sessions, MFA, breach checking. Workspace management with switcher, discovery, and join flow. Sidebar reorganization with drag-drop reordering. Mobile redesign with More menu and 44px touch targets.
 
 **Tech Stack:**
 - Next.js 15 with App Router
-- TypeScript (~48,900 LOC)
+- TypeScript (~57,900 LOC)
 - PostgreSQL with Drizzle ORM (SSL encrypted)
 - Socket.IO with Redis pub-sub
 - BullMQ job queues with Redis
@@ -67,6 +67,12 @@ Complete platform feature set with scheduling, reminders, bookmarks, user status
 - **v0.5.0:** User groups for @team mentions
 - **v0.5.0:** Guest accounts with channel-scoped access and auto-expiration
 - **v0.5.0:** Workspace analytics dashboard (message volume, DAU/WAU/MAU, CSV export)
+- **v0.6.0:** CSP nonces, Redis session validation, SVG upload blocking
+- **v0.6.0:** Socket.IO rate limiting, Unicode sanitization, audit log integrity
+- **v0.6.0:** Password breach checking, storage quotas, TOTP MFA
+- **v0.6.0:** Workspace switcher with unreads, browse/join discovery
+- **v0.6.0:** Sidebar drag-drop reordering with cross-device sync
+- **v0.6.0:** Mobile More menu, status drawer, 44px touch targets
 
 ## Target Users
 
@@ -139,64 +145,16 @@ Requirements shipped and working in production:
   - ANLY-01 to ANLY-08: Workspace analytics dashboard
   - TEST-01 to TEST-08: Testing and stabilization (2 descoped)
 
+- **v0.6.0 - Polish & Hardening** (53 requirements)
+  - SEC2-01 to SEC2-22: Security hardening (CSP, sessions, MFA, breach checks, quotas)
+  - FIX-01 to FIX-05: Bug fixes (mobile DM, profile spacing, nav highlighting)
+  - WKSP2-01 to WKSP2-06: Workspace management (switcher, discovery, join flow)
+  - SIDE-01 to SIDE-08: Sidebar reorganization (drag-drop, cross-device sync)
+  - MOBI2-01 to MOBI2-12: Mobile redesign (More menu, touch targets, responsive)
+
 ### Active
 
-**v0.6.0 - Polish & Hardening**
-
-Security:
-- [ ] Fix CSP policy (remove unsafe-inline/unsafe-eval)
-- [ ] Fix session validation cache bypass vulnerability
-- [ ] Implement proper SVG sanitization for emoji uploads
-- [ ] Add rate limiting to all Socket.IO event handlers
-- [ ] Add message content sanitization (Unicode, RTL, control chars)
-- [ ] Add channel membership check to notes API
-- [ ] Add audit log integrity protection
-- [ ] Strengthen export authorization (IDOR fix)
-- [ ] Implement password breach checking
-- [ ] Add per-user storage quotas
-- [ ] Enforce secure cookie handling in production
-- [ ] Implement structured logging (no debug info leakage)
-- [ ] Strengthen Socket.IO CORS validation
-- [ ] Validate redirect URLs
-- [ ] Add DNS rebinding protection for link previews
-- [ ] Disconnect soft-locked guests from Socket.IO
-- [ ] Add Subresource Integrity (SRI)
-- [ ] Add security headers to API routes
-- [ ] Prevent verbose error messages in development
-- [ ] Add password history tracking
-- [ ] Add MFA support (TOTP)
-- [ ] Implement orphaned attachment cleanup
-
-Bug Fixes:
-- [ ] Fix DMs 404 on mobile
-- [ ] Fix profile page title concatenation
-- [ ] Fix mobile channel header crowding
-- [ ] Add tooltip for truncated workspace names
-- [ ] Fix mobile navigation state inconsistency
-
-Workspace Management:
-- [ ] Workspace switcher (for users in multiple workspaces)
-- [ ] Workspace discovery and join flow
-
-Sidebar Reorganization:
-- [ ] Move "new category" to settings
-- [ ] Drag-and-drop reordering for categories
-- [ ] Drag-and-drop reordering for channels within categories
-- [ ] Drag-and-drop reordering for DM conversations
-- [ ] Drag-and-drop reordering for sidebar sections (Notes, Scheduled, Reminders, Saved)
-- [ ] Per-user sidebar order preferences
-
-Mobile Redesign:
-- [ ] Mobile access to scheduled messages
-- [ ] Mobile access to reminders
-- [ ] Mobile access to bookmarks/saved items
-- [ ] Mobile access to user status management
-- [ ] Mobile access to custom emoji picker
-- [ ] Mobile access to user groups management
-- [ ] Mobile access to guest management
-- [ ] Mobile access to workspace analytics
-- [ ] Fix visual polish (crowding, spacing, touch targets)
-- [ ] Ensure navigation state correctness across all routes
+None - planning next milestone. Run `/gsd:new-milestone` to start v0.7.0.
 
 ### Out of Scope
 
@@ -249,6 +207,14 @@ Mobile Redesign:
 | emoji-mart for picker | Custom emoji integration, lazy loading | Good |
 | Guest soft-lock for expired access | 24-hour grace period, can view but not post | Good |
 | Aggregate-only analytics | No individual user surveillance | Good |
+| CSP nonce implementation | Eliminate inline script vulnerabilities | Good |
+| Redis session validation | Immediate revocation, no cookie caching | Good |
+| SVG blocking (raster-only) | Prevent XSS via malicious SVG content | Good |
+| Bloom filter for breach check | 100 common passwords, minimal memory | Good |
+| TOTP MFA with backup codes | Standard 2FA without hardware dependency | Good |
+| dnd-kit for sidebar drag-drop | React 18/19 compatible, accessible | Good |
+| Vaul for mobile drawers | Native iOS-style bottom sheets | Good |
+| 44px touch targets | iOS HIG compliance | Good |
 
 ---
 
@@ -277,4 +243,4 @@ Mobile Redesign:
 ---
 
 ---
-*Last updated: 2026-01-22 after v0.6.0 milestone initialization*
+*Last updated: 2026-01-24 after v0.6.0 milestone completion*
