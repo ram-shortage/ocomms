@@ -201,19 +201,27 @@ async function seed() {
   }
 
   // Add users as members
+  // FIX: Check membership by BOTH userId AND organizationId for proper idempotency
+  // Users can be members of multiple organizations, so checking only userId is incorrect
   console.log("Adding members to organization...");
   for (let i = 0; i < users.length; i++) {
     const user = users[i];
     const role = i === 0 ? "owner" : "member";
 
+    // Properly scope the membership check to this specific organization
     const existingMember = await db
       .select()
       .from(schema.members)
-      .where(eq(schema.members.userId, user.id))
+      .where(
+        and(
+          eq(schema.members.userId, user.id),
+          eq(schema.members.organizationId, org.id)
+        )
+      )
       .limit(1);
 
     if (existingMember.length > 0) {
-      console.log(`  Member ${user.email} already exists, skipping`);
+      console.log(`  Member ${user.email} already in org ${org.slug}, skipping`);
       continue;
     }
 
@@ -228,6 +236,8 @@ async function seed() {
   }
 
   // Create channels
+  // FIX: Check channel by BOTH slug AND organizationId for proper idempotency
+  // Different organizations can have channels with the same slug
   console.log("Creating channels...");
   const channels: typeof schema.channels.$inferSelect[] = [];
 
@@ -235,11 +245,16 @@ async function seed() {
     const existing = await db
       .select()
       .from(schema.channels)
-      .where(eq(schema.channels.slug, channelData.slug))
+      .where(
+        and(
+          eq(schema.channels.slug, channelData.slug),
+          eq(schema.channels.organizationId, org.id)
+        )
+      )
       .limit(1);
 
     if (existing.length > 0) {
-      console.log(`  Channel ${channelData.slug} already exists, skipping`);
+      console.log(`  Channel ${channelData.slug} already exists in ${org.slug}, skipping`);
       channels.push(existing[0]);
       continue;
     }
@@ -263,17 +278,24 @@ async function seed() {
   }
 
   // Add all users to all channels
+  // FIX: Properly check channel membership by BOTH channelId AND userId
   console.log("Adding members to channels...");
   for (const channel of channels) {
     for (const user of users) {
-      const existing = await db
+      // Check if this specific user is already a member of this specific channel
+      const existingMembership = await db
         .select()
         .from(schema.channelMembers)
-        .where(eq(schema.channelMembers.channelId, channel.id))
+        .where(
+          and(
+            eq(schema.channelMembers.channelId, channel.id),
+            eq(schema.channelMembers.userId, user.id)
+          )
+        )
         .limit(1);
 
-      // Simple check - if any member exists, assume all are added
-      if (existing.some((m) => m.userId === user.id)) {
+      if (existingMembership.length > 0) {
+        // User already in this channel, skip
         continue;
       }
 
