@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-21)
 ## Current Position
 
 Phase: 37 of 37 (E2E Test Fixes)
-Plan: 7 of ? in current phase
+Plan: 1 of 7 in current phase
 Status: In progress
-Last activity: 2026-01-24 - Completed 37-07-PLAN.md (Code Review Fixes)
+Last activity: 2026-01-24 - Completed 37-01-PLAN.md (Core Flow Test Fixes)
 
-Progress: [██████████████████████████] 37/37 phases
+Progress: [██████████████████████████] 37/37 phases (Plan 1/7)
 
 ## Shipped Milestones
 
@@ -48,10 +48,12 @@ Progress: [███████████████████████
 Decisions are logged in PROJECT.md Key Decisions table.
 
 Recent from Phase 37:
-- Explicit Set lookups for org-scoped notification filtering (SEC-07-01)
-- No override for seed scripts in production - test credentials are security risk (SEC-07-02)
-- Batch inArray queries instead of N+1 loops for exports (PERF-07-01)
-- Redis rate limiting with in-memory fallback for multi-instance support (INFRA-07-01)
+- Use aside selector for sidebar instead of nav (E2E-CORE-01)
+- Use header h1 for channel header locator (E2E-CORE-02)
+- Use div.group within .py-4 for message items (E2E-CORE-03)
+- Use role=dialog for Sheet/thread panel (E2E-CORE-04)
+- Use em-emoji-picker for emoji picker component (E2E-CORE-05)
+- Add E2E_SEED_MODE environment variable for credentials (E2E-CORE-06)
 
 Recent from Phase 36:
 - tmpfs for PostgreSQL in test compose - RAM disk for speed (E2E-01)
@@ -160,7 +162,7 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-24
-Stopped at: Completed 37-07-PLAN.md (Code Review Fixes)
+Stopped at: Completed 37-01-PLAN.md (Core Flow Test Fixes)
 Resume file: None
 
 ## Human Verification Deferred
