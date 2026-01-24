@@ -35,8 +35,14 @@ test.describe('core flows regression', () => {
       // Should redirect to workspace (or workspace picker)
       await expect(page).toHaveURL(/\/[a-z0-9-]+/, { timeout: 30000 });
 
+      // If on workspace picker, select Acme Corporation
+      if (await page.getByText('Your Workspaces').isVisible({ timeout: 2000 }).catch(() => false)) {
+        await page.getByRole('link', { name: /acme/i }).first().click();
+        await expect(page).toHaveURL(/\/acme/, { timeout: 10000 });
+      }
+
       // Should see workspace content (sidebar is an aside element)
-      await expect(page.locator('aside')).toBeVisible();
+      await expect(page.locator('aside')).toBeVisible({ timeout: 10000 });
     });
   });
 
@@ -87,10 +93,10 @@ test.describe('core flows regression', () => {
       await replyButton.click();
 
       // Thread panel is a Sheet that opens on the right side
-      // The Sheet has role="dialog" and contains "Thread" title
+      // The Sheet has role="dialog" and contains "Thread" title heading
       const threadPanel = page.getByRole('dialog');
       await expect(threadPanel).toBeVisible({ timeout: 5000 });
-      await expect(threadPanel.getByText('Thread')).toBeVisible();
+      await expect(threadPanel.getByRole('heading', { name: 'Thread' })).toBeVisible();
 
       // Send a reply in the thread
       const threadInput = threadPanel.getByPlaceholder(/reply in thread/i);
@@ -170,22 +176,15 @@ test.describe('core flows regression', () => {
       const emojiPicker = page.locator('em-emoji-picker');
       await expect(emojiPicker).toBeVisible({ timeout: 5000 });
 
-      // Click a common emoji - use the skin-tone neutral emoji button
-      // emoji-mart renders buttons with data-emoji attribute
-      const thumbsUp = page.locator('em-emoji-picker button[aria-label*="thumbs up"]').first();
-      if (await thumbsUp.isVisible({ timeout: 2000 }).catch(() => false)) {
-        await thumbsUp.click();
-      } else {
-        // Search for thumbs up
-        const searchInput = page.locator('em-emoji-picker input[type="search"]');
-        if (await searchInput.isVisible({ timeout: 2000 }).catch(() => false)) {
-          await searchInput.fill('thumbs');
-          await page.waitForTimeout(500); // Wait for search results
-        }
-        // Click first emoji in grid
-        const firstEmoji = page.locator('em-emoji-picker button[data-index]').first();
-        await firstEmoji.click();
-      }
+      // Click a common emoji - search for thumbs up and click it
+      const searchInput = page.locator('em-emoji-picker input[type="search"], em-emoji-picker [role="searchbox"]');
+      await expect(searchInput).toBeVisible({ timeout: 5000 });
+      await searchInput.fill('thumbs');
+      await page.waitForTimeout(500); // Wait for search results
+
+      // Click the first thumbs up emoji in the results
+      const thumbsUpEmoji = page.locator('em-emoji-picker button').filter({ hasText: /👍|:thumbsup:/ }).first();
+      await thumbsUpEmoji.click();
 
       // Reaction should appear on the message
       // Reactions are rendered as buttons with rounded-full class and emoji content
