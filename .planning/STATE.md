@@ -159,8 +159,9 @@ Recent from Phase 31:
 
 ### Pending Todos
 
-1 todo pending - see `.planning/todos/pending/`
+2 todos pending - see `.planning/todos/pending/`
 - Fix typing bar layout whitespace
+- Mobile UX improvements (channels button, message layout, nav bar position)
 
 ### Deferred Tech Debt
 
