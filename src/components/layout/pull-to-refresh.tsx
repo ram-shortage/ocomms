@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode } from "react";
+import { ReactNode, forwardRef, useImperativeHandle } from "react";
 import { usePullRefresh } from "@/hooks";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -11,14 +11,17 @@ interface PullToRefreshProps {
   className?: string;
 }
 
-export function PullToRefresh({
+export const PullToRefresh = forwardRef<HTMLDivElement, PullToRefreshProps>(function PullToRefresh({
   children,
   onRefresh,
   className,
-}: PullToRefreshProps) {
+}, ref) {
   const { containerRef, pullDistance, isRefreshing } = usePullRefresh({
     onRefresh,
   });
+
+  // Expose the container ref to parent components for scroll position management
+  useImperativeHandle(ref, () => containerRef.current!, [containerRef]);
 
   const showIndicator = pullDistance > 0 || isRefreshing;
 
@@ -58,4 +61,4 @@ export function PullToRefresh({
       </div>
     </div>
   );
-}
+});

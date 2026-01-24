@@ -217,6 +217,22 @@ export interface ClientToServerEvents {
     data: { threadId: string },
     callback: (response: { success: boolean; replies?: Message[] }) => void
   ) => void;
+  /** Lazy-load older messages for infinite scroll */
+  "message:getOlder": (
+    data: {
+      targetId: string;
+      targetType: "channel" | "dm";
+      cursor: number; // sequence number to load before
+      limit?: number;
+    },
+    callback: (response: {
+      success: boolean;
+      messages?: Message[];
+      hasMore?: boolean;
+      nextCursor?: number;
+      error?: string;
+    }) => void
+  ) => void;
   "room:join": (data: { roomId: string; roomType: "channel" | "dm" }) => void;
   "room:leave": (data: { roomId: string; roomType: "channel" | "dm" }) => void;
   "workspace:join": (data: { workspaceId: string }) => void;

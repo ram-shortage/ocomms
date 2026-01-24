@@ -1,7 +1,7 @@
 import type { Server, Socket } from "socket.io";
 import { db } from "@/db";
 import { messages, channelMembers, conversationParticipants, channels, conversations, fileAttachments, members, guestChannelAccess } from "@/db/schema";
-import { eq, and, isNull, sql, inArray } from "drizzle-orm";
+import { eq, and, isNull, sql, inArray, lt, desc } from "drizzle-orm";
 import { RateLimiterRedis, RateLimiterMemory } from "rate-limiter-flexible";
 import type { RateLimiterAbstract } from "rate-limiter-flexible";
 import { getRoomName } from "../rooms";
@@ -539,6 +539,194 @@ async function handleDeleteMessage(
 }
 
 /**
+ * Handle message:getOlder event for lazy loading older messages.
+ * Used for infinite scroll when user scrolls up to load history.
+ */
+async function handleGetOlderMessages(
+  socket: SocketWithData,
+  data: {
+    targetId: string;
+    targetType: "channel" | "dm";
+    cursor: number;
+    limit?: number;
+  },
+  callback: (response: {
+    success: boolean;
+    messages?: Message[];
+    hasMore?: boolean;
+    nextCursor?: number;
+    error?: string;
+  }) => void
+): Promise<void> {
+  const userId = socket.data.userId;
+  const { targetId, targetType, cursor, limit = 50 } = data;
+
+  try {
+    // Validate membership
+    if (targetType === "channel") {
+      const membership = await db
+        .select()
+        .from(channelMembers)
+        .where(and(eq(channelMembers.channelId, targetId), eq(channelMembers.userId, userId)))
+        .limit(1);
+
+      if (membership.length === 0) {
+        callback({ success: false, error: "Not a member of this channel" });
+        return;
+      }
+    } else {
+      const participation = await db
+        .select()
+        .from(conversationParticipants)
+        .where(and(eq(conversationParticipants.conversationId, targetId), eq(conversationParticipants.userId, userId)))
+        .limit(1);
+
+      if (participation.length === 0) {
+        callback({ success: false, error: "Not a participant in this conversation" });
+        return;
+      }
+    }
+
+    // Fetch messages with sequence < cursor, ordered DESC, limit + 1 to detect hasMore
+    const fetchLimit = Math.min(limit, 100) + 1; // Cap at 100, +1 for hasMore detection
+    const whereCondition = targetType === "channel"
+      ? and(eq(messages.channelId, targetId), isNull(messages.deletedAt), isNull(messages.parentId), lt(messages.sequence, cursor))
+      : and(eq(messages.conversationId, targetId), isNull(messages.deletedAt), isNull(messages.parentId), lt(messages.sequence, cursor));
+
+    const olderMessages = await db
+      .select({
+        id: messages.id,
+        content: messages.content,
+        authorId: messages.authorId,
+        channelId: messages.channelId,
+        conversationId: messages.conversationId,
+        parentId: messages.parentId,
+        replyCount: messages.replyCount,
+        sequence: messages.sequence,
+        deletedAt: messages.deletedAt,
+        createdAt: messages.createdAt,
+        updatedAt: messages.updatedAt,
+        authorName: users.name,
+        authorEmail: users.email,
+      })
+      .from(messages)
+      .leftJoin(users, eq(messages.authorId, users.id))
+      .where(whereCondition)
+      .orderBy(desc(messages.sequence))
+      .limit(fetchLimit);
+
+    // Check if there are more messages beyond our limit
+    const hasMore = olderMessages.length > Math.min(limit, 100);
+    const messagesToReturn = hasMore ? olderMessages.slice(0, -1) : olderMessages;
+
+    // Fetch attachments for these messages
+    const messageIds = messagesToReturn.map((m) => m.id);
+    const attachmentsData = messageIds.length > 0
+      ? await db
+          .select({
+            id: fileAttachments.id,
+            messageId: fileAttachments.messageId,
+            originalName: fileAttachments.originalName,
+            path: fileAttachments.path,
+            mimeType: fileAttachments.mimeType,
+            sizeBytes: fileAttachments.sizeBytes,
+            isImage: fileAttachments.isImage,
+          })
+          .from(fileAttachments)
+          .where(inArray(fileAttachments.messageId, messageIds))
+      : [];
+
+    // Group attachments by messageId
+    const attachmentsByMessageId = new Map<string, Attachment[]>();
+    for (const a of attachmentsData) {
+      if (a.messageId) {
+        const existing = attachmentsByMessageId.get(a.messageId) || [];
+        existing.push({
+          id: a.id,
+          originalName: a.originalName,
+          path: a.path,
+          mimeType: a.mimeType,
+          sizeBytes: a.sizeBytes,
+          isImage: a.isImage,
+        });
+        attachmentsByMessageId.set(a.messageId, existing);
+      }
+    }
+
+    // Get organization ID for guest status lookup
+    let organizationId: string | null = null;
+    if (targetType === "channel") {
+      const [channel] = await db
+        .select({ organizationId: channels.organizationId })
+        .from(channels)
+        .where(eq(channels.id, targetId))
+        .limit(1);
+      organizationId = channel?.organizationId ?? null;
+    } else {
+      const [conv] = await db
+        .select({ organizationId: conversations.organizationId })
+        .from(conversations)
+        .where(eq(conversations.id, targetId))
+        .limit(1);
+      organizationId = conv?.organizationId ?? null;
+    }
+
+    // Fetch guest status for message authors
+    const uniqueAuthorIds = [...new Set(messagesToReturn.map((m) => m.authorId))];
+    const guestStatusMap = new Map<string, boolean>();
+    if (organizationId && uniqueAuthorIds.length > 0) {
+      const guestMembers = await db
+        .select({ odlUserId: members.userId, isGuest: members.isGuest })
+        .from(members)
+        .where(and(
+          inArray(members.userId, uniqueAuthorIds),
+          eq(members.organizationId, organizationId)
+        ));
+      for (const m of guestMembers) {
+        guestStatusMap.set(m.odlUserId, m.isGuest ?? false);
+      }
+    }
+
+    // Reverse to chronological order (oldest first) for client
+    const formattedMessages: Message[] = messagesToReturn.reverse().map((m) => ({
+      id: m.id,
+      content: m.content,
+      authorId: m.authorId,
+      channelId: m.channelId,
+      conversationId: m.conversationId,
+      parentId: m.parentId,
+      replyCount: m.replyCount,
+      sequence: m.sequence,
+      deletedAt: m.deletedAt,
+      createdAt: m.createdAt,
+      updatedAt: m.updatedAt,
+      author: {
+        id: m.authorId,
+        name: m.authorName,
+        email: m.authorEmail || "",
+        isGuest: guestStatusMap.get(m.authorId) ?? false,
+      },
+      attachments: attachmentsByMessageId.get(m.id),
+    }));
+
+    // Next cursor is the lowest sequence number in the returned set
+    const nextCursor = formattedMessages.length > 0 ? formattedMessages[0].sequence : undefined;
+
+    callback({
+      success: true,
+      messages: formattedMessages,
+      hasMore,
+      nextCursor,
+    });
+
+    console.log(`[Message] User ${userId} loaded ${formattedMessages.length} older messages for ${targetType}:${targetId}`);
+  } catch (error) {
+    console.error("[Message] Error loading older messages:", error);
+    callback({ success: false, error: "Failed to load older messages" });
+  }
+}
+
+/**
  * Register message event handlers on socket.
  */
 export function handleMessageEvents(socket: SocketWithData, io: SocketIOServer): void {
@@ -548,5 +736,9 @@ export function handleMessageEvents(socket: SocketWithData, io: SocketIOServer):
 
   socket.on("message:delete", (data) => {
     handleDeleteMessage(socket, io, data);
+  });
+
+  socket.on("message:getOlder", (data, callback) => {
+    handleGetOlderMessages(socket, data, callback);
   });
 }

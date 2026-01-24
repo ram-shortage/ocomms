@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { MessageItem } from "./message-item";
 import { ThreadPanel } from "../thread/thread-panel";
 import { PullToRefresh } from "@/components/layout";
+import { Loader2 } from "lucide-react";
 import type { Message, ReactionGroup } from "@/lib/socket-events";
 import {
   cacheMessage,
@@ -62,7 +63,16 @@ export function MessageList({
   const [selectedThread, setSelectedThread] = useState<Message | null>(null);
   const [isThreadPanelOpen, setIsThreadPanelOpen] = useState(false);
   const [messageIdsWithReminders, setMessageIdsWithReminders] = useState<Set<string>>(new Set());
+
+  // Lazy loading state for older messages
+  const [isLoadingOlder, setIsLoadingOlder] = useState(false);
+  const [hasMoreOlder, setHasMoreOlder] = useState(true);
+  const [oldestCursor, setOldestCursor] = useState<number | null>(null);
+
   const bottomRef = useRef<HTMLDivElement>(null);
+  const topSentinelRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isInitialLoad = useRef(true);
   const socket = useSocket();
   const router = useRouter();
 
@@ -99,9 +109,76 @@ export function MessageList({
   }, []);
 
   // Scroll to bottom when messages or pending messages change
+  // Use instant scroll on initial load to avoid visible animation
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (isInitialLoad.current) {
+      bottomRef.current?.scrollIntoView({ behavior: "instant" });
+      isInitialLoad.current = false;
+    } else {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
   }, [messages, pendingMessages]);
+
+  // Set initial cursor from oldest message in initialMessages
+  useEffect(() => {
+    if (messages.length > 0 && oldestCursor === null) {
+      setOldestCursor(messages[0].sequence);
+    }
+  }, [messages, oldestCursor]);
+
+  // Load older messages when scrolling to top
+  const loadOlderMessages = useCallback(() => {
+    if (!socket || isLoadingOlder || !hasMoreOlder || oldestCursor === null) return;
+
+    const container = containerRef.current;
+    const scrollHeightBefore = container?.scrollHeight ?? 0;
+
+    setIsLoadingOlder(true);
+
+    socket.emit(
+      "message:getOlder",
+      { targetId, targetType, cursor: oldestCursor, limit: 50 },
+      (response) => {
+        if (response.success && response.messages && response.messages.length > 0) {
+          setMessages((prev) => [...response.messages!, ...prev]);
+          setHasMoreOlder(response.hasMore ?? false);
+          setOldestCursor(response.nextCursor ?? null);
+
+          // Cache the loaded older messages
+          cacheMessages(response.messages!);
+
+          // Restore scroll position after DOM update
+          requestAnimationFrame(() => {
+            if (container) {
+              const scrollHeightAfter = container.scrollHeight;
+              container.scrollTop += scrollHeightAfter - scrollHeightBefore;
+            }
+          });
+        } else {
+          // No more messages or error
+          setHasMoreOlder(false);
+        }
+        setIsLoadingOlder(false);
+      }
+    );
+  }, [socket, targetId, targetType, oldestCursor, isLoadingOlder, hasMoreOlder]);
+
+  // IntersectionObserver for top sentinel to trigger lazy loading
+  useEffect(() => {
+    if (!topSentinelRef.current || !hasMoreOlder) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !isLoadingOlder && oldestCursor !== null) {
+          loadOlderMessages();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(topSentinelRef.current);
+    return () => observer.disconnect();
+  }, [hasMoreOlder, isLoadingOlder, oldestCursor, loadOlderMessages]);
 
   // Fetch reactions for all messages on mount and when messages change
   useEffect(() => {
@@ -346,8 +423,25 @@ export function MessageList({
 
   return (
     <div className={`flex flex-col flex-1 min-h-0 overflow-hidden ${className || ""}`}>
-      <PullToRefresh onRefresh={handleRefresh} className="flex-1 min-h-0">
+      <PullToRefresh onRefresh={handleRefresh} className="flex-1 min-h-0" ref={containerRef}>
         <div className="py-4">
+          {/* Top sentinel for infinite scroll - triggers loading older messages */}
+          <div ref={topSentinelRef} className="h-1" />
+
+          {/* Loading spinner for older messages */}
+          {isLoadingOlder && (
+            <div className="flex justify-center py-4">
+              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            </div>
+          )}
+
+          {/* Show "beginning of history" message when no more older messages */}
+          {!hasMoreOlder && messages.length > 0 && (
+            <div className="text-center text-sm text-muted-foreground py-4">
+              This is the beginning of the conversation
+            </div>
+          )}
+
           {normalizedMessages.map((message) => (
             <MessageItem
               key={message.id}

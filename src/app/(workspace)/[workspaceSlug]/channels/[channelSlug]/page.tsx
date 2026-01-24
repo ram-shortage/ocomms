@@ -8,7 +8,7 @@ import { ChannelHeader } from "@/components/channel/channel-header";
 import { ChannelContent } from "@/components/channel/channel-content";
 import { db } from "@/db";
 import { messages, users, pinnedMessages, channelNotificationSettings, fileAttachments, messageLinkPreviews, linkPreviews, members } from "@/db/schema";
-import { eq, and, isNull, asc, inArray } from "drizzle-orm";
+import { eq, and, isNull, asc, desc, inArray } from "drizzle-orm";
 import type { Message, Attachment } from "@/lib/socket-events";
 import type { NotificationMode } from "@/db/schema/channel-notification-settings";
 
@@ -71,7 +71,7 @@ export default async function ChannelPage({
     .from(messages)
     .leftJoin(users, eq(messages.authorId, users.id))
     .where(and(eq(messages.channelId, channel.id), isNull(messages.deletedAt), isNull(messages.parentId)))
-    .orderBy(asc(messages.sequence))
+    .orderBy(desc(messages.sequence))
     .limit(50);
 
   // FILE-04/FILE-05: Fetch attachments for these messages
@@ -166,7 +166,8 @@ export default async function ChannelPage({
   }
 
   // Transform to Message type for client
-  const initialMessages: Message[] = channelMessages.map((m) => ({
+  // Reverse from DESC order back to chronological for display (oldest first)
+  const initialMessages: Message[] = channelMessages.reverse().map((m) => ({
     id: m.id,
     content: m.content,
     authorId: m.authorId,

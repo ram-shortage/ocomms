@@ -7,7 +7,7 @@ import { DMHeader } from "@/components/dm/dm-header";
 import { DMContent } from "@/components/dm/dm-content";
 import { db } from "@/db";
 import { messages, users, fileAttachments, members } from "@/db/schema";
-import { eq, and, isNull, asc, inArray } from "drizzle-orm";
+import { eq, and, isNull, desc, inArray } from "drizzle-orm";
 import type { Message, Attachment } from "@/lib/socket-events";
 
 export default async function DMPage({
@@ -67,7 +67,7 @@ export default async function DMPage({
     .from(messages)
     .leftJoin(users, eq(messages.authorId, users.id))
     .where(and(eq(messages.conversationId, conversationId), isNull(messages.deletedAt), isNull(messages.parentId)))
-    .orderBy(asc(messages.sequence))
+    .orderBy(desc(messages.sequence))
     .limit(50);
 
   // FILE-04/FILE-05: Fetch attachments for these messages
@@ -121,7 +121,8 @@ export default async function DMPage({
   }
 
   // Transform to Message type for client
-  const initialMessages: Message[] = conversationMessages.map((m) => ({
+  // Reverse from DESC order back to chronological for display (oldest first)
+  const initialMessages: Message[] = conversationMessages.reverse().map((m) => ({
     id: m.id,
     content: m.content,
     authorId: m.authorId,
