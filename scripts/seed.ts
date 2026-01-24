@@ -11,6 +11,9 @@
  * - Read states and notification settings
  *
  * Usage: npm run db:seed
+ *
+ * SECURITY: This script creates test users with known passwords.
+ * It MUST NOT be run in production environments.
  */
 
 import { db } from "../src/db";
@@ -20,11 +23,59 @@ import { nanoid } from "nanoid";
 // Use better-auth's password hashing (scrypt-based)
 import { hashPassword } from "better-auth/crypto";
 
+// ============================================
+// PRODUCTION SAFETY CHECK - TEST DATA PROHIBITED
+// ============================================
+const PRODUCTION_INDICATORS = [
+  "rds.amazonaws.com",
+  "supabase.co",
+  "neon.tech",
+  "planetscale.com",
+  "cockroachlabs.cloud",
+  "digitalocean.com",
+  "azure.com",
+  "gcp.com",
+  "render.com",
+  "railway.app",
+  "fly.io",
+  "heroku",
+  ".prod.",
+  "-prod-",
+  "-production",
+  ".production.",
+];
+
+function isProductionDatabase(): boolean {
+  const dbUrl = process.env.DATABASE_URL || "";
+  return PRODUCTION_INDICATORS.some((indicator) =>
+    dbUrl.toLowerCase().includes(indicator.toLowerCase())
+  );
+}
+
+function checkProductionSafety(): void {
+  const isProduction = isProductionDatabase() || process.env.NODE_ENV === "production";
+
+  if (isProduction) {
+    console.error("\n" + "=".repeat(60));
+    console.error("  REFUSED: Cannot seed test data in production");
+    console.error("=".repeat(60));
+    console.error("\nThis script creates test users with known passwords.");
+    console.error("Running it in production would create security vulnerabilities.\n");
+    console.error("DATABASE_URL:", process.env.DATABASE_URL?.substring(0, 50) + "...");
+    console.error("NODE_ENV:", process.env.NODE_ENV || "(not set)");
+    console.error("\nThis operation is not allowed. No override is available.\n");
+    process.exit(1);
+  }
+}
+
+// Run safety check immediately on script load
+checkProductionSafety();
+
 // Helper to generate IDs like better-auth does
 const genId = () => nanoid(24);
 
 // Test users data
-const TEST_PASSWORD = "password123"; // All test users use this password
+const TEST_PASSWORD = "TheOrder2026!!"; // All test users use this password
 
 interface UserSeed {
   id: string;
@@ -44,16 +95,44 @@ const usersData: UserSeed[] = [
   { id: genId(), name: "Henry Wilson", email: "henry@example.com", emailVerified: true },
 ];
 
-// Organization (workspace) data
+// Organization (workspace) data with varying visibility policies
 interface OrgSeed {
   id: string;
   name: string;
   slug: string;
+  joinPolicy: "invite_only" | "request" | "open";
+  description?: string;
 }
 
 const orgsData: OrgSeed[] = [
-  { id: genId(), name: "Acme Corp", slug: "acme-corp" },
-  { id: genId(), name: "Startup Labs", slug: "startup-labs" },
+  {
+    id: genId(),
+    name: "Acme Corp",
+    slug: "acme-corp",
+    joinPolicy: "invite_only",
+    description: "Private corporate workspace - invitation only"
+  },
+  {
+    id: genId(),
+    name: "Startup Labs",
+    slug: "startup-labs",
+    joinPolicy: "request",
+    description: "Innovation hub for startups - request access to join our community"
+  },
+  {
+    id: genId(),
+    name: "Open Community",
+    slug: "open-community",
+    joinPolicy: "open",
+    description: "Public workspace - everyone is welcome to join instantly"
+  },
+  {
+    id: genId(),
+    name: "Enterprise Solutions",
+    slug: "enterprise-solutions",
+    joinPolicy: "request",
+    description: "Enterprise-grade collaboration for business teams"
+  },
 ];
 
 async function seed() {
@@ -125,6 +204,8 @@ async function seed() {
       id: org.id,
       name: org.name,
       slug: org.slug,
+      joinPolicy: org.joinPolicy,
+      description: org.description,
       createdAt: now,
     });
   }
@@ -135,8 +216,16 @@ async function seed() {
   // ============================================
   console.log("Creating organization memberships...");
 
-  // Acme Corp: Alice (owner), Bob, Carol, David, Emma (all members)
-  const acmeMembers = [
+  interface MemberSeed {
+    orgId: string;
+    userId: string;
+    role: string;
+    isGuest?: boolean;
+    guestExpiresAt?: Date;
+  }
+
+  // Acme Corp (invite_only): Alice (owner), Bob (admin), Carol, David, Emma
+  const acmeMembers: MemberSeed[] = [
     { orgId: orgsData[0].id, userId: usersData[0].id, role: "owner" },
     { orgId: orgsData[0].id, userId: usersData[1].id, role: "admin" },
     { orgId: orgsData[0].id, userId: usersData[2].id, role: "member" },
@@ -144,23 +233,53 @@ async function seed() {
     { orgId: orgsData[0].id, userId: usersData[4].id, role: "member" },
   ];
 
-  // Startup Labs: Frank (owner), Grace, Henry
-  const startupMembers = [
+  // Startup Labs (request): Frank (owner), Grace (admin), Henry, Alice
+  const startupMembers: MemberSeed[] = [
     { orgId: orgsData[1].id, userId: usersData[5].id, role: "owner" },
     { orgId: orgsData[1].id, userId: usersData[6].id, role: "admin" },
     { orgId: orgsData[1].id, userId: usersData[7].id, role: "member" },
-    // Alice is also in Startup Labs
     { orgId: orgsData[1].id, userId: usersData[0].id, role: "member" },
   ];
 
-  const allMembers = [...acmeMembers, ...startupMembers];
+  // Open Community (open): Carol (owner), David (admin), Emma, Frank, Grace - plus guest
+  const openCommunityMembers: MemberSeed[] = [
+    { orgId: orgsData[2].id, userId: usersData[2].id, role: "owner" },
+    { orgId: orgsData[2].id, userId: usersData[3].id, role: "admin" },
+    { orgId: orgsData[2].id, userId: usersData[4].id, role: "member" },
+    { orgId: orgsData[2].id, userId: usersData[5].id, role: "member" },
+    { orgId: orgsData[2].id, userId: usersData[6].id, role: "member" },
+    // Guest member with expiration
+    {
+      orgId: orgsData[2].id,
+      userId: usersData[7].id,
+      role: "member",
+      isGuest: true,
+      guestExpiresAt: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000) // 7 days
+    },
+  ];
+
+  // Enterprise Solutions (request): Bob (owner), Alice (admin), Henry, David
+  const enterpriseMembers: MemberSeed[] = [
+    { orgId: orgsData[3].id, userId: usersData[1].id, role: "owner" },
+    { orgId: orgsData[3].id, userId: usersData[0].id, role: "admin" },
+    { orgId: orgsData[3].id, userId: usersData[7].id, role: "member" },
+    { orgId: orgsData[3].id, userId: usersData[3].id, role: "member" },
+  ];
+
+  const allMembers = [...acmeMembers, ...startupMembers, ...openCommunityMembers, ...enterpriseMembers];
+  const memberIdMap: Map<string, string> = new Map(); // key: `${orgId}:${userId}`, value: memberId
 
   for (const m of allMembers) {
+    const memberId = genId();
+    memberIdMap.set(`${m.orgId}:${m.userId}`, memberId);
+
     await db.insert(schema.members).values({
-      id: genId(),
+      id: memberId,
       organizationId: m.orgId,
       userId: m.userId,
       role: m.role,
+      isGuest: m.isGuest || false,
+      guestExpiresAt: m.guestExpiresAt,
       createdAt: now,
     });
   }
@@ -183,17 +302,28 @@ async function seed() {
   }
 
   const channelsData: ChannelSeed[] = [
-    // Acme Corp channels
+    // Acme Corp channels (invite_only workspace)
     { id: crypto.randomUUID(), orgId: orgsData[0].id, name: "general", slug: "general", description: "Company-wide announcements and general discussion", topic: "Welcome to Acme Corp!", isPrivate: false, createdBy: usersData[0].id },
     { id: crypto.randomUUID(), orgId: orgsData[0].id, name: "engineering", slug: "engineering", description: "Engineering team discussions", topic: "Q1 Goals: Ship v2.0", isPrivate: false, createdBy: usersData[0].id },
     { id: crypto.randomUUID(), orgId: orgsData[0].id, name: "random", slug: "random", description: "Non-work banter and water cooler chat", isPrivate: false, createdBy: usersData[1].id },
     { id: crypto.randomUUID(), orgId: orgsData[0].id, name: "product", slug: "product", description: "Product planning and roadmap discussions", topic: "Roadmap review every Tuesday", isPrivate: false, createdBy: usersData[2].id },
     { id: crypto.randomUUID(), orgId: orgsData[0].id, name: "leadership", slug: "leadership", description: "Private channel for leadership team", isPrivate: true, createdBy: usersData[0].id },
     { id: crypto.randomUUID(), orgId: orgsData[0].id, name: "design", slug: "design", description: "Design team collaboration", topic: "Design system v3 in progress", isPrivate: false, createdBy: usersData[4].id },
-    // Startup Labs channels
+    // Startup Labs channels (request workspace)
     { id: crypto.randomUUID(), orgId: orgsData[1].id, name: "general", slug: "general", description: "General discussion for Startup Labs", topic: "Let's build something great!", isPrivate: false, createdBy: usersData[5].id },
     { id: crypto.randomUUID(), orgId: orgsData[1].id, name: "dev", slug: "dev", description: "Development discussions", isPrivate: false, createdBy: usersData[6].id },
     { id: crypto.randomUUID(), orgId: orgsData[1].id, name: "founders", slug: "founders", description: "Private founder discussions", isPrivate: true, createdBy: usersData[5].id },
+    // Open Community channels (open workspace)
+    { id: crypto.randomUUID(), orgId: orgsData[2].id, name: "general", slug: "general", description: "Welcome to the Open Community!", topic: "Everyone is welcome here!", isPrivate: false, createdBy: usersData[2].id },
+    { id: crypto.randomUUID(), orgId: orgsData[2].id, name: "introductions", slug: "introductions", description: "Introduce yourself to the community", isPrivate: false, createdBy: usersData[2].id },
+    { id: crypto.randomUUID(), orgId: orgsData[2].id, name: "help", slug: "help", description: "Get help and support", topic: "Ask anything!", isPrivate: false, createdBy: usersData[3].id },
+    { id: crypto.randomUUID(), orgId: orgsData[2].id, name: "off-topic", slug: "off-topic", description: "Casual conversations", isPrivate: false, createdBy: usersData[4].id },
+    { id: crypto.randomUUID(), orgId: orgsData[2].id, name: "moderators", slug: "moderators", description: "Private channel for community moderators", isPrivate: true, createdBy: usersData[2].id },
+    // Enterprise Solutions channels (request workspace)
+    { id: crypto.randomUUID(), orgId: orgsData[3].id, name: "general", slug: "general", description: "Enterprise team announcements", topic: "Building enterprise solutions", isPrivate: false, createdBy: usersData[1].id },
+    { id: crypto.randomUUID(), orgId: orgsData[3].id, name: "sales", slug: "sales", description: "Sales team discussions", isPrivate: false, createdBy: usersData[1].id },
+    { id: crypto.randomUUID(), orgId: orgsData[3].id, name: "support", slug: "support", description: "Customer support coordination", isPrivate: false, createdBy: usersData[0].id },
+    { id: crypto.randomUUID(), orgId: orgsData[3].id, name: "executive", slug: "executive", description: "Private executive discussions", isPrivate: true, createdBy: usersData[1].id },
   ];
 
   for (const ch of channelsData) {
@@ -217,64 +347,97 @@ async function seed() {
   // ============================================
   console.log("Creating channel memberships...");
 
-  // Add all Acme members to public Acme channels
-  const acmePublicChannels = channelsData.filter(c => c.orgId === orgsData[0].id && !c.isPrivate);
-  const acmeUserIds = acmeMembers.map(m => m.userId);
-
   let channelMemberCount = 0;
-  for (const channel of acmePublicChannels) {
-    for (const userId of acmeUserIds) {
-      await db.insert(schema.channelMembers).values({
-        id: crypto.randomUUID(),
-        channelId: channel.id,
-        userId: userId,
-        role: userId === channel.createdBy ? "admin" : "member",
-        joinedAt: now,
-      });
-      channelMemberCount++;
+
+  // Helper to add members to channels for an org
+  const addChannelMemberships = async (
+    orgId: string,
+    members: MemberSeed[],
+    privateChannelMemberUserIds?: { [channelSlug: string]: string[] }
+  ) => {
+    const orgChannels = channelsData.filter(c => c.orgId === orgId);
+    const memberUserIds = members.filter(m => !m.isGuest).map(m => m.userId); // Exclude guests from public channels
+    const guestMembers = members.filter(m => m.isGuest);
+
+    for (const channel of orgChannels) {
+      if (channel.isPrivate) {
+        // Add specific members to private channels
+        const privateMembers = privateChannelMemberUserIds?.[channel.slug] || [channel.createdBy];
+        for (const userId of privateMembers) {
+          await db.insert(schema.channelMembers).values({
+            id: crypto.randomUUID(),
+            channelId: channel.id,
+            userId: userId,
+            role: userId === channel.createdBy ? "admin" : "member",
+            joinedAt: now,
+          });
+          channelMemberCount++;
+        }
+      } else {
+        // Add all non-guest members to public channels
+        for (const userId of memberUserIds) {
+          await db.insert(schema.channelMembers).values({
+            id: crypto.randomUUID(),
+            channelId: channel.id,
+            userId: userId,
+            role: userId === channel.createdBy ? "admin" : "member",
+            joinedAt: now,
+          });
+          channelMemberCount++;
+        }
+      }
     }
-  }
 
-  // Add only Alice and Bob to leadership (private)
-  const leadershipChannel = channelsData.find(c => c.slug === "leadership" && c.orgId === orgsData[0].id)!;
-  for (const userId of [usersData[0].id, usersData[1].id]) {
-    await db.insert(schema.channelMembers).values({
-      id: crypto.randomUUID(),
-      channelId: leadershipChannel.id,
-      userId: userId,
-      role: userId === usersData[0].id ? "admin" : "member",
-      joinedAt: now,
-    });
-    channelMemberCount++;
-  }
+    // Handle guest channel access - grant specific channels
+    for (const guestMember of guestMembers) {
+      const guestMemberId = memberIdMap.get(`${orgId}:${guestMember.userId}`);
+      if (!guestMemberId) continue;
 
-  // Add Startup Labs members to their channels
-  const startupPublicChannels = channelsData.filter(c => c.orgId === orgsData[1].id && !c.isPrivate);
-  const startupUserIds = startupMembers.map(m => m.userId);
+      // Grant guest access to general and help channels (if exists)
+      const guestChannels = orgChannels.filter(c =>
+        !c.isPrivate && (c.slug === "general" || c.slug === "help" || c.slug === "introductions")
+      );
 
-  for (const channel of startupPublicChannels) {
-    for (const userId of startupUserIds) {
-      await db.insert(schema.channelMembers).values({
-        id: crypto.randomUUID(),
-        channelId: channel.id,
-        userId: userId,
-        role: userId === channel.createdBy ? "admin" : "member",
-        joinedAt: now,
-      });
-      channelMemberCount++;
+      for (const channel of guestChannels) {
+        // Add as channel member
+        await db.insert(schema.channelMembers).values({
+          id: crypto.randomUUID(),
+          channelId: channel.id,
+          userId: guestMember.userId,
+          role: "member",
+          joinedAt: now,
+        });
+        channelMemberCount++;
+
+        // Also add to guest_channel_access for channel-scoped permissions
+        await db.insert(schema.guestChannelAccess).values({
+          memberId: guestMemberId,
+          channelId: channel.id,
+          grantedAt: now,
+        });
+      }
     }
-  }
+  };
 
-  // Add Frank to founders (private)
-  const foundersChannel = channelsData.find(c => c.slug === "founders")!;
-  await db.insert(schema.channelMembers).values({
-    id: crypto.randomUUID(),
-    channelId: foundersChannel.id,
-    userId: usersData[5].id,
-    role: "admin",
-    joinedAt: now,
+  // Acme Corp memberships
+  await addChannelMemberships(orgsData[0].id, acmeMembers, {
+    leadership: [usersData[0].id, usersData[1].id], // Alice and Bob
   });
-  channelMemberCount++;
+
+  // Startup Labs memberships
+  await addChannelMemberships(orgsData[1].id, startupMembers, {
+    founders: [usersData[5].id, usersData[6].id], // Frank and Grace
+  });
+
+  // Open Community memberships (with guest)
+  await addChannelMemberships(orgsData[2].id, openCommunityMembers, {
+    moderators: [usersData[2].id, usersData[3].id], // Carol and David
+  });
+
+  // Enterprise Solutions memberships
+  await addChannelMemberships(orgsData[3].id, enterpriseMembers, {
+    executive: [usersData[1].id, usersData[0].id], // Bob and Alice
+  });
 
   console.log(`  Created ${channelMemberCount} channel memberships\n`);
 
@@ -293,14 +456,23 @@ async function seed() {
   }
 
   const conversationsData: ConversationSeed[] = [
-    // Acme 1:1 DMs
+    // Acme Corp DMs (invite_only)
     { id: crypto.randomUUID(), orgId: orgsData[0].id, isGroup: false, createdBy: usersData[0].id, participants: [usersData[0].id, usersData[1].id] },
     { id: crypto.randomUUID(), orgId: orgsData[0].id, isGroup: false, createdBy: usersData[2].id, participants: [usersData[2].id, usersData[0].id] },
     { id: crypto.randomUUID(), orgId: orgsData[0].id, isGroup: false, createdBy: usersData[1].id, participants: [usersData[1].id, usersData[3].id] },
-    // Acme group DM
     { id: crypto.randomUUID(), orgId: orgsData[0].id, isGroup: true, name: "Project Alpha Team", createdBy: usersData[0].id, participants: [usersData[0].id, usersData[1].id, usersData[3].id, usersData[4].id] },
-    // Startup Labs 1:1 DM
+    // Startup Labs DMs (request)
     { id: crypto.randomUUID(), orgId: orgsData[1].id, isGroup: false, createdBy: usersData[5].id, participants: [usersData[5].id, usersData[6].id] },
+    { id: crypto.randomUUID(), orgId: orgsData[1].id, isGroup: false, createdBy: usersData[7].id, participants: [usersData[7].id, usersData[5].id] },
+    { id: crypto.randomUUID(), orgId: orgsData[1].id, isGroup: true, name: "Startup Core Team", createdBy: usersData[5].id, participants: [usersData[5].id, usersData[6].id, usersData[7].id] },
+    // Open Community DMs (open)
+    { id: crypto.randomUUID(), orgId: orgsData[2].id, isGroup: false, createdBy: usersData[2].id, participants: [usersData[2].id, usersData[3].id] },
+    { id: crypto.randomUUID(), orgId: orgsData[2].id, isGroup: false, createdBy: usersData[4].id, participants: [usersData[4].id, usersData[5].id] },
+    { id: crypto.randomUUID(), orgId: orgsData[2].id, isGroup: true, name: "Community Moderators", createdBy: usersData[2].id, participants: [usersData[2].id, usersData[3].id, usersData[4].id] },
+    // Enterprise Solutions DMs (request)
+    { id: crypto.randomUUID(), orgId: orgsData[3].id, isGroup: false, createdBy: usersData[1].id, participants: [usersData[1].id, usersData[0].id] },
+    { id: crypto.randomUUID(), orgId: orgsData[3].id, isGroup: false, createdBy: usersData[7].id, participants: [usersData[7].id, usersData[3].id] },
+    { id: crypto.randomUUID(), orgId: orgsData[3].id, isGroup: true, name: "Enterprise Strategy", createdBy: usersData[1].id, participants: [usersData[1].id, usersData[0].id, usersData[7].id, usersData[3].id] },
   ];
 
   for (const conv of conversationsData) {
@@ -644,11 +816,27 @@ async function seed() {
 
   let readStateCount = 0;
 
+  // Get all workspace member lists
+  const workspaceMemberMap: { [orgId: string]: MemberSeed[] } = {
+    [orgsData[0].id]: acmeMembers,
+    [orgsData[1].id]: startupMembers,
+    [orgsData[2].id]: openCommunityMembers,
+    [orgsData[3].id]: enterpriseMembers,
+  };
+
+  const privateChannelMembers: { [key: string]: string[] } = {
+    [`${orgsData[0].id}:leadership`]: [usersData[0].id, usersData[1].id],
+    [`${orgsData[1].id}:founders`]: [usersData[5].id, usersData[6].id],
+    [`${orgsData[2].id}:moderators`]: [usersData[2].id, usersData[3].id],
+    [`${orgsData[3].id}:executive`]: [usersData[1].id, usersData[0].id],
+  };
+
   // Give each user a read state for channels they're in
   for (const channel of channelsData) {
+    const orgMembers = workspaceMemberMap[channel.orgId] || [];
     const memberUserIds = channel.isPrivate
-      ? (channel.slug === "leadership" ? [usersData[0].id, usersData[1].id] : [usersData[5].id])
-      : (channel.orgId === orgsData[0].id ? acmeUserIds : startupUserIds);
+      ? (privateChannelMembers[`${channel.orgId}:${channel.slug}`] || [channel.createdBy])
+      : orgMembers.filter(m => !m.isGuest).map(m => m.userId);
 
     for (const userId of memberUserIds) {
       // Some users are caught up, some have unread messages
@@ -711,17 +899,160 @@ async function seed() {
   // ============================================
   console.log("Creating invitations...");
 
-  await db.insert(schema.invitations).values({
-    id: genId(),
-    email: "newuser@example.com",
-    organizationId: orgsData[0].id,
-    inviterId: usersData[0].id,
-    role: "member",
-    status: "pending",
-    expiresAt: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
-    createdAt: now,
-  });
-  console.log(`  Created 1 pending invitation\n`);
+  // Create invitations for each workspace
+  for (const org of orgsData) {
+    await db.insert(schema.invitations).values({
+      id: genId(),
+      email: `invited-${org.slug}@example.com`,
+      organizationId: org.id,
+      inviterId: org.joinPolicy === "invite_only" ? usersData[0].id :
+                 org.joinPolicy === "request" ? usersData[5].id : usersData[2].id,
+      role: "member",
+      status: "pending",
+      expiresAt: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000),
+      createdAt: now,
+    });
+  }
+  console.log(`  Created ${orgsData.length} pending invitations\n`);
+
+  // ============================================
+  // 16. CREATE WORKSPACE JOIN REQUESTS
+  // ============================================
+  console.log("Creating workspace join requests...");
+
+  // Create pending join requests for workspaces with "request" policy
+  const requestWorkspaces = orgsData.filter(org => org.joinPolicy === "request");
+  let joinRequestCount = 0;
+
+  for (const ws of requestWorkspaces) {
+    // Create a pending request from a user not in the workspace
+    const nonMemberUser = usersData.find(u =>
+      !workspaceMemberMap[ws.id]?.some(m => m.userId === u.id)
+    );
+
+    if (nonMemberUser) {
+      await db.insert(schema.workspaceJoinRequests).values({
+        userId: nonMemberUser.id,
+        organizationId: ws.id,
+        message: `I'd love to join ${ws.name}! I'm interested in collaborating with the team.`,
+        status: "pending",
+        createdAt: hoursAgo(24),
+      });
+      joinRequestCount++;
+    }
+
+    // Create an approved request (historical)
+    const approvedMember = workspaceMemberMap[ws.id]?.find(m => m.role === "member");
+    const adminUser = workspaceMemberMap[ws.id]?.find(m => m.role === "admin" || m.role === "owner");
+
+    if (approvedMember && adminUser) {
+      await db.insert(schema.workspaceJoinRequests).values({
+        userId: approvedMember.userId,
+        organizationId: ws.id,
+        message: "Excited to be part of this workspace!",
+        status: "approved",
+        createdAt: hoursAgo(72),
+        reviewedAt: hoursAgo(48),
+        reviewedBy: adminUser.userId,
+      });
+      joinRequestCount++;
+    }
+  }
+  console.log(`  Created ${joinRequestCount} workspace join requests\n`);
+
+  // ============================================
+  // 17. CREATE GUEST INVITES
+  // ============================================
+  console.log("Creating guest invites...");
+
+  // Create guest invite links for each workspace
+  let guestInviteCount = 0;
+
+  // Get workspace owner info from member data
+  const getWorkspaceOwner = (orgId: string): string => {
+    const members = workspaceMemberMap[orgId];
+    const owner = members?.find(m => m.role === "owner");
+    return owner?.userId || usersData[0].id;
+  };
+
+  for (const org of orgsData) {
+    const wsChannels = channelsData.filter(c => c.orgId === org.id && !c.isPrivate);
+    const generalChannel = wsChannels.find(c => c.slug === "general");
+
+    if (generalChannel) {
+      // Active guest invite
+      await db.insert(schema.guestInvites).values({
+        organizationId: org.id,
+        token: `guest-${org.slug}-${nanoid(12)}`,
+        createdBy: getWorkspaceOwner(org.id),
+        expiresAt: new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000), // 14 days
+        channelIds: JSON.stringify([generalChannel.id]),
+        createdAt: hoursAgo(48),
+      });
+      guestInviteCount++;
+
+      // Used guest invite (historical) for workspace with guest
+      const wsMembers = workspaceMemberMap[org.id];
+      const guestMember = wsMembers?.find(m => m.isGuest);
+      if (guestMember) {
+        await db.insert(schema.guestInvites).values({
+          organizationId: org.id,
+          token: `used-guest-${org.slug}-${nanoid(12)}`,
+          createdBy: getWorkspaceOwner(org.id),
+          channelIds: JSON.stringify([generalChannel.id]),
+          usedBy: guestMember.userId,
+          usedAt: hoursAgo(24),
+          createdAt: hoursAgo(72),
+        });
+        guestInviteCount++;
+      }
+    }
+  }
+  console.log(`  Created ${guestInviteCount} guest invites\n`);
+
+  // ============================================
+  // 18. CREATE SIDEBAR PREFERENCES
+  // ============================================
+  console.log("Creating sidebar preferences...");
+
+  let sidebarPrefCount = 0;
+  const defaultSectionOrder = ['threads', 'search', 'notes', 'scheduled', 'reminders', 'saved'];
+
+  // Create sidebar preferences for some users in each workspace
+  for (const org of orgsData) {
+    const wsMembers = workspaceMemberMap[org.id] || [];
+    // Give first 3 non-guest members customized sidebar preferences
+    const membersWithPrefs = wsMembers.filter(m => !m.isGuest).slice(0, 3);
+
+    for (let i = 0; i < membersWithPrefs.length; i++) {
+      const member = membersWithPrefs[i];
+      const wsConversations = conversationsData.filter(c =>
+        c.orgId === org.id && c.participants.includes(member.userId)
+      );
+
+      // Create varied preferences for each user
+      const preferences = {
+        categoryOrder: [] as string[], // Would be populated with category IDs in real scenario
+        dmOrder: wsConversations.map(c => c.id),
+        sectionOrder: i === 0 ? defaultSectionOrder :
+          i === 1 ? ['notes', 'threads', 'search', 'saved', 'scheduled', 'reminders'] :
+            ['search', 'saved', 'threads', 'notes', 'scheduled', 'reminders'],
+        hiddenSections: i === 2 ? ['scheduled'] : [],
+        collapsedSections: i === 1 ? ['reminders'] : [],
+        updatedAt: now.toISOString(),
+      };
+
+      await db.insert(schema.userSidebarPreferences).values({
+        userId: member.userId,
+        organizationId: org.id,
+        preferences,
+        createdAt: now,
+        updatedAt: now,
+      });
+      sidebarPrefCount++;
+    }
+  }
+  console.log(`  Created ${sidebarPrefCount} sidebar preferences\n`);
 
   // ============================================
   // SUMMARY
@@ -729,16 +1060,23 @@ async function seed() {
   console.log("=".repeat(50));
   console.log("SEED COMPLETE!");
   console.log("=".repeat(50));
-  console.log("\nTest Accounts (password for all: 'password123'):");
+  console.log(`\nTest Accounts (password for all: '${TEST_PASSWORD}'):`);
   console.log("-".repeat(50));
   for (const u of usersData) {
     console.log(`  ${u.email.padEnd(25)} - ${u.name}`);
   }
-  console.log("\nWorkspaces:");
+  console.log("\nWorkspaces (with visibility policies):");
   console.log("-".repeat(50));
   for (const org of orgsData) {
-    console.log(`  ${org.slug.padEnd(20)} - ${org.name}`);
+    const policyLabel = org.joinPolicy === "invite_only" ? "Private" :
+                        org.joinPolicy === "request" ? "Request Access" : "Open";
+    console.log(`  ${org.slug.padEnd(25)} [${policyLabel.padEnd(14)}] - ${org.name}`);
   }
+  console.log("\nVisibility Policies:");
+  console.log("-".repeat(50));
+  console.log("  Private (invite_only) - Hidden from browse, invitation only");
+  console.log("  Request Access        - Visible in browse, requires admin approval");
+  console.log("  Open                  - Visible in browse, instant join");
   console.log("\nTo login, visit: http://localhost/login");
   console.log("");
 }

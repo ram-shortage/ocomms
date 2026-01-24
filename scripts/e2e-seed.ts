@@ -6,13 +6,64 @@
  * - acme-corp workspace with basic channels
  *
  * Usage: DATABASE_URL=... npx tsx scripts/e2e-seed.ts
+ *
+ * SECURITY: This script creates test users with known passwords.
+ * It MUST NOT be run in production environments.
  */
 
 import { db } from "../src/db";
 import * as schema from "../src/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { hashPassword } from "better-auth/crypto";
+
+// ============================================
+// PRODUCTION SAFETY CHECK - TEST DATA PROHIBITED
+// ============================================
+const PRODUCTION_INDICATORS = [
+  "rds.amazonaws.com",
+  "supabase.co",
+  "neon.tech",
+  "planetscale.com",
+  "cockroachlabs.cloud",
+  "digitalocean.com",
+  "azure.com",
+  "gcp.com",
+  "render.com",
+  "railway.app",
+  "fly.io",
+  "heroku",
+  ".prod.",
+  "-prod-",
+  "-production",
+  ".production.",
+];
+
+function isProductionDatabase(): boolean {
+  const dbUrl = process.env.DATABASE_URL || "";
+  return PRODUCTION_INDICATORS.some((indicator) =>
+    dbUrl.toLowerCase().includes(indicator.toLowerCase())
+  );
+}
+
+function checkProductionSafety(): void {
+  const isProduction = isProductionDatabase() || process.env.NODE_ENV === "production";
+
+  if (isProduction) {
+    console.error("\n" + "=".repeat(60));
+    console.error("  REFUSED: Cannot seed E2E test data in production");
+    console.error("=".repeat(60));
+    console.error("\nThis script creates test users with known passwords.");
+    console.error("Running it in production would create security vulnerabilities.\n");
+    console.error("DATABASE_URL:", process.env.DATABASE_URL?.substring(0, 50) + "...");
+    console.error("NODE_ENV:", process.env.NODE_ENV || "(not set)");
+    console.error("\nThis operation is not allowed. No override is available.\n");
+    process.exit(1);
+  }
+}
+
+// Run safety check immediately on script load
+checkProductionSafety();
 
 // Generate IDs like better-auth
 const genId = () => nanoid(24);
