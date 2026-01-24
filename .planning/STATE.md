@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-21)
 ## Current Position
 
 Phase: 37 of 37 (E2E Test Fixes)
-Plan: 3 of 7 in current phase
+Plan: 4 of 7 in current phase
 Status: In progress
-Last activity: 2026-01-24 - Completed 37-03-PLAN.md (Workspace Test Fixes)
+Last activity: 2026-01-24 - Completed 37-04-PLAN.md (Sidebar Test Fixes)
 
-Progress: [██████████████████████████] 37/37 phases (Plan 3/7)
+Progress: [██████████████████████████] 37/37 phases (Plan 4/7)
 
 ## Shipped Milestones
 
@@ -60,6 +60,9 @@ Recent from Phase 37:
 - FORCE_INSECURE_COOKIES env var to disable secure cookies in E2E (E2E-WS-02)
 - DISABLE_RATE_LIMIT env var to disable rate limiting in E2E (E2E-WS-03)
 - data-testid selectors for workspace switcher components (E2E-WS-04)
+- Mouse events for dnd-kit drag operations (E2E-SIDE-03)
+- XPath preceding-sibling for drag handle location (E2E-SIDE-04)
+- path.join with __dirname for storage state paths (E2E-SIDE-05)
 
 Recent from Phase 36:
 - tmpfs for PostgreSQL in test compose - RAM disk for speed (E2E-01)
@@ -168,7 +171,7 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-24
-Stopped at: Completed 37-03-PLAN.md (Workspace Test Fixes)
+Stopped at: Completed 37-04-PLAN.md (Sidebar Test Fixes)
 Resume file: None
 
 ## Human Verification Deferred
