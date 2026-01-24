@@ -50,10 +50,14 @@ export function AddParticipantsDialog({
     }
   }, [open, organizationId]);
 
-  // Filter out members already in conversation
-  const availableMembers = members.filter(
-    (m) => !existingParticipantIds.includes(m.userId)
-  );
+  // Filter out members already in conversation, sort alphabetically
+  const availableMembers = members
+    .filter((m) => !existingParticipantIds.includes(m.userId))
+    .sort((a, b) => {
+      const nameA = (a.user.name || a.user.email).toLowerCase();
+      const nameB = (b.user.name || b.user.email).toLowerCase();
+      return nameA.localeCompare(nameB);
+    });
 
   const handleToggle = (userId: string, checked: boolean) => {
     if (checked) {

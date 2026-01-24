@@ -55,7 +55,13 @@ export function StartDMDialog({
     }
   }, [open, organizationId]);
 
-  const availableMembers = members.filter((m) => m.userId !== currentUserId);
+  const availableMembers = members
+    .filter((m) => m.userId !== currentUserId)
+    .sort((a, b) => {
+      const nameA = (a.user.name || a.user.email).toLowerCase();
+      const nameB = (b.user.name || b.user.email).toLowerCase();
+      return nameA.localeCompare(nameB);
+    });
   const isGroupDM = selectedIds.length > 1;
 
   const handleToggle = (userId: string, checked: boolean) => {
