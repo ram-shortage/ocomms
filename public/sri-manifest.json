@@ -1,8 +1,8 @@
 {
-  "generated": "2026-01-24T13:42:02.683Z",
+  "generated": "2026-01-24T13:55:01.415Z",
   "files": {
-    "/_next/static/Lh1wmHifCCmkTtAYi5LJA/_buildManifest.js": "sha384-3G39x8XRjOkj0NTsmsqNjZDa3326BNdQhm/uoZFw6UqVl0bVo/JDxBgC5M6F00mp",
-    "/_next/static/Lh1wmHifCCmkTtAYi5LJA/_ssgManifest.js": "sha384-IahYFZWHVi15AEIjFvtLcYfsYp3a5TRlT5Nvpi0E/GXcTFwjd3OitBYYkqfevQ/7",
+    "/_next/static/Z8xzthHX_NCdCFILylgZr/_buildManifest.js": "sha384-3G39x8XRjOkj0NTsmsqNjZDa3326BNdQhm/uoZFw6UqVl0bVo/JDxBgC5M6F00mp",
+    "/_next/static/Z8xzthHX_NCdCFILylgZr/_ssgManifest.js": "sha384-IahYFZWHVi15AEIjFvtLcYfsYp3a5TRlT5Nvpi0E/GXcTFwjd3OitBYYkqfevQ/7",
     "/_next/static/chunks/1086-c03540dba6edd9bd.js": "sha384-iE0Nu4FsFvxaI/mAca0syiKC5o19da1dZA9g5xpXKwOn4QaBy/4afsAAqAWqgEWi",
     "/_next/static/chunks/1123-2f5e715f2b68e9eb.js": "sha384-1IsuOFSA7Y+riJoYzZoysBZ/4/5bg1DHf4R1EuOCU+fAWvGnZXL45sZ0SSIF2qH5",
     "/_next/static/chunks/1310-724953022e7ab45a.js": "sha384-kjYXSyv0t0R/UgA+EUWpnF2E6PM2+zIdpiYokW7WkgDc6RPbUeGUuuXjZ9G07TxW",
@@ -58,7 +58,7 @@
     "/_next/static/chunks/app/(workspace)/[workspaceSlug]/channels/page-2c0a649ba090fc26.js": "sha384-HNeZaU8uljs5STtCQdpCeNBFLVqd5Z8aGto0MQ8L2/opubydc6wR1Uxztt1uXKcl",
     "/_next/static/chunks/app/(workspace)/[workspaceSlug]/dm/[conversationId]/page-a5dfd2a98b15c00e.js": "sha384-VUdEEoI8IMTiBsb5Eb7U5Kq+4askL+0aeXbEZeHKhJDOyDuBxethnbmWN/JrXyfV",
     "/_next/static/chunks/app/(workspace)/[workspaceSlug]/dm/page-fcd40f3a0d38a8fd.js": "sha384-4AZ25Jfx84ERP+piA8jO8Df3Q67H0RGgXzbiA23YFee2lWUU7UBfuwajR5tZd69J",
-    "/_next/static/chunks/app/(workspace)/[workspaceSlug]/layout-b549b5adff4b5d02.js": "sha384-rrRhOnzq8V5TVwPcnvBE3kuj8qtVxwxjeBTrqh9IaiLj01lvN026Xz3Zltm3zPcf",
+    "/_next/static/chunks/app/(workspace)/[workspaceSlug]/layout-026cc4f81c9e1da9.js": "sha384-bM0UQdQFtDOMlGjjCS5mc4KXqKU/C6oNKzNKxprFSWzqRSxxZhRHEwTQdeNC8tpY",
     "/_next/static/chunks/app/(workspace)/[workspaceSlug]/members/[memberId]/page-35f881035acde3a5.js": "sha384-+Tu4f4iiTawpJr66gayRciU+BIZW3pt6+lFeZBKbcRNyHAcVtswuUZXRhuY3Gcgh",
     "/_next/static/chunks/app/(workspace)/[workspaceSlug]/notes/page-8c252e3bf5f1264e.js": "sha384-A/RCjUIH6ujYlyd9ErnsuX9dFIdd3MTSR4J/F6is1vo36sQPeoWSjXsshTruz2qr",
     "/_next/static/chunks/app/(workspace)/[workspaceSlug]/page-34da7f198e1a4cb5.js": "sha384-pZTx+mmRqPyGfQFB/AMXuZ35z4cIX+TwdVAssM5Rtb72IPTndNC+aEi5Sqt1tBO2",

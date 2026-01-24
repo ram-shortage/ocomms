@@ -58,7 +58,7 @@ export default async function RootLayout({
             {children}
           </SyncProvider>
           <PWAProvider />
-          <Toaster />
+          <Toaster duration={5000} />
         </ThemeProvider>
       </body>
     </html>

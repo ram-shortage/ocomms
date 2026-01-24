@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { Drawer as DrawerPrimitive } from "vaul";
@@ -76,6 +76,15 @@ export function MobileSidebarDrawer({
 }: MobileSidebarDrawerProps) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const prevPathnameRef = useRef(pathname);
+
+  // Close drawer when pathname changes (actual navigation occurred)
+  useEffect(() => {
+    if (prevPathnameRef.current !== pathname) {
+      setOpen(false);
+      prevPathnameRef.current = pathname;
+    }
+  }, [pathname]);
 
   // Derive page title from pathname
   const getPageTitle = () => {
@@ -100,11 +109,6 @@ export function MobileSidebarDrawer({
     if (path === "/notes") return "My Notes";
 
     return workspace.name;
-  };
-
-  // Close drawer on navigation
-  const handleNavigation = () => {
-    setOpen(false);
   };
 
   return (
@@ -163,8 +167,8 @@ export function MobileSidebarDrawer({
               <X className="h-5 w-5" />
             </button>
 
-            {/* Sidebar content - wrapped to handle navigation */}
-            <div onClick={handleNavigation} className="h-full">
+            {/* Sidebar content */}
+            <div className="h-full">
               <WorkspaceSidebar
                 workspace={workspace}
                 currentUserId={currentUserId}

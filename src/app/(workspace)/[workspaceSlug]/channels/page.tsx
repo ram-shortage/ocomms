@@ -33,7 +33,7 @@ export default async function ChannelDirectoryPage({
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="flex-1 min-h-0 overflow-auto">
       <div className="max-w-4xl mx-auto p-8">
         <div className="mb-6">
           <Link
