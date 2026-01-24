@@ -6,7 +6,7 @@ import { eq, and } from "drizzle-orm";
 import { members } from "@/db/schema";
 import { PresenceWrapper } from "@/components/presence/presence-wrapper";
 import { WorkspaceSidebar } from "@/components/workspace/workspace-sidebar";
-import { MobileTabBar } from "@/components/layout";
+import { MobileSidebarDrawer } from "@/components/mobile/mobile-sidebar-drawer";
 import { ReminderListener } from "@/components/reminder/reminder-listener";
 import { GuestWelcomeWrapper } from "@/components/guest/guest-welcome-wrapper";
 import { getUserChannels } from "@/lib/actions/channel";
@@ -127,6 +127,23 @@ export default async function WorkspaceSlugLayout({
   return (
     <PresenceWrapper workspaceId={workspace.id} memberUserIds={memberUserIds}>
       <div className="flex h-dvh flex-col md:flex-row">
+        {/* Mobile header + sidebar drawer - mobile only */}
+        <MobileSidebarDrawer
+          workspace={{
+            id: workspace.id,
+            name: workspace.name,
+            slug: workspaceSlug,
+          }}
+          currentUserId={session.user.id}
+          channels={sidebarChannels}
+          conversations={sidebarConversations}
+          categories={categories}
+          collapseStates={collapseStates}
+          isAdmin={isAdmin}
+          myStatus={myStatus}
+          workspaces={workspacesWithMemberCounts}
+        />
+
         {/* Sidebar - desktop only */}
         <div className="hidden md:flex h-full">
           <WorkspaceSidebar
@@ -146,13 +163,10 @@ export default async function WorkspaceSlugLayout({
           />
         </div>
 
-        {/* Main content - with bottom padding on mobile for tab bar */}
-        <main className="flex-1 min-h-0 flex flex-col overflow-hidden pb-16 md:pb-0">
+        {/* Main content - with top padding on mobile for header (includes safe area) */}
+        <main className="flex-1 min-h-0 flex flex-col overflow-hidden pt-[calc(env(safe-area-inset-top)+3.5rem)] md:pt-0">
           {children}
         </main>
-
-        {/* Bottom tabs - mobile only */}
-        <MobileTabBar workspaceSlug={workspaceSlug} />
 
         {/* RMND-*: Reminder toast listener */}
         <ReminderListener workspaceSlug={workspaceSlug} />

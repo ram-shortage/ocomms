@@ -14,9 +14,14 @@ These bugs were captured prior to production testing:
 - [ ] **BUG-01**: Uploads not persisted across container restart (Docker volume missing)
 - [ ] **BUG-02**: Uploaded images return 404 errors
 - [ ] **BUG-03**: Notification enable popup stays on screen after permission granted
-- [ ] **BUG-04**: No direct channels access from mobile nav bar
+- [x] **BUG-04**: No direct channels access from mobile nav bar — **FIXED**
+  - Replaced bottom tab bar with top header + sidebar drawer
+  - Hamburger menu opens full sidebar with channels, DMs, search, settings
 - [ ] **BUG-05**: Messages render cramped on left side of mobile viewport
-- [ ] **BUG-06**: Mobile nav bar should be at top instead of bottom
+  - May need separate CSS fix in message-list component
+- [x] **BUG-06**: Mobile nav bar should be at top instead of bottom — **FIXED**
+  - New top header with hamburger menu, page title, notifications
+  - Sidebar slides in from left as drawer
 - [ ] **BUG-07**: Typing bar has excessive whitespace below input
 
 ### Discovered Bugs (Phase 38)
