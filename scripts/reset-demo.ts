@@ -101,19 +101,31 @@ async function resetAndDemoSeed() {
 
   console.log("   Tables dropped.\n");
 
-  console.log("2. Running migrations (db:push)...");
+  console.log("2. Running migrations...");
   try {
-    execSync("npm run db:push", { stdio: "inherit" });
+    // In production container, bundled scripts are at /app/*.mjs
+    // In development, use npm commands
+    const isProduction = process.env.NODE_ENV === "production";
+    if (isProduction) {
+      execSync("node /app/migrate.mjs", { stdio: "inherit" });
+    } else {
+      execSync("npm run db:push", { stdio: "inherit" });
+    }
   } catch (error) {
-    console.error("Migration failed. Please run manually: npm run db:push");
+    console.error("Migration failed:", error);
     process.exit(1);
   }
 
   console.log("\n3. Running demo seed...");
   try {
-    execSync("npm run db:demo-seed", { stdio: "inherit" });
+    const isProduction = process.env.NODE_ENV === "production";
+    if (isProduction) {
+      execSync("node /app/demo-seed.mjs", { stdio: "inherit" });
+    } else {
+      execSync("npm run db:demo-seed", { stdio: "inherit" });
+    }
   } catch (error) {
-    console.error("Demo seed failed. Please run manually: npm run db:demo-seed");
+    console.error("Demo seed failed:", error);
     process.exit(1);
   }
 
