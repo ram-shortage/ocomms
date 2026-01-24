@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-24)
 
 **Core value:** Data sovereignty - complete control over communication data
-**Current focus:** Planning next milestone (v0.7.0)
+**Current focus:** v0.6.1 Bug Fixes
 
 ## Current Position
 
-Phase: Milestone complete
-Plan: N/A
-Status: v0.6.0 shipped, ready for next milestone
-Last activity: 2026-01-24 - v0.6.0 milestone complete
+Phase: 38 - Production Testing & Bug Discovery
+Plan: —
+Status: Defining requirements through production testing
+Last activity: 2026-01-24 — Milestone v0.6.1 started
 
-Progress: [██████████████████████████] v0.6.0 complete (8 phases, 41 plans)
+Progress: [░░░░░░░░░░░░░░░░░░░░░░░░░░] v0.6.1 starting
 
 ## Shipped Milestones
 

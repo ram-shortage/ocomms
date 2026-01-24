@@ -7,7 +7,7 @@
     "type": "full-stack-application"
   },
   "milestone": {
-    "current": "Polish & Hardening",
-    "version": "0.6.0"
+    "current": "Bug Fixes",
+    "version": "0.6.1"
   }
 }

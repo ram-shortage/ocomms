@@ -12,9 +12,11 @@ OComms is a self-hosted team communication platform - a Slack-like experience th
 
 ## Current State
 
-**Version:** v0.6.0 (Polish & Hardening) - Shipped 2026-01-24
+**Version:** v0.6.1 (Bug Fixes) - In Progress
 
-Security hardening with CSP nonces, Redis sessions, MFA, breach checking. Workspace management with switcher, discovery, and join flow. Sidebar reorganization with drag-drop reordering. Mobile redesign with More menu and 44px touch targets.
+Bug fix milestone addressing production issues: upload persistence, notification UI, mobile UX improvements, and layout fixes.
+
+**Previous:** v0.6.0 (Polish & Hardening) - Shipped 2026-01-24
 
 **Tech Stack:**
 - Next.js 15 with App Router
@@ -154,7 +156,12 @@ Requirements shipped and working in production:
 
 ### Active
 
-None - planning next milestone. Run `/gsd:new-milestone` to start v0.7.0.
+**v0.6.1 - Bug Fixes** (requirements TBD after production testing)
+- Upload persistence and 404 fixes (Docker volume)
+- Notification popup cleanup after permission granted
+- Mobile UX: channels access, message layout, nav position
+- Typing bar layout whitespace fix
+- Additional bugs discovered during production testing
 
 ### Out of Scope
 
@@ -243,4 +250,4 @@ None - planning next milestone. Run `/gsd:new-milestone` to start v0.7.0.
 ---
 
 ---
-*Last updated: 2026-01-24 after v0.6.0 milestone completion*
+*Last updated: 2026-01-24 after v0.6.1 milestone start*
