@@ -1,6 +1,6 @@
 import type { Server, Socket } from "socket.io";
 import { db } from "@/db";
-import { messages, channelMembers, conversationParticipants, channels, conversations, fileAttachments, members, guestChannelAccess } from "@/db/schema";
+import { messages, channelMembers, conversationParticipants, channels, conversations, fileAttachments, members, guestChannelAccess, organization } from "@/db/schema";
 import { eq, and, isNull, sql, inArray, lt, desc } from "drizzle-orm";
 import { RateLimiterRedis, RateLimiterMemory } from "rate-limiter-flexible";
 import type { RateLimiterAbstract } from "rate-limiter-flexible";
@@ -449,14 +449,18 @@ async function handleSendMessage(
         .from(conversationParticipants)
         .where(eq(conversationParticipants.conversationId, targetId));
 
-      // Get conversation's workspace for URL building
+      // Get conversation's workspace slug for URL building
       const [convData] = await db
-        .select({ organizationId: conversations.organizationId })
+        .select({
+          organizationId: conversations.organizationId,
+          workspaceSlug: organization.slug,
+        })
         .from(conversations)
+        .leftJoin(organization, eq(conversations.organizationId, organization.id))
         .where(eq(conversations.id, targetId))
         .limit(1);
 
-      const workspaceId = convData?.organizationId;
+      const workspaceSlug = convData?.workspaceSlug;
 
       for (const participant of participants) {
         // Don't notify sender of their own message
@@ -468,8 +472,8 @@ async function handleSendMessage(
             : "New direct message",
           body: newMessage.content.slice(0, 100),
           data: {
-            url: workspaceId
-              ? `/workspace/${workspaceId}/dm/${targetId}`
+            url: workspaceSlug
+              ? `/${workspaceSlug}/dm/${targetId}`
               : `/`,
             tag: `dm:${targetId}`,
             type: "dm",

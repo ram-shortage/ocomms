@@ -1,6 +1,6 @@
 import type { Server, Socket } from "socket.io";
 import { db } from "@/db";
-import { notifications, users, channelMembers, channels, channelNotificationSettings, members, userGroups, userGroupMembers } from "@/db/schema";
+import { notifications, users, channelMembers, channels, channelNotificationSettings, members, userGroups, userGroupMembers, organization } from "@/db/schema";
 import { eq, and, isNull, desc, inArray } from "drizzle-orm";
 import { getRoomName } from "../rooms";
 import type { ClientToServerEvents, ServerToClientEvents, SocketData, Message, Notification } from "@/lib/socket-events";
@@ -165,8 +165,20 @@ export async function createNotifications(params: {
   // Get channel name and slug if in channel context
   let channelName: string | undefined;
   let channelSlug: string | undefined;
+  let workspaceSlug: string | undefined;
   // L-7 FIX: Batch fetch all notification settings for channel once
   let notificationSettingsMap = new Map<string, NotificationMode>();
+
+  // Get workspace slug for notification URLs
+  if (workspaceId) {
+    const [org] = await db
+      .select({ slug: organization.slug })
+      .from(organization)
+      .where(eq(organization.id, workspaceId))
+      .limit(1);
+    workspaceSlug = org?.slug ?? undefined;
+  }
+
   if (channelId) {
     const [channelData] = await db
       .select({ name: channels.name, slug: channels.slug })
@@ -364,10 +376,10 @@ export async function createNotifications(params: {
         : "New mention",
       body: notification.content,
       data: {
-        url: notification.channelId && channelSlug
-          ? `/workspace/${workspaceId}/channels/${channelSlug}`
-          : notification.conversationId
-            ? `/workspace/${workspaceId}/dm/${notification.conversationId}`
+        url: notification.channelId && channelSlug && workspaceSlug
+          ? `/${workspaceSlug}/channels/${channelSlug}`
+          : notification.conversationId && workspaceSlug
+            ? `/${workspaceSlug}/dm/${notification.conversationId}`
             : "/",
         tag: notification.channelId
           ? `channel:${notification.channelId}`
