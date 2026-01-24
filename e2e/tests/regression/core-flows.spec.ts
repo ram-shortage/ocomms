@@ -11,6 +11,12 @@ import { SidebarPage } from '../../pages/sidebar.page';
  * reactions, and search.
  */
 
+// Credentials depend on seed mode (matches auth.setup.ts)
+const DEMO_SEED_MODE = process.env.E2E_SEED_MODE === 'demo';
+const TEST_CREDENTIALS = DEMO_SEED_MODE
+  ? { email: 'alice.chen@example.com', password: 'TheOrder2026!!' }
+  : { email: 'alice@demo.ocomms.local', password: 'password123' };
+
 test.describe('core flows regression', () => {
   test.describe('authentication', () => {
     test('user can sign in and access workspace', async ({ page }) => {
@@ -23,8 +29,8 @@ test.describe('core flows regression', () => {
       await loginPage.goto();
       await expect(page).toHaveURL(/login/);
 
-      // Enter credentials
-      await loginPage.login('alice@demo.ocomms.local', 'password123');
+      // Enter credentials (based on seed mode)
+      await loginPage.login(TEST_CREDENTIALS.email, TEST_CREDENTIALS.password);
 
       // Should redirect to workspace (or workspace picker)
       await expect(page).toHaveURL(/\/[a-z0-9-]+/, { timeout: 30000 });
