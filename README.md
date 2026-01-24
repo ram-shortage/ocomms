@@ -153,7 +153,7 @@ For detailed deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md).
 npm install
 
 # Start PostgreSQL and Redis (dev containers)
-docker-compose -f docker-compose.dev.yml up -d
+docker compose -f docker-compose.dev.yml up -d
 
 # Run database migrations
 npm run db:push
@@ -260,7 +260,7 @@ Completed milestones:
 - **v0.6.0** — Polish & hardening (security hardening, workspace management, sidebar reorg, mobile redesign)
 
 Future versions may include:
-- [ ] Message editing
+- [ ] Message editing (deletion already supported)
 - [ ] Rich text formatting
 - [ ] SSO/SAML integration
 - [ ] Webhooks and bot accounts
