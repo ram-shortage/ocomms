@@ -2,6 +2,10 @@
 
 A comprehensive guide for deploying OComms, a self-hosted team communication platform.
 
+> **Note:** For v0.6.0 specific documentation, see:
+> - [DEPLOYMENT-v0.6.md](docs/DEPLOYMENT-v0.6.md) - Clean install guide for v0.6
+> - [upgrade-v0.5-to-v0.6.md](docs/upgrade-v0.5-to-v0.6.md) - Upgrade guide from v0.5
+
 ---
 
 ## Table of Contents
@@ -53,7 +57,7 @@ docker compose exec app npm run db:migrate
 - Domain name with DNS A record pointing to server
 - Ports 80 and 443 open
 
-**Stack:** Next.js 16, PostgreSQL 16, Redis 7, Socket.IO, BullMQ, Nginx + Let's Encrypt
+**Stack:** Next.js 15, PostgreSQL 16, Redis 7, Socket.IO, BullMQ, Nginx + Let's Encrypt
 
 ---
 
@@ -276,10 +280,9 @@ docker compose up -d
 ```
 
 This starts:
-- **app:** The main OComms application (Next.js + Socket.IO)
-- **worker:** Background job processor
+- **app:** The main OComms application (Next.js + Socket.IO + background jobs)
 - **db:** PostgreSQL database
-- **redis:** Redis for caching and real-time features
+- **redis:** Redis for caching, real-time features, and job queues
 - **nginx:** Reverse proxy with SSL
 
 #### Step 4.2: Monitor Startup Progress
@@ -364,7 +367,7 @@ NEXT_PUBLIC_VAPID_PUBLIC_KEY=your-public-key
 Restart containers:
 
 ```bash
-docker compose restart app worker
+docker compose restart app
 ```
 
 ---
@@ -601,34 +604,36 @@ To use your own certificates instead of Let's Encrypt:
 
 ---
 
-## Worker Processes
+## Background Jobs
 
-OComms uses background worker processes for asynchronous tasks.
+OComms uses BullMQ for asynchronous background tasks. These run within the main `app` container.
 
-### Worker Functions
+### Background Job Functions
 
-| Worker | Purpose |
-|--------|---------|
+| Job | Purpose |
+|-----|---------|
 | Scheduled Messages | Sends messages at scheduled times |
 | Reminders | Triggers reminder notifications |
 | Status Expiration | Clears expired user statuses |
 | Link Preview | Generates URL previews |
 | Guest Expiration | Handles guest account cleanup |
+| Attachment Cleanup | Removes orphaned attachments (daily) |
 
-### Worker Health Check
+### Background Job Health Check
 
 ```bash
-# View worker logs
-docker compose logs -f worker
+# View app logs (includes background job output)
+docker compose logs -f app
 
-# Check worker status
-docker compose ps worker
+# Check app container status
+docker compose ps app
 ```
 
-### Manual Worker Restart
+### Manual Restart
 
 ```bash
-docker compose restart worker
+# Restart app (restarts background jobs too)
+docker compose restart app
 ```
 
 ---
@@ -745,6 +750,49 @@ docker compose exec nginx ls -la /etc/letsencrypt/live/
 docker compose exec nginx certbot renew --force-renewal
 ```
 
+#### Cloudflare 521 Error (Web Server Down)
+
+**Symptom:** Browser shows "Error 521 - Web server is down" from Cloudflare.
+
+**Common causes:**
+
+1. **Nginx config has wrong domain:** The default nginx config uses `example.com` as a placeholder.
+
+   ```bash
+   # Check nginx logs for the issue
+   docker compose logs nginx --tail 50
+   ```
+
+   If you see errors like:
+   ```
+   Could not find non-zero size keyfile file '/etc/letsencrypt/live/example.com/privkey.pem'
+   ```
+
+   **Fix:** Update `nginx/conf.d/default.conf` to use your actual domain:
+   ```bash
+   # Edit the config
+   nano nginx/conf.d/default.conf
+
+   # Replace all instances of 'example.com' with your domain (e.g., 'chat.ocomms.org')
+   # Then restart nginx
+   docker compose restart nginx
+   ```
+
+2. **Containers still starting:** After `docker compose up -d`, wait 30-60 seconds for healthchecks.
+
+   ```bash
+   # Check container status
+   docker compose ps
+
+   # App should show "healthy" status
+   ```
+
+3. **App container failed:** Check app logs for startup errors.
+
+   ```bash
+   docker compose logs app --tail 50
+   ```
+
 #### WebSocket Connection Failures
 
 Check nginx configuration allows WebSocket upgrades:
@@ -830,13 +878,13 @@ crontab -e
 
 ```bash
 # Stop the app
-docker compose stop app worker
+docker compose stop app
 
 # Restore from backup
-docker compose exec -T db psql -U postgres -d ocomms < ./backups/ocomms-20240115.sql
+docker compose exec -T db psql -U postgres -d ocomms < ./backups/ocomms-20260124.sql
 
 # Restart services
-docker compose start app worker
+docker compose start app
 ```
 
 ### Application Updates
@@ -933,4 +981,4 @@ services:
 
 ---
 
-*Last updated: 2026-01-21 (v0.5.0)*
+*Last updated: 2026-01-24 (v0.6.0)*
