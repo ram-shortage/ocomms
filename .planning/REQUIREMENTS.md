@@ -47,11 +47,12 @@ These bugs were captured prior to production testing:
     2. Only logout on confirmed invalid sessions (401/403, empty user)
     3. Allow through on transient errors (network, 5xx, Redis issues)
 
-## Deferred
+### Discovered Bugs (Post-Deploy)
 
-| Bug | Reason |
-|-----|--------|
-| Realtime chat not updating | Likely Next.js server action manifest issue, needs deeper investigation |
+- [x] **BUG-09**: Messages not appearing for sender until refresh — **FIXED**
+  - Root cause: Race condition - message handlers registered before socket joined rooms
+  - Fix: Move `joinUserRooms()` to execute BEFORE registering event handlers
+  - Added "ready" event to notify client when connection is fully established
 
 ## Traceability
 

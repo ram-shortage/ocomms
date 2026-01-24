@@ -98,12 +98,20 @@ export function setupSocketHandlers(io: SocketIOServer, redis?: Redis | null) {
     // Apply rate limiting to all socket events (SEC2-04)
     createEventRateLimiter(socket);
 
+    // CRITICAL: Join rooms BEFORE registering message handlers
+    // This prevents race condition where messages are sent before socket joins rooms
+    try {
+      await joinUserRooms(socket);
+    } catch (error) {
+      console.error(`[Socket.IO] Error joining rooms for user ${userId}:`, error);
+    }
+
     // Setup presence event handlers if available
     if (presenceManager) {
       handlePresenceEvents(socket, io, presenceManager);
     }
 
-    // Setup message event handlers
+    // Setup message event handlers (after rooms are joined)
     handleMessageEvents(socket, io);
 
     // Setup reaction event handlers
@@ -131,12 +139,8 @@ export function setupSocketHandlers(io: SocketIOServer, redis?: Redis | null) {
     // Setup typing indicator event handlers
     handleTypingEvents(socket, io);
 
-    // Join user to their authorized rooms
-    try {
-      await joinUserRooms(socket);
-    } catch (error) {
-      console.error(`[Socket.IO] Error joining rooms for user ${userId}:`, error);
-    }
+    // Notify client that connection is fully ready
+    socket.emit("ready");
 
     // Handle room:join for dynamic room joining (e.g., when user joins new channel)
     socket.on("room:join", async (data) => {
