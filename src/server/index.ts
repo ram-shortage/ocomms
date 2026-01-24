@@ -13,7 +13,11 @@ import { createRedisAdapter, createPresenceRedisClient } from "./socket/adapter"
 import { setupSocketHandlers } from "./socket";
 import { initAllowedRedirectDomains } from "@/lib/redirect-validation";
 import { scheduleAttachmentCleanup } from "./queue/attachment-cleanup.queue";
+import { configureVapid } from "@/lib/push/vapid";
 import type { ClientToServerEvents, ServerToClientEvents, SocketData } from "@/lib/socket-events";
+
+// Initialize VAPID for push notifications
+configureVapid();
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = process.env.HOST || "localhost";
