@@ -17,12 +17,17 @@ These bugs were captured prior to production testing:
 - [x] **BUG-04**: No direct channels access from mobile nav bar — **FIXED**
   - Replaced bottom tab bar with top header + sidebar drawer
   - Hamburger menu opens full sidebar with channels, DMs, search, settings
-- [ ] **BUG-05**: Messages render cramped on left side of mobile viewport
-  - May need separate CSS fix in message-list component
+- [x] **BUG-05**: Messages render cramped on left side of mobile viewport — **FIXED**
+  - Added flex-wrap to name/timestamp row for narrow screens
+  - Name truncates on mobile (max-w-[150px]), full on desktop
+  - Timestamp uses whitespace-nowrap to prevent breaking
 - [x] **BUG-06**: Mobile nav bar should be at top instead of bottom — **FIXED**
   - New top header with hamburger menu, page title, notifications
   - Sidebar slides in from left as drawer
-- [ ] **BUG-07**: Typing bar has excessive whitespace below input
+- [x] **BUG-07**: Typing bar has excessive whitespace below input — **LIKELY FIXED**
+  - Removed bottom tab bar (was pb-16 padding for mobile nav)
+  - Now using top header, main content fills to bottom
+  - Needs testing to confirm
 
 ### Discovered Bugs (Phase 38)
 

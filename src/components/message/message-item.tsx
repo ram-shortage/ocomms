@@ -92,8 +92,8 @@ export function MessageItem({
       </div>
 
       <div className="flex-1 min-w-0">
-        <div className="flex items-baseline gap-2">
-          <span className="font-semibold text-foreground">
+        <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+          <span className="font-semibold text-foreground truncate max-w-[150px] sm:max-w-none">
             {message.author?.name || message.author?.email || "Unknown"}
           </span>
           {/* GUST-03: Show guest badge next to name */}
@@ -102,7 +102,7 @@ export function MessageItem({
           {authorStatus?.emoji && (
             <StatusDisplay emoji={authorStatus.emoji} text={authorStatus.text} />
           )}
-          <span className="text-xs text-muted-foreground">
+          <span className="text-xs text-muted-foreground whitespace-nowrap shrink-0">
             {formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })}
           </span>
         </div>

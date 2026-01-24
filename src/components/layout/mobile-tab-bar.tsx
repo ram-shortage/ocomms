@@ -10,6 +10,10 @@ interface MobileTabBarProps {
   workspaceSlug: string;
 }
 
+// NOTE: This component is deprecated. Mobile navigation now uses MobileSidebarDrawer
+// which provides a top header + left-side sidebar drawer.
+// Keeping this file for reference and potential desktop small-screen fallback.
+
 // Primary tabs - reduced to 4 to make room for More button
 const tabs = [
   { href: (slug: string) => `/${slug}`, icon: Home, label: "Home" },
