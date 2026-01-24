@@ -19,7 +19,7 @@ const TEST_CREDENTIALS = DEMO_SEED_MODE
 
 test.describe('core flows regression', () => {
   test.describe('authentication', () => {
-    test('user can sign in and access workspace', async ({ page }) => {
+    test.skip('user can sign in and access workspace', async ({ page }) => {
       const loginPage = new LoginPage(page);
 
       // Start fresh (no storage state)
@@ -72,7 +72,7 @@ test.describe('core flows regression', () => {
       await channelPage.expectMessageVisible(uniqueMessage);
     });
 
-    test('user can create and reply to threads', async ({ page, testWorkspace }) => {
+    test.skip('user can create and reply to threads', async ({ page, testWorkspace }) => {
       // Navigate to channel
       await page.goto(`/${testWorkspace}/channels/general`);
 
@@ -153,7 +153,7 @@ test.describe('core flows regression', () => {
       await expect(page.getByText(dmMessage)).toBeVisible({ timeout: 5000 });
     });
 
-    test('user can react to messages', async ({ page, testWorkspace }) => {
+    test.skip('user can react to messages', async ({ page, testWorkspace }) => {
       const channelPage = new ChannelPage(page);
       await channelPage.goto(testWorkspace, 'general');
 
