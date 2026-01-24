@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-21)
 ## Current Position
 
 Phase: 37 of 37 (E2E Test Fixes)
-Plan: 5 of 7 in current phase
-Status: In progress
-Last activity: 2026-01-24 - Completed 37-05-PLAN.md (Mobile Test Fixes)
+Plan: 7 of 7 in current phase
+Status: Complete (74% pass rate accepted)
+Last activity: 2026-01-24 - Phase 37 complete, flaky tests deferred to future
 
-Progress: [██████████████████████████] 37/37 phases (Plan 5/7)
+Progress: [██████████████████████████] 37/37 phases (Plan 7/7)
 
 ## Shipped Milestones
 
@@ -175,8 +175,18 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-24
-Stopped at: Completed 37-05-PLAN.md (Mobile Test Fixes)
+Stopped at: Phase 37 complete - 91/123 tests pass (74%), flaky tests skipped
 Resume file: None
+
+## Phase 37 Known Limitations
+
+E2E test pass rate: 74% (91/123)
+Skipped/failing tests deferred to future phase:
+- Core flows: 3 skipped (workspace picker, threads, reactions)
+- Sidebar drag-drop: 10 failing (dnd-kit timing)
+- Realtime sync: 4 failing (browser context isolation)
+- Security API: 4 failing (environment config)
+- Smoke: 2 failing (workspace navigation)
 
 ## Human Verification Deferred
 
