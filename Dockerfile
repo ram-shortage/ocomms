@@ -41,6 +41,12 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 
+# Create uploads directory structure for volume mount
+# These directories will be populated when the uploads_data volume is mounted
+RUN mkdir -p ./public/uploads/attachments \
+             ./public/uploads/avatars \
+             ./public/uploads/emoji
+
 # Copy bundled server
 COPY --from=builder /app/dist-server ./
 

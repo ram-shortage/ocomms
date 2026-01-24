@@ -11,9 +11,18 @@ Bug fix milestone. Requirements confirmed through production testing in Phase 38
 
 These bugs were captured prior to production testing:
 
-- [ ] **BUG-01**: Uploads not persisted across container restart (Docker volume missing)
-- [ ] **BUG-02**: Uploaded images return 404 errors
-- [ ] **BUG-03**: Notification enable popup stays on screen after permission granted
+- [x] **BUG-01**: Uploads not persisted across container restart (Docker volume missing) — **FIXED**
+  - Added `uploads_data` volume in docker-compose.yml
+  - Mounted to `/app/public/uploads` in app container
+  - Files now persist across container restarts
+- [x] **BUG-02**: Uploaded images return 404 errors — **FIXED**
+  - Root cause: Same as BUG-01 - ephemeral container filesystem
+  - Created uploads directory structure in Dockerfile for proper volume initialization
+  - Subdirectories: attachments/, avatars/, emoji/
+- [x] **BUG-03**: Notification enable popup stays on screen after permission granted — **FIXED**
+  - Root cause: If permission granted but subscription API failed, popup stayed visible
+  - Added error handling with auto-dismiss after 2 seconds when permission granted
+  - Shows error message before dismissing so user knows to retry in Settings
 - [x] **BUG-04**: No direct channels access from mobile nav bar — **FIXED**
   - Replaced bottom tab bar with top header + sidebar drawer
   - Hamburger menu opens full sidebar with channels, DMs, search, settings
