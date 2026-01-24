@@ -2,7 +2,8 @@ import type { Server, Socket } from "socket.io";
 import { db } from "@/db";
 import { messages, channelMembers, conversationParticipants, channels, conversations, fileAttachments, members, guestChannelAccess } from "@/db/schema";
 import { eq, and, isNull, sql, inArray } from "drizzle-orm";
-import { RateLimiterMemory } from "rate-limiter-flexible";
+import { RateLimiterRedis, RateLimiterMemory } from "rate-limiter-flexible";
+import type { RateLimiterAbstract } from "rate-limiter-flexible";
 import { getRoomName } from "../rooms";
 import type { ClientToServerEvents, ServerToClientEvents, SocketData, Message, Attachment } from "@/lib/socket-events";
 import { users } from "@/db/schema";
@@ -13,6 +14,7 @@ import { sendPushToUser, type PushPayload } from "@/lib/push";
 import { extractUrls } from "@/lib/url-extractor";
 import { linkPreviewQueue } from "@/server/queue/link-preview.queue";
 import { sanitizeUnicode } from "@/lib/sanitize";
+import { createRedisClient } from "@/server/redis";
 
 /**
  * Check if user is a guest and if so, verify access and soft-lock status
@@ -88,11 +90,37 @@ async function checkGuestAccess(
 const MAX_MESSAGE_LENGTH = 10_000;
 
 // SECFIX-06: Rate limiter - 10 messages per 60 seconds per user
-const messageRateLimiter = new RateLimiterMemory({
-  points: 10,
-  duration: 60,
-  keyPrefix: "message",
-});
+// UPGRADE: Use Redis for multi-instance consistency in production deployments
+// Falls back to in-memory rate limiting if Redis is unavailable
+let messageRateLimiter: RateLimiterAbstract;
+
+function initializeRateLimiter(): RateLimiterAbstract {
+  try {
+    const redisClient = createRedisClient();
+    console.log("[Socket.IO] Using Redis-backed rate limiting for multi-instance consistency");
+    return new RateLimiterRedis({
+      storeClient: redisClient,
+      points: 10,
+      duration: 60,
+      keyPrefix: "socket:msg:rl",
+    });
+  } catch (error) {
+    console.warn("[Socket.IO] Redis unavailable, using in-memory rate limiting (single-instance only)", error);
+    return new RateLimiterMemory({
+      points: 10,
+      duration: 60,
+      keyPrefix: "message",
+    });
+  }
+}
+
+// Initialize lazily to ensure Redis connection settings are available
+function getRateLimiter(): RateLimiterAbstract {
+  if (!messageRateLimiter) {
+    messageRateLimiter = initializeRateLimiter();
+  }
+  return messageRateLimiter;
+}
 
 type SocketIOServer = Server<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
 type SocketWithData = Socket<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>;
@@ -112,9 +140,9 @@ async function handleSendMessage(
   const { targetId, targetType, content, attachmentIds } = data;
 
   try {
-    // SECFIX-06: Rate limit check
+    // SECFIX-06: Rate limit check (uses Redis for multi-instance consistency)
     try {
-      await messageRateLimiter.consume(userId);
+      await getRateLimiter().consume(userId);
     } catch (rejRes: unknown) {
       const rateLimitResult = rejRes as { msBeforeNext: number };
       socket.emit("error", {
