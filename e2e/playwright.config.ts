@@ -64,10 +64,13 @@ export default defineConfig({
   ],
 
   // Web server configuration - starts Docker Compose test stack
+  // NOTE: The test containers should already be running with seeded data.
+  // Set CI=true to force starting fresh containers, otherwise reuses existing.
   webServer: {
-    command: 'docker compose -f docker-compose.test.yml up',
+    command: 'docker compose -f ../docker-compose.test.yml up -d && sleep 10',
     url: 'http://localhost:3000/api/health',
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: true, // Always reuse if server is already running
     timeout: 120 * 1000, // 2 minutes for container build/start
+    cwd: __dirname, // Run from e2e directory
   },
 });

@@ -50,7 +50,10 @@ export const auth = betterAuth({
     : [],
   advanced: {
     // Use __Secure- cookie prefix in production (requires HTTPS)
-    useSecureCookies: process.env.NODE_ENV === "production",
+    // FORCE_INSECURE_COOKIES can be set to "true" for E2E testing over HTTP
+    useSecureCookies:
+      process.env.NODE_ENV === "production" &&
+      process.env.FORCE_INSECURE_COOKIES !== "true",
   },
   emailAndPassword: {
     enabled: true,
@@ -78,7 +81,10 @@ export const auth = betterAuth({
     },
   },
   rateLimit: {
-    enabled: true,
+    // Disable rate limiting in development or when DISABLE_RATE_LIMIT is set
+    enabled:
+      process.env.NODE_ENV === "production" &&
+      process.env.DISABLE_RATE_LIMIT !== "true",
     window: 60, // seconds
     max: 100, // requests per window
     customRules: {

@@ -79,16 +79,18 @@ export function WorkspaceSwitcher({
         <Button
           variant="ghost"
           className="flex items-center gap-2 font-bold hover:bg-accent px-2 h-auto py-1"
+          aria-label={`Switch workspace, current: ${currentWorkspace.name}`}
+          data-testid="workspace-switcher-button"
         >
           <span className="truncate max-w-[150px]">{currentWorkspace.name}</span>
           <ChevronDown className="h-4 w-4 flex-shrink-0" />
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="start" className="w-80">
+      <DropdownMenuContent align="start" className="w-80" data-testid="workspace-switcher-dropdown">
         <DropdownMenuLabel>Your Workspaces</DropdownMenuLabel>
 
-        <div className="py-1">
+        <div className="py-1" data-testid="workspace-list">
           {workspaces.map((workspace) => (
             <WorkspaceCard
               key={workspace.id}

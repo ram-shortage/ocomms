@@ -17,6 +17,10 @@ services:
       - BETTER_AUTH_URL=http://localhost:3000
       - NEXT_PUBLIC_APP_URL=http://localhost:3000
       - NODE_ENV=production
+      # Force insecure cookies for E2E testing over HTTP
+      - FORCE_INSECURE_COOKIES=true
+      # Disable rate limiting for E2E testing
+      - DISABLE_RATE_LIMIT=true
       # Email disabled in test environment
       - SMTP_HOST=
       - SMTP_PORT=
@@ -54,6 +58,8 @@ services:
 
   redis:
     image: redis:7-alpine
+    ports:
+      - "6380:6379"
     command: redis-server
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]

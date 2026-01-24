@@ -89,7 +89,10 @@ async function safeFetch(url: string): Promise<Response> {
     const size = parseInt(contentLength, 10);
     if (!isNaN(size) && size > MAX_RESPONSE_SIZE_BYTES) {
       // Consume body to properly close connection
-      response.body?.cancel();
+      // Cast needed for compatibility across different ReadableStream types
+      if (response.body && "cancel" in response.body) {
+        await (response.body as unknown as { cancel(): Promise<void> }).cancel();
+      }
       throw new Error(`Response too large: ${size} bytes (max ${MAX_RESPONSE_SIZE_BYTES})`);
     }
   }
