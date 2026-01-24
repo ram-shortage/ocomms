@@ -24,7 +24,7 @@ Key findings:
 
 The sidebar already includes navigation links for /threads and /search:
 
-**File:** `/Users/brett/Documents/code/ocomms/src/components/workspace/workspace-sidebar.tsx`
+**File:** `src/components/workspace/workspace-sidebar.tsx`
 ```typescript
 {/* Quick links */}
 <div className="px-3 py-1">
@@ -52,14 +52,14 @@ The sidebar already includes navigation links for /threads and /search:
 ```
 
 Both pages exist:
-- `/Users/brett/Documents/code/ocomms/src/app/(workspace)/[workspaceSlug]/threads/page.tsx`
-- `/Users/brett/Documents/code/ocomms/src/app/(workspace)/[workspaceSlug]/search/page.tsx`
+- `src/app/(workspace)/[workspaceSlug]/threads/page.tsx`
+- `src/app/(workspace)/[workspaceSlug]/search/page.tsx`
 
 **Status:** No work needed. Verify requirement is met.
 
 ### UIPOL-02: Logout Button
 
-**Existing component:** `/Users/brett/Documents/code/ocomms/src/components/auth/logout-button.tsx`
+**Existing component:** `src/components/auth/logout-button.tsx`
 ```typescript
 "use client";
 
@@ -178,7 +178,7 @@ Use existing README.md patterns for consistency.
 
 ### UIPOL-06: HSTS Configuration
 
-**Current value:** `/Users/brett/Documents/code/ocomms/nginx/conf.d/default.conf`
+**Current value:** `nginx/conf.d/default.conf`
 ```nginx
 add_header Strict-Transport-Security "max-age=3600" always;
 ```
@@ -468,12 +468,12 @@ Recommended task sequencing:
 ## Sources
 
 ### Primary (HIGH confidence)
-- `/Users/brett/Documents/code/ocomms/src/components/workspace/workspace-sidebar.tsx` - Direct code inspection
-- `/Users/brett/Documents/code/ocomms/src/components/auth/logout-button.tsx` - Direct code inspection
-- `/Users/brett/Documents/code/ocomms/src/app/api/admin/audit-logs/route.ts` - Direct code inspection
-- `/Users/brett/Documents/code/ocomms/src/app/api/admin/export/route.ts` - Direct code inspection
-- `/Users/brett/Documents/code/ocomms/nginx/conf.d/default.conf` - Direct code inspection
-- `/Users/brett/Documents/code/ocomms/README.md` - Documentation patterns
+- `src/components/workspace/workspace-sidebar.tsx` - Direct code inspection
+- `src/components/auth/logout-button.tsx` - Direct code inspection
+- `src/app/api/admin/audit-logs/route.ts` - Direct code inspection
+- `src/app/api/admin/export/route.ts` - Direct code inspection
+- `nginx/conf.d/default.conf` - Direct code inspection
+- `README.md` - Documentation patterns
 
 ### Secondary (MEDIUM confidence)
 - Existing settings page patterns from codebase

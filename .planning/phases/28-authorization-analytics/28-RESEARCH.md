@@ -347,7 +347,7 @@ Verified patterns from existing codebase:
 
 ### Admin Role Check (Existing Pattern)
 ```typescript
-// Source: /Users/brett/Documents/code/ocomms/src/lib/actions/admin.ts
+// Source: src/lib/actions/admin.ts
 const callerMembership = await db.query.members.findFirst({
   where: and(
     eq(members.userId, session.user.id),
@@ -362,7 +362,7 @@ if (!callerMembership || (callerMembership.role !== "owner" && callerMembership.
 
 ### BullMQ Queue Pattern (Existing Pattern)
 ```typescript
-// Source: /Users/brett/Documents/code/ocomms/src/server/queue/status-expiration.queue.ts
+// Source: src/server/queue/status-expiration.queue.ts
 import { Queue } from "bullmq";
 import { getQueueConnection } from "./connection";
 
@@ -389,7 +389,7 @@ export const guestExpirationQueue = new Queue<GuestExpirationJobData>(
 
 ### Extend Mention Parsing for Groups
 ```typescript
-// Source: Extending /Users/brett/Documents/code/ocomms/src/lib/mentions.ts
+// Source: Extending src/lib/mentions.ts
 export interface ParsedMention {
   type: "user" | "channel" | "here" | "group"; // Add "group"
   value: string;

@@ -1230,7 +1230,7 @@ volumes:
 - [Next.js File Uploads](https://www.pronextjs.dev/next-js-file-uploads-server-side-solutions)
 
 #### Project Codebase (HIGH confidence)
-- `/Users/brett/Documents/code/ocomms/src/app/api/upload/avatar/route.ts` - Existing upload pattern
-- `/Users/brett/Documents/code/ocomms/src/app/globals.css` - Existing CSS variables
-- `/Users/brett/Documents/code/ocomms/src/middleware.ts` - Existing auth bypass pattern
-- `/Users/brett/Documents/code/ocomms/src/db/schema/message.ts` - Existing schema patterns
+- `src/app/api/upload/avatar/route.ts` - Existing upload pattern
+- `src/app/globals.css` - Existing CSS variables
+- `src/middleware.ts` - Existing auth bypass pattern
+- `src/db/schema/message.ts` - Existing schema patterns
