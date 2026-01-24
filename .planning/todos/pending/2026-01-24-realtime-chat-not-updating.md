@@ -9,18 +9,21 @@ files:
 
 ## Problem
 
-Messages sent by other users are not appearing in realtime. Users need to refresh the page to see new messages.
+Sender's screen not updating after sending messages. Recipient sees messages fine.
+Intermittent - works after refresh, then stops working.
 
-Possible causes:
-- Socket.IO connection not establishing
-- Socket events not being emitted/received
-- Redis pub/sub not configured correctly for multi-instance
-- Client not subscribing to correct rooms/channels
+Root cause identified: `failed-to-find-server-action` errors in Next.js.
+- Server action IDs on client don't match server expectations
+- Also seeing: `Failed to fetch reminder count: An unexpected response`
+
+Socket.IO is working correctly:
+- Redis adapter connected
+- Users joining rooms properly
+- Messages being broadcast (recipient receives them)
 
 ## Solution
 
-TBD - Need to debug:
-1. Check browser console for socket connection errors
-2. Check server logs for socket events
-3. Verify Redis is running and accessible
-4. Test with `docker compose logs -f app | grep -i socket`
+Likely a Next.js 15 server action manifest issue. Try:
+1. Full rebuild with cache clear: `docker compose build --no-cache app`
+2. Check if `.next/server/app` contains action manifests
+3. May need to pin Next.js version or investigate standalone build config
