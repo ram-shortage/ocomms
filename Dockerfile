@@ -60,6 +60,7 @@ COPY --from=builder /app/node_modules/dompurify ./node_modules/dompurify
 
 # Copy better-auth for seed scripts
 COPY --from=builder /app/node_modules/better-auth ./node_modules/better-auth
+COPY --from=builder /app/node_modules/@better-auth ./node_modules/@better-auth
 COPY --from=builder /app/node_modules/@noble ./node_modules/@noble
 
 # Set ownership
