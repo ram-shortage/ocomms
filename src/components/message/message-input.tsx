@@ -220,12 +220,13 @@ export function MessageInput({ targetId, targetType, members = [], groups = [], 
       setStagedAttachments([]);
       // TYPE-04: Stop typing immediately on send
       stopTyping();
-      // Keep focus on textarea for continued typing
-      textareaRef.current?.focus();
     } catch (err) {
       console.error("[MessageInput] Failed to queue message:", err);
     } finally {
       setIsSending(false);
+      // Keep focus on textarea for continued typing
+      // Use setTimeout to ensure textarea is re-enabled after state update
+      setTimeout(() => textareaRef.current?.focus(), 0);
     }
   }, [content, hasContent, isSending, queueAndSend, stagedAttachments, stopTyping]);
 
