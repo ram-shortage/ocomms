@@ -187,7 +187,7 @@ export function ChannelHeader({
   );
 
   return (
-    <header className="border-b px-4 py-3">
+    <header className="hidden sm:block border-b px-4 py-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3 min-w-0 flex-1">
           <div className="flex items-center gap-1.5">
@@ -199,8 +199,8 @@ export function ChannelHeader({
             <h1 className="font-semibold text-lg truncate">{channel.name}</h1>
           </div>
 
-          {/* Topic - inline editable (hidden on mobile) */}
-          <div className="hidden sm:block flex-1 min-w-0">
+          {/* Topic - inline editable */}
+          <div className="flex-1 min-w-0">
             {isEditingTopic ? (
               <div className="flex items-center gap-2">
                 <Input

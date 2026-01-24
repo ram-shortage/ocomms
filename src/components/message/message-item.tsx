@@ -148,9 +148,9 @@ export function MessageItem({
         )}
       </div>
 
-      {/* Action buttons - visible on hover for non-deleted messages */}
+      {/* Action buttons - visible on hover for non-deleted messages, hidden on mobile */}
       {!isDeleted && (
-        <div className="flex items-center gap-1">
+        <div className="hidden sm:flex items-center gap-1 shrink-0">
           <ReactionPicker onSelectEmoji={(emoji) => onToggleReaction(message.id, emoji)} customEmojis={customEmojis} />
           {/* RMND-01: Remind me button - highlighted if reminder exists */}
           <ReminderMenuItem messageId={message.id} hasReminder={hasReminder} />
