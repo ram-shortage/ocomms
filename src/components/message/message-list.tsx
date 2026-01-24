@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, useCallback } from "react";
 import { useSocket } from "@/lib/socket-client";
 import { useRouter } from "next/navigation";
 import { MessageItem } from "./message-item";
@@ -108,13 +108,18 @@ export function MessageList({
     fetchReminderMessageIds();
   }, []);
 
-  // Scroll to bottom when messages or pending messages change
-  // Use instant scroll on initial load to avoid visible animation
-  useEffect(() => {
+  // Initial scroll to bottom - use useLayoutEffect to scroll before browser paints
+  // This prevents the visible "jump" from top to bottom
+  useLayoutEffect(() => {
     if (isInitialLoad.current) {
       bottomRef.current?.scrollIntoView({ behavior: "instant" });
       isInitialLoad.current = false;
-    } else {
+    }
+  }, []);
+
+  // Smooth scroll for new messages after initial load
+  useEffect(() => {
+    if (!isInitialLoad.current) {
       bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages, pendingMessages]);
