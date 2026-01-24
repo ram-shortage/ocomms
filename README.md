@@ -49,7 +49,7 @@ Organizations increasingly need real-time communication tools, but cloud-hosted 
 
 ### Rich Content
 - Link previews with Open Graph unfurling
-- Custom emoji upload (PNG, JPG, GIF, SVG)
+- Custom emoji upload (PNG, JPG, GIF)
 - File uploads up to 25MB (drag-drop, clipboard paste)
 - Image inline previews and download cards
 - Channel notes (shared markdown per channel)
@@ -144,7 +144,7 @@ docker compose exec app npm run db:migrate
 - Domain name with DNS A record pointing to server
 - Ports 80 and 443 open
 
-For detailed deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md).
+For detailed deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md). For a complete feature reference, see [docs/FEATURES.md](docs/FEATURES.md).
 
 ## Development
 
