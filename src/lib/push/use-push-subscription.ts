@@ -93,30 +93,22 @@ export function usePushSubscription(): UsePushSubscriptionReturn {
   }, [isSupported]);
 
   const subscribe = useCallback(async (): Promise<boolean> => {
-    if (!isSupported) {
-      console.error("[Push] Not supported on this device");
-      return false;
-    }
+    if (!isSupported) return false;
 
     setIsLoading(true);
     try {
       // Request notification permission
-      console.log("[Push] Requesting notification permission...");
       const permission = await Notification.requestPermission();
       setPermissionState(permission as PushPermissionState);
 
       if (permission !== "granted") {
-        console.log("[Push] Permission not granted:", permission);
         return false;
       }
-      console.log("[Push] Permission granted");
 
       // Get VAPID public key from server
-      console.log("[Push] Fetching VAPID public key...");
       const vapidResponse = await fetch("/api/push/vapid-public");
       if (!vapidResponse.ok) {
-        const errorText = await vapidResponse.text();
-        console.error("[Push] Failed to get VAPID key:", vapidResponse.status, errorText);
+        console.error("[Push] Failed to get VAPID key");
         return false;
       }
       const { publicKey, error: vapidError } = await vapidResponse.json();
@@ -124,23 +116,17 @@ export function usePushSubscription(): UsePushSubscriptionReturn {
         console.error("[Push] VAPID key response error:", vapidError);
         return false;
       }
-      console.log("[Push] Got VAPID key, length:", publicKey.length);
 
       // Get service worker registration
-      console.log("[Push] Getting service worker registration...");
       const registration = await navigator.serviceWorker.ready;
-      console.log("[Push] Service worker ready");
 
       // Subscribe to push
-      console.log("[Push] Subscribing to push manager...");
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(publicKey),
       });
-      console.log("[Push] Push subscription created");
 
       // Send subscription to server
-      console.log("[Push] Sending subscription to server...");
       const response = await fetch("/api/push/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -148,14 +134,11 @@ export function usePushSubscription(): UsePushSubscriptionReturn {
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error("[Push] Failed to save subscription:", response.status, errorText);
-        // Unsubscribe if server storage failed
+        console.error("[Push] Failed to save subscription to server");
         await subscription.unsubscribe();
         return false;
       }
 
-      console.log("[Push] Subscription saved successfully");
       setIsSubscribed(true);
       return true;
     } catch (error) {
