@@ -29,8 +29,8 @@ test.describe('core flows regression', () => {
       // Should redirect to workspace (or workspace picker)
       await expect(page).toHaveURL(/\/[a-z0-9-]+/, { timeout: 30000 });
 
-      // Should see workspace content (sidebar with nav)
-      await expect(page.locator('nav')).toBeVisible();
+      // Should see workspace content (sidebar is an aside element)
+      await expect(page.locator('aside')).toBeVisible();
     });
   });
 
@@ -64,52 +64,67 @@ test.describe('core flows regression', () => {
       // Navigate to channel
       await page.goto(`/${testWorkspace}/channels/general`);
 
-      // Wait for messages to load
-      const messageList = page.getByRole('list', { name: /messages/i });
-      await expect(messageList).toBeVisible();
+      // Wait for messages to load - messages are in a container with py-4 class
+      // Each message is a div.group with flex items-start gap-3
+      const messagesContainer = page.locator('.py-4').first();
+      await expect(messagesContainer).toBeVisible({ timeout: 10000 });
 
-      // Find a message with the thread reply button
-      const message = page.locator('[data-message-id]').first();
-      await expect(message).toBeVisible();
+      // Find a message item (message items have group class and flex layout)
+      const message = messagesContainer.locator('div.group').first();
+      await expect(message).toBeVisible({ timeout: 5000 });
 
       // Hover to reveal action buttons
       await message.hover();
 
-      // Click thread/reply button
-      const replyButton = message.getByRole('button', { name: /thread|reply/i });
+      // Click thread/reply button - has sr-only text "Reply in thread"
+      const replyButton = message.getByRole('button', { name: /reply in thread/i });
       await replyButton.click();
 
-      // Thread panel should open
-      const threadPanel = page.locator('[data-testid="thread-panel"]');
-      await expect(threadPanel).toBeVisible();
+      // Thread panel is a Sheet that opens on the right side
+      // The Sheet has role="dialog" and contains "Thread" title
+      const threadPanel = page.getByRole('dialog');
+      await expect(threadPanel).toBeVisible({ timeout: 5000 });
+      await expect(threadPanel.getByText('Thread')).toBeVisible();
 
       // Send a reply in the thread
-      const threadInput = threadPanel.getByPlaceholder(/reply/i);
+      const threadInput = threadPanel.getByPlaceholder(/reply in thread/i);
       await threadInput.fill(`Thread reply ${Date.now()}`);
       await threadInput.press('Enter');
 
-      // Reply should appear in thread
-      await expect(threadPanel.locator('[data-message-id]')).toHaveCount(2, { timeout: 5000 });
+      // Reply should appear in thread - check for reply count text
+      await expect(threadPanel.getByText(/1 reply/i)).toBeVisible({ timeout: 5000 });
     });
 
     test('user can send direct messages', async ({ page, testWorkspace }) => {
-      // Navigate to DMs
-      await page.goto(`/${testWorkspace}/dm`);
+      // Navigate to workspace first to get sidebar with DM list
+      await page.goto(`/${testWorkspace}`);
 
-      // Find or start a DM conversation
-      // Look for existing DM or start new one
-      const dmLink = page.getByRole('link', { name: /bob/i }).first();
+      // Wait for sidebar to load
+      await expect(page.locator('aside')).toBeVisible({ timeout: 10000 });
 
-      if (await dmLink.isVisible()) {
+      // Find an existing DM conversation with Bob in the sidebar
+      // DM links in sidebar contain user names
+      const dmLink = page.locator('aside').getByRole('link', { name: /bob/i }).first();
+
+      if (await dmLink.isVisible({ timeout: 5000 }).catch(() => false)) {
         await dmLink.click();
       } else {
-        // Start new DM - click the "New message" or "+" button
-        const newDmButton = page.getByRole('button', { name: /new message|start|compose/i });
-        if (await newDmButton.isVisible()) {
+        // Start new DM - look for the "New message" button (sr-only text)
+        const sidebar = page.locator('aside');
+        const newDmButton = sidebar.getByRole('button', { name: /new message/i }).first();
+        if (await newDmButton.isVisible({ timeout: 2000 }).catch(() => false)) {
           await newDmButton.click();
-          // Select Bob from the list
-          const userSelect = page.getByRole('option', { name: /bob/i });
-          await userSelect.click();
+
+          // Dialog opens - find and select Bob from the member list
+          const dialog = page.getByRole('dialog');
+          await expect(dialog).toBeVisible({ timeout: 5000 });
+
+          // Members are shown as labels with checkboxes
+          const bobLabel = dialog.locator('label').filter({ hasText: /bob/i }).first();
+          await bobLabel.click();
+
+          // Click Start Conversation button
+          await dialog.getByRole('button', { name: /start conversation/i }).click();
         }
       }
 
@@ -130,41 +145,52 @@ test.describe('core flows regression', () => {
       const channelPage = new ChannelPage(page);
       await channelPage.goto(testWorkspace, 'general');
 
-      // Find a message
-      const message = page.locator('[data-message-id]').first();
-      await expect(message).toBeVisible();
+      // Wait for messages container to load
+      const messagesContainer = page.locator('.py-4').first();
+      await expect(messagesContainer).toBeVisible({ timeout: 10000 });
+
+      // Find a message item
+      const message = messagesContainer.locator('div.group').first();
+      await expect(message).toBeVisible({ timeout: 5000 });
 
       // Hover to show reaction button
       await message.hover();
 
-      // Click react button
-      const reactButton = message.getByRole('button', { name: /react|emoji/i });
+      // Click react button (has sr-only text "Add reaction")
+      const reactButton = message.getByRole('button', { name: /add reaction/i });
       await reactButton.click();
 
-      // Emoji picker should appear
-      const emojiPicker = page.locator('em-emoji-picker, [data-testid="emoji-picker"]');
-      await expect(emojiPicker).toBeVisible();
+      // Emoji picker should appear (em-emoji-picker is the emoji-mart component)
+      const emojiPicker = page.locator('em-emoji-picker');
+      await expect(emojiPicker).toBeVisible({ timeout: 5000 });
 
-      // Click a common emoji (thumbs up)
-      // emoji-mart structure: look for the frequently used or search
-      const thumbsUp = page.locator('[data-emoji-set] button[aria-label*="thumbs"], [title*="thumbs"]').first();
-      if (await thumbsUp.isVisible()) {
+      // Click a common emoji - use the skin-tone neutral emoji button
+      // emoji-mart renders buttons with data-emoji attribute
+      const thumbsUp = page.locator('em-emoji-picker button[aria-label*="thumbs up"]').first();
+      if (await thumbsUp.isVisible({ timeout: 2000 }).catch(() => false)) {
         await thumbsUp.click();
       } else {
-        // Try clicking first emoji in the grid
-        const firstEmoji = page.locator('em-emoji-picker button').first();
+        // Search for thumbs up
+        const searchInput = page.locator('em-emoji-picker input[type="search"]');
+        if (await searchInput.isVisible({ timeout: 2000 }).catch(() => false)) {
+          await searchInput.fill('thumbs');
+          await page.waitForTimeout(500); // Wait for search results
+        }
+        // Click first emoji in grid
+        const firstEmoji = page.locator('em-emoji-picker button[data-index]').first();
         await firstEmoji.click();
       }
 
       // Reaction should appear on the message
-      const reaction = message.locator('[data-testid="reaction"]');
-      await expect(reaction).toBeVisible({ timeout: 5000 });
+      // Reactions are rendered as buttons with rounded-full class and emoji content
+      const reactionButton = message.locator('button.rounded-full');
+      await expect(reactionButton).toBeVisible({ timeout: 5000 });
 
       // Click reaction again to toggle/remove
-      await reaction.click();
+      await reactionButton.click();
 
-      // Reaction should be removed or count decreased
-      await expect(reaction).not.toBeVisible({ timeout: 5000 });
+      // Reaction should be removed
+      await expect(reactionButton).not.toBeVisible({ timeout: 5000 });
     });
   });
 
@@ -173,27 +199,32 @@ test.describe('core flows regression', () => {
       // Navigate to search
       await page.goto(`/${testWorkspace}/search`);
 
-      // Search input should be visible
-      const searchInput = page.getByPlaceholder(/search/i);
-      await expect(searchInput).toBeVisible();
+      // Search page title should be visible
+      await expect(page.getByRole('heading', { name: /search/i })).toBeVisible();
 
-      // Enter search query (use a common word that should exist)
-      await searchInput.fill('test');
+      // Search input should be visible (look for input with search placeholder)
+      const searchInput = page.locator('input[placeholder*="earch"]');
+      await expect(searchInput).toBeVisible({ timeout: 5000 });
+
+      // Enter search query (use common words that should exist in demo-seed)
+      await searchInput.fill('hello');
       await searchInput.press('Enter');
 
-      // Wait for results (or "no results" message)
-      await page.waitForLoadState('networkidle');
+      // Wait for navigation/URL update (search uses URL params)
+      await page.waitForURL(/[?&]q=/);
 
-      // Should show results section or empty state
-      const resultsOrEmpty = page.getByText(/result|found|no.*match/i);
+      // Should show results count or "No messages found" message
+      // Results page shows either "X results for" or "No messages found for"
+      const resultsOrEmpty = page.getByText(/result|no messages found/i);
       await expect(resultsOrEmpty.first()).toBeVisible({ timeout: 10000 });
 
-      // If results exist, clicking one should navigate
-      const result = page.locator('[data-testid="search-result"], [class*="search-result"]').first();
-      if (await result.isVisible()) {
-        await result.click();
-        // Should navigate to the message location
-        await expect(page).not.toHaveURL(/\/search$/);
+      // Check if results exist - they're rendered as Card components within Links
+      const resultCards = page.locator('a:has(.rounded-xl)'); // Card component
+      if (await resultCards.count() > 0) {
+        const firstResult = resultCards.first();
+        await firstResult.click();
+        // Should navigate to the channel/DM location (not search page)
+        await expect(page).not.toHaveURL(/\/search/);
       }
     });
   });
@@ -204,8 +235,8 @@ test.describe('core flows regression', () => {
 
       await page.goto(`/${testWorkspace}`);
 
-      // Wait for sidebar to load
-      await expect(page.locator('nav')).toBeVisible();
+      // Wait for sidebar to load (sidebar is an aside element)
+      await expect(page.locator('aside')).toBeVisible();
 
       // Find and click a channel
       const generalChannel = sidebar.getChannel('general');

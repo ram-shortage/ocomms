@@ -18,9 +18,11 @@ export class ChannelPage {
   constructor(page: Page) {
     this.page = page;
     this.messageInput = page.getByPlaceholder(/message/i);
-    this.messageList = page.getByRole('list', { name: /messages/i });
+    // Message list is a container div, not a semantic list element
+    this.messageList = page.locator('.py-4').first();
     this.sendButton = page.getByRole('button', { name: /send/i });
-    this.channelHeader = page.getByRole('heading', { level: 1 });
+    // Channel header is within header > div > div structure
+    this.channelHeader = page.locator('header h1');
     this.typingIndicator = page.locator('[data-testid="typing-indicator"]');
   }
 
@@ -59,9 +61,10 @@ export class ChannelPage {
 
   /**
    * Get a message element by its text content.
+   * Messages are div.group elements within the .py-4 container
    */
   getMessage(text: string) {
-    return this.page.locator('[data-message-id]').filter({ hasText: text });
+    return this.messageList.locator('div.group').filter({ hasText: text });
   }
 
   /**
@@ -70,10 +73,11 @@ export class ChannelPage {
   async addReaction(messageText: string, emoji: string) {
     const message = this.getMessage(messageText);
     await message.hover();
-    const reactionButton = message.getByRole('button', { name: /react/i });
+    // Reaction button has sr-only text "Add reaction"
+    const reactionButton = message.getByRole('button', { name: /add reaction/i });
     await reactionButton.click();
-    // Click the emoji in the picker
-    await this.page.getByRole('button', { name: emoji }).click();
+    // Click the emoji in the picker (emoji-mart)
+    await this.page.locator('em-emoji-picker button').filter({ hasText: emoji }).first().click();
   }
 
   /**
