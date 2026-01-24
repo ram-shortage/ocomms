@@ -202,16 +202,22 @@ export async function POST() {
     }
 
     // 5. Get notifications for org members
+    // SECURITY FIX: Only include notifications from THIS organization's channels/conversations
+    // Must use explicit Set lookups to prevent cross-organization data leakage
+    const channelIdSet = new Set(channelIds);
+    const conversationIdSet = new Set(conversationIds);
+
     const allNotifications: (typeof notifications.$inferSelect)[] = [];
     for (const member of orgMembers) {
       const userNotifications = await db.query.notifications.findMany({
         where: eq(notifications.userId, member.userId),
       });
-      // Filter to only notifications for this org's channels/conversations
+      // Filter to ONLY notifications for this org's channels/conversations
+      // Both conditions require explicit membership in org's channel/conversation sets
       const orgNotifications = userNotifications.filter(
         (n) =>
-          (n.channelId && channelIds.includes(n.channelId)) ||
-          (n.conversationId && conversationIds.includes(n.conversationId))
+          (n.channelId !== null && channelIdSet.has(n.channelId)) ||
+          (n.conversationId !== null && conversationIdSet.has(n.conversationId))
       );
       allNotifications.push(...orgNotifications);
     }
