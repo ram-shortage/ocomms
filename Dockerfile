@@ -19,7 +19,7 @@ COPY . .
 RUN npm run build
 RUN npx esbuild src/server/index.ts --bundle --platform=node --target=node22 \
     --outfile=dist-server/index.js --minify --sourcemap \
-    --external:next --external:sharp --external:lightningcss --external:isomorphic-dompurify
+    --external:next --external:sharp --external:lightningcss --external:isomorphic-dompurify --external:web-push
 RUN npx esbuild ./scripts/migrate.ts --bundle --platform=node --target=node22 \
     --outfile=dist-server/migrate.mjs --format=esm --minify \
     --external:postgres --external:drizzle-orm
@@ -65,6 +65,20 @@ COPY --from=builder /app/node_modules/drizzle-orm ./node_modules/drizzle-orm
 # Copy isomorphic-dompurify and dependencies (external to esbuild)
 COPY --from=builder /app/node_modules/isomorphic-dompurify ./node_modules/isomorphic-dompurify
 COPY --from=builder /app/node_modules/dompurify ./node_modules/dompurify
+
+# Copy web-push for push notifications (external to esbuild)
+COPY --from=builder /app/node_modules/web-push ./node_modules/web-push
+COPY --from=builder /app/node_modules/asn1.js ./node_modules/asn1.js
+COPY --from=builder /app/node_modules/bn.js ./node_modules/bn.js
+COPY --from=builder /app/node_modules/minimalistic-assert ./node_modules/minimalistic-assert
+COPY --from=builder /app/node_modules/http_ece ./node_modules/http_ece
+COPY --from=builder /app/node_modules/jwa ./node_modules/jwa
+COPY --from=builder /app/node_modules/jws ./node_modules/jws
+COPY --from=builder /app/node_modules/buffer-equal-constant-time ./node_modules/buffer-equal-constant-time
+COPY --from=builder /app/node_modules/ecdsa-sig-formatter ./node_modules/ecdsa-sig-formatter
+COPY --from=builder /app/node_modules/safe-buffer ./node_modules/safe-buffer
+COPY --from=builder /app/node_modules/inherits ./node_modules/inherits
+COPY --from=builder /app/node_modules/safer-buffer ./node_modules/safer-buffer
 
 
 # Set ownership
