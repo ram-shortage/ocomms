@@ -21,7 +21,12 @@ These bugs were captured prior to production testing:
 
 ### Discovered Bugs (Phase 38)
 
-*To be populated during production testing walkthrough*
+- [x] **BUG-08**: Session lost during navigation (CRITICAL - INTERMITTENT) — **FIXED**
+  - Root cause: Middleware fail-closed on ANY fetch error (timeout, network, 5xx)
+  - Fix applied to `src/middleware.ts`:
+    1. Added 5s fetch timeout with retry (was infinite timeout)
+    2. Only logout on confirmed invalid sessions (401/403, empty user)
+    3. Allow through on transient errors (network, 5xx, Redis issues)
 
 ## Deferred
 
