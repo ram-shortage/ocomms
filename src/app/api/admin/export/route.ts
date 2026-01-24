@@ -2,18 +2,15 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { db } from "@/db";
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { auditLog, AuditEventType, getClientIP } from "@/lib/audit-logger";
 import {
   organizations,
   members,
-  users,
   profiles,
   channels,
-  channelMembers,
   messages,
   conversations,
-  conversationParticipants,
   reactions,
   pinnedMessages,
   notifications,
@@ -105,15 +102,13 @@ export async function POST() {
       },
     });
 
-    // Get profiles for each member
+    // PERF FIX: Batch query for profiles instead of N+1
     const memberUserIds = orgMembers.map((m) => m.userId);
-    const allProfiles: (typeof profiles.$inferSelect)[] = [];
-    for (const userId of memberUserIds) {
-      const profile = await db.query.profiles.findFirst({
-        where: eq(profiles.userId, userId),
-      });
-      if (profile) allProfiles.push(profile);
-    }
+    const allProfiles = memberUserIds.length > 0
+      ? await db.query.profiles.findMany({
+          where: inArray(profiles.userId, memberUserIds),
+        })
+      : [];
 
     const membersWithProfiles = orgMembers.map((member) => ({
       ...member,
@@ -121,6 +116,7 @@ export async function POST() {
     }));
 
     // 2. Get channels with members and messages
+    // PERF FIX: Use batched queries instead of N+1
     const orgChannels = await db.query.channels.findMany({
       where: eq(channels.organizationId, organizationId),
       with: {
@@ -128,34 +124,39 @@ export async function POST() {
       },
     });
 
-    const channelsWithMessages = [];
-    let totalMessages = 0;
-    for (const channel of orgChannels) {
-      const channelMessages = await db.query.messages.findMany({
-        where: eq(messages.channelId, channel.id),
-      });
-      totalMessages += channelMessages.length;
+    // Get all channel IDs for batch queries
+    const channelIds = orgChannels.map((c) => c.id);
 
-      // Get reactions for these messages
-      const messageIds = channelMessages.map((m) => m.id);
-      const messageReactions: (typeof reactions.$inferSelect)[] = [];
-      for (const messageId of messageIds) {
-        const reacts = await db.query.reactions.findMany({
-          where: eq(reactions.messageId, messageId),
-        });
-        messageReactions.push(...reacts);
-      }
+    // Batch query: all channel messages at once
+    const allChannelMessages = channelIds.length > 0
+      ? await db.query.messages.findMany({
+          where: inArray(messages.channelId, channelIds),
+        })
+      : [];
+    const totalMessages = allChannelMessages.length;
 
-      channelsWithMessages.push({
+    // Batch query: all reactions for channel messages at once
+    const channelMessageIds = allChannelMessages.map((m) => m.id);
+    const allChannelReactions = channelMessageIds.length > 0
+      ? await db.query.reactions.findMany({
+          where: inArray(reactions.messageId, channelMessageIds),
+        })
+      : [];
+
+    // Group messages by channel and attach reactions
+    const channelsWithMessages = orgChannels.map((channel) => {
+      const channelMessages = allChannelMessages.filter((m) => m.channelId === channel.id);
+      return {
         ...channel,
         messages: channelMessages.map((msg) => ({
           ...msg,
-          reactions: messageReactions.filter((r) => r.messageId === msg.id),
+          reactions: allChannelReactions.filter((r) => r.messageId === msg.id),
         })),
-      });
-    }
+      };
+    });
 
     // 3. Get direct messages (conversations)
+    // PERF FIX: Use batched queries instead of N+1
     const orgConversations = await db.query.conversations.findMany({
       where: eq(conversations.organizationId, organizationId),
       with: {
@@ -164,100 +165,89 @@ export async function POST() {
     });
     const conversationIds = orgConversations.map((c) => c.id);
 
-    const conversationsWithMessages = [];
-    let totalDmMessages = 0;
-    for (const conversation of orgConversations) {
-      const convMessages = await db.query.messages.findMany({
-        where: eq(messages.conversationId, conversation.id),
-      });
-      totalDmMessages += convMessages.length;
+    // Batch query: all conversation messages at once
+    const allConvMessages = conversationIds.length > 0
+      ? await db.query.messages.findMany({
+          where: inArray(messages.conversationId, conversationIds),
+        })
+      : [];
+    const totalDmMessages = allConvMessages.length;
 
-      // Get reactions for these messages
-      const messageIds = convMessages.map((m) => m.id);
-      const messageReactions: (typeof reactions.$inferSelect)[] = [];
-      for (const messageId of messageIds) {
-        const reacts = await db.query.reactions.findMany({
-          where: eq(reactions.messageId, messageId),
-        });
-        messageReactions.push(...reacts);
-      }
+    // Batch query: all reactions for conversation messages at once
+    const convMessageIds = allConvMessages.map((m) => m.id);
+    const allConvReactions = convMessageIds.length > 0
+      ? await db.query.reactions.findMany({
+          where: inArray(reactions.messageId, convMessageIds),
+        })
+      : [];
 
-      conversationsWithMessages.push({
+    // Group messages by conversation and attach reactions
+    const conversationsWithMessages = orgConversations.map((conversation) => {
+      const convMessages = allConvMessages.filter((m) => m.conversationId === conversation.id);
+      return {
         ...conversation,
         messages: convMessages.map((msg) => ({
           ...msg,
-          reactions: messageReactions.filter((r) => r.messageId === msg.id),
+          reactions: allConvReactions.filter((r) => r.messageId === msg.id),
         })),
-      });
-    }
+      };
+    });
 
     // 4. Get pinned messages
-    const channelIds = orgChannels.map((c) => c.id);
-    const allPinnedMessages: (typeof pinnedMessages.$inferSelect)[] = [];
-    for (const channelId of channelIds) {
-      const pins = await db.query.pinnedMessages.findMany({
-        where: eq(pinnedMessages.channelId, channelId),
-      });
-      allPinnedMessages.push(...pins);
-    }
+    // PERF FIX: Single batch query instead of N+1
+    const allPinnedMessages = channelIds.length > 0
+      ? await db.query.pinnedMessages.findMany({
+          where: inArray(pinnedMessages.channelId, channelIds),
+        })
+      : [];
 
     // 5. Get notifications for org members
     // SECURITY FIX: Only include notifications from THIS organization's channels/conversations
     // Must use explicit Set lookups to prevent cross-organization data leakage
+    // PERF FIX: Single batch query for all member notifications, then filter
     const channelIdSet = new Set(channelIds);
     const conversationIdSet = new Set(conversationIds);
 
-    const allNotifications: (typeof notifications.$inferSelect)[] = [];
-    for (const member of orgMembers) {
-      const userNotifications = await db.query.notifications.findMany({
-        where: eq(notifications.userId, member.userId),
-      });
-      // Filter to ONLY notifications for this org's channels/conversations
-      // Both conditions require explicit membership in org's channel/conversation sets
-      const orgNotifications = userNotifications.filter(
-        (n) =>
-          (n.channelId !== null && channelIdSet.has(n.channelId)) ||
-          (n.conversationId !== null && conversationIdSet.has(n.conversationId))
-      );
-      allNotifications.push(...orgNotifications);
-    }
+    const allUserNotifications = memberUserIds.length > 0
+      ? await db.query.notifications.findMany({
+          where: inArray(notifications.userId, memberUserIds),
+        })
+      : [];
+
+    // Filter to ONLY notifications for this org's channels/conversations
+    // Both conditions require explicit membership in org's channel/conversation sets
+    const allNotifications = allUserNotifications.filter(
+      (n) =>
+        (n.channelId !== null && channelIdSet.has(n.channelId)) ||
+        (n.conversationId !== null && conversationIdSet.has(n.conversationId))
+    );
 
     // 6. Get channel notification settings
-    const allNotificationSettings: (typeof channelNotificationSettings.$inferSelect)[] = [];
-    for (const channelId of channelIds) {
-      const settings = await db.query.channelNotificationSettings.findMany({
-        where: eq(channelNotificationSettings.channelId, channelId),
-      });
-      allNotificationSettings.push(...settings);
-    }
+    // PERF FIX: Single batch query instead of N+1
+    const allNotificationSettings = channelIds.length > 0
+      ? await db.query.channelNotificationSettings.findMany({
+          where: inArray(channelNotificationSettings.channelId, channelIds),
+        })
+      : [];
 
     // 7. Get read states
-    const allReadStates: (typeof channelReadState.$inferSelect)[] = [];
-    for (const channelId of channelIds) {
-      const states = await db.query.channelReadState.findMany({
-        where: eq(channelReadState.channelId, channelId),
-      });
-      allReadStates.push(...states);
-    }
-    for (const conversation of orgConversations) {
-      const states = await db.query.channelReadState.findMany({
-        where: eq(channelReadState.conversationId, conversation.id),
-      });
-      allReadStates.push(...states);
-    }
+    // PERF FIX: Two batch queries instead of N+1 (channels + conversations)
+    const channelReadStates = channelIds.length > 0
+      ? await db.query.channelReadState.findMany({
+          where: inArray(channelReadState.channelId, channelIds),
+        })
+      : [];
 
-    // Count total reactions
-    let totalReactions = 0;
-    for (const channel of channelsWithMessages) {
-      for (const msg of channel.messages) {
-        totalReactions += msg.reactions.length;
-      }
-    }
-    for (const conv of conversationsWithMessages) {
-      for (const msg of conv.messages) {
-        totalReactions += msg.reactions.length;
-      }
-    }
+    const conversationReadStates = conversationIds.length > 0
+      ? await db.query.channelReadState.findMany({
+          where: inArray(channelReadState.conversationId, conversationIds),
+        })
+      : [];
+
+    const allReadStates = [...channelReadStates, ...conversationReadStates];
+
+    // Count total reactions (already batched above)
+    const totalReactions = allChannelReactions.length + allConvReactions.length;
 
     // Build manifest
     const manifest: ExportManifest = {
