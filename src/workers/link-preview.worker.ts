@@ -46,15 +46,26 @@ import type { LinkPreviewJobData } from "@/server/queue/link-preview.queue";
 
 const CACHE_TTL_HOURS = 24;
 
+// SEC2-FIX: Maximum response size to prevent memory exhaustion attacks
+// 5MB is sufficient for HTML pages while preventing abuse
+const MAX_RESPONSE_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
+
 // Create filtering agents for SSRF protection (LINK-07, SEC2-15)
 // These agents validate resolved IP addresses, preventing DNS rebinding attacks
 const httpAgent = new RequestFilteringHttpAgent();
 const httpsAgent = new RequestFilteringHttpsAgent();
 
 /**
- * Custom fetch with SSRF protection via request-filtering-agent.
- * Blocks requests to private/internal IP addresses after DNS resolution.
- * This prevents DNS rebinding attacks where attacker DNS resolves to private IP.
+ * Custom fetch with SSRF protection and response size limits.
+ *
+ * Security features:
+ * - request-filtering-agent blocks requests to private/internal IPs after DNS resolution
+ * - Content-Length header check rejects obviously large responses early
+ * - Streaming body reader enforces max size during download
+ *
+ * This prevents:
+ * - DNS rebinding attacks (attacker DNS resolves to private IP)
+ * - Memory exhaustion attacks (massive response bodies)
  */
 async function safeFetch(url: string): Promise<Response> {
   const parsedUrl = new URL(url);
@@ -64,11 +75,24 @@ async function safeFetch(url: string): Promise<Response> {
     agent,
     timeout: 5000,
     follow: 3,
+    // node-fetch 'size' option sets max response body size
+    size: MAX_RESPONSE_SIZE_BYTES,
     headers: {
       Accept: "text/html, application/xhtml+xml",
       "User-Agent": "facebookexternalhit",
     },
   });
+
+  // Early rejection based on Content-Length header if available
+  const contentLength = response.headers.get("content-length");
+  if (contentLength) {
+    const size = parseInt(contentLength, 10);
+    if (!isNaN(size) && size > MAX_RESPONSE_SIZE_BYTES) {
+      // Consume body to properly close connection
+      response.body?.cancel();
+      throw new Error(`Response too large: ${size} bytes (max ${MAX_RESPONSE_SIZE_BYTES})`);
+    }
+  }
 
   // Convert node-fetch Response to something unfurl.js expects
   return response as unknown as Response;
