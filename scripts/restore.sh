@@ -81,11 +81,37 @@ echo "Done."
 
 # Restore execution
 echo "Step 4/4: Restoring from backup..."
-pg_restore -U "${PGUSER}" -d "${PGDATABASE}" --clean --if-exists "${BACKUP_FILE}" 2>/dev/null || true
-echo "Done."
+# FIX: Properly capture and report pg_restore errors instead of hiding them
+# pg_restore returns non-zero on warnings too, so we capture output and check for actual failures
+RESTORE_OUTPUT=$(pg_restore -U "${PGUSER}" -d "${PGDATABASE}" --clean --if-exists --verbose "${BACKUP_FILE}" 2>&1) || RESTORE_EXIT_CODE=$?
+
+# Check if restore actually failed (not just warnings)
+# pg_restore returns 1 for warnings, but we need to check if data was restored
+if [[ "${RESTORE_EXIT_CODE:-0}" -ne 0 ]]; then
+    echo "pg_restore output:"
+    echo "${RESTORE_OUTPUT}"
+    echo ""
+fi
+
+# Verify restore succeeded by checking for tables
+echo "Verifying restore..."
+TABLE_COUNT=$(psql -U "${PGUSER}" -d "${PGDATABASE}" -t -c "SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public'" 2>/dev/null | tr -d ' ')
+
+if [[ -z "${TABLE_COUNT}" ]] || [[ "${TABLE_COUNT}" -lt 1 ]]; then
+    echo ""
+    echo "=========================================="
+    echo "ERROR: Restore verification FAILED!"
+    echo "=========================================="
+    echo ""
+    echo "No tables found in database after restore."
+    echo "The pg_restore output above may contain the cause."
+    echo ""
+    exit 1
+fi
 
 echo ""
 echo "=== Restore Complete ==="
 echo "Database '${PGDATABASE}' restored from: ${BACKUP_FILE}"
+echo "Tables restored: ${TABLE_COUNT}"
 echo ""
 echo "Note: You may need to restart the application to reconnect to the database."
