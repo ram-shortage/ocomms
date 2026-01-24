@@ -28,6 +28,12 @@ const serwist = new Serwist({
   },
 });
 
+// Explicit fetch handler - Chrome Android requires this for PWA installability
+// Serwist handles the actual caching logic via addEventListeners() below
+self.addEventListener("fetch", () => {
+  // Let Serwist handle the fetch - this listener just ensures Chrome sees a fetch handler
+});
+
 // Listen for skip waiting message from main thread
 self.addEventListener("message", (event) => {
   if (event.data && event.data.type === "SKIP_WAITING") {
