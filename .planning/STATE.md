@@ -155,12 +155,8 @@ Recent from Phase 31:
 
 ### Pending Todos
 
-5 todos pending - see `.planning/todos/pending/`
-- Fix channel category drag-drop (addressed in SIDE-02 to SIDE-04)
-- Reorder sidebar sections (addressed in SIDE-06)
+1 todo pending - see `.planning/todos/pending/`
 - Fix typing bar layout whitespace
-- Phase 26 status bugs (can be closed)
-- Load testing typing indicators (descoped)
 
 ### Deferred Tech Debt
 
