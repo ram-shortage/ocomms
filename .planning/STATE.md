@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-21)
 
 **Core value:** Data sovereignty - complete control over communication data
-**Current focus:** v0.6.0 Polish & Hardening - Phase 36 Stabilization
+**Current focus:** v0.6.0 Polish & Hardening - Phase 37 E2E Test Fixes
 
 ## Current Position
 
-Phase: 36 of 36 (Stabilization)
-Plan: 5 of 6 in current phase
+Phase: 37 of 37 (E2E Test Fixes)
+Plan: 7 of ? in current phase
 Status: In progress
-Last activity: 2026-01-23 - Completed 36-02-PLAN.md (Security E2E Tests)
+Last activity: 2026-01-24 - Completed 37-07-PLAN.md (Code Review Fixes)
 
-Progress: [██████████████████████████] 36/36 phases (Plan 5/6)
+Progress: [██████████████████████████] 37/37 phases
 
 ## Shipped Milestones
 
@@ -36,10 +36,10 @@ Progress: [███████████████████████
 
 ## Performance Metrics
 
-**Cumulative (through Phase 34-05):**
-- Total plans completed: 144
-- Total requirements delivered: 257
-- Total phases completed: 34
+**Cumulative (through Phase 37-07):**
+- Total plans completed: 145+
+- Total requirements delivered: 257+
+- Total phases completed: 37
 
 ## Accumulated Context
 
@@ -47,17 +47,11 @@ Progress: [███████████████████████
 
 Decisions are logged in PROJECT.md Key Decisions table.
 
-Recent from Phase 34:
-- JSONB preferences column with SidebarPreferencesData type for flexible storage (SIDE-01)
-- Unique index on (userId, organizationId) for per-user per-workspace preferences (SIDE-02)
-- saveSidebarPreferences merges partial updates with existing preferences (SIDE-03)
-- Server-side timestamp for updatedAt field in preferences (SIDE-04)
-- Category sortable IDs prefixed with 'cat-' to distinguish from channel IDs (SIDE-05)
-- Category reorder available to all users as personal preference (SIDE-06)
-- New categories appear at end of saved order using MAX_SAFE_INTEGER (SIDE-07)
-- DM drag handle appears on hover, uses same pattern as channel drag handles (SIDE-08)
-- SortableSection uses dnd-kit useSortable hook with grip handle visible on hover (SIDE-09)
-- Section visibility toggles via Checkbox components with immediate persistence (SIDE-10)
+Recent from Phase 37:
+- Explicit Set lookups for org-scoped notification filtering (SEC-07-01)
+- No override for seed scripts in production - test credentials are security risk (SEC-07-02)
+- Batch inArray queries instead of N+1 loops for exports (PERF-07-01)
+- Redis rate limiting with in-memory fallback for multi-instance support (INFRA-07-01)
 
 Recent from Phase 36:
 - tmpfs for PostgreSQL in test compose - RAM disk for speed (E2E-01)
@@ -90,6 +84,18 @@ Recent from Phase 35:
 - perLine prop forwarded to emoji-mart for mobile 6-column layout (MOBI-EMOJ-01)
 - Status fetched via getMyStatus when More menu opens (MOBI-STAT-02)
 - min-h-11 md:min-h-8 pattern for responsive touch targets (MOBI2-09)
+
+Recent from Phase 34:
+- JSONB preferences column with SidebarPreferencesData type for flexible storage (SIDE-01)
+- Unique index on (userId, organizationId) for per-user per-workspace preferences (SIDE-02)
+- saveSidebarPreferences merges partial updates with existing preferences (SIDE-03)
+- Server-side timestamp for updatedAt field in preferences (SIDE-04)
+- Category sortable IDs prefixed with 'cat-' to distinguish from channel IDs (SIDE-05)
+- Category reorder available to all users as personal preference (SIDE-06)
+- New categories appear at end of saved order using MAX_SAFE_INTEGER (SIDE-07)
+- DM drag handle appears on hover, uses same pattern as channel drag handles (SIDE-08)
+- SortableSection uses dnd-kit useSortable hook with grip handle visible on hover (SIDE-09)
+- Section visibility toggles via Checkbox components with immediate persistence (SIDE-10)
 
 Recent from Phase 33:
 - SQL aggregation with LATERAL joins for workspace unreads (efficient single query) (WS-01)
@@ -153,8 +159,8 @@ None active.
 
 ## Session Continuity
 
-Last session: 2026-01-23
-Stopped at: Completed 36-02-PLAN.md (Security E2E Tests)
+Last session: 2026-01-24
+Stopped at: Completed 37-07-PLAN.md (Code Review Fixes)
 Resume file: None
 
 ## Human Verification Deferred
