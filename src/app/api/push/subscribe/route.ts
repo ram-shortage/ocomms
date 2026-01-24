@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { db } from "@/db";
 import { pushSubscriptions } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { isVapidConfigured } from "@/lib/push";
+import { isVapidConfigured, configureVapid } from "@/lib/push";
 
 interface PushSubscriptionJSON {
   endpoint: string;
@@ -15,6 +15,11 @@ interface PushSubscriptionJSON {
 }
 
 export async function POST(request: NextRequest) {
+  // Ensure VAPID is configured (API routes run in separate process from custom server)
+  if (!isVapidConfigured()) {
+    configureVapid();
+  }
+
   // Verify push is configured
   if (!isVapidConfigured()) {
     return NextResponse.json(

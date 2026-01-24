@@ -1,7 +1,12 @@
 import { NextResponse } from "next/server";
-import { getVapidPublicKey, isVapidConfigured } from "@/lib/push";
+import { getVapidPublicKey, isVapidConfigured, configureVapid } from "@/lib/push";
 
 export async function GET() {
+  // Ensure VAPID is configured (API routes run in separate process from custom server)
+  if (!isVapidConfigured()) {
+    configureVapid();
+  }
+
   if (!isVapidConfigured()) {
     return NextResponse.json(
       { error: "Push notifications not configured" },
