@@ -21,6 +21,12 @@ RUN npx esbuild src/server/index.ts --bundle --platform=node --target=node22 \
 RUN npx esbuild ./scripts/migrate.ts --bundle --platform=node --target=node22 \
     --outfile=dist-server/migrate.mjs --format=esm --minify \
     --external:postgres --external:drizzle-orm
+RUN npx esbuild ./scripts/demo-seed.ts --bundle --platform=node --target=node22 \
+    --outfile=dist-server/demo-seed.mjs --format=esm --minify \
+    --external:postgres --external:drizzle-orm --external:better-auth
+RUN npx esbuild ./scripts/reset-demo.ts --bundle --platform=node --target=node22 \
+    --outfile=dist-server/reset-demo.mjs --format=esm --minify \
+    --external:postgres --external:drizzle-orm --external:better-auth
 
 # Stage 3: Production runner
 FROM node:22-alpine AS runner
@@ -51,6 +57,10 @@ COPY --from=builder /app/node_modules/drizzle-orm ./node_modules/drizzle-orm
 # Copy isomorphic-dompurify and dependencies (external to esbuild)
 COPY --from=builder /app/node_modules/isomorphic-dompurify ./node_modules/isomorphic-dompurify
 COPY --from=builder /app/node_modules/dompurify ./node_modules/dompurify
+
+# Copy better-auth for seed scripts
+COPY --from=builder /app/node_modules/better-auth ./node_modules/better-auth
+COPY --from=builder /app/node_modules/@noble ./node_modules/@noble
 
 # Set ownership
 RUN chown -R nextjs:nodejs /app
