@@ -159,10 +159,11 @@ Recent from Phase 31:
 
 ### Pending Todos
 
-3 todos pending - see `.planning/todos/pending/`
+4 todos pending - see `.planning/todos/pending/`
 - Fix typing bar layout whitespace
 - Mobile UX improvements (channels button, message layout, nav bar position)
 - Notification enable popup stays on screen after granting permission
+- Chats not updating in realtime
 
 ### Deferred Tech Debt
 
