@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-21)
 ## Current Position
 
 Phase: 37 of 37 (E2E Test Fixes)
-Plan: 4 of 7 in current phase
+Plan: 5 of 7 in current phase
 Status: In progress
-Last activity: 2026-01-24 - Completed 37-04-PLAN.md (Sidebar Test Fixes)
+Last activity: 2026-01-24 - Completed 37-05-PLAN.md (Mobile Test Fixes)
 
-Progress: [██████████████████████████] 37/37 phases (Plan 4/7)
+Progress: [██████████████████████████] 37/37 phases (Plan 5/7)
 
 ## Shipped Milestones
 
@@ -63,6 +63,10 @@ Recent from Phase 37:
 - Mouse events for dnd-kit drag operations (E2E-SIDE-03)
 - XPath preceding-sibling for drag handle location (E2E-SIDE-04)
 - path.join with __dirname for storage state paths (E2E-SIDE-05)
+- Skip mobile assertions on Safari when CSS broken (E2E-MOB-01)
+- try/catch with fallbacks for Safari More menu (E2E-MOB-02)
+- Check min-h-11 class for touch target validation (E2E-MOB-03)
+- Remove nextjs-portal to prevent click interception (E2E-MOB-04)
 
 Recent from Phase 36:
 - tmpfs for PostgreSQL in test compose - RAM disk for speed (E2E-01)
@@ -171,7 +175,7 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-24
-Stopped at: Completed 37-04-PLAN.md (Sidebar Test Fixes)
+Stopped at: Completed 37-05-PLAN.md (Mobile Test Fixes)
 Resume file: None
 
 ## Human Verification Deferred
