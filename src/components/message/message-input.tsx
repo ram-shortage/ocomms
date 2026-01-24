@@ -54,7 +54,19 @@ export function MessageInput({ targetId, targetType, members = [], groups = [], 
   const [mentionTriggerIndex, setMentionTriggerIndex] = useState<number | null>(null);
   const [rateLimitMessage, setRateLimitMessage] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const shouldRefocusRef = useRef(false);
   const socket = useSocket();
+
+  // Refocus textarea after sending completes and component re-renders
+  useEffect(() => {
+    if (shouldRefocusRef.current && !isSending) {
+      shouldRefocusRef.current = false;
+      // Use requestAnimationFrame to ensure DOM is ready
+      requestAnimationFrame(() => {
+        textareaRef.current?.focus();
+      });
+    }
+  }, [isSending]);
 
   // File upload state
   const [pendingUploads, setPendingUploads] = useState<Map<string, PendingUpload>>(new Map());
@@ -223,10 +235,9 @@ export function MessageInput({ targetId, targetType, members = [], groups = [], 
     } catch (err) {
       console.error("[MessageInput] Failed to queue message:", err);
     } finally {
+      // Mark for refocus - the useEffect will handle it after re-render
+      shouldRefocusRef.current = true;
       setIsSending(false);
-      // Keep focus on textarea for continued typing
-      // Use setTimeout to ensure textarea is re-enabled after state update
-      setTimeout(() => textareaRef.current?.focus(), 0);
     }
   }, [content, hasContent, isSending, queueAndSend, stagedAttachments, stopTyping]);
 
