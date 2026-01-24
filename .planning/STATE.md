@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-21)
 ## Current Position
 
 Phase: 37 of 37 (E2E Test Fixes)
-Plan: 2 of 7 in current phase
+Plan: 3 of 7 in current phase
 Status: In progress
-Last activity: 2026-01-24 - Completed 37-02-PLAN.md (Security Test Fixes)
+Last activity: 2026-01-24 - Completed 37-03-PLAN.md (Workspace Test Fixes)
 
-Progress: [██████████████████████████] 37/37 phases (Plan 2/7)
+Progress: [██████████████████████████] 37/37 phases (Plan 3/7)
 
 ## Shipped Milestones
 
@@ -57,6 +57,9 @@ Recent from Phase 37:
 - File-based cookie verification for secure cookie tests (SEC-E2E-04)
 - Accept CSP inline script violations as known issue (SEC-E2E-05)
 - Use page.evaluate for API calls needing proper origin (SEC-E2E-06)
+- FORCE_INSECURE_COOKIES env var to disable secure cookies in E2E (E2E-WS-02)
+- DISABLE_RATE_LIMIT env var to disable rate limiting in E2E (E2E-WS-03)
+- data-testid selectors for workspace switcher components (E2E-WS-04)
 
 Recent from Phase 36:
 - tmpfs for PostgreSQL in test compose - RAM disk for speed (E2E-01)
@@ -165,7 +168,7 @@ None active.
 ## Session Continuity
 
 Last session: 2026-01-24
-Stopped at: Completed 37-02-PLAN.md (Security Test Fixes)
+Stopped at: Completed 37-03-PLAN.md (Workspace Test Fixes)
 Resume file: None
 
 ## Human Verification Deferred
