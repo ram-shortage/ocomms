@@ -1,4 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
+import path from 'path';
+
+// Resolve auth file paths relative to this config file
+const authDir = path.join(__dirname, '.auth');
 
 /**
  * Playwright configuration for OComms E2E testing.
@@ -34,7 +38,7 @@ export default defineConfig({
       name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
-        storageState: 'e2e/.auth/alice.json',
+        storageState: path.join(authDir, 'alice.json'),
       },
       dependencies: ['setup'],
       testIgnore: '**/mobile/**/*.spec.ts',
@@ -45,7 +49,7 @@ export default defineConfig({
       name: 'mobile-chrome',
       use: {
         ...devices['Pixel 5'],
-        storageState: 'e2e/.auth/alice.json',
+        storageState: path.join(authDir, 'alice.json'),
       },
       dependencies: ['setup'],
       testMatch: '**/mobile/**/*.spec.ts',
@@ -56,7 +60,7 @@ export default defineConfig({
       name: 'mobile-safari',
       use: {
         ...devices['iPhone 13'],
-        storageState: 'e2e/.auth/alice.json',
+        storageState: path.join(authDir, 'alice.json'),
       },
       dependencies: ['setup'],
       testMatch: '**/mobile/**/*.spec.ts',

@@ -33,9 +33,13 @@ export class SidebarPage {
 
   /**
    * Get a channel item by name.
+   * Channels may have # prefix as icon or in text, so we match flexibly.
    */
   getChannel(name: string) {
-    return this.page.getByRole('link', { name: new RegExp(`#\\s*${name}`, 'i') });
+    // First try exact match, then flexible match
+    return this.page.locator('aside a[href*="/channels/"]').filter({
+      hasText: new RegExp(name, 'i'),
+    });
   }
 
   /**
@@ -145,7 +149,9 @@ export class SidebarPage {
    */
   getChannelDragHandle(channelName: string) {
     const channelGroup = this.page.locator('aside .group').filter({
-      has: this.page.getByRole('link', { name: new RegExp(`#\\s*${channelName}`, 'i') }),
+      has: this.page.locator(`aside a[href*="/channels/"]`).filter({
+        hasText: new RegExp(channelName, 'i'),
+      }),
     });
     return channelGroup.locator('button').first();
   }
@@ -175,26 +181,30 @@ export class SidebarPage {
    * @returns Array of category names in their display order.
    */
   async getCategoryOrder(): Promise<string[]> {
-    // Categories are uppercase buttons with chevrons
-    const categoryButtons = this.page.locator('aside button').filter({
-      hasText: /^[A-Z][A-Z\s]*$/,
-    });
+    // Known category names - we'll find their actual order in the DOM
+    const knownCategories = ['Engineering', 'Product', 'Design', 'Operations', 'Social', 'Marketing', 'Sales'];
 
-    const count = await categoryButtons.count();
-    const names: string[] = [];
+    // Get all category buttons by finding .group elements that contain these category names
+    // and extract them in DOM order
+    const categoryElements = await this.page.evaluate((categories) => {
+      const sidebar = document.querySelector('aside');
+      if (!sidebar) return [];
 
-    for (let i = 0; i < count; i++) {
-      const text = await categoryButtons.nth(i).textContent();
-      if (text) {
-        // Clean up text (remove chevron markers, trim)
-        const name = text.trim();
-        if (name && !name.includes('CHANNELS') && !name.includes('DIRECT')) {
-          names.push(name);
+      // Find all buttons in the sidebar
+      const buttons = sidebar.querySelectorAll('button');
+      const found: string[] = [];
+
+      buttons.forEach((btn) => {
+        const text = btn.textContent?.trim();
+        if (text && categories.some((cat: string) => cat.toLowerCase() === text.toLowerCase())) {
+          found.push(text);
         }
-      }
-    }
+      });
 
-    return names;
+      return found;
+    }, knownCategories);
+
+    return categoryElements;
   }
 
   /**
@@ -313,28 +323,82 @@ export class SidebarPage {
   }
 
   /**
+   * Helper method to perform dnd-kit compatible drag operations.
+   * Uses mouse events instead of dragTo for compatibility with dnd-kit.
+   */
+  private async performDndKitDrag(dragHandle: Locator, target: Locator) {
+    // Force drag handle visible (it may have opacity-0 class)
+    await dragHandle.evaluate((el) => {
+      el.classList.remove('opacity-0');
+      el.classList.add('opacity-100');
+    });
+
+    // Get bounding boxes
+    const handleBox = await dragHandle.boundingBox();
+    const targetBox = await target.boundingBox();
+
+    if (!handleBox || !targetBox) {
+      throw new Error('Could not get bounding boxes for drag operation');
+    }
+
+    // Calculate positions
+    const startX = handleBox.x + handleBox.width / 2;
+    const startY = handleBox.y + handleBox.height / 2;
+    const endX = targetBox.x + targetBox.width / 2;
+    const endY = targetBox.y + targetBox.height / 2;
+
+    // Move to drag handle and press
+    await this.page.mouse.move(startX, startY);
+    await this.page.mouse.down();
+
+    // Move with intermediate steps for dnd-kit to register
+    const steps = 10;
+    for (let i = 1; i <= steps; i++) {
+      const x = startX + (endX - startX) * (i / steps);
+      const y = startY + (endY - startY) * (i / steps);
+      await this.page.mouse.move(x, y);
+      await this.page.waitForTimeout(20);
+    }
+
+    // Release
+    await this.page.mouse.up();
+
+    // Wait for UI update
+    await this.page.waitForTimeout(300);
+  }
+
+  /**
    * Drag a category to a new position.
    * Uses dnd-kit compatible drag operations.
    */
   async dragCategory(fromCategory: string, toCategory: string) {
-    // Hover to reveal drag handle
+    // Category buttons are inside the CategorySidebar component
+    // Structure: div > div.group > [button(dragHandle), button(categoryName)]
+    // The drag handle is the sibling button that precedes the category name button
     const fromHeader = this.getCategoryHeader(fromCategory);
     await fromHeader.hover();
 
-    // Get the drag handle
-    const fromGroup = this.page.locator('aside .group').filter({
-      has: fromHeader,
-    });
-    const dragHandle = fromGroup.locator('button').first();
+    // Get the drag handle by finding the previous sibling button
+    // The category structure has drag handle as the first button in the parent container
+    const dragHandle = fromHeader.locator('xpath=preceding-sibling::button[1]');
+
+    // Verify the drag handle exists
+    if (await dragHandle.count() === 0) {
+      // Fallback: try finding parent and getting first button
+      const parent = fromHeader.locator('..');
+      const firstButton = parent.locator('button').first();
+      // Check if first button is not the category header itself
+      if (await firstButton.textContent() === '') {
+        await this.performDndKitDrag(firstButton, this.getCategoryHeader(toCategory));
+        return;
+      }
+    }
 
     // Get target position
     const toHeader = this.getCategoryHeader(toCategory);
 
-    // Perform drag
-    await dragHandle.dragTo(toHeader);
-
-    // Small delay for UI update
-    await this.page.waitForTimeout(300);
+    // Perform dnd-kit compatible drag
+    await this.performDndKitDrag(dragHandle, toHeader);
   }
 
   /**
@@ -351,11 +415,8 @@ export class SidebarPage {
     });
     const dragHandle = channelGroup.locator('button').first();
 
-    // Perform drag
-    await dragHandle.dragTo(targetElement);
-
-    // Small delay for UI update
-    await this.page.waitForTimeout(300);
+    // Perform dnd-kit compatible drag
+    await this.performDndKitDrag(dragHandle, targetElement);
   }
 
   /**
@@ -395,11 +456,8 @@ export class SidebarPage {
       hasText: new RegExp(toUser, 'i'),
     });
 
-    // Perform drag
-    await dragHandle.dragTo(toDm);
-
-    // Small delay for UI update
-    await this.page.waitForTimeout(300);
+    // Perform dnd-kit compatible drag
+    await this.performDndKitDrag(dragHandle, toDm);
   }
 
   /**
@@ -423,11 +481,8 @@ export class SidebarPage {
       name: new RegExp(`^${toSection}$`, 'i'),
     });
 
-    // Perform drag
-    await dragHandle.dragTo(toLink);
-
-    // Small delay for UI update
-    await this.page.waitForTimeout(300);
+    // Perform dnd-kit compatible drag
+    await this.performDndKitDrag(dragHandle, toLink);
   }
 
   /**
@@ -441,7 +496,9 @@ export class SidebarPage {
     await fromButton.hover();
 
     // Get parent group and drag handle
-    const sectionGroup = fromButton.locator('..').locator('..');
+    const sectionGroup = this.page.locator('aside .group').filter({
+      has: fromButton,
+    });
     const dragHandle = sectionGroup.locator('button').first();
 
     // Get target
@@ -449,10 +506,7 @@ export class SidebarPage {
       name: new RegExp(toSection, 'i'),
     });
 
-    // Perform drag
-    await dragHandle.dragTo(toButton);
-
-    // Small delay for UI update
-    await this.page.waitForTimeout(300);
+    // Perform dnd-kit compatible drag
+    await this.performDndKitDrag(dragHandle, toButton);
   }
 }
